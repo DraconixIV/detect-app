@@ -18,27 +18,33 @@ export default function AddFindForm({
     <div
       style={{
         display: "flex",
-        flexDirection:
-          "column",
-        gap: "8px"
+        flexDirection: "column",
+        gap: "10px",
+        marginTop: "10px",
+        padding: "10px",
+        borderRadius: "16px",
+        background: "rgba(255,255,255,0.05)"
       }}
     >
+      {/* TITRE */}
       <input
-        placeholder="Titre"
+        type="text"
+        placeholder="Titre de la trouvaille"
         value={newTitle}
         onChange={(e) =>
-          setNewTitle(
-            e.target.value
-          )
+          setNewTitle(e.target.value)
         }
         style={{
-          padding: "8px",
-          borderRadius: "10px",
+          padding: "10px",
+          borderRadius: "12px",
           border: "none",
-          fontSize: "13px"
+          outline: "none",
+          fontSize: "13px",
+          background: "#f3f4f6"
         }}
       />
 
+      {/* DESCRIPTION */}
       <textarea
         placeholder="Description"
         value={newDescription}
@@ -48,14 +54,18 @@ export default function AddFindForm({
           )
         }
         style={{
-          padding: "8px",
-          borderRadius: "10px",
+          padding: "10px",
+          borderRadius: "12px",
           border: "none",
+          outline: "none",
           fontSize: "13px",
-          minHeight: "70px"
+          minHeight: "90px",
+          resize: "none",
+          background: "#f3f4f6"
         }}
       />
 
+      {/* CATEGORIE */}
       <select
         value={newCategory}
         onChange={(e) =>
@@ -64,10 +74,12 @@ export default function AddFindForm({
           )
         }
         style={{
-          padding: "8px",
-          borderRadius: "10px",
+          padding: "10px",
+          borderRadius: "12px",
           border: "none",
-          fontSize: "13px"
+          outline: "none",
+          fontSize: "13px",
+          background: "#f3f4f6"
         }}
       >
         {Object.keys(icons).map(
@@ -82,22 +94,20 @@ export default function AddFindForm({
         )}
       </select>
 
-      {/* CAMERA */}
+      {/* BOUTON PHOTO */}
       <label
         style={{
-          background:
-            "#2563eb",
+          background: "#2563eb",
           color: "white",
-          padding: "10px",
-          borderRadius:
-            "12px",
+          padding: "12px",
+          borderRadius: "14px",
           textAlign: "center",
           cursor: "pointer",
           fontSize: "13px",
           fontWeight: "600"
         }}
       >
-        📷 Prendre une photo
+        📷 Ajouter une photo
 
         <input
           type="file"
@@ -106,81 +116,95 @@ export default function AddFindForm({
           style={{
             display: "none"
           }}
-          onChange={(e) =>
-            setNewPhoto(
-              e.target.files[0]
-            )
-          }
-        />
-      </label>
+          onChange={(e) => {
+            const file =
+              e.target.files?.[0];
 
-      {/* GALERIE */}
-      <label
-        style={{
-          background:
-            "#374151",
-          color: "white",
-          padding: "10px",
-          borderRadius:
-            "12px",
-          textAlign: "center",
-          cursor: "pointer",
-          fontSize: "13px",
-          fontWeight: "600"
-        }}
-      >
-        🖼️ Choisir depuis galerie
+            if (!file) return;
 
-        <input
-          type="file"
-          accept="image/*"
-          style={{
-            display: "none"
+            setNewPhoto(file);
           }}
-          onChange={(e) =>
-            setNewPhoto(
-              e.target.files[0]
-            )
-          }
         />
       </label>
 
-      {/* PREVIEW */}
+      {/* PREVIEW PHOTO */}
       {newPhoto && (
         <div
           style={{
             background:
               "rgba(255,255,255,0.08)",
-            padding: "8px",
-            borderRadius:
-              "10px",
-            fontSize: "12px",
-            color: "white"
+            padding: "10px",
+            borderRadius: "12px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px"
           }}
         >
-          📸 {newPhoto.name}
+          <div
+            style={{
+              fontSize: "12px",
+              color: "white",
+              wordBreak:
+                "break-word"
+            }}
+          >
+            📸 {newPhoto.name}
+          </div>
+
+          <img
+            src={URL.createObjectURL(
+              newPhoto
+            )}
+            alt="preview"
+            style={{
+              width: "100%",
+              borderRadius: "12px",
+              maxHeight: "180px",
+              objectFit: "cover"
+            }}
+          />
+
+          <button
+            onClick={() =>
+              setNewPhoto(null)
+            }
+            style={{
+              border: "none",
+              borderRadius: "10px",
+              padding: "8px",
+              background: "#ef4444",
+              color: "white",
+              cursor: "pointer",
+              fontSize: "12px"
+            }}
+          >
+            ❌ Retirer photo
+          </button>
         </div>
       )}
 
-      {/* SAVE BUTTON */}
+      {/* BOUTON SAVE */}
       <button
-        disabled={addingFind}
+        disabled={
+          addingFind || !newTitle
+        }
         onClick={addFind}
         style={{
-          borderRadius:
-            "12px",
-          padding: "10px",
+          borderRadius: "14px",
+          padding: "12px",
           border: "none",
-          background:
-            "#16a34a",
+          background: addingFind
+            ? "#4b5563"
+            : "#16a34a",
           color: "white",
           fontSize: "14px",
-          fontWeight: "600",
-          cursor: "pointer"
+          fontWeight: "700",
+          cursor: "pointer",
+          transition: "0.2s"
         }}
       >
         {addingFind
-          ? "Ajout..."
+          ? "Ajout en cours..."
           : "✅ Sauvegarder trouvaille"}
       </button>
     </div>
