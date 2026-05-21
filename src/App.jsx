@@ -343,7 +343,7 @@ function App() {
 
     if (addingFind) return;
 
-    setAddingFind(false);
+    setAddingFind(true);
 
     try {
       await createFind({
@@ -752,6 +752,7 @@ function App() {
             addFind={addFind}
             newPhoto={newPhoto}
             setNewPhoto={setNewPhoto}
+            addingFind={addingFind}
           />
         </div>
       )}
