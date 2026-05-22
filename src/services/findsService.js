@@ -3,30 +3,39 @@ import imageCompression from "browser-image-compression";
 import { supabase } from "../supabase";
 
 export async function loadFinds() {
-  const { data, error } =
-    await supabase
-      .from("finds")
-      .select("*");
+  try {
+    const { data, error } =
+      await supabase
+        .from("finds")
+        .select("*")
+        .order("id", {
+          ascending: false
+        });
 
-  if (error) {
+    if (error) {
+      console.error(error);
+      return [];
+    }
+
+    return (data || []).map(
+      (find) => ({
+        ...find,
+
+        position: [
+          find.latitude,
+          find.longitude
+        ],
+
+        category:
+          find.category ||
+          "autre"
+      })
+    );
+
+  } catch (error) {
     console.error(error);
     return [];
   }
-
-  return (data || []).map(
-    (find) => ({
-      ...find,
-
-      position: [
-        find.latitude,
-        find.longitude
-      ],
-
-      category:
-        find.category ||
-        "autre"
-    })
-  );
 }
 
 export async function addFind({
@@ -34,53 +43,18 @@ export async function addFind({
   newTitle,
   newDescription,
   newCategory,
-  newPhoto
+  photoFile
 }) {
   try {
-    // 1. création trouvaille
-    const {
-      data: insertedFind,
-      error: insertError
-    } = await supabase
-      .from("finds")
-      .insert([
-        {
-          title: newTitle,
+    let imageUrl = null;
 
-          description:
-            newDescription,
-
-          category:
-            newCategory,
-
-          latitude:
-            position[0],
-
-          longitude:
-            position[1],
-
-          date:
-            new Date().toLocaleString()
-        }
-      ])
-      .select()
-      .single();
-
-    if (insertError) {
-      console.error(insertError);
-
-      alert(
-        "Erreur création trouvaille"
-      );
-
-      return null;
-    }
-
-    // 2. upload photo si présente
-    if (newPhoto) {
+    // =========================
+    // UPLOAD PHOTO
+    // =========================
+    if (photoFile) {
       const compressedFile =
         await imageCompression(
-          newPhoto,
+          photoFile,
           {
             maxSizeMB: 0.3,
             maxWidthOrHeight: 1600,
@@ -89,11 +63,13 @@ export async function addFind({
         );
 
       const cleanName =
-        newPhoto.name
+        photoFile.name
           .replaceAll(" ", "-")
           .replaceAll("é", "e")
           .replaceAll("è", "e")
-          .replaceAll("à", "a");
+          .replaceAll("ê", "e")
+          .replaceAll("à", "a")
+          .replaceAll("ù", "u");
 
       const fileName =
         `${Date.now()}-${cleanName}`;
@@ -107,28 +83,101 @@ export async function addFind({
           compressedFile
         );
 
-      if (!uploadError) {
-        const {
-          data: { publicUrl }
-        } = supabase.storage
-          .from("find-photos")
-          .getPublicUrl(fileName);
+      if (uploadError) {
+        console.error(
+          uploadError
+        );
 
-        // 3. liaison photo ↔ trouvaille
-        await supabase
-          .from("find_photos")
-          .insert([
-            {
-              find_id:
-                insertedFind.id,
+        alert(
+          "Erreur upload photo"
+        );
 
-              image_url:
-                publicUrl,
+        return null;
+      }
 
-              type:
-                "discovery"
-            }
-          ]);
+      const {
+        data: { publicUrl }
+      } = supabase.storage
+        .from("find-photos")
+        .getPublicUrl(fileName);
+
+      imageUrl = publicUrl;
+    }
+
+    // =========================
+    // INSERT TROUVAILLE
+    // =========================
+    const {
+      data: insertedFind,
+      error: insertError
+    } = await supabase
+      .from("finds")
+      .insert([
+        {
+          title:
+            newTitle || "",
+
+          description:
+            newDescription ||
+            "",
+
+          category:
+            newCategory ||
+            "autre",
+
+          latitude:
+            position[0],
+
+          longitude:
+            position[1],
+
+          date:
+            new Date().toLocaleString(),
+
+          image_url:
+            imageUrl
+        }
+      ])
+      .select()
+      .single();
+
+    if (insertError) {
+      console.error(
+        insertError
+      );
+
+      alert(
+        "Erreur création trouvaille"
+      );
+
+      return null;
+    }
+
+    // =========================
+    // TABLE find_photos
+    // =========================
+    if (imageUrl) {
+      const {
+        error: photoError
+      } = await supabase
+        .from("find_photos")
+        .insert([
+          {
+            find_id:
+              insertedFind.id,
+
+            image_url:
+              imageUrl,
+
+            type:
+              "discovery"
+          }
+        ]);
+
+      if (photoError) {
+        console.error(
+          photoError
+        );
       }
     }
 
@@ -149,16 +198,22 @@ export async function addFind({
   }
 }
 
-export async function deleteFind(findId) {
+export async function deleteFind(
+  findId
+) {
   try {
-    // récupérer photos liées
+    // =========================
+    // RECUP PHOTOS
+    // =========================
     const { data: photos } =
       await supabase
         .from("find_photos")
         .select("*")
         .eq("find_id", findId);
 
-    // supprimer fichiers storage
+    // =========================
+    // DELETE STORAGE
+    // =========================
     if (photos?.length) {
       const fileNames =
         photos.map((photo) =>
@@ -172,13 +227,17 @@ export async function deleteFind(findId) {
         .remove(fileNames);
     }
 
-    // supprimer photos DB
+    // =========================
+    // DELETE find_photos
+    // =========================
     await supabase
       .from("find_photos")
       .delete()
       .eq("find_id", findId);
 
-    // supprimer trouvaille
+    // =========================
+    // DELETE finds
+    // =========================
     const { error } =
       await supabase
         .from("finds")
