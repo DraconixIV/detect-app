@@ -14,16 +14,32 @@ export default function AddFindForm({
 }) {
   if (!showForm) return null;
 
+  const inputStyle = {
+    padding: "12px",
+    borderRadius: "14px",
+    border: "1px solid rgba(255,255,255,0.12)",
+    outline: "none",
+    fontSize: "14px",
+    background: "#f9fafb",
+    color: "#111827",
+    width: "100%",
+    boxSizing: "border-box",
+    fontWeight: "500"
+  };
+
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "10px",
-        marginTop: "10px",
-        padding: "10px",
-        borderRadius: "16px",
-        background: "rgba(255,255,255,0.05)"
+        gap: "12px",
+        marginTop: "12px",
+        padding: "14px",
+        borderRadius: "18px",
+        background: "rgba(17,24,39,0.92)",
+        backdropFilter: "blur(12px)",
+        boxShadow:
+          "0 8px 24px rgba(0,0,0,0.35)"
       }}
     >
       {/* TITRE */}
@@ -34,14 +50,7 @@ export default function AddFindForm({
         onChange={(e) =>
           setNewTitle(e.target.value)
         }
-        style={{
-          padding: "10px",
-          borderRadius: "12px",
-          border: "none",
-          outline: "none",
-          fontSize: "13px",
-          background: "#f3f4f6"
-        }}
+        style={inputStyle}
       />
 
       {/* DESCRIPTION */}
@@ -54,14 +63,10 @@ export default function AddFindForm({
           )
         }
         style={{
-          padding: "10px",
-          borderRadius: "12px",
-          border: "none",
-          outline: "none",
-          fontSize: "13px",
-          minHeight: "90px",
+          ...inputStyle,
+          minHeight: "100px",
           resize: "none",
-          background: "#f3f4f6"
+          fontFamily: "inherit"
         }}
       />
 
@@ -73,14 +78,7 @@ export default function AddFindForm({
             e.target.value
           )
         }
-        style={{
-          padding: "10px",
-          borderRadius: "12px",
-          border: "none",
-          outline: "none",
-          fontSize: "13px",
-          background: "#f3f4f6"
-        }}
+        style={inputStyle}
       >
         {Object.keys(icons).map(
           (cat) => (
@@ -97,14 +95,17 @@ export default function AddFindForm({
       {/* BOUTON PHOTO */}
       <label
         style={{
-          background: "#2563eb",
+          background:
+            "linear-gradient(135deg,#2563eb,#1d4ed8)",
           color: "white",
-          padding: "12px",
+          padding: "13px",
           borderRadius: "14px",
           textAlign: "center",
           cursor: "pointer",
-          fontSize: "13px",
-          fontWeight: "600"
+          fontSize: "14px",
+          fontWeight: "700",
+          boxShadow:
+            "0 4px 12px rgba(37,99,235,0.35)"
         }}
       >
         📷 Ajouter une photo
@@ -133,17 +134,17 @@ export default function AddFindForm({
           style={{
             background:
               "rgba(255,255,255,0.08)",
-            padding: "10px",
-            borderRadius: "12px",
+            padding: "12px",
+            borderRadius: "14px",
             display: "flex",
             flexDirection: "column",
-            gap: "8px"
+            gap: "10px"
           }}
         >
           <div
             style={{
               fontSize: "12px",
-              color: "white",
+              color: "#f3f4f6",
               wordBreak:
                 "break-word"
             }}
@@ -159,8 +160,10 @@ export default function AddFindForm({
             style={{
               width: "100%",
               borderRadius: "12px",
-              maxHeight: "180px",
-              objectFit: "cover"
+              maxHeight: "220px",
+              objectFit: "cover",
+              border:
+                "2px solid rgba(255,255,255,0.08)"
             }}
           />
 
@@ -171,11 +174,12 @@ export default function AddFindForm({
             style={{
               border: "none",
               borderRadius: "10px",
-              padding: "8px",
+              padding: "10px",
               background: "#ef4444",
               color: "white",
               cursor: "pointer",
-              fontSize: "12px"
+              fontSize: "13px",
+              fontWeight: "600"
             }}
           >
             ❌ Retirer photo
@@ -190,17 +194,19 @@ export default function AddFindForm({
         }
         onClick={addFind}
         style={{
-          borderRadius: "14px",
-          padding: "12px",
+          borderRadius: "15px",
+          padding: "14px",
           border: "none",
           background: addingFind
             ? "#4b5563"
-            : "#16a34a",
+            : "linear-gradient(135deg,#16a34a,#15803d)",
           color: "white",
-          fontSize: "14px",
-          fontWeight: "700",
+          fontSize: "15px",
+          fontWeight: "800",
           cursor: "pointer",
-          transition: "0.2s"
+          transition: "0.2s",
+          boxShadow:
+            "0 6px 16px rgba(22,163,74,0.35)"
         }}
       >
         {addingFind
