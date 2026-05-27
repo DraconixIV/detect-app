@@ -16,8 +16,6 @@ import AddFindForm from "./components/AddFindForm";
 
 import LoadingScreen from "./components/LoadingScreen";
 import GpsMarker from "./components/GpsMarker";
-import TrackLines from "./components/TrackLines";
-import TrackHistory from "./components/TrackHistory";
 import MapLayers from "./components/MapLayers";
 import StatsPanel from "./components/StatsPanel";
 
@@ -27,11 +25,6 @@ import {
   loadFinds as fetchFinds,
   addFind as createFind
 } from "./services/findsService";
-
-import {
-  loadTracks as fetchTracks,
-  saveTrack as createTrack
-} from "./services/tracksService";
 
 import {
   exportData,
@@ -115,12 +108,6 @@ function App() {
   const [position, setPosition] =
     useState(null);
 
-  const [track, setTrack] =
-    useState([]);
-
-  const [savedTracks, setSavedTracks] =
-    useState([]);
-
   const [finds, setFinds] =
     useState([]);
 
@@ -179,24 +166,12 @@ function App() {
     useState(true);
 
   const [
-    showTrack,
-    setShowTrack
-  ] = useState(true);
-
-  const [
-    savingTrack,
-    setSavingTrack
-  ] = useState(false);
-
-  const [
     addingFind,
     setAddingFind
   ] = useState(false);
 
   useEffect(() => {
     loadFinds();
-
-    loadTracks();
 
     const watchId =
       navigator.geolocation.watchPosition(
@@ -212,46 +187,6 @@ function App() {
             return;
           }
 
-          setTrack((prevTrack) => {
-            if (
-              prevTrack.length === 0
-            ) {
-              return [newPosition];
-            }
-
-            const lastPoint =
-              prevTrack[
-                prevTrack.length - 1
-              ];
-
-            const distance =
-              distanceBetween(
-                lastPoint,
-                newPosition
-              );
-
-            if (distance < 3) {
-              return prevTrack;
-            }
-
-            const alreadyVisited =
-              prevTrack.some(
-                (point) =>
-                  distanceBetween(
-                    point,
-                    newPosition
-                  ) < 5
-              );
-
-            if (alreadyVisited) {
-              return prevTrack;
-            }
-
-            return [
-              ...prevTrack,
-              newPosition
-            ];
-          });
         },
 
         (err) => {
@@ -276,33 +211,11 @@ function App() {
       );
   }, [followGps]);
 
-  const loadTracks = async () => {
-    const data =
-      await fetchTracks();
-
-    setSavedTracks(data || []);
-  };
-
   const loadFinds = async () => {
     const data =
       await fetchFinds();
 
     setFinds(data || []);
-  };
-
-  const saveTrack = async () => {
-    if (savingTrack) return;
-
-    setSavingTrack(true);
-
-    const success =
-      await createTrack(track);
-
-    if (success) {
-      loadTracks();
-    }
-
-    setSavingTrack(false);
   };
 
   const toggleFilter = (
@@ -591,25 +504,6 @@ function App() {
             ➕ Ajouter trouvaille
           </button>
 
-          <button
-            disabled={savingTrack}
-            onClick={() => {
-              saveTrack();
-              setShowMenu(false);
-            }}
-            style={{
-              borderRadius:
-                "12px",
-              padding: "7px",
-              border: "none",
-              fontSize: "13px"
-            }}
-          >
-            {savingTrack
-              ? "Sauvegarde..."
-              : "💾 Sauvegarder sortie"}
-          </button>
-
           <div
             style={{
               display: "flex",
@@ -636,25 +530,6 @@ function App() {
                 : "📍 OFF"}
             </button>
 
-            <button
-              onClick={() =>
-                setShowTrack(
-                  !showTrack
-                )
-              }
-              style={{
-                flex: 1,
-                borderRadius:
-                  "12px",
-                padding: "7px",
-                border: "none",
-                fontSize: "13px"
-              }}
-            >
-              {showTrack
-                ? "👁️ ON"
-                : "👁️ OFF"}
-            </button>
           </div>
 
           <button
@@ -769,9 +644,6 @@ function App() {
         >
           <StatsPanel
             finds={finds}
-            savedTracks={
-              savedTracks
-            }
             exportData={
               handleExport
             }
@@ -811,17 +683,6 @@ function App() {
 
         <GpsMarker
           position={position}
-        />
-
-        <TrackLines
-          track={track}
-          visible={showTrack}
-        />
-
-        <TrackHistory
-          savedTracks={
-            savedTracks
-          }
         />
 
         {filteredFinds.map(

@@ -1,9 +1,9 @@
 export default function StatsPanel({
-  finds,
-  savedTracks,
+  finds = [],
+  savedTracks = [],
   exportData,
   importData,
-  groupedDates,
+  groupedDates = {},
   setSelectedDate,
   onClose
 }) {
@@ -73,7 +73,8 @@ export default function StatsPanel({
           padding: "10px",
           borderRadius: "12px",
           border: "none",
-          fontSize: "15px"
+          fontSize: "15px",
+          cursor: "pointer"
         }}
       >
         📤 Export backup
@@ -87,7 +88,8 @@ export default function StatsPanel({
           padding: "10px",
           borderRadius: "12px",
           border: "none",
-          fontSize: "15px"
+          fontSize: "15px",
+          cursor: "pointer"
         }}
       >
         📥 Import backup
@@ -113,16 +115,30 @@ export default function StatsPanel({
           padding: "10px",
           borderRadius: "12px",
           border: "none",
-          fontSize: "15px"
+          fontSize: "15px",
+          cursor: "pointer"
         }}
       >
         ❌ Retirer filtre
       </button>
 
       {Object.entries(
-        groupedDates
+        groupedDates || {}
+      ).length === 0 && (
+        <p
+          style={{
+            opacity: 0.7,
+            fontSize: "14px"
+          }}
+        >
+          Aucune date disponible
+        </p>
+      )}
+
+      {Object.entries(
+        groupedDates || {}
       ).map(
-        ([date, finds]) => (
+        ([date, findsForDate]) => (
           <button
             key={date}
             onClick={() =>
@@ -134,11 +150,12 @@ export default function StatsPanel({
               padding: "10px",
               borderRadius: "12px",
               border: "none",
-              fontSize: "14px"
+              fontSize: "14px",
+              cursor: "pointer"
             }}
           >
             📅 {date} —{" "}
-            {finds.length}
+            {findsForDate.length}
           </button>
         )
       )}

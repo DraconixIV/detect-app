@@ -124,9 +124,6 @@ function FindPopup({
 
     input.accept = "image/*";
 
-    // IMPORTANT :
-    // ouvre directement la caméra
-    // sur téléphone
     if (useCamera) {
       input.setAttribute(
         "capture",
@@ -134,7 +131,6 @@ function FindPopup({
       );
     }
 
-    // galerie = multi upload
     if (!useCamera) {
       input.multiple = true;
     }
@@ -276,18 +272,46 @@ function FindPopup({
         photo.type === "clean"
     );
 
+  const inputStyle = {
+    width: "100%",
+    padding: "12px",
+    borderRadius: "14px",
+    border: "1px solid #d1d5db",
+    fontSize: "14px",
+    boxSizing: "border-box",
+    color: "#111827",
+    background: "white",
+    outline: "none"
+  };
+
+  const buttonStyle = {
+    border: "none",
+    borderRadius: "12px",
+    padding: "10px",
+    background: "#2563eb",
+    color: "white",
+    fontWeight: "600",
+    cursor: "pointer"
+  };
+
   return (
     <>
       <div
         style={{
-          width: "250px"
+          width: "270px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+          color: "#111827",
+          fontFamily:
+            "system-ui, sans-serif"
         }}
       >
+        {/* TABS */}
         <div
           style={{
             display: "flex",
-            gap: "5px",
-            marginBottom: "10px"
+            gap: "6px"
           }}
         >
           <button
@@ -296,6 +320,24 @@ function FindPopup({
                 "discovery"
               )
             }
+            style={{
+              flex: 1,
+              padding: "8px",
+              border: "none",
+              borderRadius: "10px",
+              background:
+                activeTab ===
+                "discovery"
+                  ? "#2563eb"
+                  : "#e5e7eb",
+              color:
+                activeTab ===
+                "discovery"
+                  ? "white"
+                  : "#111827",
+              fontWeight: "600",
+              cursor: "pointer"
+            }}
           >
             Découverte
           </button>
@@ -304,6 +346,24 @@ function FindPopup({
             onClick={() =>
               setActiveTab("clean")
             }
+            style={{
+              flex: 1,
+              padding: "8px",
+              border: "none",
+              borderRadius: "10px",
+              background:
+                activeTab ===
+                "clean"
+                  ? "#2563eb"
+                  : "#e5e7eb",
+              color:
+                activeTab ===
+                "clean"
+                  ? "white"
+                  : "#111827",
+              fontWeight: "600",
+              cursor: "pointer"
+            }}
           >
             Nettoyage
           </button>
@@ -312,11 +372,28 @@ function FindPopup({
             onClick={() =>
               setActiveTab("id")
             }
+            style={{
+              flex: 1,
+              padding: "8px",
+              border: "none",
+              borderRadius: "10px",
+              background:
+                activeTab === "id"
+                  ? "#2563eb"
+                  : "#e5e7eb",
+              color:
+                activeTab === "id"
+                  ? "white"
+                  : "#111827",
+              fontWeight: "600",
+              cursor: "pointer"
+            }}
           >
             ID
           </button>
         </div>
 
+        {/* DISCOVERY */}
         {activeTab ===
           "discovery" && (
           <>
@@ -328,10 +405,8 @@ function FindPopup({
                 )
               }
               placeholder="Titre"
+              style={inputStyle}
             />
-
-            <br />
-            <br />
 
             <textarea
               value={description}
@@ -341,55 +416,47 @@ function FindPopup({
                 )
               }
               placeholder="Description"
+              style={{
+                ...inputStyle,
+                minHeight: "100px",
+                resize: "none"
+              }}
             />
-
-            <br />
-            <br />
-
-            📅 {find.date}
-
-            <br />
-            <br />
 
             <div
               style={{
-                display: "flex",
-                flexDirection:
-                  "column",
-                gap: "6px"
+                fontSize: "13px",
+                color: "#6b7280"
               }}
             >
-              <button
-                disabled={uploading}
-                onClick={() =>
-                  uploadPhoto(
-                    "discovery",
-                    true
-                  )
-                }
-              >
-                {uploading
-                  ? "Upload..."
-                  : "📸 Prendre une photo"}
-              </button>
-
-              <button
-                disabled={uploading}
-                onClick={() =>
-                  uploadPhoto(
-                    "discovery",
-                    false
-                  )
-                }
-              >
-                {uploading
-                  ? "Upload..."
-                  : "🖼️ Ajouter depuis galerie"}
-              </button>
+              📅 {find.date}
             </div>
 
-            <br />
-            <br />
+            <button
+              disabled={uploading}
+              onClick={() =>
+                uploadPhoto(
+                  "discovery",
+                  true
+                )
+              }
+              style={buttonStyle}
+            >
+              📸 Caméra
+            </button>
+
+            <button
+              disabled={uploading}
+              onClick={() =>
+                uploadPhoto(
+                  "discovery",
+                  false
+                )
+              }
+              style={buttonStyle}
+            >
+              🖼️ Galerie
+            </button>
 
             {discoveryPhotos.length >
               0 && (
@@ -401,13 +468,6 @@ function FindPopup({
                     ].image_url
                   }
                   alt=""
-                  width="200"
-                  style={{
-                    cursor:
-                      "pointer",
-                    borderRadius:
-                      "10px"
-                  }}
                   onClick={() =>
                     setFullscreenImage(
                       discoveryPhotos[
@@ -415,43 +475,56 @@ function FindPopup({
                       ].image_url
                     )
                   }
+                  style={{
+                    width: "100%",
+                    maxHeight: "220px",
+                    objectFit: "cover",
+                    borderRadius: "14px",
+                    cursor: "pointer",
+                    border:
+                      "2px solid #e5e7eb"
+                  }}
                 />
 
-                <br />
-                <br />
-
-                <button
-                  onClick={() =>
-                    setDiscoveryIndex(
-                      (
-                        discoveryIndex -
-                        1 +
-                        discoveryPhotos.length
-                      ) %
-                        discoveryPhotos.length
-                    )
-                  }
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent:
+                      "center",
+                    gap: "8px"
+                  }}
                 >
-                  ←
-                </button>
+                  <button
+                    onClick={() =>
+                      setDiscoveryIndex(
+                        (
+                          discoveryIndex -
+                          1 +
+                          discoveryPhotos.length
+                        ) %
+                          discoveryPhotos.length
+                      )
+                    }
+                    style={buttonStyle}
+                  >
+                    ←
+                  </button>
 
-                <button
-                  onClick={() =>
-                    setDiscoveryIndex(
-                      (
-                        discoveryIndex +
-                        1
-                      ) %
-                        discoveryPhotos.length
-                    )
-                  }
-                >
-                  →
-
-                </button>
-
-                <br />
-                <br />
+                  <button
+                    onClick={() =>
+                      setDiscoveryIndex(
+                        (
+                          discoveryIndex +
+                          1
+                        ) %
+                          discoveryPhotos.length
+                      )
+                    }
+                    style={buttonStyle}
+                  >
+                    →
+                  </button>
+                </div>
 
                 <button
                   onClick={() =>
@@ -461,14 +534,20 @@ function FindPopup({
                       ]
                     )
                   }
+                  style={{
+                    ...buttonStyle,
+                    background:
+                      "#dc2626"
+                  }}
                 >
-                  🗑️ Supprimer
+                  🗑️ Supprimer photo
                 </button>
               </>
             )}
           </>
         )}
 
+        {/* CLEAN */}
         {activeTab ===
           "clean" && (
           <>
@@ -480,10 +559,8 @@ function FindPopup({
                 )
               }
               placeholder="Titre nettoyage"
+              style={inputStyle}
             />
-
-            <br />
-            <br />
 
             <textarea
               value={
@@ -495,50 +572,38 @@ function FindPopup({
                 )
               }
               placeholder="Description nettoyage"
+              style={{
+                ...inputStyle,
+                minHeight: "100px",
+                resize: "none"
+              }}
             />
 
-            <br />
-            <br />
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection:
-                  "column",
-                gap: "6px"
-              }}
+            <button
+              disabled={uploading}
+              onClick={() =>
+                uploadPhoto(
+                  "clean",
+                  true
+                )
+              }
+              style={buttonStyle}
             >
-              <button
-                disabled={uploading}
-                onClick={() =>
-                  uploadPhoto(
-                    "clean",
-                    true
-                  )
-                }
-              >
-                {uploading
-                  ? "Upload..."
-                  : "📸 Prendre une photo"}
-              </button>
+              📸 Caméra
+            </button>
 
-              <button
-                disabled={uploading}
-                onClick={() =>
-                  uploadPhoto(
-                    "clean",
-                    false
-                  )
-                }
-              >
-                {uploading
-                  ? "Upload..."
-                  : "🖼️ Ajouter depuis galerie"}
-              </button>
-            </div>
-
-            <br />
-            <br />
+            <button
+              disabled={uploading}
+              onClick={() =>
+                uploadPhoto(
+                  "clean",
+                  false
+                )
+              }
+              style={buttonStyle}
+            >
+              🖼️ Galerie
+            </button>
 
             {cleanPhotos.length >
               0 && (
@@ -550,13 +615,6 @@ function FindPopup({
                     ].image_url
                   }
                   alt=""
-                  width="200"
-                  style={{
-                    cursor:
-                      "pointer",
-                    borderRadius:
-                      "10px"
-                  }}
                   onClick={() =>
                     setFullscreenImage(
                       cleanPhotos[
@@ -564,42 +622,56 @@ function FindPopup({
                       ].image_url
                     )
                   }
+                  style={{
+                    width: "100%",
+                    maxHeight: "220px",
+                    objectFit: "cover",
+                    borderRadius: "14px",
+                    cursor: "pointer",
+                    border:
+                      "2px solid #e5e7eb"
+                  }}
                 />
 
-                <br />
-                <br />
-
-                <button
-                  onClick={() =>
-                    setCleanIndex(
-                      (
-                        cleanIndex -
-                        1 +
-                        cleanPhotos.length
-                      ) %
-                        cleanPhotos.length
-                    )
-                  }
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent:
+                      "center",
+                    gap: "8px"
+                  }}
                 >
-                  ←
-                </button>
+                  <button
+                    onClick={() =>
+                      setCleanIndex(
+                        (
+                          cleanIndex -
+                          1 +
+                          cleanPhotos.length
+                        ) %
+                          cleanPhotos.length
+                      )
+                    }
+                    style={buttonStyle}
+                  >
+                    ←
+                  </button>
 
-                <button
-                  onClick={() =>
-                    setCleanIndex(
-                      (
-                        cleanIndex +
-                        1
-                      ) %
-                        cleanPhotos.length
-                    )
-                  }
-                >
-                  →
-                </button>
-
-                <br />
-                <br />
+                  <button
+                    onClick={() =>
+                      setCleanIndex(
+                        (
+                          cleanIndex +
+                          1
+                        ) %
+                          cleanPhotos.length
+                      )
+                    }
+                    style={buttonStyle}
+                  >
+                    →
+                  </button>
+                </div>
 
                 <button
                   onClick={() =>
@@ -609,14 +681,20 @@ function FindPopup({
                       ]
                     )
                   }
+                  style={{
+                    ...buttonStyle,
+                    background:
+                      "#dc2626"
+                  }}
                 >
-                  🗑️ Supprimer
+                  🗑️ Supprimer photo
                 </button>
               </>
             )}
           </>
         )}
 
+        {/* ID */}
         {activeTab === "id" && (
           <>
             <input
@@ -629,10 +707,8 @@ function FindPopup({
                 )
               }
               placeholder="Lien d'identification"
+              style={inputStyle}
             />
-
-            <br />
-            <br />
 
             {identificationLink && (
               <a
@@ -641,34 +717,49 @@ function FindPopup({
                 }
                 target="_blank"
                 rel="noreferrer"
+                style={{
+                  color: "#2563eb",
+                  fontWeight: "600"
+                }}
               >
-                Ouvrir le lien
+                🔗 Ouvrir le lien
               </a>
             )}
           </>
         )}
 
-        <br />
-        <br />
-
+        {/* DELETE */}
         <button
           onClick={() =>
             onDelete(find.id)
           }
           style={{
-            background: "#c62828",
+            border: "none",
+            borderRadius: "14px",
+            padding: "12px",
+            background: "#dc2626",
             color: "white",
-            marginBottom: "10px"
+            fontWeight: "700",
+            cursor: "pointer"
           }}
         >
           🗑️ Supprimer trouvaille
         </button>
 
-        <br />
-
+        {/* SAVE */}
         <button
           disabled={saving}
           onClick={saveChanges}
+          style={{
+            border: "none",
+            borderRadius: "14px",
+            padding: "12px",
+            background: "#16a34a",
+            color: "white",
+            fontWeight: "700",
+            cursor: "pointer",
+            fontSize: "14px"
+          }}
         >
           {saving
             ? "Sauvegarde..."
@@ -676,6 +767,7 @@ function FindPopup({
         </button>
       </div>
 
+      {/* FULLSCREEN */}
       {fullscreenImage && (
         <div
           onClick={() =>
@@ -688,13 +780,15 @@ function FindPopup({
             width: "100vw",
             height: "100vh",
             background:
-              "rgba(0,0,0,0.9)",
+              "rgba(0,0,0,0.92)",
             display: "flex",
             justifyContent:
               "center",
             alignItems: "center",
             zIndex: 99999,
-            cursor: "pointer"
+            cursor: "pointer",
+            padding: "10px",
+            boxSizing: "border-box"
           }}
         >
           <img
@@ -702,7 +796,10 @@ function FindPopup({
             alt=""
             style={{
               maxWidth: "95%",
-              maxHeight: "95%"
+              maxHeight: "95%",
+              borderRadius: "16px",
+              boxShadow:
+                "0 0 40px rgba(0,0,0,0.5)"
             }}
           />
         </div>
