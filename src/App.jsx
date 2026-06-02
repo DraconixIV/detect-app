@@ -23,7 +23,8 @@ import { icons } from "./icons";
 
 import {
   loadFinds as fetchFinds,
-  addFind as createFind
+  addFind as createFind,
+  toggleFavorite
 } from "./services/findsService";
 
 import {
@@ -31,11 +32,15 @@ import {
   importData
 } from "./services/backupService";
 
-function offsetPosition(position, index) {
-  const radius = 0.00012;
+
+function offsetPosition(
+  position,
+  index
+) {
+  const radius = 0.00004;
 
   const angle =
-    index * 45 * (Math.PI / 180);
+    index * 60 * (Math.PI / 180);
 
   return [
     position[0] +
@@ -44,20 +49,6 @@ function offsetPosition(position, index) {
     position[1] +
       Math.cos(angle) * radius
   ];
-}
-
-function RecenterMap({
-  position
-}) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (position) {
-      map.setView(position);
-    }
-  }, [position, map]);
-
-  return null;
 }
 
 function distanceBetween(
@@ -102,6 +93,20 @@ function distanceBetween(
     );
 
   return R * c;
+}
+
+function RecenterMap({
+  position
+}) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (position) {
+      map.setView(position);
+    }
+  }, [position, map]);
+
+  return null;
 }
 
 function App() {
@@ -164,11 +169,29 @@ function App() {
 
   const [followGps, setFollowGps] =
     useState(true);
+  
+  const [favoritesOnly, setFavoritesOnly] =
+    useState(false);
 
   const [
     addingFind,
     setAddingFind
   ] = useState(false);
+
+  // ==========================
+  // ANCIENNES TROUVAILLES
+  // ==========================
+  const [isOldFind, setIsOldFind] =
+    useState(false);
+
+  const [customDate, setCustomDate] =
+    useState("");
+
+  const [customLat, setCustomLat] =
+    useState("");
+
+  const [customLng, setCustomLng] =
+    useState("");
 
   useEffect(() => {
     loadFinds();
@@ -182,11 +205,6 @@ function App() {
           ];
 
           setPosition(newPosition);
-
-          if (!followGps) {
-            return;
-          }
-
         },
 
         (err) => {
@@ -209,7 +227,7 @@ function App() {
       navigator.geolocation.clearWatch(
         watchId
       );
-  }, [followGps]);
+  }, []);
 
   const loadFinds = async () => {
     const data =
@@ -247,25 +265,44 @@ function App() {
       await importData();
 
       loadFinds();
-
-      loadTracks();
     };
 
   const addFind = async () => {
-    if (!position) return;
+    if (!position && !isOldFind) {
+      alert("GPS indisponible");
+      return;
+    }
 
     if (addingFind) return;
 
     setAddingFind(true);
 
     try {
-      await createFind({
-        position,
-        newTitle,
-        newDescription,
-        newCategory,
-        photoFile: newPhoto
-      });
+     await createFind({
+       position: isOldFind
+         ? [
+             Number(customLat),
+             Number(customLng)
+           ]
+         : position,
+
+       newTitle,
+       newDescription,
+       newCategory,
+       newPhoto,
+
+       customDate: isOldFind
+         ? customDate
+         : null
+     });
+
+      setIsOldFind(false);
+
+      setCustomDate("");
+
+      setCustomLat("");
+
+      setCustomLng("");
 
       setShowForm(false);
 
@@ -288,6 +325,20 @@ function App() {
     }
 
     setAddingFind(false);
+  };
+
+  const handleFavorite =
+  async (find) => {
+
+    const success =
+      await toggleFavorite(
+        find.id,
+        find.favorite
+      );
+
+    if (success) {
+      await loadFinds();
+    }
   };
 
   const deleteFind = async (
@@ -329,63 +380,74 @@ function App() {
       .delete()
       .eq("id", findId);
 
-    loadFinds();
+    await loadFinds();
   };
 
-  const groupedDates = {};
-
-  finds.forEach((find) => {
-    const shortDate =
-      find.date?.split(" ")[0];
+  const filteredFinds =
+  finds.filter((find) => {
 
     if (
-      !groupedDates[shortDate]
+      favoritesOnly &&
+      !find.favorite
     ) {
-      groupedDates[
-        shortDate
-      ] = [];
+      return false;
     }
 
-    groupedDates[
-      shortDate
-    ].push(find);
+    const matchesCategory =
+      filters.includes(
+        find.category
+      );
+
+    const matchesSearch =
+      find.title
+        ?.toLowerCase()
+        .includes(
+          search.toLowerCase()
+        ) ||
+      find.description
+        ?.toLowerCase()
+        .includes(
+          search.toLowerCase()
+        );
+
+    const matchesDate =
+      !selectedDate ||
+      find.date?.startsWith(
+        selectedDate
+      );
+
+    return (
+      matchesCategory &&
+      matchesSearch &&
+      matchesDate
+    );
   });
 
-  const filteredFinds =
-    finds.filter((find) => {
-      const matchesCategory =
-        filters.includes(
-          find.category
-        );
+    const groupedDates = finds.reduce(
+  (acc, find) => {
+    if (!find?.date) {
+      return acc;
+    }
 
-      const matchesSearch =
-        find.title
-          ?.toLowerCase()
-          .includes(
-            search.toLowerCase()
-          ) ||
-        find.description
-          ?.toLowerCase()
-          .includes(
-            search.toLowerCase()
-          );
+    const shortDate =
+      find.date.split(" ")[0];
 
-      const matchesDate =
-        !selectedDate ||
-        find.date?.startsWith(
-          selectedDate
-        );
+    if (!acc[shortDate]) {
+      acc[shortDate] = [];
+    }
 
-      return (
-        matchesCategory &&
-        matchesSearch &&
-        matchesDate
-      );
-    });
+    acc[shortDate].push(find);
+
+    return acc;
+  },
+  {}
+);
 
   if (!position) {
     return <LoadingScreen />;
   }
+
+  console.log("handleFavorite =", handleFavorite);
 
   return (
     <div
@@ -404,7 +466,7 @@ function App() {
           position: "absolute",
           top: 85,
           left: 15,
-          zIndex: 2000,
+          zIndex: 5000,
           width: "52px",
           height: "52px",
           borderRadius: "50%",
@@ -429,7 +491,7 @@ function App() {
           position: "absolute",
           top: 150,
           left: 15,
-          zIndex: 2000,
+          zIndex: 5000,
           width: "52px",
           height: "52px",
           borderRadius: "50%",
@@ -490,9 +552,9 @@ function App() {
           </button>
 
           <button
-            onClick={() => {
-              setShowForm(!showForm);
-            }}
+            onClick={() =>
+              setShowForm(!showForm)
+            }
             style={{
               borderRadius:
                 "12px",
@@ -504,33 +566,42 @@ function App() {
             ➕ Ajouter trouvaille
           </button>
 
-          <div
+          <button
+            onClick={() =>
+              setFollowGps(
+                !followGps
+              )
+            }
             style={{
-              display: "flex",
-              gap: "5px"
+              borderRadius:
+                "12px",
+              padding: "7px",
+              border: "none",
+              fontSize: "13px"
             }}
           >
-            <button
-              onClick={() =>
-                setFollowGps(
-                  !followGps
-                )
-              }
-              style={{
-                flex: 1,
-                borderRadius:
-                  "12px",
-                padding: "7px",
-                border: "none",
-                fontSize: "13px"
-              }}
-            >
-              {followGps
-                ? "📍 ON"
-                : "📍 OFF"}
-            </button>
+            {followGps
+              ? "📍 ON"
+              : "📍 OFF"}
+          </button>
 
-          </div>
+          <button
+  onClick={() =>
+    setFavoritesOnly(
+      !favoritesOnly
+    )
+  }
+  style={{
+    borderRadius: "12px",
+    padding: "7px",
+    border: "none",
+    fontSize: "13px"
+  }}
+>
+  {favoritesOnly
+    ? "⭐ Favoris ON"
+    : "⭐ Favoris OFF"}
+</button>
 
           <button
             onClick={() => {
@@ -611,24 +682,30 @@ function App() {
             ))}
           </div>
 
-          <AddFindForm
-            showForm={showForm}
-            newTitle={newTitle}
-            setNewTitle={setNewTitle}
-            newDescription={newDescription}
-            setNewDescription={
-              setNewDescription
-            }
-            newCategory={newCategory}
-            setNewCategory={
-              setNewCategory
-            }
-            icons={icons}
-            addFind={addFind}
-            newPhoto={newPhoto}
-            setNewPhoto={setNewPhoto}
-            addingFind={addingFind}
-          />
+         <AddFindForm
+  showForm={showForm}
+  newTitle={newTitle}
+  setNewTitle={setNewTitle}
+  newDescription={newDescription}
+  setNewDescription={setNewDescription}
+  newCategory={newCategory}
+  setNewCategory={setNewCategory}
+  icons={icons}
+  addFind={addFind}
+  newPhoto={newPhoto}
+  setNewPhoto={setNewPhoto}
+  addingFind={addingFind}
+
+  isOldFind={isOldFind}
+  setIsOldFind={setIsOldFind}
+  customDate={customDate}
+  setCustomDate={setCustomDate}
+  customLat={customLat}
+  setCustomLat={setCustomLat}
+  customLng={customLng}
+  setCustomLng={setCustomLng}
+/>
+          
         </div>
       )}
 
@@ -644,6 +721,7 @@ function App() {
         >
           <StatsPanel
             finds={finds}
+            savedTracks={[]}
             exportData={
               handleExport
             }
@@ -686,30 +764,54 @@ function App() {
         />
 
         {filteredFinds.map(
-          (find, index) => (
-            <Marker
-              key={find.id}
-              position={offsetPosition(
-                find.position,
-                index
-              )}
-              icon={
-                icons[
-                  find.category
-                ] ||
-                icons.autre
-              }
-            >
-              <Popup>
-                <FindPopup
-                  find={find}
-                  onDelete={
-                    deleteFind
-                  }
-                />
-              </Popup>
-            </Marker>
-          )
+          (find) => {
+            const sameSpotFinds =
+              filteredFinds.filter(
+                (f) =>
+                  distanceBetween(
+                    f.position,
+                    find.position
+                  ) < 3
+              );
+
+            const sameIndex =
+              sameSpotFinds.findIndex(
+                (f) =>
+                  f.id === find.id
+              );
+
+            const finalPosition =
+              sameSpotFinds.length >
+              1
+                ? offsetPosition(
+                    find.position,
+                    sameIndex
+                  )
+                : find.position;
+
+            return (
+              <Marker
+                key={find.id}
+                position={
+                  finalPosition
+                }
+                icon={
+                  icons[
+                    find.category
+                  ] ||
+                  icons.autre
+                }
+              >
+                <Popup>
+                  <FindPopup
+  find={find}
+  onDelete={deleteFind}
+  onFavorite={handleFavorite}
+/>
+                </Popup>
+              </Marker>
+            );
+          }
         )}
       </MapContainer>
     </div>

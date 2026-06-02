@@ -43,18 +43,48 @@ export async function addFind({
   newTitle,
   newDescription,
   newCategory,
-  photoFile
+  newPhoto,
+  customDate = null
+
 }) {
   try {
-    let imageUrl = null;
+    const {
+      data: insertedFind,
+      error: insertError
+    } = await supabase
+      .from("finds")
+      .insert([
+        {
+          title: newTitle,
+          description:
+            newDescription,
+          category:
+            newCategory,
+          latitude:
+            position[0],
+          longitude:
+            position[1],
+          date:
+            customDate ||
+            new Date().toLocaleString()
+        }
+      ])
+      .select()
+      .single();
 
-    // =========================
-    // UPLOAD PHOTO
-    // =========================
-    if (photoFile) {
+    if (insertError) {
+      console.error(
+        "Erreur insert:",
+        insertError
+      );
+
+      throw insertError;
+    }
+
+    if (newPhoto) {
       const compressedFile =
         await imageCompression(
-          photoFile,
+          newPhoto,
           {
             maxSizeMB: 0.3,
             maxWidthOrHeight: 1600,
@@ -63,13 +93,11 @@ export async function addFind({
         );
 
       const cleanName =
-        photoFile.name
+        newPhoto.name
           .replaceAll(" ", "-")
           .replaceAll("é", "e")
           .replaceAll("è", "e")
-          .replaceAll("ê", "e")
-          .replaceAll("à", "a")
-          .replaceAll("ù", "u");
+          .replaceAll("à", "a");
 
       const fileName =
         `${Date.now()}-${cleanName}`;
@@ -85,14 +113,11 @@ export async function addFind({
 
       if (uploadError) {
         console.error(
+          "Erreur upload:",
           uploadError
         );
 
-        alert(
-          "Erreur upload photo"
-        );
-
-        return null;
+        throw uploadError;
       }
 
       const {
@@ -101,62 +126,6 @@ export async function addFind({
         .from("find-photos")
         .getPublicUrl(fileName);
 
-      imageUrl = publicUrl;
-    }
-
-    // =========================
-    // INSERT TROUVAILLE
-    // =========================
-    const {
-      data: insertedFind,
-      error: insertError
-    } = await supabase
-      .from("finds")
-      .insert([
-        {
-          title:
-            newTitle || "",
-
-          description:
-            newDescription ||
-            "",
-
-          category:
-            newCategory ||
-            "autre",
-
-          latitude:
-            position[0],
-
-          longitude:
-            position[1],
-
-          date:
-            new Date().toLocaleString(),
-
-          image_url:
-            imageUrl
-        }
-      ])
-      .select()
-      .single();
-
-    if (insertError) {
-      console.error(
-        insertError
-      );
-
-      alert(
-        "Erreur création trouvaille"
-      );
-
-      return null;
-    }
-
-    // =========================
-    // TABLE find_photos
-    // =========================
-    if (imageUrl) {
       const {
         error: photoError
       } = await supabase
@@ -165,10 +134,8 @@ export async function addFind({
           {
             find_id:
               insertedFind.id,
-
             image_url:
-              imageUrl,
-
+              publicUrl,
             type:
               "discovery"
           }
@@ -176,25 +143,23 @@ export async function addFind({
 
       if (photoError) {
         console.error(
+          "Erreur photo DB:",
           photoError
         );
+
+        throw photoError;
       }
     }
-
-    alert(
-      "Trouvaille ajoutée ✅"
-    );
 
     return insertedFind;
 
   } catch (error) {
-    console.error(error);
-
-    alert(
-      "Erreur ajout trouvaille"
+    console.error(
+      "Erreur addFind:",
+      error
     );
 
-    return null;
+    throw error;
   }
 }
 
@@ -269,4 +234,28 @@ export async function deleteFind(
 
     return false;
   }
+}
+
+export async function toggleFavorite(
+  findId,
+  currentValue
+) {
+
+  const result =
+    await supabase
+      .from("finds")
+      .update({
+        favorite: !currentValue
+      })
+      .eq("id", findId);
+
+  if (result.error) {
+    console.error(
+      "ERREUR SUPABASE",
+      result.error
+    );
+    return false;
+  }
+
+  return true;
 }

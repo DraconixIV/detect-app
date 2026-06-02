@@ -151,8 +151,14 @@ code {
    LEAFLET FIX
 ========================= */
 
-.leaflet-container {
-  width: 100%;
-  height: 100%;
-  background: #d1d5db;
+.leaflet-cluster-spider-leg {
+  stroke: transparent !important;
+}
+
+path.leaflet-interactive {
+  stroke: transparent !important;
+}
+
+.marker-cluster svg path {
+  stroke: transparent !important;
 }

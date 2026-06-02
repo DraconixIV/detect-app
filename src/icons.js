@@ -2,8 +2,7 @@ import L from "leaflet";
 
 function createIcon(color) {
   return new L.Icon({
-    iconUrl:
-      `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
+    iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
 
     shadowUrl:
       "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
@@ -31,7 +30,7 @@ export const icons = {
     createIcon("black"),
 
   médaille:
-    createIcon("gold"),
+    createIcon("yellow"),
 
   militaire:
     createIcon("red"),
@@ -39,10 +38,12 @@ export const icons = {
   monnaie:
     createIcon("green"),
 
-  outil: createIcon("blue"),
+  outil:
+    createIcon("blue"),
 
-  plomb: createIcon("cyan"),
+  plomb:
+    createIcon("blue"),
 
   religieux:
-    createIcon("pink")
+    createIcon("violet")
 };

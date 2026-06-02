@@ -6,7 +6,8 @@ import imageCompression from "browser-image-compression";
 
 function FindPopup({
   find,
-  onDelete
+  onDelete,
+  onFavorite
 }) {
   const [activeTab, setActiveTab] =
     useState("discovery");
@@ -307,6 +308,16 @@ function FindPopup({
             "system-ui, sans-serif"
         }}
       >
+        {find.favorite && (
+  <div
+    style={{
+      textAlign: "center",
+      fontSize: "24px"
+    }}
+  >
+    ⭐ Favori
+  </div>
+)}
         {/* TABS */}
         <div
           style={{
@@ -727,6 +738,25 @@ function FindPopup({
             )}
           </>
         )}
+
+      <button
+  onClick={() => onFavorite(find)}
+  style={{
+    border: "none",
+    borderRadius: "14px",
+    padding: "12px",
+    background: find.favorite
+      ? "#f59e0b"
+      : "#6b7280",
+    color: "white",
+    fontWeight: "700",
+    cursor: "pointer"
+  }}
+>
+  {find.favorite
+    ? "⭐ Retirer des favoris"
+    : "☆ Ajouter aux favoris"}
+</button>
 
         {/* DELETE */}
         <button

@@ -7,6 +7,14 @@ export default function StatsPanel({
   setSelectedDate,
   onClose
 }) {
+  const validDates = Object.entries(
+    groupedDates || {}
+  ).filter(
+    ([_, findsForDate]) =>
+      Array.isArray(findsForDate) &&
+      findsForDate.length > 0
+  );
+
   return (
     <div
       style={{
@@ -56,13 +64,11 @@ export default function StatsPanel({
       </h3>
 
       <p>
-        📍 Trouvailles :{" "}
-        {finds.length}
+        📍 Trouvailles : {finds.length}
       </p>
 
       <p>
-        🛰️ Sorties GPS :{" "}
-        {savedTracks.length}
+        🛰️ Sorties GPS : {savedTracks.length}
       </p>
 
       <button
@@ -122,9 +128,7 @@ export default function StatsPanel({
         ❌ Retirer filtre
       </button>
 
-      {Object.entries(
-        groupedDates || {}
-      ).length === 0 && (
+      {validDates.length === 0 && (
         <p
           style={{
             opacity: 0.7,
@@ -135,9 +139,7 @@ export default function StatsPanel({
         </p>
       )}
 
-      {Object.entries(
-        groupedDates || {}
-      ).map(
+      {validDates.map(
         ([date, findsForDate]) => (
           <button
             key={date}
@@ -154,8 +156,7 @@ export default function StatsPanel({
               cursor: "pointer"
             }}
           >
-            📅 {date} —{" "}
-            {findsForDate.length}
+            📅 {date} — {findsForDate.length}
           </button>
         )
       )}

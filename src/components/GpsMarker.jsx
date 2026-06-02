@@ -5,34 +5,37 @@ import {
   Popup
 } from "react-leaflet";
 
-import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+const gpsIcon = new L.DivIcon({
+  className: "",
 
-import markerIcon from "leaflet/dist/images/marker-icon.png";
+  html: `
+    <div
+      style="
+        width:24px;
+        height:24px;
+        border:4px solid red;
+        border-radius:50%;
+        background:transparent;
+        box-sizing:border-box;
+      "
+    ></div>
+  `,
 
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
+  iconSize: [24, 24],
 
-/* FIX ICONE LEAFLET VITE */
-
-delete L.Icon.Default.prototype._getIconUrl;
-
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    markerIcon2x,
-
-  iconUrl:
-    markerIcon,
-
-  shadowUrl:
-    markerShadow
+  iconAnchor: [12, 12]
 });
 
 export default function GpsMarker({
   position
 }) {
   return (
-    <Marker position={position}>
+    <Marker
+      position={position}
+      icon={gpsIcon}
+    >
       <Popup>
-        Vous êtes ici 📍
+        📍 Vous êtes ici
       </Popup>
     </Marker>
   );

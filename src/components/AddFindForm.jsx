@@ -10,8 +10,18 @@ export default function AddFindForm({
   addFind,
   newPhoto,
   setNewPhoto,
-  addingFind
+  addingFind,
+
+  isOldFind,
+  setIsOldFind,
+  customDate,
+  setCustomDate,
+  customLat,
+  setCustomLat,
+  customLng,
+  setCustomLng
 }) {
+
   if (!showForm) return null;
 
   const inputStyle = {
@@ -39,7 +49,9 @@ export default function AddFindForm({
         background: "rgba(17,24,39,0.92)",
         backdropFilter: "blur(12px)",
         boxShadow:
-          "0 8px 24px rgba(0,0,0,0.35)"
+          "0 8px 24px rgba(0,0,0,0.35)",
+        position: "relative",
+        zIndex: 10
       }}
     >
       {/* TITRE */}
@@ -91,6 +103,59 @@ export default function AddFindForm({
           )
         )}
       </select>
+
+      <label
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    color: "white"
+  }}
+>
+  <input
+    type="checkbox"
+    checked={isOldFind}
+    onChange={(e) =>
+      setIsOldFind(e.target.checked)
+    }
+  />
+  📜 Ancienne trouvaille
+</label>
+
+{isOldFind && (
+  <>
+    <input
+      type="datetime-local"
+      value={customDate}
+      onChange={(e) =>
+        setCustomDate(e.target.value)
+      }
+      style={inputStyle}
+    />
+
+    <input
+      type="number"
+      step="any"
+      placeholder="Latitude"
+      value={customLat}
+      onChange={(e) =>
+        setCustomLat(e.target.value)
+      }
+      style={inputStyle}
+    />
+
+    <input
+      type="number"
+      step="any"
+      placeholder="Longitude"
+      value={customLng}
+      onChange={(e) =>
+        setCustomLng(e.target.value)
+      }
+      style={inputStyle}
+    />
+  </>
+)}
 
       {/* BOUTON PHOTO */}
       <label
@@ -168,6 +233,7 @@ export default function AddFindForm({
           />
 
           <button
+            type="button"
             onClick={() =>
               setNewPhoto(null)
             }
@@ -189,24 +255,34 @@ export default function AddFindForm({
 
       {/* BOUTON SAVE */}
       <button
-        disabled={
-          addingFind || !newTitle
-        }
-        onClick={addFind}
+        type="button"
+        disabled={addingFind}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          console.log(
+            "BOUTON CLIQUÉ"
+          );
+
+          addFind();
+        }}
         style={{
-          borderRadius: "15px",
-          padding: "14px",
+          borderRadius: "14px",
+          padding: "12px",
           border: "none",
           background: addingFind
             ? "#4b5563"
-            : "linear-gradient(135deg,#16a34a,#15803d)",
+            : "#16a34a",
           color: "white",
-          fontSize: "15px",
-          fontWeight: "800",
-          cursor: "pointer",
+          fontSize: "14px",
+          fontWeight: "700",
+          cursor: addingFind
+            ? "not-allowed"
+            : "pointer",
           transition: "0.2s",
-          boxShadow:
-            "0 6px 16px rgba(22,163,74,0.35)"
+          position: "relative",
+          zIndex: 999
         }}
       >
         {addingFind
