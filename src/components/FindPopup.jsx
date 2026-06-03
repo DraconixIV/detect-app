@@ -308,14 +308,26 @@ function FindPopup({
             "system-ui, sans-serif"
         }}
       >
-        {find.favorite && (
+        <div
+  style={{
+    display: "flex",
+    justifyContent: "center",
+    gap: "8px",
+    fontSize: "22px"
+  }}
+>
+  {find.favorite && <span>⭐</span>}
+</div>
+
+{find.is_old_find && (
   <div
     style={{
       textAlign: "center",
-      fontSize: "24px"
+      fontSize: "18px",
+      fontWeight: "bold"
     }}
   >
-    ⭐ Favori
+    🏛️ Ancienne trouvaille
   </div>
 )}
         {/* TABS */}

@@ -232,6 +232,11 @@ function App() {
   const loadFinds = async () => {
     const data =
       await fetchFinds();
+    console.log("FINDS APP", data);
+    console.log(
+  "DERNIER FIND",
+  finds[0]
+);
 
     setFinds(data || []);
   };
@@ -279,22 +284,24 @@ function App() {
 
     try {
      await createFind({
-       position: isOldFind
-         ? [
-             Number(customLat),
-             Number(customLng)
-           ]
-         : position,
+  position: isOldFind
+    ? [
+        Number(customLat),
+        Number(customLng)
+      ]
+    : position,
 
-       newTitle,
-       newDescription,
-       newCategory,
-       newPhoto,
+  newTitle,
+  newDescription,
+  newCategory,
+  newPhoto,
 
-       customDate: isOldFind
-         ? customDate
-         : null
-     });
+  customDate: isOldFind
+    ? customDate
+    : null,
+
+  isOldFind
+});
 
       setIsOldFind(false);
 
@@ -763,6 +770,12 @@ function App() {
           position={position}
         />
 
+        console.log(
+  "MARKERS",
+  filteredFinds
+);
+
+
         {filteredFinds.map(
           (find) => {
             const sameSpotFinds =
@@ -788,6 +801,11 @@ function App() {
                     sameIndex
                   )
                 : find.position;
+
+                console.log(
+                  find.id,
+                  find.is_old_find
+                );
 
             return (
               <Marker
