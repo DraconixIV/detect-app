@@ -102,7 +102,7 @@ function RecenterMap({
 
   useEffect(() => {
     if (position) {
-      map.setView(position);
+      map.setView(position, 20);
     }
   }, [position, map]);
 
@@ -119,10 +119,11 @@ function App() {
   const [search, setSearch] =
     useState("");
 
-  const [
-    selectedDate,
-    setSelectedDate
-  ] = useState(null);
+  const [selectedDate, setSelectedDate] =
+    useState(null);
+  
+  const [zoomToDate, setZoomToDate] =
+    useState(null);
 
   const [mapStyle, setMapStyle] =
     useState("plan");
@@ -456,7 +457,24 @@ function App() {
 
   console.log("handleFavorite =", handleFavorite);
 
-  return (
+  console.log("handleFavorite =", handleFavorite);
+
+const dateFinds =
+  zoomToDate
+    ? finds.filter((find) =>
+        find.date?.startsWith(
+          zoomToDate
+        )
+      )
+    : [];
+
+const zoomPosition =
+  dateFinds.length > 0
+    ? dateFinds[0].position
+    : null;
+
+return (
+
     <div
       style={{
         height: "100vh",
@@ -738,9 +756,10 @@ function App() {
             groupedDates={
               groupedDates
             }
-            setSelectedDate={
-              setSelectedDate
-            }
+            setSelectedDate={(date) => {
+              setSelectedDate(date);
+              setZoomToDate(date);
+            }}
             onClose={() =>
               setShowStats(false)
             }
@@ -757,10 +776,12 @@ function App() {
         }}
       >
         {followGps && (
-          <RecenterMap
-            position={position}
-          />
-        )}
+  <RecenterMap
+    position={
+      zoomPosition || position
+    }
+  />
+)}
 
         <MapLayers
           mapStyle={mapStyle}

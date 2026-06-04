@@ -68,8 +68,50 @@ export default function StatsPanel({
       </p>
 
       <p>
+        📜 Anciennes trouvailles : {
+          finds.filter(
+            (find) => find.is_old_find
+         ).length
+        }
+      </p>
+
+      <p>
+  ⭐ Favoris : {
+    finds.filter(
+      (find) => find.favorite
+    ).length
+  }
+</p>
+
+      <p>
         🛰️ Sorties GPS : {savedTracks.length}
       </p>
+
+      <hr
+  style={{
+    margin: "15px 0"
+  }}
+/>
+
+<h3>🏆 Catégories</h3>
+
+{Object.entries(
+  finds.reduce(
+    (acc, find) => {
+      acc[find.category] =
+        (acc[find.category] || 0) + 1;
+
+      return acc;
+    },
+    {}
+  )
+)
+  .sort((a, b) => b[1] - a[1])
+  .map(([category, count]) => (
+    <p key={category}>
+      {category} : {count}
+    </p>
+  ))}
 
       <button
         onClick={exportData}
@@ -140,26 +182,33 @@ export default function StatsPanel({
       )}
 
       {validDates.map(
-        ([date, findsForDate]) => (
-          <button
-            key={date}
-            onClick={() =>
-              setSelectedDate(date)
-            }
-            style={{
-              width: "100%",
-              marginBottom: "8px",
-              padding: "10px",
-              borderRadius: "12px",
-              border: "none",
-              fontSize: "14px",
-              cursor: "pointer"
-            }}
-          >
-            📅 {date} — {findsForDate.length}
-          </button>
-        )
-      )}
+  ([date, findsForDate]) => (
+    <button
+      key={date}
+      onClick={() =>
+        setSelectedDate(date)
+      }
+      style={{
+        width: "100%",
+        marginBottom: "8px",
+        padding: "10px",
+        borderRadius: "12px",
+        border: "none",
+        fontSize: "14px",
+        cursor: "pointer"
+      }}
+    >
+      📅 {date}
+      <br />
+      <strong>
+        {findsForDate.length} trouvaille
+        {findsForDate.length > 1
+          ? "s"
+          : ""}
+      </strong>
+    </button>
+  )
+)}
     </div>
   );
 }

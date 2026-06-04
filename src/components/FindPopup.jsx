@@ -35,6 +35,21 @@ function FindPopup({
     find.identification_link || ""
   );
 
+  const [latitude, setLatitude] =
+  useState(find.latitude || "");
+
+const [longitude, setLongitude] =
+  useState(find.longitude || "");
+
+const [date, setDate] =
+  useState(find.date || "");
+
+const [category, setCategory] =
+  useState(find.category || "");
+
+const [isOldFind, setIsOldFind] =
+  useState(find.is_old_find || false);
+
   const [photos, setPhotos] =
     useState([]);
 
@@ -86,15 +101,28 @@ function FindPopup({
     const { error } =
       await supabase
         .from("finds")
-        .update({
-          title,
-          description,
-          clean_title: cleanTitle,
-          clean_description:
-            cleanDescription,
-          identification_link:
-            identificationLink
-        })
+       .update({
+  title,
+  description,
+  clean_title: cleanTitle,
+  clean_description:
+    cleanDescription,
+  identification_link:
+    identificationLink,
+
+  latitude:
+    Number(latitude),
+
+  longitude:
+    Number(longitude),
+
+  date,
+
+  category,
+
+  is_old_find:
+    isOldFind
+})
         .eq("id", find.id);
 
     setSaving(false);
@@ -319,7 +347,7 @@ function FindPopup({
   {find.favorite && <span>⭐</span>}
 </div>
 
-{find.is_old_find && (
+{isOldFind && (
   <div
     style={{
       textAlign: "center",
@@ -446,14 +474,75 @@ function FindPopup({
               }}
             />
 
-            <div
-              style={{
-                fontSize: "13px",
-                color: "#6b7280"
-              }}
-            >
-              📅 {find.date}
-            </div>
+            <input
+  value={date}
+  onChange={(e) =>
+    setDate(e.target.value)
+  }
+  placeholder="Date"
+  style={inputStyle}
+/>
+
+<input
+  type="number"
+  step="any"
+  value={latitude}
+  onChange={(e) =>
+    setLatitude(e.target.value)
+  }
+  placeholder="Latitude"
+  style={inputStyle}
+/>
+
+<input
+  type="number"
+  step="any"
+  value={longitude}
+  onChange={(e) =>
+    setLongitude(e.target.value)
+  }
+  placeholder="Longitude"
+  style={inputStyle}
+/>
+
+<select
+  value={category}
+  onChange={(e) =>
+    setCategory(e.target.value)
+  }
+  style={inputStyle}
+>
+  <option value="autre">autre</option>
+  <option value="bijou">bijou</option>
+  <option value="boucle">boucle</option>
+  <option value="bouton">bouton</option>
+  <option value="dé à coudre">dé à coudre</option>
+  <option value="médaille">médaille</option>
+  <option value="militaire">militaire</option>
+  <option value="monnaie">monnaie</option>
+  <option value="outil">outil</option>
+  <option value="plomb">plomb</option>
+  <option value="religieux">religieux</option>
+</select>
+
+<label
+  style={{
+    display: "flex",
+    gap: "8px",
+    alignItems: "center"
+  }}
+>
+  <input
+    type="checkbox"
+    checked={isOldFind}
+    onChange={(e) =>
+      setIsOldFind(
+        e.target.checked
+      )
+    }
+  />
+  Ancienne trouvaille
+</label>
 
             <button
               disabled={uploading}
