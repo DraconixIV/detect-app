@@ -829,31 +829,23 @@ return (
                 );
 
             return (
-              <Marker
-                key={find.id}
-                position={
-                  finalPosition
-                }
-                icon={
-                  icons[
-                    find.category
-                  ] ||
-                  icons.autre
-                }
-              >
-                <Popup
-  autoPan={false}
-  keepInView={false}
-  closeButton={true}
->
-  <FindPopup
-    find={find}
-    onDelete={deleteFind}
-    onFavorite={handleFavorite}
-  />
-                </Popup>
-              </Marker>
-            );
+  <Marker
+    key={find.id}
+    position={finalPosition}
+    icon={
+      icons[find.category] ||
+      icons.autre
+    }
+  >
+    <Popup
+      autoPan={false}
+      keepInView={false}
+      closeOnClick={false}
+    >
+      <div>TEST</div>
+    </Popup>
+  </Marker>
+);
           }
         )}
       </MapContainer>
