@@ -838,12 +838,16 @@ return (
     }
   >
     <Popup
-      autoPan={false}
-      keepInView={false}
-      closeOnClick={false}
-    >
-      <div>TEST</div>
-    </Popup>
+  autoPan={false}
+  keepInView={false}
+  closeOnClick={false}
+>
+  <FindPopup
+    find={find}
+    onDelete={deleteFind}
+    onFavorite={handleFavorite}
+  />
+</Popup>
   </Marker>
 );
           }
