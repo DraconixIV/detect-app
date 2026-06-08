@@ -328,8 +328,10 @@ const [isOldFind, setIsOldFind] =
       <div
   style={{
     width: "270px",
-    maxHeight: "70vh",
-    overflowY: "auto",
+    maxHeight: "65vh",
+    overflowY: "scroll",
+    WebkitOverflowScrolling: "touch",
+    touchAction: "pan-y",
 
     display: "flex",
     flexDirection: "column",
@@ -908,33 +910,28 @@ const [isOldFind, setIsOldFind] =
             setFullscreenImage(null)
           }
           style={{
-            position: "fixed",
-            inset: 0,
-            background:
-              "rgba(0,0,0,0.92)",
-            display: "flex",
-            justifyContent:
-              "center",
-            alignItems: "center",
-            zIndex: 99999,
-            cursor: "pointer",
-            padding: "10px",
-            boxSizing: "border-box"
-          }}
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100vw",
+  height: "100vh",
+  background: "rgba(0,0,0,0.92)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  transform: "translateZ(0)",
+  zIndex: 99999,
+}}
         >
           <img
             src={fullscreenImage}
             alt=""
             style={{
-               width: "auto",
-               height: "auto",
-               maxWidth: "100%",
-               maxHeight: "100%",
-               objectFit: "contain",
-               borderRadius: "16px",
-               boxShadow:
-                 "0 0 40px rgba(0,0,0,0.5)"
-            }}
+  maxWidth: "95vw",
+  maxHeight: "95vh",
+  objectFit: "contain",
+  borderRadius: "16px"
+}}
           />
         </div>
       )}

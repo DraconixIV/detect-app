@@ -775,7 +775,7 @@ return (
           width: "100%"
         }}
       >
-        {followGps && (
+        {false && (
   <RecenterMap
     position={
       zoomPosition || position
@@ -841,12 +841,16 @@ return (
                   icons.autre
                 }
               >
-                <Popup>
-                  <FindPopup
-  find={find}
-  onDelete={deleteFind}
-  onFavorite={handleFavorite}
-/>
+                <Popup
+  autoPan={false}
+  keepInView={false}
+  closeButton={true}
+>
+  <FindPopup
+    find={find}
+    onDelete={deleteFind}
+    onFavorite={handleFavorite}
+  />
                 </Popup>
               </Marker>
             );
