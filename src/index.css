@@ -162,3 +162,21 @@ path.leaflet-interactive {
 .marker-cluster svg path {
   stroke: transparent !important;
 }
+
+/* =========================
+POPUP MOBILE FIX
+========================= */
+
+.leaflet-popup-content {
+  margin: 8px !important;
+  max-height: 75vh !important;
+  overflow-y: auto !important;
+}
+
+.leaflet-popup-content-wrapper {
+  max-height: 80vh !important;
+}
+
+.leaflet-popup {
+  max-width: 320px !important;
+}

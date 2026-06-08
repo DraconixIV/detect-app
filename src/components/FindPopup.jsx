@@ -326,10 +326,13 @@ const [isOldFind, setIsOldFind] =
   return (
     <>
       <div
-        style={{
-          width: "270px",
-          display: "flex",
-          flexDirection: "column",
+  style={{
+    width: "270px",
+    maxHeight: "70vh",
+    overflowY: "auto",
+
+    display: "flex",
+    flexDirection: "column",
           gap: "10px",
           color: "#111827",
           fontFamily:
@@ -906,10 +909,7 @@ const [isOldFind, setIsOldFind] =
           }
           style={{
             position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
+            inset: 0,
             background:
               "rgba(0,0,0,0.92)",
             display: "flex",
@@ -926,11 +926,14 @@ const [isOldFind, setIsOldFind] =
             src={fullscreenImage}
             alt=""
             style={{
-              maxWidth: "95%",
-              maxHeight: "95%",
-              borderRadius: "16px",
-              boxShadow:
-                "0 0 40px rgba(0,0,0,0.5)"
+               width: "auto",
+               height: "auto",
+               maxWidth: "100%",
+               maxHeight: "100%",
+               objectFit: "contain",
+               borderRadius: "16px",
+               boxShadow:
+                 "0 0 40px rgba(0,0,0,0.5)"
             }}
           />
         </div>
