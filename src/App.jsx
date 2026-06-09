@@ -842,11 +842,7 @@ return (
   keepInView={false}
   closeOnClick={false}
 >
-  <FindPopup
-    find={find}
-    onDelete={deleteFind}
-    onFavorite={handleFavorite}
-  />
+  <div>TEST</div>
 </Popup>
   </Marker>
 );
