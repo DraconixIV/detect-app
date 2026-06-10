@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+console.log("DEPLOY TEST V1.2");
+
 import {
   MapContainer,
   Marker,
@@ -797,57 +799,56 @@ return (
 );
 
 
-        {filteredFinds.map(
-          (find) => {
-            const sameSpotFinds =
-              filteredFinds.filter(
-                (f) =>
-                  distanceBetween(
-                    f.position,
-                    find.position
-                  ) < 3
-              );
+{filteredFinds.map((find) => {
+  const sameSpotFinds =
+    filteredFinds.filter(
+      (f) =>
+        distanceBetween(
+          f.position,
+          find.position
+        ) < 3
+    );
 
-            const sameIndex =
-              sameSpotFinds.findIndex(
-                (f) =>
-                  f.id === find.id
-              );
+  const sameIndex =
+    sameSpotFinds.findIndex(
+      (f) => f.id === find.id
+    );
 
-            const finalPosition =
-              sameSpotFinds.length >
-              1
-                ? offsetPosition(
-                    find.position,
-                    sameIndex
-                  )
-                : find.position;
+  const finalPosition =
+    sameSpotFinds.length > 1
+      ? offsetPosition(
+          find.position,
+          sameIndex
+        )
+      : find.position;
 
-                console.log(
-                  find.id,
-                  find.is_old_find
-                );
+  console.log(
+    find.id,
+    find.is_old_find
+  );
 
-            return (
-  <Marker
-    key={find.id}
-    position={finalPosition}
-    icon={
-      icons[find.category] ||
-      icons.autre
-    }
-  >
-    <Popup
-  autoPan={false}
-  keepInView={false}
-  closeOnClick={false}
->
-  <div>TEST</div>
-</Popup>
-  </Marker>
-);
-          }
-        )}
+  return (
+    <Marker
+      key={find.id}
+      position={finalPosition}
+      icon={
+        icons[find.category] ||
+        icons.autre
+      }
+    >
+      <Popup
+        autoPan={false}
+        keepInView={false}
+        closeOnClick={false}
+      >
+        <div>
+          <h3>{find.title}</h3>
+        </div>
+      </Popup>
+    </Marker>
+  );
+})}        
+
       </MapContainer>
     </div>
   );
