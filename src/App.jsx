@@ -837,14 +837,16 @@ return (
       }
     >
       <Popup
-        autoPan={false}
-        keepInView={false}
-        closeOnClick={false}
-      >
-        <div>
-          <h3>{find.title}</h3>
-        </div>
-      </Popup>
+  autoPan={false}
+  keepInView={false}
+  closeOnClick={false}
+>
+  <FindPopup
+    find={find}
+    onDelete={deleteFind}
+    onFavorite={handleFavorite}
+  />
+</Popup>
     </Marker>
   );
 })}        
