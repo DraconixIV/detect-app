@@ -9,6 +9,8 @@ function FindPopup({
   onDelete,
   onFavorite
 }) {
+  console.log("FINDPOPUP VERSION COMPLETE");
+  console.log("FindPopup loaded", find);
   const [activeTab, setActiveTab] =
     useState("discovery");
 
@@ -97,6 +99,7 @@ const [isOldFind, setIsOldFind] =
     if (saving) return;
 
     setSaving(true);
+    console.log("saveChanges ready");
 
     const { error } =
       await supabase
@@ -325,6 +328,9 @@ const [isOldFind, setIsOldFind] =
 
   return (
     <>
+      <h1 style={{ color: "red" }}>
+        FINDPOPUP VRAI
+      </h1>
       <div
   style={{
     width: "270px",
