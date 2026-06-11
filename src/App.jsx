@@ -181,12 +181,6 @@ function App() {
     setAddingFind
   ] = useState(false);
 
-  // ==========================
-  // ANCIENNES TROUVAILLES
-  // ==========================
-  const [isOldFind, setIsOldFind] =
-    useState(false);
-
   const [customDate, setCustomDate] =
     useState("");
 
@@ -276,10 +270,19 @@ function App() {
     };
 
   const addFind = async () => {
-    if (!position && !isOldFind) {
-      alert("GPS indisponible");
-      return;
-    }
+
+  const finalPosition =
+  customLat && customLng
+    ? [
+        Number(customLat),
+        Number(customLng)
+      ]
+    : position;
+
+if (!finalPosition) {
+  alert("GPS indisponible");
+  return;
+}
 
     if (addingFind) return;
 
@@ -287,26 +290,16 @@ function App() {
 
     try {
      await createFind({
-  position: isOldFind
-    ? [
-        Number(customLat),
-        Number(customLng)
-      ]
-    : position,
+  position: finalPosition,
 
   newTitle,
   newDescription,
   newCategory,
   newPhoto,
 
-  customDate: isOldFind
-    ? customDate
-    : null,
-
-  isOldFind
+  customDate:
+  customDate || null,
 });
-
-      setIsOldFind(false);
 
       setCustomDate("");
 
@@ -723,8 +716,6 @@ return (
   setNewPhoto={setNewPhoto}
   addingFind={addingFind}
 
-  isOldFind={isOldFind}
-  setIsOldFind={setIsOldFind}
   customDate={customDate}
   setCustomDate={setCustomDate}
   customLat={customLat}
@@ -822,10 +813,6 @@ return (
         )
       : find.position;
 
-  console.log(
-    find.id,
-    find.is_old_find
-  );
 
   return (
     <Marker

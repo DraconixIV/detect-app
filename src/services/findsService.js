@@ -45,7 +45,6 @@ export async function addFind({
   newCategory,
   newPhoto,
   customDate = null,
-  isOldFind = false
 
 
 }) {
@@ -69,8 +68,7 @@ export async function addFind({
           date:
             customDate ||
             new Date().toLocaleString(),
-          is_old_find:
-            isOldFind
+          
         }
       ])
       .select()

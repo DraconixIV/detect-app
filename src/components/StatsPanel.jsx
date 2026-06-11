@@ -68,14 +68,6 @@ export default function StatsPanel({
       </p>
 
       <p>
-        📜 Anciennes trouvailles : {
-          finds.filter(
-            (find) => find.is_old_find
-         ).length
-        }
-      </p>
-
-      <p>
   ⭐ Favoris : {
     finds.filter(
       (find) => find.favorite

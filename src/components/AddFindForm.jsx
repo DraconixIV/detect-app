@@ -11,15 +11,12 @@ export default function AddFindForm({
   newPhoto,
   setNewPhoto,
   addingFind,
-
-  isOldFind,
-  setIsOldFind,
   customDate,
   setCustomDate,
   customLat,
   setCustomLat,
   customLng,
-  setCustomLng
+  setCustomLng,
 }) {
 
   if (!showForm) return null;
@@ -104,58 +101,36 @@ export default function AddFindForm({
         )}
       </select>
 
-      <label
-  style={{
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    color: "white"
-  }}
->
-  <input
-    type="checkbox"
-    checked={isOldFind}
-    onChange={(e) =>
-      setIsOldFind(e.target.checked)
-    }
-  />
-  📜 Ancienne trouvaille
-</label>
-
-{isOldFind && (
-  <>
     <input
-      type="datetime-local"
-      value={customDate}
-      onChange={(e) =>
-        setCustomDate(e.target.value)
-      }
-      style={inputStyle}
-    />
+  type="date"
+  value={customDate}
+  onChange={(e) =>
+    setCustomDate(e.target.value)
+  }
+  style={inputStyle}
+/>
 
-    <input
-      type="number"
-      step="any"
-      placeholder="Latitude"
-      value={customLat}
-      onChange={(e) =>
-        setCustomLat(e.target.value)
-      }
-      style={inputStyle}
-    />
+<input
+  type="number"
+  step="any"
+  placeholder="Latitude"
+  value={customLat}
+  onChange={(e) =>
+    setCustomLat(e.target.value)
+  }
+  style={inputStyle}
+/>
 
-    <input
-      type="number"
-      step="any"
-      placeholder="Longitude"
-      value={customLng}
-      onChange={(e) =>
-        setCustomLng(e.target.value)
-      }
-      style={inputStyle}
-    />
-  </>
-)}
+<input
+  type="number"
+  step="any"
+  placeholder="Longitude"
+  value={customLng}
+  onChange={(e) =>
+    setCustomLng(e.target.value)
+  }
+  style={inputStyle}
+/>
 
       {/* BOUTON PHOTO */}
       <label
@@ -260,10 +235,6 @@ export default function AddFindForm({
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-
-          console.log(
-            "BOUTON CLIQUÉ"
-          );
 
           addFind();
         }}
