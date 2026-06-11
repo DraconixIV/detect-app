@@ -9,6 +9,7 @@ function FindPopup({
   onDelete,
   onFavorite
 }) {
+  console.log("DEPLOY", Date.now());
   console.log("FINDPOPUP VERSION COMPLETE");
   console.log("FindPopup loaded", find);
   const [activeTab, setActiveTab] =
@@ -328,9 +329,6 @@ const [isOldFind, setIsOldFind] =
 
   return (
     <>
-      <h1 style={{ color: "red" }}>
-        FINDPOPUP VRAI
-      </h1>
       <div
   style={{
     width: "270px",
