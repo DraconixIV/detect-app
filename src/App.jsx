@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-console.log("VERSION TEST 999");
+// Build refresh June 2026
 
 import {
   MapContainer,
