@@ -1,49 +1,71 @@
 import L from "leaflet";
 
 function createIcon(color) {
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg"
+         width="25"
+         height="41"
+         viewBox="0 0 25 41">
+      <path
+        d="M12.5 0C5.6 0 0 5.6 0 12.5
+           c0 9.4 12.5 28.5 12.5 28.5
+           S25 21.9 25 12.5
+           C25 5.6 19.4 0 12.5 0z"
+        fill="${color}"
+        stroke="#000"
+        stroke-width="1.5"
+      />
+      <circle
+        cx="12.5"
+        cy="12.5"
+        r="5"
+        fill="white"
+      />
+    </svg>
+  `;
+
   return new L.Icon({
-    iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
+    iconUrl:
+      "data:image/svg+xml;charset=UTF-8," +
+      encodeURIComponent(svg),
 
     shadowUrl:
       "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 
     iconSize: [25, 41],
-
     iconAnchor: [12, 41],
-
     popupAnchor: [1, -34],
-
     shadowSize: [41, 41]
   });
 }
 
 export const icons = {
-  autre: createIcon("grey"),
+  autre: createIcon("#000000"),      // noir
 
-  bijou: createIcon("yellow"),
+  bijou: createIcon("#ff69b4"),      // rose
 
-  boucle: createIcon("orange"),
+  boucle: createIcon("#8b4513"),     // marron
 
-  bouton: createIcon("violet"),
+  bouton: createIcon("#22c55e"),     // vert
 
   "dé à coudre":
-    createIcon("black"),
+    createIcon("#ffffff"),           // blanc
 
   médaille:
-    createIcon("yellow"),
+    createIcon("#2563eb"),           // bleu
 
   militaire:
-    createIcon("red"),
+    createIcon("#dc2626"),           // rouge
 
   monnaie:
-    createIcon("green"),
+    createIcon("#facc15"),           // jaune
 
   outil:
-    createIcon("blue"),
+    createIcon("#4b5563"),           // gris foncé
 
   plomb:
-    createIcon("blue"),
+    createIcon("#9ca3af"),           // gris
 
   religieux:
-    createIcon("violet")
+    createIcon("#f97316")            // orange
 };
