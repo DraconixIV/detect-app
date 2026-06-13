@@ -1,4 +1,5 @@
 export default function AddFindForm({
+  
   showForm,
   newTitle,
   setNewTitle,
@@ -18,6 +19,9 @@ export default function AddFindForm({
   customLng,
   setCustomLng,
 }) {
+  console.log("ADD FINDFORM PROPS", {
+  newDescription
+});
 
   if (!showForm) return null;
   console.log("ADD FINDFORM V999");

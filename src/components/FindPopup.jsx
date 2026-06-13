@@ -9,17 +9,13 @@ function FindPopup({
   onDelete,
   onFavorite
 }) {
-  console.log("DEPLOY", Date.now());
-  console.log("FINDPOPUP VERSION COMPLETE");
-  console.log("FindPopup loaded", find);
+  console.log("FINDPOPUP NO DESCRIPTION");
+  console.log("FIND OBJECT", find);
   const [activeTab, setActiveTab] =
     useState("discovery");
 
   const [title, setTitle] =
     useState(find.title || "");
-
-  const [description, setDescription] =
-    useState(find.description || "");
 
   const [cleanTitle, setCleanTitle] =
     useState(find.clean_title || "");
@@ -49,9 +45,6 @@ const [date, setDate] =
 
 const [category, setCategory] =
   useState(find.category || "");
-
-const [isOldFind, setIsOldFind] =
-  useState(find.is_old_find || false);
 
   const [photos, setPhotos] =
     useState([]);
@@ -100,14 +93,12 @@ const [isOldFind, setIsOldFind] =
     if (saving) return;
 
     setSaving(true);
-    console.log("saveChanges ready");
 
     const { error } =
       await supabase
         .from("finds")
        .update({
   title,
-  description,
   clean_title: cleanTitle,
   clean_description:
     cleanDescription,
@@ -124,8 +115,6 @@ const [isOldFind, setIsOldFind] =
 
   category,
 
-  is_old_find:
-    isOldFind
 })
         .eq("id", find.id);
 
@@ -356,17 +345,6 @@ const [isOldFind, setIsOldFind] =
   {find.favorite && <span>⭐</span>}
 </div>
 
-{isOldFind && (
-  <div
-    style={{
-      textAlign: "center",
-      fontSize: "18px",
-      fontWeight: "bold"
-    }}
-  >
-    🏛️ Ancienne trouvaille
-  </div>
-)}
         {/* TABS */}
         <div
           style={{
@@ -468,21 +446,6 @@ const [isOldFind, setIsOldFind] =
               style={inputStyle}
             />
 
-            <textarea
-              value={description}
-              onChange={(e) =>
-                setDescription(
-                  e.target.value
-                )
-              }
-              placeholder="Description"
-              style={{
-                ...inputStyle,
-                minHeight: "100px",
-                resize: "none"
-              }}
-            />
-
             <input
   value={date}
   onChange={(e) =>
@@ -534,24 +497,6 @@ const [isOldFind, setIsOldFind] =
   <option value="religieux">religieux</option>
 </select>
 
-<label
-  style={{
-    display: "flex",
-    gap: "8px",
-    alignItems: "center"
-  }}
->
-  <input
-    type="checkbox"
-    checked={isOldFind}
-    onChange={(e) =>
-      setIsOldFind(
-        e.target.checked
-      )
-    }
-  />
-  Ancienne trouvaille
-</label>
 
             <button
               disabled={uploading}
@@ -684,21 +629,19 @@ const [isOldFind, setIsOldFind] =
             />
 
             <textarea
-              value={
-                cleanDescription
-              }
-              onChange={(e) =>
-                setCleanDescription(
-                  e.target.value
-                )
-              }
-              placeholder="Description nettoyage"
-              style={{
-                ...inputStyle,
-                minHeight: "100px",
-                resize: "none"
-              }}
-            />
+  value={cleanDescription}
+  onChange={(e) =>
+    setCleanDescription(
+      e.target.value
+    )
+  }
+  placeholder="Description nettoyage"
+  style={{
+    ...inputStyle,
+    minHeight: "100px",
+    resize: "vertical"
+  }}
+/>
 
             <button
               disabled={uploading}
