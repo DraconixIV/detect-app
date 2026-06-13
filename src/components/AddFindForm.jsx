@@ -20,6 +20,10 @@ export default function AddFindForm({
 }) {
 
   if (!showForm) return null;
+  console.log("ADD FINDFORM V999");
+  <h1 style={{ color: "red" }}>
+    VERSION 2026 TEST
+  </h1>
 
   const inputStyle = {
     padding: "12px",
@@ -51,6 +55,9 @@ export default function AddFindForm({
         zIndex: 10
       }}
     >
+        <h1 style={{ color: "red" }}>
+          VERSION NOUVELLE
+        </h1>
       {/* TITRE */}
       <input
         type="text"
@@ -60,23 +67,6 @@ export default function AddFindForm({
           setNewTitle(e.target.value)
         }
         style={inputStyle}
-      />
-
-      {/* DESCRIPTION */}
-      <textarea
-        placeholder="Description"
-        value={newDescription}
-        onChange={(e) =>
-          setNewDescription(
-            e.target.value
-          )
-        }
-        style={{
-          ...inputStyle,
-          minHeight: "100px",
-          resize: "none",
-          fontFamily: "inherit"
-        }}
       />
 
       {/* CATEGORIE */}
