@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { categoryEmojis } from "./subCategories";
 
@@ -540,41 +540,60 @@ function App() {
     await loadFinds();
   };
 
-  const filteredFinds =
-  finds.filter((find) => {
+  const filteredFinds = useMemo(() => {
+    return finds.filter((find) => {
+      if (favoritesOnly && !find.favorite) {
+        return false;
+      }
 
-    if (
-      favoritesOnly &&
-      !find.favorite
-    ) {
-      return false;
-    }
+      const matchesCategory = filters.includes(find.category);
 
-    const matchesCategory =
-      filters.includes(
-        find.category
-      );
+      const matchesSearch =
+        !search ||
+        find.title?.toLowerCase().includes(search.toLowerCase()) ||
+        find.description?.toLowerCase().includes(search.toLowerCase()) ||
+        find.category?.toLowerCase().includes(search.toLowerCase()) ||
+        find.sub_category?.toLowerCase().includes(search.toLowerCase()) ||
+        find.date?.toLowerCase().includes(search.toLowerCase());
 
-    const matchesSearch =
-      !search ||
-      find.title?.toLowerCase().includes(search.toLowerCase()) ||
-      find.description?.toLowerCase().includes(search.toLowerCase()) ||
-      find.category?.toLowerCase().includes(search.toLowerCase()) ||
-      find.sub_category?.toLowerCase().includes(search.toLowerCase()) ||
-      find.date?.toLowerCase().includes(search.toLowerCase());
+      const matchesDate =
+        !selectedDate ||
+        find.date?.startsWith(selectedDate);
 
-    const matchesDate =
-      !selectedDate ||
-      find.date?.startsWith(
-        selectedDate
-      );
+      return matchesCategory && matchesSearch && matchesDate;
+    });
+  }, [finds, filters, search, selectedDate, favoritesOnly]);
 
-    return (
-      matchesCategory &&
-      matchesSearch &&
-      matchesDate
-    );
-  });
+  const positionedFinds = useMemo(() => {
+    if (filteredFinds.length === 0) return [];
+    
+    const groups = [];
+    filteredFinds.forEach((find) => {
+      const group = groups.find((g) => {
+        const first = g[0];
+        // Fast bounding box check (equivalent to ~3-4 meters)
+        const latDiff = Math.abs(first.position[0] - find.position[0]);
+        const lngDiff = Math.abs(first.position[1] - find.position[1]);
+        return latDiff < 0.00004 && lngDiff < 0.00004;
+      });
+      
+      if (group) {
+        group.push(find);
+      } else {
+        groups.push([find]);
+      }
+    });
+
+    return groups.flatMap((group) => {
+      if (group.length === 1) {
+        return { ...group[0], finalPosition: group[0].position };
+      }
+      return group.map((find, index) => ({
+        ...find,
+        finalPosition: offsetPosition(find.position, index)
+      }));
+    });
+  }, [filteredFinds]);
 
     const groupedDates = finds.reduce(
   (acc, find) => {
@@ -1233,53 +1252,25 @@ return (
           position={position}
         />
 
-{filteredFinds.map((find) => {
-  const sameSpotFinds =
-    filteredFinds.filter(
-      (f) =>
-        distanceBetween(
-          f.position,
-          find.position
-        ) < 3
-    );
-
-  const sameIndex =
-    sameSpotFinds.findIndex(
-      (f) => f.id === find.id
-    );
-
-  const finalPosition =
-    sameSpotFinds.length > 1
-      ? offsetPosition(
-          find.position,
-          sameIndex
-        )
-      : find.position;
-
-
-  return (
-    <Marker
-      key={find.id}
-      position={finalPosition}
-      icon={
-        icons[find.category] ||
-        icons.autre
-      }
-    >
-      <Popup
-  autoPan={false}
-  keepInView={false}
-  closeOnClick={false}
->
-  <FindPopup
-    find={find}
-    onDelete={deleteFind}
-    onFavorite={handleFavorite}
-  />
-</Popup>
-    </Marker>
-  );
-})}        
+        {positionedFinds.map((find) => (
+          <Marker
+            key={find.id}
+            position={find.finalPosition}
+            icon={icons[find.category] || icons.autre}
+          >
+            <Popup
+              autoPan={false}
+              keepInView={false}
+              closeOnClick={false}
+            >
+              <FindPopup
+                find={find}
+                onDelete={deleteFind}
+                onFavorite={handleFavorite}
+              />
+            </Popup>
+          </Marker>
+        ))}        
 
       </MapContainer>
 
