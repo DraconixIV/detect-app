@@ -23,9 +23,7 @@ export default function AddFindForm({
   customLng,
   setCustomLng,
 }) {
-  console.log("ADD FINDFORM PROPS", {
-  newDescription
-});
+
 
   if (!showForm) return null;
 
