@@ -34,13 +34,35 @@ export default function StatsPanel({
   setSelectedDate,
   onClose
 }) {
-  const validDates = Object.entries(
-    groupedDates || {}
-  ).filter(
-    ([_, findsForDate]) =>
-      Array.isArray(findsForDate) &&
-      findsForDate.length > 0
-  );
+  // Grouper les trouvailles par date (DD/MM/YYYY)
+  const findsByDate = finds.reduce((acc, find) => {
+    if (!find.date) return acc;
+    const datePart = find.date.split(",")[0].split(" ")[0].trim();
+    if (!acc[datePart]) acc[datePart] = [];
+    acc[datePart].push(find);
+    return acc;
+  }, {});
+
+  // Grouper les sorties (traces GPS) par date (DD/MM/YYYY)
+  const tracksByDate = savedTracks.reduce((acc, track) => {
+    if (!track.created_at) return acc;
+    const dateStr = new Date(track.created_at).toLocaleDateString("fr-FR");
+    if (!acc[dateStr]) acc[dateStr] = [];
+    acc[dateStr].push(track);
+    return acc;
+  }, {});
+
+  // Union triée de toutes les dates (de la plus récente à la plus ancienne)
+  const allDates = Array.from(new Set([
+    ...Object.keys(findsByDate),
+    ...Object.keys(tracksByDate)
+  ])).sort((a, b) => {
+    const parseDate = (dStr) => {
+      const parts = dStr.split("/");
+      return new Date(parts[2], parts[1] - 1, parts[0]);
+    };
+    return parseDate(b) - parseDate(a);
+  });
 
   return (
     <div
@@ -253,93 +275,94 @@ export default function StatsPanel({
         }}
       />
 
-      <h3>🛰️ Historique Sorties</h3>
-      {savedTracks.length === 0 && (
-        <p style={{ opacity: 0.7, fontSize: "13px", fontStyle: "italic" }}>Aucune sortie enregistrée</p>
-      )}
-      {savedTracks.map((track) => {
-        const dist = getDistanceOfTrack(track.positions);
-        const dateStr = track.created_at ? new Date(track.created_at).toLocaleDateString() : "";
-        return (
-          <div key={track.id} style={{ margin: "8px 0", padding: "10px", background: "rgba(255,255,255,0.06)", borderRadius: "10px", fontSize: "12px", border: "1px solid rgba(255,255,255,0.08)" }}>
-            <div style={{ fontWeight: "bold", display: "flex", justifyContent: "space-between" }}>
-              <span>🚶 {track.session_name}</span>
-              <span style={{ fontSize: "10px", opacity: 0.6 }}>{dateStr}</span>
-            </div>
-            <div style={{ opacity: 0.8, fontSize: "11px", marginTop: "4px", display: "flex", gap: "10px" }}>
-              <span>📏 <strong>{dist.toFixed(2)}</strong> km</span>
-              <span>📍 <strong>{track.positions?.length || 0}</strong> points</span>
-            </div>
-          </div>
-        );
-      })}
-
-      <hr
-        style={{
-          margin: "15px 0"
-        }}
-      />
-
-      <h3>
-        📅 Dates
-      </h3>
+      <h3>📅 Journal des Sorties</h3>
 
       <button
-        onClick={() =>
-          setSelectedDate(null)
-        }
+        onClick={() => setSelectedDate(null)}
         style={{
           width: "100%",
           marginBottom: "10px",
           padding: "10px",
           borderRadius: "12px",
           border: "none",
-          fontSize: "15px",
-          cursor: "pointer"
+          fontSize: "14px",
+          fontWeight: "bold",
+          cursor: "pointer",
+          background: "rgba(255, 255, 255, 0.15)",
+          color: "white"
         }}
       >
-        ❌ Retirer filtre
+        ✕ Retirer le filtre de date
       </button>
 
-      {validDates.length === 0 && (
-        <p
-          style={{
-            opacity: 0.7,
-            fontSize: "14px"
-          }}
-        >
-          Aucune date disponible
-        </p>
+      {allDates.length === 0 && (
+        <p style={{ opacity: 0.7, fontSize: "13px", fontStyle: "italic" }}>Aucune sortie ni trouvaille enregistrée</p>
       )}
 
-      {validDates.map(
-  ([date, findsForDate]) => (
-    <button
-      key={date}
-      onClick={() =>
-        setSelectedDate(date)
-      }
-      style={{
-        width: "100%",
-        marginBottom: "8px",
-        padding: "10px",
-        borderRadius: "12px",
-        border: "none",
-        fontSize: "14px",
-        cursor: "pointer"
-      }}
-    >
-      📅 {date}
-      <br />
-      <strong>
-        {findsForDate.length} trouvaille
-        {findsForDate.length > 1
-          ? "s"
-          : ""}
-      </strong>
-    </button>
-  )
-)}
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px", maxHeight: "300px", overflowY: "auto", paddingRight: "4px" }}>
+        {allDates.map((dateStr) => {
+          const dayFinds = findsByDate[dateStr] || [];
+          const dayTracks = tracksByDate[dateStr] || [];
+
+          return (
+            <div
+              key={dateStr}
+              onClick={() => {
+                if (dayFinds.length > 0) {
+                  setSelectedDate(dateStr);
+                }
+              }}
+              style={{
+                background: "rgba(255, 255, 255, 0.06)",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                borderRadius: "14px",
+                padding: "12px",
+                fontSize: "12px",
+                cursor: dayFinds.length > 0 ? "pointer" : "default",
+                transition: "background 0.2s, transform 0.1s"
+              }}
+              onMouseEnter={(e) => {
+                if (dayFinds.length > 0) {
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.12)";
+                  e.currentTarget.style.transform = "scale(1.01)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(255, 255, 255, 0.06)";
+                e.currentTarget.style.transform = "scale(1)";
+              }}
+            >
+              {/* Header with Date */}
+              <div style={{ fontWeight: "bold", display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
+                <span>📅 {dateStr}</span>
+                {dayFinds.length > 0 && (
+                  <span style={{ color: "#facc15", fontWeight: "bold" }}>
+                    🪙 {dayFinds.length} trouvaille{dayFinds.length > 1 ? "s" : ""}
+                  </span>
+                )}
+              </div>
+
+              {/* Outings Details */}
+              {dayTracks.length > 0 ? (
+                <div style={{ opacity: 0.8, fontSize: "11px", display: "flex", flexDirection: "column", gap: "4px", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "6px", marginTop: "6px" }}>
+                  {dayTracks.map((t, i) => (
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span>🚶 {t.session_name || `Parcours ${i+1}`}</span>
+                      <span>📏 <strong>{getDistanceOfTrack(t.positions).toFixed(2)}</strong> km</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                dayFinds.length > 0 && (
+                  <div style={{ opacity: 0.6, fontSize: "10px", fontStyle: "italic", marginTop: "4px" }}>
+                    Pas de tracé GPS enregistré
+                  </div>
+                )
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
