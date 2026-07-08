@@ -1216,6 +1216,7 @@ return (
       <MapContainer
         center={position}
         zoom={20}
+        preferCanvas={true}
         style={{
           height: "100%",
           width: "100%"
