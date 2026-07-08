@@ -24,7 +24,7 @@ import GpsMarker from "./components/GpsMarker";
 import MapLayers from "./components/MapLayers";
 import StatsPanel from "./components/StatsPanel";
 
-import { icons } from "./icons";
+import { icons, createClusterIcon } from "./icons";
 
 import {
   loadFinds as fetchFinds,
@@ -204,9 +204,14 @@ function App() {
   const [zoomTargetPosition, setZoomTargetPosition] = useState(null);
   const [openPopupFind, setOpenPopupFind] = useState(null);
   const [activePopupId, setActivePopupId] = useState(null);
+  const [gpsAccuracy, setGpsAccuracy] = useState(null);
+  const [showHistoricalMap, setShowHistoricalMap] = useState(false);
+  const [historicalMapOpacity, setHistoricalMapOpacity] = useState(0.5);
+  const [useClustering, setUseClustering] = useState(true);
 
   const isRecordingRef = useRef(isRecordingSortie);
   const positionsRef = useRef(sortiePositions);
+  const quickAddInputRef = useRef(null);
 
   useEffect(() => {
     isRecordingRef.current = isRecordingSortie;
@@ -302,6 +307,7 @@ function App() {
           ];
 
           setPosition(newPosition);
+          setGpsAccuracy(pos.coords.accuracy);
 
           if (isRecordingRef.current) {
             setSortiePositions((prev) => {
@@ -422,11 +428,12 @@ function App() {
       loadFinds();
     };
 
-  const addFind = async () => {
-    const finalPosition =
-      customLat && customLng
+  const addFind = async (quickParams = null) => {
+    const finalPosition = quickParams
+      ? quickParams.position
+      : (customLat && customLng
         ? [Number(customLat), Number(customLng)]
-        : position;
+        : position);
 
     if (!finalPosition) {
       alert("GPS indisponible");
@@ -436,27 +443,34 @@ function App() {
     if (addingFind) return;
     setAddingFind(true);
 
+    const titleVal = quickParams ? quickParams.newTitle : newTitle;
+    const descVal = quickParams ? quickParams.newDescription : newDescription;
+    const catVal = quickParams ? quickParams.newCategory : newCategory;
+    const subCatVal = quickParams ? quickParams.newSubCategory : newSubCategory;
+    const photoVal = quickParams ? quickParams.newPhoto : newPhoto;
+    const dateVal = quickParams ? quickParams.customDate : (customDate || null);
+
     try {
       if (!isOnline) {
         await addPendingFind({
           position: finalPosition,
-          newTitle,
-          newDescription,
-          newCategory,
-          newSubCategory,
-          customDate: customDate || null
-        }, newPhoto);
+          newTitle: titleVal,
+          newDescription: descVal,
+          newCategory: catVal,
+          newSubCategory: subCatVal,
+          customDate: dateVal
+        }, photoVal);
 
         alert("Trouvaille sauvegardée localement (Hors-ligne) ! Elle sera synchronisée dès le retour d'internet. 💾");
       } else {
         await createFind({
           position: finalPosition,
-          newTitle,
-          newDescription,
-          newCategory,
-          newSubCategory,
-          newPhoto,
-          customDate: customDate || null,
+          newTitle: titleVal,
+          newDescription: descVal,
+          newCategory: catVal,
+          newSubCategory: subCatVal,
+          newPhoto: photoVal,
+          customDate: dateVal,
         });
       }
 
@@ -471,12 +485,35 @@ function App() {
       setNewPhoto(null);
 
       await loadFinds();
+      if (quickParams) {
+        alert("📸 Trouvaille rapide enregistrée !");
+      }
     } catch (error) {
       console.error(error);
       alert("Erreur ajout trouvaille");
     }
 
     setAddingFind(false);
+  };
+
+  const handleQuickAdd = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!position) {
+      alert("Position GPS non acquise. Veuillez patienter.");
+      return;
+    }
+
+    await addFind({
+      position,
+      newTitle: "Trouvaille Rapide",
+      newDescription: "Indéterminé",
+      newCategory: "Autre",
+      newSubCategory: "",
+      newPhoto: file,
+      customDate: new Date().toLocaleString("fr-FR")
+    });
   };
 
   const handleFavorite =
@@ -596,6 +633,48 @@ function App() {
       }));
     });
   }, [filteredFinds]);
+
+  const clusteredFinds = useMemo(() => {
+    if (!useClustering) {
+      return positionedFinds.map((f) => ({ ...f, isCluster: false }));
+    }
+
+    const clusters = [];
+    // Approximate 80 meters threshold in degrees
+    const clusterDistanceThreshold = 0.0008;
+
+    positionedFinds.forEach((find) => {
+      const targetCluster = clusters.find((c) => {
+        const first = c.items[0];
+        const latDiff = Math.abs(first.position[0] - find.position[0]);
+        const lngDiff = Math.abs(first.position[1] - find.position[1]);
+        return latDiff < clusterDistanceThreshold && lngDiff < clusterDistanceThreshold;
+      });
+
+      if (targetCluster) {
+        targetCluster.items.push(find);
+      } else {
+        clusters.push({
+          id: `cluster-${find.id}`,
+          position: find.position,
+          items: [find]
+        });
+      }
+    });
+
+    return clusters.map((c) => {
+      if (c.items.length === 1) {
+        return { ...c.items[0], isCluster: false };
+      }
+      return {
+        id: c.id,
+        position: c.position,
+        isCluster: true,
+        count: c.items.length,
+        items: c.items
+      };
+    });
+  }, [positionedFinds, useClustering]);
 
   const selectedDateTracks = useMemo(() => {
     if (!selectedDate) return [];
@@ -852,7 +931,11 @@ return (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", margin: "5px 0" }}>
             {/* Map Style */}
             <button
-              onClick={() => setMapStyle(mapStyle === "plan" ? "satellite" : "plan")}
+              onClick={() => {
+                if (mapStyle === "plan") setMapStyle("satellite");
+                else if (mapStyle === "satellite") setMapStyle("tactique");
+                else setMapStyle("plan");
+              }}
               style={{
                 background: "rgba(255, 255, 255, 0.06)",
                 border: "1px solid rgba(255, 255, 255, 0.08)",
@@ -864,7 +947,7 @@ return (
                 cursor: "pointer"
               }}
             >
-              {mapStyle === "plan" ? "🛰️ Satellite" : "🗺️ Plan"}
+              {mapStyle === "plan" ? "🛰️ Satellite" : mapStyle === "satellite" ? "🕶️ Tactique" : "🗺️ Plan"}
             </button>
 
             {/* Follow GPS */}
@@ -936,6 +1019,61 @@ return (
               ⭐ Favoris : {favoritesOnly ? "On" : "Off"}
             </button>
           </div>
+
+          {/* Advanced Toggles */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", margin: "5px 0" }}>
+            {/* Toggle Clustering */}
+            <button
+              onClick={() => setUseClustering(!useClustering)}
+              style={{
+                background: useClustering ? "rgba(37, 99, 235, 0.15)" : "rgba(255, 255, 255, 0.06)",
+                border: useClustering ? "1px solid #2563eb" : "1px solid rgba(255, 255, 255, 0.08)",
+                borderRadius: "12px",
+                padding: "8px",
+                color: useClustering ? "#60a5fa" : "white",
+                fontSize: "11px",
+                fontWeight: "bold",
+                cursor: "pointer"
+              }}
+            >
+              🧬 Clusters : {useClustering ? "On" : "Off"}
+            </button>
+
+            {/* Toggle Cassini */}
+            <button
+              onClick={() => setShowHistoricalMap(!showHistoricalMap)}
+              style={{
+                background: showHistoricalMap ? "rgba(217, 119, 6, 0.15)" : "rgba(255, 255, 255, 0.06)",
+                border: showHistoricalMap ? "1px solid #d97706" : "1px solid rgba(255, 255, 255, 0.08)",
+                borderRadius: "12px",
+                padding: "8px",
+                color: showHistoricalMap ? "#fbbf24" : "white",
+                fontSize: "11px",
+                fontWeight: "bold",
+                cursor: "pointer"
+              }}
+            >
+              🗺️ Cassini : {showHistoricalMap ? "On" : "Off"}
+            </button>
+          </div>
+
+          {/* Opacity slider for Cassini */}
+          {showHistoricalMap && (
+            <div style={{ background: "rgba(255,255,255,0.04)", padding: "8px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.06)", margin: "5px 0" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", color: "#d1d5db", fontWeight: "bold", marginBottom: "4px" }}>
+                <span>Opacité Cassini</span>
+                <span>{Math.round(historicalMapOpacity * 100)}%</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={historicalMapOpacity * 100}
+                onChange={(e) => setHistoricalMapOpacity(Number(e.target.value) / 100)}
+                style={{ width: "100%", cursor: "pointer", accentColor: "#d97706" }}
+              />
+            </div>
+          )}
 
           <input
             type="text"
@@ -1203,6 +1341,38 @@ return (
           {syncing && " (Synchro...)"}
         </div>
 
+        {/* GPS Accuracy Badge */}
+        <div
+          style={{
+            background: "rgba(17, 24, 39, 0.8)",
+            color: "white",
+            padding: "6px 12px",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px"
+          }}
+        >
+          <span
+            style={{
+              display: "inline-block",
+              width: "8px",
+              height: "8px",
+              borderRadius: "50%",
+              background: gpsAccuracy === null
+                ? "#9ca3af" // Grey
+                : gpsAccuracy < 5
+                  ? "#10b981" // Green
+                  : gpsAccuracy < 15
+                    ? "#f59e0b" // Orange
+                    : "#ef4444" // Red
+            }}
+          ></span>
+          {gpsAccuracy === null ? "GPS : Recherche..." : `GPS : ± ${gpsAccuracy.toFixed(0)}m`}
+        </div>
+
         {isRecordingSortie && (
           <div
             style={{
@@ -1257,6 +1427,8 @@ return (
 
         <MapLayers
           mapStyle={mapStyle}
+          showHistoricalMap={showHistoricalMap}
+          historicalMapOpacity={historicalMapOpacity}
         />
 
         {selectedDateTracks.map((track, idx) => (
@@ -1277,39 +1449,99 @@ return (
           position={position}
         />
 
-        {positionedFinds.map((find) => (
-          <Marker
-            key={find.id}
-            position={find.finalPosition}
-            icon={icons[find.category] || icons.autre}
-          >
-            <Popup
-              autoPan={false}
-              keepInView={false}
-              closeOnClick={false}
-              eventHandlers={{
-                add: () => setActivePopupId(find.id),
-                remove: () => {
-                  setActivePopupId((current) => current === find.id ? null : current);
-                }
-              }}
+        {clusteredFinds.map((node) => {
+          if (node.isCluster) {
+            return (
+              <Marker
+                key={node.id}
+                position={node.position}
+                icon={createClusterIcon(node.count)}
+                eventHandlers={{
+                  click: () => {
+                    setZoomTargetPosition(node.position);
+                  }
+                }}
+              />
+            );
+          }
+
+          return (
+            <Marker
+              key={node.id}
+              position={node.finalPosition}
+              icon={icons[node.category] || icons.autre}
             >
-              {activePopupId === find.id ? (
-                <FindPopup
-                  find={find}
-                  onDelete={deleteFind}
-                  onFavorite={handleFavorite}
-                />
-              ) : (
-                <div style={{ padding: "10px", color: "black", fontFamily: "system-ui, sans-serif", fontSize: "12px" }}>
-                  Chargement...
-                </div>
-              )}
-            </Popup>
-          </Marker>
-        ))}        
+              <Popup
+                autoPan={false}
+                keepInView={false}
+                closeOnClick={false}
+                eventHandlers={{
+                  add: () => setActivePopupId(node.id),
+                  remove: () => {
+                    setActivePopupId((current) => current === node.id ? null : current);
+                  }
+                }}
+              >
+                {activePopupId === node.id ? (
+                  <FindPopup
+                    find={node}
+                    onDelete={deleteFind}
+                    onFavorite={handleFavorite}
+                  />
+                ) : (
+                  <div style={{ padding: "10px", color: "black", fontFamily: "system-ui, sans-serif", fontSize: "12px" }}>
+                    Chargement...
+                  </div>
+                )}
+              </Popup>
+            </Marker>
+          );
+        })}        
 
       </MapContainer>
+
+      {/* Hidden input for quick add */}
+      <input
+        type="file"
+        accept="image/*"
+        capture="environment"
+        ref={quickAddInputRef}
+        style={{ display: "none" }}
+        onChange={handleQuickAdd}
+      />
+
+      {/* Floating Add Flash Button */}
+      <button
+        onClick={() => {
+          if (quickAddInputRef.current) {
+            quickAddInputRef.current.click();
+          }
+        }}
+        style={{
+          position: "absolute",
+          bottom: "30px",
+          right: "30px",
+          zIndex: 5000,
+          width: "60px",
+          height: "60px",
+          borderRadius: "50%",
+          border: "3px solid rgba(255,255,255,0.2)",
+          background: "linear-gradient(135deg, #10b981, #059669)",
+          color: "white",
+          fontSize: "24px",
+          boxShadow: "0 8px 24px rgba(5, 150, 105, 0.4)",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "transform 0.15s, background-color 0.2s"
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.08)"}
+        onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+        title="Ajout Rapide Flash"
+      >
+        📸+
+      </button>
 
       {/* FULLSCREEN ALBUM PHOTO LIGHTBOX */}
       {selectedAlbumPhoto && createPortal(
