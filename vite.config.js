@@ -15,6 +15,53 @@ export default defineConfig({
         "icon-512.png"
       ],
 
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/data\.geopf\.fr\/wmts.*/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "ign-cassini-tiles",
+              expiration: {
+                maxEntries: 1000,
+                maxAgeSeconds: 30 * 24 * 60 * 60
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/.*\.tile\.openstreetmap\.org.*/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "osm-tiles",
+              expiration: {
+                maxEntries: 1000,
+                maxAgeSeconds: 30 * 24 * 60 * 60
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/server\.arcgisonline\.com\/ArcGIS\/rest\/services\/World_Imagery\/MapServer\/tile.*/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "esri-satellite-tiles",
+              expiration: {
+                maxEntries: 1000,
+                maxAgeSeconds: 30 * 24 * 60 * 60
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          }
+        ]
+      },
+
       manifest: {
         name: "Metal Detector App",
 

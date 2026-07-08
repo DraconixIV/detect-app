@@ -32,6 +32,8 @@ export default function MapLayers({
           maxZoom={20}
           maxNativeZoom={14}
           minZoom={0}
+          updateWhenIdle={true}
+          keepBuffer={1}
         />
       )}
     </>
