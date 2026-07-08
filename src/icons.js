@@ -5,15 +5,14 @@ function createIcon(color) {
     <svg xmlns="http://www.w3.org/2000/svg"
          width="25"
          height="41"
-         viewBox="0 0 25 41"
-         style="filter: drop-shadow(0 3px 5px rgba(0,0,0,0.35)); transition: transform 0.1s ease-out;">
+         viewBox="0 0 25 41">
       <path
         d="M12.5 0C5.6 0 0 5.6 0 12.5
            c0 9.4 12.5 28.5 12.5 28.5
            S25 21.9 25 12.5
            C25 5.6 19.4 0 12.5 0z"
         fill="${color}"
-        stroke="#ffffff"
+        stroke="#000"
         stroke-width="1.5"
       />
       <circle
@@ -25,12 +24,18 @@ function createIcon(color) {
     </svg>
   `;
 
-  return new L.divIcon({
-    className: "",
-    html: svg,
+  return new L.Icon({
+    iconUrl:
+      "data:image/svg+xml;charset=UTF-8," +
+      encodeURIComponent(svg),
+
+    shadowUrl:
+      "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+
     iconSize: [25, 41],
-    iconAnchor: [12.5, 41],
-    popupAnchor: [0, -34]
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
   });
 }
 
