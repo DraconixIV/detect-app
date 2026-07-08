@@ -837,7 +837,10 @@ export default function FindPopup({
             alignItems: "center",
             justifyContent: "center"
           }}
-          onClick={() => setFullscreenImage(null)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setFullscreenImage(null);
+          }}
         >
           <img
             src={fullscreenImage}
