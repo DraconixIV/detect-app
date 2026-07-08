@@ -2,6 +2,43 @@ import imageCompression from "browser-image-compression";
 
 import { supabase } from "../supabase";
 
+export function normalizeCategoryAndSub(find) {
+  if (!find) return find;
+
+  let category = find.category || "Autre";
+  let subCategory = find.sub_category || "";
+
+  // Normalize casing and structural migrations
+  let normalized = category.trim().toLowerCase();
+
+  if (normalized === "militaire" || normalized === "munition") {
+    category = "Munition";
+  } else if (normalized === "dé à coudre") {
+    category = "Outil";
+    subCategory = "Dé à coudre";
+  } else {
+    const mapping = {
+      "autre": "Autre",
+      "bijou": "Bijou",
+      "boucle": "Boucle",
+      "bouton": "Bouton",
+      "médaille": "Médaille",
+      "monnaie": "Monnaie",
+      "outil": "Outil",
+      "plomb": "Plomb",
+      "religieux": "Religieux",
+      "munition": "Munition"
+    };
+    category = mapping[normalized] || (category.charAt(0).toUpperCase() + category.slice(1));
+  }
+
+  return {
+    ...find,
+    category,
+    sub_category: subCategory
+  };
+}
+
 export async function loadFinds() {
   try {
     const { data, error } =
@@ -18,18 +55,16 @@ export async function loadFinds() {
     }
 
     return (data || []).map(
-      (find) => ({
-        ...find,
-
-        position: [
-          find.latitude,
-          find.longitude
-        ],
-
-        category:
-          find.category ||
-          "autre"
-      })
+      (find) => {
+        const normalizedFind = normalizeCategoryAndSub(find);
+        return {
+          ...normalizedFind,
+          position: [
+            normalizedFind.latitude,
+            normalizedFind.longitude
+          ]
+        };
+      }
     );
 
   } catch (error) {
@@ -63,7 +98,7 @@ export async function addFind({
           category:
             newCategory,
           sub_category:
-            newCategory === "monnaie" ? newSubCategory || null : null,
+            newSubCategory || null,
           latitude:
             position[0],
           longitude:

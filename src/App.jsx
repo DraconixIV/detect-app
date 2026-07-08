@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { categoryEmojis } from "./subCategories";
 
 // Build refresh June 2026
 
@@ -132,17 +133,16 @@ function App() {
 
   const [filters, setFilters] =
     useState([
-      "autre",
-      "bijou",
-      "boucle",
-      "bouton",
-      "dé à coudre",
-      "médaille",
-      "militaire",
-      "monnaie",
-      "outil",
-      "plomb",
-      "religieux"
+      "Monnaie",
+      "Bijou",
+      "Boucle",
+      "Bouton",
+      "Médaille",
+      "Munition",
+      "Outil",
+      "Plomb",
+      "Religieux",
+      "Autre"
     ]);
 
   const [newTitle, setNewTitle] =
@@ -156,7 +156,7 @@ function App() {
   const [
     newCategory,
     setNewCategory
-  ] = useState("monnaie");
+  ] = useState("Monnaie");
 
   const [
     newSubCategory,
@@ -319,7 +319,7 @@ if (!finalPosition) {
 
       setNewDescription("");
 
-      setNewCategory("monnaie");
+      setNewCategory("Monnaie");
 
       setNewSubCategory("");
 
@@ -762,7 +762,7 @@ return (
                   fontSize: "11px"
                 }}
               >
-                {category}
+                {categoryEmojis[category] || ""} {category}
               </button>
             ))}
           </div>

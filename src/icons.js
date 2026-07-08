@@ -40,32 +40,14 @@ function createIcon(color) {
 }
 
 export const icons = {
-  autre: createIcon("#000000"),      // noir
-
-  bijou: createIcon("#ff69b4"),      // rose
-
-  boucle: createIcon("#8b4513"),     // marron
-
-  bouton: createIcon("#22c55e"),     // vert
-
-  "dé à coudre":
-    createIcon("#ffffff"),           // blanc
-
-  médaille:
-    createIcon("#2563eb"),           // bleu
-
-  militaire:
-    createIcon("#dc2626"),           // rouge
-
-  monnaie:
-    createIcon("#facc15"),           // jaune
-
-  outil:
-    createIcon("#4b5563"),           // gris foncé
-
-  plomb:
-    createIcon("#9ca3af"),           // gris
-
-  religieux:
-    createIcon("#f97316")            // orange
+  Monnaie: createIcon("#facc15"),    // Jaune vif (impératif)
+  Bijou: createIcon("#ec4899"),      // Rose magenta élégant
+  Boucle: createIcon("#8b5cf6"),     // Violet
+  Bouton: createIcon("#10b981"),     // Vert émeraude
+  Médaille: createIcon("#3b82f6"),   // Bleu royal
+  Munition: createIcon("#ef4444"),   // Rouge corail
+  Outil: createIcon("#f97316"),      // Orange/Ambre
+  Plomb: createIcon("#6b7280"),      // Gris acier
+  Religieux: createIcon("#d97706"),  // Brun doré
+  Autre: createIcon("#111827")       // Noir charbon
 };

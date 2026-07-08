@@ -1,4 +1,4 @@
-import { monnaieSubCategories } from "../subCategories";
+import { categoriesWithSub, categoryEmojis } from "../subCategories";
 
 export default function AddFindForm({
   
@@ -76,9 +76,7 @@ export default function AddFindForm({
         onChange={(e) => {
           const cat = e.target.value;
           setNewCategory(cat);
-          if (cat !== "monnaie") {
-            setNewSubCategory("");
-          }
+          setNewSubCategory("");
         }}
         style={inputStyle}
       >
@@ -88,38 +86,38 @@ export default function AddFindForm({
               key={cat}
               value={cat}
             >
-              {cat}
+              {categoryEmojis[cat] || ""} {cat}
             </option>
           )
         )}
       </select>
       
-      {newCategory === "monnaie" && (
-  <select
-  value={newSubCategory}
-  onChange={(e) =>
-    setNewSubCategory(
-      e.target.value
-    )
-  }
-  style={inputStyle}
->
-  <option value="">
-    Sous-catégorie
-  </option>
+      {categoriesWithSub[newCategory] && (
+        <select
+          value={newSubCategory}
+          onChange={(e) =>
+            setNewSubCategory(
+              e.target.value
+            )
+          }
+          style={inputStyle}
+        >
+          <option value="">
+            Sous-catégorie
+          </option>
 
-  {monnaieSubCategories.map(
-    (subCat) => (
-      <option
-        key={subCat}
-        value={subCat}
-      >
-        {subCat}
-      </option>
-    )
-  )}
-</select>
-)}
+          {categoriesWithSub[newCategory].map(
+            (subCat) => (
+              <option
+                key={subCat}
+                value={subCat}
+              >
+                {subCat}
+              </option>
+            )
+          )}
+        </select>
+      )}
 
     <input
   type="date"

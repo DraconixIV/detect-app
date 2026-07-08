@@ -5,7 +5,7 @@ import { supabase } from "../supabase";
 
 import imageCompression from "browser-image-compression";
 
-import { monnaieSubCategories } from "../subCategories";
+import { categoriesWithSub, categoryEmojis } from "../subCategories";
 
 function FindPopup({
   find,
@@ -56,9 +56,7 @@ const [
 const handleCategoryChange = (e) => {
   const newCat = e.target.value;
   setCategory(newCat);
-  if (newCat !== "monnaie") {
-    setSubCategory("");
-  }
+  setSubCategory("");
 };
 
   const [photos, setPhotos] =
@@ -140,7 +138,7 @@ const handleCategoryChange = (e) => {
   category,
 
   sub_category:
-    category === "monnaie" ? subCategory || null : null,
+    subCategory || null,
 
 })
         .eq("id", find.id);
@@ -509,20 +507,14 @@ const handleCategoryChange = (e) => {
   onChange={handleCategoryChange}
   style={inputStyle}
 >
-  <option value="autre">autre</option>
-  <option value="bijou">bijou</option>
-  <option value="boucle">boucle</option>
-  <option value="bouton">bouton</option>
-  <option value="dé à coudre">dé à coudre</option>
-  <option value="médaille">médaille</option>
-  <option value="militaire">militaire</option>
-  <option value="monnaie">monnaie</option>
-  <option value="outil">outil</option>
-  <option value="plomb">plomb</option>
-  <option value="religieux">religieux</option>
+  {Object.keys(categoriesWithSub).map((cat) => (
+    <option key={cat} value={cat}>
+      {categoryEmojis[cat] || ""} {cat}
+    </option>
+  ))}
 </select>
 
-{category === "monnaie" && (
+{categoriesWithSub[category] && (
   <select
     value={subCategory}
     onChange={(e) =>
@@ -536,7 +528,7 @@ const handleCategoryChange = (e) => {
       Sous-catégorie
     </option>
 
-    {monnaieSubCategories.map(
+    {categoriesWithSub[category].map(
       (subCat) => (
         <option
           key={subCat}
@@ -549,20 +541,46 @@ const handleCategoryChange = (e) => {
   </select>
 )}
 
-{subCategory && (
+<div
+  style={{
+    display: "flex",
+    gap: "8px",
+    justifyContent: "center",
+    margin: "5px 0"
+  }}
+>
   <div
     style={{
-      padding: "6px",
+      padding: "6px 12px",
       borderRadius: "8px",
-      background: "#f3f4f6",
+      background: "#e5e7eb",
       textAlign: "center",
       fontSize: "13px",
-      fontWeight: "600"
+      fontWeight: "600",
+      color: "#1f2937",
+      flex: 1
     }}
   >
-    🏷️ {subCategory}
+    {categoryEmojis[category] || "📍"} {category}
   </div>
-)}
+
+  {subCategory && (
+    <div
+      style={{
+        padding: "6px 12px",
+        borderRadius: "8px",
+        background: "#f3f4f6",
+        textAlign: "center",
+        fontSize: "13px",
+        fontWeight: "600",
+        color: "#4b5563",
+        flex: 1
+      }}
+    >
+      🏷️ {subCategory}
+    </div>
+  )}
+</div>
 
             <button
               disabled={uploading}

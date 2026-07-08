@@ -1,4 +1,4 @@
-import { monnaieSubCategories } from "../subCategories";
+import { categoriesWithSub, categoryEmojis } from "../subCategories";
 
 export default function StatsPanel({
   finds = [],
@@ -87,61 +87,52 @@ export default function StatsPanel({
   }}
 />
 
-<h3>🏆 Catégories</h3>
+<h3>🏆 Catégories & Détails</h3>
 
 {Object.entries(
   finds.reduce(
     (acc, find) => {
-      acc[find.category] =
-        (acc[find.category] || 0) + 1;
-
+      acc[find.category] = (acc[find.category] || 0) + 1;
       return acc;
     },
     {}
   )
 )
   .sort((a, b) => b[1] - a[1])
-  .map(([category, count]) => (
-    <p key={category}>
-      {category} : {count}
-    </p>
-  ))}
+  .map(([category, count]) => {
+    // Obtenir le décompte des sous-catégories pour cette catégorie
+    const subCatCounts = Object.entries(
+      finds
+        .filter((find) => find.category === category && find.sub_category)
+        .reduce((acc, find) => {
+          const matchingSubCat = (categoriesWithSub[category] || []).find(
+            (sub) => sub.toLowerCase() === find.sub_category.toLowerCase()
+          ) || find.sub_category;
 
-  <hr
-  style={{
-    margin: "15px 0"
-  }}
-/>
+          acc[matchingSubCat] = (acc[matchingSubCat] || 0) + 1;
+          return acc;
+        }, {})
+    ).sort((a, b) => b[1] - a[1]);
 
-<h3>🪙 Monnaies</h3>
-
-{Object.entries(
-  finds
-    .filter(
-      (find) =>
-        find.category === "monnaie" &&
-        find.sub_category
-    )
-    .reduce(
-      (acc, find) => {
-        const matchingSubCat = monnaieSubCategories.find(
-          (sub) => sub.toLowerCase() === find.sub_category.toLowerCase()
-        ) || find.sub_category;
-
-        acc[matchingSubCat] =
-          (acc[matchingSubCat] || 0) + 1;
-
-        return acc;
-      },
-      {}
-    )
-)
-  .sort((a, b) => b[1] - a[1])
-  .map(([subCategory, count]) => (
-    <p key={subCategory}>
-      {subCategory} : {count}
-    </p>
-  ))}
+    return (
+      <div key={category} style={{ marginBottom: "12px" }}>
+        <p style={{ fontWeight: "bold", margin: "4px 0", fontSize: "14px" }}>
+          {categoryEmojis[category] || "📍"} {category} : {count}
+        </p>
+        
+        {subCatCounts.length > 0 && (
+          <div style={{ paddingLeft: "15px", fontSize: "12px", color: "#d1d5db" }}>
+            {subCatCounts.map(([subCat, subCount]) => (
+              <div key={subCat} style={{ margin: "2px 0" }}>
+                ↳ {subCat} : {subCount}
+              </div>
+            ))}
+          </div>
+        )}
+        <hr style={{ margin: "10px 0", border: "none", borderBottom: "1px solid rgba(255, 255, 255, 0.15)" }} />
+      </div>
+    );
+  })}
 
       <button
         onClick={exportData}
