@@ -257,7 +257,7 @@ export default function FindPopup({
         }}
       >
         <h4 style={{ margin: 0, fontSize: "14px", fontWeight: "800", color: "#1f2937", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {categoryEmojis[category] || "📍"} {title || "Sans titre"}
+          {title || "Sans titre"}
         </h4>
 
         <div style={{ fontSize: "11px", color: "#6b7280", fontWeight: "700" }}>

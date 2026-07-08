@@ -1636,13 +1636,12 @@ return (
             onClick={(e) => e.stopPropagation()}
           >
             <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "bold" }}>
-              {categoryEmojis[selectedAlbumPhoto.find.category] || "📍"} {selectedAlbumPhoto.find.title}
+              {selectedAlbumPhoto.find.title}
             </h3>
-            {selectedAlbumPhoto.find.sub_category && (
-              <p style={{ margin: 0, opacity: 0.8, fontSize: "14px" }}>
-                Sous-catégorie : {selectedAlbumPhoto.find.sub_category}
-              </p>
-            )}
+            <p style={{ margin: 0, opacity: 0.8, fontSize: "14px" }}>
+              {categoryEmojis[selectedAlbumPhoto.find.category] || "📍"} {selectedAlbumPhoto.find.category}
+              {selectedAlbumPhoto.find.sub_category ? ` • ${selectedAlbumPhoto.find.sub_category}` : ""}
+            </p>
 
             <button
               onClick={() => {
