@@ -8,6 +8,7 @@ import {
   MapContainer,
   Marker,
   Popup,
+  Polyline,
   useMap
 } from "react-leaflet";
 
@@ -595,6 +596,15 @@ function App() {
       }));
     });
   }, [filteredFinds]);
+
+  const selectedDateTracks = useMemo(() => {
+    if (!selectedDate) return [];
+    return savedTracks.filter((track) => {
+      if (!track.created_at) return false;
+      const trackDate = new Date(track.created_at).toLocaleDateString("fr-FR");
+      return trackDate === selectedDate;
+    });
+  }, [selectedDate, savedTracks]);
 
     const groupedDates = finds.reduce(
   (acc, find) => {
@@ -1248,6 +1258,20 @@ return (
         <MapLayers
           mapStyle={mapStyle}
         />
+
+        {selectedDateTracks.map((track, idx) => (
+          <Polyline
+            key={track.id || idx}
+            positions={track.positions}
+            pathOptions={{
+              color: "#facc15",
+              weight: 4,
+              opacity: 0.7,
+              dashArray: "6, 8",
+              lineCap: "round"
+            }}
+          />
+        ))}
 
         <GpsMarker
           position={position}
