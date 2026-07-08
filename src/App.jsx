@@ -491,6 +491,59 @@ return (
         width: "100%"
       }}
     >
+      {/* FILTER BANNER */}
+      {selectedDate && (
+        <div
+          style={{
+            position: "absolute",
+            top: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 5000,
+            background: "rgba(17, 24, 39, 0.92)",
+            backdropFilter: "blur(8px)",
+            color: "white",
+            padding: "10px 18px",
+            borderRadius: "20px",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.35)",
+            fontFamily: "system-ui, sans-serif",
+            fontSize: "14px",
+            fontWeight: "600",
+            border: "1px solid rgba(255, 255, 255, 0.12)"
+          }}
+        >
+          <span>
+            📅 Sortie du {selectedDate} : {filteredFinds.length} trouvaille{filteredFinds.length > 1 ? "s" : ""}
+          </span>
+          <button
+            onClick={() => {
+              setSelectedDate(null);
+              setZoomToDate(null);
+            }}
+            style={{
+              border: "none",
+              background: "#ef4444",
+              color: "white",
+              borderRadius: "50%",
+              width: "20px",
+              height: "20px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              fontSize: "12px",
+              fontWeight: "bold",
+              padding: 0
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* MENU BUTTON */}
       <button
         onClick={() => {
