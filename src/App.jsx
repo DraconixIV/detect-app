@@ -465,9 +465,6 @@ if (!finalPosition) {
     return <LoadingScreen />;
   }
 
-  console.log("handleFavorite =", handleFavorite);
-
-  console.log("handleFavorite =", handleFavorite);
 
 const dateFinds =
   zoomToDate

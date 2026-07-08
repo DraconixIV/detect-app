@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { supabase } from "../supabase";
 
@@ -11,16 +12,13 @@ function FindPopup({
   onDelete,
   onFavorite
 }) {
-  console.log("FINDPOPUP NO DESCRIPTION");
-  console.log("FIND OBJECT", find);
+
   const [activeTab, setActiveTab] =
     useState("discovery");
 
   const [title, setTitle] =
     useState(find.title || "");
 
-  const [cleanTitle, setCleanTitle] =
-    useState(find.clean_title || "");
 
   const [
     cleanDescription,
@@ -116,7 +114,7 @@ const handleCategoryChange = (e) => {
         .from("finds")
        .update({
   title,
-  clean_title: cleanTitle,
+  clean_title: title,
   clean_description:
     cleanDescription,
   identification_link:
@@ -676,17 +674,6 @@ const handleCategoryChange = (e) => {
         {activeTab ===
           "clean" && (
           <>
-            <input
-              value={cleanTitle}
-              onChange={(e) =>
-                setCleanTitle(
-                  e.target.value
-                )
-              }
-              placeholder="Titre nettoyage"
-              style={inputStyle}
-            />
-
             <textarea
   value={cleanDescription}
   onChange={(e) =>
@@ -694,7 +681,7 @@ const handleCategoryChange = (e) => {
       e.target.value
     )
   }
-  placeholder="Description nettoyage"
+  placeholder="Description"
   style={{
     ...inputStyle,
     minHeight: "100px",
@@ -910,36 +897,38 @@ const handleCategoryChange = (e) => {
       </div>
 
       {/* FULLSCREEN */}
-      {fullscreenImage && (
+      {fullscreenImage && createPortal(
         <div
           onClick={() =>
             setFullscreenImage(null)
           }
           style={{
-  position: "fixed",
-  top: 0,
-  left: 0,
-  width: "100vw",
-  height: "100vh",
-  background: "rgba(0,0,0,0.92)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  transform: "translateZ(0)",
-  zIndex: 99999,
-}}
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.92)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            transform: "translateZ(0)",
+            zIndex: 99999,
+          }}
         >
           <img
             src={fullscreenImage}
             alt=""
             style={{
-  maxWidth: "95vw",
-  maxHeight: "95vh",
-  objectFit: "contain",
-  borderRadius: "16px"
-}}
+              maxWidth: "95vw",
+              maxHeight: "95vh",
+              objectFit: "contain",
+              borderRadius: "16px",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.5)"
+            }}
           />
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
