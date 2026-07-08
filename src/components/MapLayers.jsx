@@ -30,6 +30,7 @@ export default function MapLayers({
           url="https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=BNF-IGNF_GEOGRAPHICALGRIDSYSTEMS.CASSINI&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png"
           opacity={historicalMapOpacity}
           maxZoom={20}
+          maxNativeZoom={15}
           minZoom={0}
         />
       )}
