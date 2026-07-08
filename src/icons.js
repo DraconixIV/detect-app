@@ -53,7 +53,7 @@ export const icons = {
 };
 
 export function createClusterIcon(count) {
-  return new L.divIcon({
+  return L.divIcon({
     className: "",
     html: `
       <div style="

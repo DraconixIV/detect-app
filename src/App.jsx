@@ -9,7 +9,8 @@ import {
   Marker,
   Popup,
   Polyline,
-  useMap
+  useMap,
+  useMapEvents
 } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
@@ -130,20 +131,13 @@ function RecenterMap({
 }
 
 function MapEvents({ onZoomEnd }) {
-  const map = useMap();
-
-  useEffect(() => {
-    const handleZoom = () => {
+  useMapEvents({
+    zoomend(e) {
       if (onZoomEnd) {
-        onZoomEnd(map.getZoom());
+        onZoomEnd(e.target.getZoom());
       }
-    };
-    map.on("zoomend", handleZoom);
-    handleZoom();
-    return () => {
-      map.off("zoomend", handleZoom);
-    };
-  }, [map, onZoomEnd]);
+    }
+  });
 
   return null;
 }
