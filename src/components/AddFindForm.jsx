@@ -1,3 +1,5 @@
+import { monnaieSubCategories } from "../subCategories";
+
 export default function AddFindForm({
   
   showForm,
@@ -7,6 +9,8 @@ export default function AddFindForm({
   setNewDescription,
   newCategory,
   setNewCategory,
+  newSubCategory,
+  setNewSubCategory,
   icons,
   addFind,
   newPhoto,
@@ -24,10 +28,6 @@ export default function AddFindForm({
 });
 
   if (!showForm) return null;
-  console.log("ADD FINDFORM V999");
-  <h1 style={{ color: "red" }}>
-    VERSION 2026 TEST
-  </h1>
 
   const inputStyle = {
     padding: "12px",
@@ -59,9 +59,6 @@ export default function AddFindForm({
         zIndex: 10
       }}
     >
-        <h1 style={{ color: "red" }}>
-          VERSION NOUVELLE
-        </h1>
       {/* TITRE */}
       <input
         type="text"
@@ -76,11 +73,13 @@ export default function AddFindForm({
       {/* CATEGORIE */}
       <select
         value={newCategory}
-        onChange={(e) =>
-          setNewCategory(
-            e.target.value
-          )
-        }
+        onChange={(e) => {
+          const cat = e.target.value;
+          setNewCategory(cat);
+          if (cat !== "monnaie") {
+            setNewSubCategory("");
+          }
+        }}
         style={inputStyle}
       >
         {Object.keys(icons).map(
@@ -94,6 +93,33 @@ export default function AddFindForm({
           )
         )}
       </select>
+      
+      {newCategory === "monnaie" && (
+  <select
+  value={newSubCategory}
+  onChange={(e) =>
+    setNewSubCategory(
+      e.target.value
+    )
+  }
+  style={inputStyle}
+>
+  <option value="">
+    Sous-catégorie
+  </option>
+
+  {monnaieSubCategories.map(
+    (subCat) => (
+      <option
+        key={subCat}
+        value={subCat}
+      >
+        {subCat}
+      </option>
+    )
+  )}
+</select>
+)}
 
     <input
   type="date"

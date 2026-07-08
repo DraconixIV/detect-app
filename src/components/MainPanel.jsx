@@ -25,6 +25,8 @@ export default function MainPanel({
   setNewDescription,
   newCategory,
   setNewCategory,
+  newSubCategory,
+  setNewSubCategory,
   addFind
 }) {
   return (
@@ -121,6 +123,12 @@ export default function MainPanel({
         }
         setNewCategory={
           setNewCategory
+        }
+        newSubCategory={
+          newSubCategory
+        }
+        setNewSubCategory={
+          setNewSubCategory
         }
         icons={icons}
         addFind={addFind}

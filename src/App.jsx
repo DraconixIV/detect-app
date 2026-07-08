@@ -158,6 +158,11 @@ function App() {
     setNewCategory
   ] = useState("monnaie");
 
+  const [
+    newSubCategory,
+    setNewSubCategory
+  ] = useState("");
+
   const [newPhoto, setNewPhoto] =
     useState(null);
 
@@ -295,6 +300,7 @@ if (!finalPosition) {
   newTitle,
   newDescription,
   newCategory,
+  newSubCategory,
   newPhoto,
 
   customDate:
@@ -314,6 +320,8 @@ if (!finalPosition) {
       setNewDescription("");
 
       setNewCategory("monnaie");
+
+      setNewSubCategory("");
 
       setNewPhoto(null);
 
@@ -402,16 +410,23 @@ if (!finalPosition) {
       );
 
     const matchesSearch =
-      find.title
-        ?.toLowerCase()
-        .includes(
-          search.toLowerCase()
-        ) ||
-      find.description
-        ?.toLowerCase()
-        .includes(
-          search.toLowerCase()
-        );
+  find.title
+    ?.toLowerCase()
+    .includes(
+      search.toLowerCase()
+    ) ||
+
+  find.description
+    ?.toLowerCase()
+    .includes(
+      search.toLowerCase()
+    ) ||
+
+  find.sub_category
+    ?.toLowerCase()
+    .includes(
+      search.toLowerCase()
+    );
 
     const matchesDate =
       !selectedDate ||
@@ -710,6 +725,8 @@ return (
   setNewDescription={setNewDescription}
   newCategory={newCategory}
   setNewCategory={setNewCategory}
+  newSubCategory={newSubCategory}
+  setNewSubCategory={setNewSubCategory}
   icons={icons}
   addFind={addFind}
   newPhoto={newPhoto}
@@ -783,12 +800,6 @@ return (
         <GpsMarker
           position={position}
         />
-
-        console.log(
-  "MARKERS",
-  filteredFinds
-);
-
 
 {filteredFinds.map((find) => {
   const sameSpotFinds =

@@ -4,6 +4,8 @@ import { supabase } from "../supabase";
 
 import imageCompression from "browser-image-compression";
 
+import { monnaieSubCategories } from "../subCategories";
+
 function FindPopup({
   find,
   onDelete,
@@ -45,6 +47,21 @@ const [date, setDate] =
 
 const [category, setCategory] =
   useState(find.category || "");
+
+const [
+  subCategory,
+  setSubCategory
+] = useState(
+  find.sub_category || ""
+);
+
+const handleCategoryChange = (e) => {
+  const newCat = e.target.value;
+  setCategory(newCat);
+  if (newCat !== "monnaie") {
+    setSubCategory("");
+  }
+};
 
   const [photos, setPhotos] =
     useState([]);
@@ -114,6 +131,9 @@ const [category, setCategory] =
   date,
 
   category,
+
+  sub_category:
+    category === "monnaie" ? subCategory || null : null,
 
 })
         .eq("id", find.id);
@@ -479,9 +499,7 @@ const [category, setCategory] =
 
 <select
   value={category}
-  onChange={(e) =>
-    setCategory(e.target.value)
-  }
+  onChange={handleCategoryChange}
   style={inputStyle}
 >
   <option value="autre">autre</option>
@@ -497,6 +515,47 @@ const [category, setCategory] =
   <option value="religieux">religieux</option>
 </select>
 
+{category === "monnaie" && (
+  <select
+    value={subCategory}
+    onChange={(e) =>
+      setSubCategory(
+        e.target.value
+      )
+    }
+    style={inputStyle}
+  >
+    <option value="">
+      Sous-catégorie
+    </option>
+
+    {monnaieSubCategories.map(
+      (subCat) => (
+        <option
+          key={subCat}
+          value={subCat}
+        >
+          {subCat}
+        </option>
+      )
+    )}
+  </select>
+)}
+
+{subCategory && (
+  <div
+    style={{
+      padding: "6px",
+      borderRadius: "8px",
+      background: "#f3f4f6",
+      textAlign: "center",
+      fontSize: "13px",
+      fontWeight: "600"
+    }}
+  >
+    🏷️ {subCategory}
+  </div>
+)}
 
             <button
               disabled={uploading}

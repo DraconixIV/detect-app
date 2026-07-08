@@ -105,6 +105,38 @@ export default function StatsPanel({
     </p>
   ))}
 
+  <hr
+  style={{
+    margin: "15px 0"
+  }}
+/>
+
+<h3>🪙 Monnaies</h3>
+
+{Object.entries(
+  finds
+    .filter(
+      (find) =>
+        find.category === "monnaie" &&
+        find.sub_category
+    )
+    .reduce(
+      (acc, find) => {
+        acc[find.sub_category] =
+          (acc[find.sub_category] || 0) + 1;
+
+        return acc;
+      },
+      {}
+    )
+)
+  .sort((a, b) => b[1] - a[1])
+  .map(([subCategory, count]) => (
+    <p key={subCategory}>
+      {subCategory} : {count}
+    </p>
+  ))}
+
       <button
         onClick={exportData}
         style={{

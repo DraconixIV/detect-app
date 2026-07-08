@@ -43,6 +43,7 @@ export async function addFind({
   newTitle,
   newDescription,
   newCategory,
+  newSubCategory,
   newPhoto,
   customDate = null,
 
@@ -61,6 +62,8 @@ export async function addFind({
             newDescription,
           category:
             newCategory,
+          sub_category:
+            newCategory === "monnaie" ? newSubCategory || null : null,
           latitude:
             position[0],
           longitude:
