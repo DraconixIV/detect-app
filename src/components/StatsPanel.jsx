@@ -1,3 +1,5 @@
+import { monnaieSubCategories } from "../subCategories";
+
 export default function StatsPanel({
   finds = [],
   savedTracks = [],
@@ -122,8 +124,12 @@ export default function StatsPanel({
     )
     .reduce(
       (acc, find) => {
-        acc[find.sub_category] =
-          (acc[find.sub_category] || 0) + 1;
+        const matchingSubCat = monnaieSubCategories.find(
+          (sub) => sub.toLowerCase() === find.sub_category.toLowerCase()
+        ) || find.sub_category;
+
+        acc[matchingSubCat] =
+          (acc[matchingSubCat] || 0) + 1;
 
         return acc;
       },

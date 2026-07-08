@@ -1,7 +1,18 @@
-console.log("SUBCATEGORIES LOADED");
-
 export const monnaieSubCategories = [
-  "gauloise",
-  "grecque",
-  "romaine"
+  "Gauloise",
+  "Grecque",
+  "Romaine",
+  "Byzantine",
+  "Mérovingienne",
+  "Carolingienne",
+  "Féodale",
+  "Royale",
+  "Révolution",
+  "Empire",
+  "République française",
+  "Coloniale",
+  "Étrangère",
+  "Jeton",
+  "Indéterminée",
+  "Savo"
 ];
