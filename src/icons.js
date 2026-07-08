@@ -51,30 +51,3 @@ export const icons = {
   Religieux: createIcon("#d97706"),  // Brun doré
   Autre: createIcon("#111827")       // Noir charbon
 };
-
-export function createClusterIcon(count) {
-  return L.divIcon({
-    className: "",
-    html: `
-      <div style="
-        width: 36px;
-        height: 36px;
-        background: rgba(37, 99, 235, 0.95);
-        border: 3px solid white;
-        border-radius: 50%;
-        color: white;
-        font-weight: 800;
-        font-size: 14px;
-        font-family: system-ui, sans-serif;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-      ">
-        ${count}
-      </div>
-    `,
-    iconSize: [36, 36],
-    iconAnchor: [18, 18]
-  });
-}

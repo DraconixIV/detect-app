@@ -9,8 +9,7 @@ import {
   Marker,
   Popup,
   Polyline,
-  useMap,
-  useMapEvents
+  useMap
 } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
@@ -24,8 +23,9 @@ import LoadingScreen from "./components/LoadingScreen";
 import GpsMarker from "./components/GpsMarker";
 import MapLayers from "./components/MapLayers";
 import StatsPanel from "./components/StatsPanel";
+import MarkerClusterGroup from "react-leaflet-cluster";
 
-import { icons, createClusterIcon } from "./icons";
+import { icons } from "./icons";
 
 import {
   loadFinds as fetchFinds,
@@ -130,17 +130,7 @@ function RecenterMap({
   return null;
 }
 
-function MapEvents({ onZoomEnd }) {
-  useMapEvents({
-    zoomend(e) {
-      if (onZoomEnd) {
-        onZoomEnd(e.target.getZoom());
-      }
-    }
-  });
 
-  return null;
-}
 
 function App() {
   const [position, setPosition] =
@@ -225,7 +215,6 @@ function App() {
   const [showHistoricalMap, setShowHistoricalMap] = useState(false);
   const [historicalMapOpacity, setHistoricalMapOpacity] = useState(0.5);
   const [useClustering, setUseClustering] = useState(false);
-  const [mapZoom, setMapZoom] = useState(20);
 
   const isRecordingRef = useRef(isRecordingSortie);
   const positionsRef = useRef(sortiePositions);
@@ -652,52 +641,7 @@ function App() {
     });
   }, [filteredFinds]);
 
-  const clusteredFinds = useMemo(() => {
-    if (!useClustering || mapZoom >= 18) {
-      return positionedFinds.map((f) => ({ ...f, isCluster: false }));
-    }
 
-    const clusters = [];
-    const thresholdMap = {
-      17: 0.0002,
-      16: 0.0004,
-      15: 0.0008,
-      14: 0.0016
-    };
-    const clusterDistanceThreshold = thresholdMap[mapZoom] || (mapZoom < 14 ? 0.0032 : 0.0008);
-
-    positionedFinds.forEach((find) => {
-      const targetCluster = clusters.find((c) => {
-        const first = c.items[0];
-        const latDiff = Math.abs(first.position[0] - find.position[0]);
-        const lngDiff = Math.abs(first.position[1] - find.position[1]);
-        return latDiff < clusterDistanceThreshold && lngDiff < clusterDistanceThreshold;
-      });
-
-      if (targetCluster) {
-        targetCluster.items.push(find);
-      } else {
-        clusters.push({
-          id: `cluster-${find.id}`,
-          position: find.position,
-          items: [find]
-        });
-      }
-    });
-
-    return clusters.map((c) => {
-      if (c.items.length === 1) {
-        return { ...c.items[0], isCluster: false };
-      }
-      return {
-        id: c.id,
-        position: c.position,
-        isCluster: true,
-        count: c.items.length,
-        items: c.items
-      };
-    });
-  }, [positionedFinds, useClustering, mapZoom]);
 
   const selectedDateTracks = useMemo(() => {
     if (!selectedDate) return [];
@@ -1450,8 +1394,6 @@ return (
           historicalMapOpacity={historicalMapOpacity}
         />
 
-        <MapEvents onZoomEnd={setMapZoom} />
-
         {selectedDateTracks.map((track, idx) => (
           <Polyline
             key={track.id || idx}
@@ -1470,44 +1412,61 @@ return (
           position={position}
         />
 
-        {clusteredFinds.map((node) => {
-          if (node.isCluster) {
-            return (
+        {useClustering ? (
+          <MarkerClusterGroup>
+            {positionedFinds.map((find) => (
               <Marker
-                key={node.id}
-                position={node.position}
-                icon={createClusterIcon(node.count)}
-                eventHandlers={{
-                  click: (e) => {
-                    const mapInstance = e.target._map;
-                    const nextZoom = Math.min(mapInstance.getZoom() + 3, 20);
-                    setZoomTarget({ position: node.position, zoom: nextZoom });
-                  }
-                }}
-              />
-            );
-          }
-
-          return (
+                key={find.id}
+                position={find.finalPosition}
+                icon={icons[find.category] || icons.autre}
+              >
+                <Popup
+                  autoPan={false}
+                  keepInView={false}
+                  closeOnClick={false}
+                  eventHandlers={{
+                    add: () => setActivePopupId(find.id),
+                    remove: () => {
+                      setActivePopupId((current) => current === find.id ? null : current);
+                    }
+                  }}
+                >
+                  {activePopupId === find.id ? (
+                    <FindPopup
+                      find={find}
+                      onDelete={deleteFind}
+                      onFavorite={handleFavorite}
+                    />
+                  ) : (
+                    <div style={{ padding: "10px", color: "black", fontFamily: "system-ui, sans-serif", fontSize: "12px" }}>
+                      Chargement...
+                    </div>
+                  )}
+                </Popup>
+              </Marker>
+            ))}
+          </MarkerClusterGroup>
+        ) : (
+          positionedFinds.map((find) => (
             <Marker
-              key={node.id}
-              position={node.finalPosition}
-              icon={icons[node.category] || icons.autre}
+              key={find.id}
+              position={find.finalPosition}
+              icon={icons[find.category] || icons.autre}
             >
               <Popup
                 autoPan={false}
                 keepInView={false}
                 closeOnClick={false}
                 eventHandlers={{
-                  add: () => setActivePopupId(node.id),
+                  add: () => setActivePopupId(find.id),
                   remove: () => {
-                    setActivePopupId((current) => current === node.id ? null : current);
+                    setActivePopupId((current) => current === find.id ? null : current);
                   }
                 }}
               >
-                {activePopupId === node.id ? (
+                {activePopupId === find.id ? (
                   <FindPopup
-                    find={node}
+                    find={find}
                     onDelete={deleteFind}
                     onFavorite={handleFavorite}
                   />
@@ -1518,8 +1477,8 @@ return (
                 )}
               </Popup>
             </Marker>
-          );
-        })}        
+          ))
+        )}        
 
       </MapContainer>
 
