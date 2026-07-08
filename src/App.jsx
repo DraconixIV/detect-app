@@ -541,15 +541,25 @@ function App() {
       return;
     }
 
+    const titleInput = window.prompt("Titre de la trouvaille :", "Trouvaille Rapide");
+    if (titleInput === null) {
+      e.target.value = "";
+      return;
+    }
+
+    const title = titleInput.trim() || "Trouvaille Rapide";
+
     await addFind({
       position,
-      newTitle: "Trouvaille Rapide",
+      newTitle: title,
       newDescription: "Indéterminé",
       newCategory: "Autre",
       newSubCategory: "",
       newPhoto: file,
       customDate: new Date().toLocaleString("fr-FR")
     });
+
+    e.target.value = "";
   };
 
   const handleFavorite =
