@@ -129,6 +129,25 @@ function RecenterMap({
   return null;
 }
 
+function MapEvents({ onZoomEnd }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const handleZoom = () => {
+      if (onZoomEnd) {
+        onZoomEnd(map.getZoom());
+      }
+    };
+    map.on("zoomend", handleZoom);
+    handleZoom();
+    return () => {
+      map.off("zoomend", handleZoom);
+    };
+  }, [map, onZoomEnd]);
+
+  return null;
+}
+
 function App() {
   const [position, setPosition] =
     useState(null);
@@ -212,6 +231,7 @@ function App() {
   const [showHistoricalMap, setShowHistoricalMap] = useState(false);
   const [historicalMapOpacity, setHistoricalMapOpacity] = useState(0.5);
   const [useClustering, setUseClustering] = useState(false);
+  const [mapZoom, setMapZoom] = useState(20);
 
   const isRecordingRef = useRef(isRecordingSortie);
   const positionsRef = useRef(sortiePositions);
@@ -639,13 +659,18 @@ function App() {
   }, [filteredFinds]);
 
   const clusteredFinds = useMemo(() => {
-    if (!useClustering) {
+    if (!useClustering || mapZoom >= 18) {
       return positionedFinds.map((f) => ({ ...f, isCluster: false }));
     }
 
     const clusters = [];
-    // Approximate 80 meters threshold in degrees
-    const clusterDistanceThreshold = 0.0008;
+    const thresholdMap = {
+      17: 0.0002,
+      16: 0.0004,
+      15: 0.0008,
+      14: 0.0016
+    };
+    const clusterDistanceThreshold = thresholdMap[mapZoom] || (mapZoom < 14 ? 0.0032 : 0.0008);
 
     positionedFinds.forEach((find) => {
       const targetCluster = clusters.find((c) => {
@@ -678,7 +703,7 @@ function App() {
         items: c.items
       };
     });
-  }, [positionedFinds, useClustering]);
+  }, [positionedFinds, useClustering, mapZoom]);
 
   const selectedDateTracks = useMemo(() => {
     if (!selectedDate) return [];
@@ -935,11 +960,7 @@ return (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", margin: "5px 0" }}>
             {/* Map Style */}
             <button
-              onClick={() => {
-                if (mapStyle === "plan") setMapStyle("satellite");
-                else if (mapStyle === "satellite") setMapStyle("tactique");
-                else setMapStyle("plan");
-              }}
+              onClick={() => setMapStyle(mapStyle === "plan" ? "satellite" : "plan")}
               style={{
                 background: "rgba(255, 255, 255, 0.06)",
                 border: "1px solid rgba(255, 255, 255, 0.08)",
@@ -951,7 +972,7 @@ return (
                 cursor: "pointer"
               }}
             >
-              {mapStyle === "plan" ? "🛰️ Satellite" : mapStyle === "satellite" ? "🕶️ Tactique" : "🗺️ Plan"}
+              {mapStyle === "plan" ? "🛰️ Satellite" : "🗺️ Plan"}
             </button>
 
             {/* Follow GPS */}
@@ -1434,6 +1455,8 @@ return (
           showHistoricalMap={showHistoricalMap}
           historicalMapOpacity={historicalMapOpacity}
         />
+
+        <MapEvents onZoomEnd={setMapZoom} />
 
         {selectedDateTracks.map((track, idx) => (
           <Polyline
