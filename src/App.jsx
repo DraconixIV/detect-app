@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import { categoryEmojis } from "./subCategories";
 
 // Build refresh June 2026
@@ -198,6 +199,7 @@ function App() {
   const [showAlbum, setShowAlbum] = useState(false);
   const [albumFilter, setAlbumFilter] = useState("Tous");
   const [allPhotos, setAllPhotos] = useState([]);
+  const [selectedAlbumPhoto, setSelectedAlbumPhoto] = useState(null);
 
   const isRecordingRef = useRef(isRecordingSortie);
   const positionsRef = useRef(sortiePositions);
@@ -1131,8 +1133,7 @@ return (
                   <div
                     key={find.id}
                     onClick={() => {
-                      setSelectedFind(find);
-                      setShowAlbum(false);
+                      setSelectedAlbumPhoto({ find, photoUrl });
                     }}
                     style={{
                       position: "relative",
@@ -1287,6 +1288,111 @@ return (
 })}        
 
       </MapContainer>
+
+      {/* FULLSCREEN ALBUM PHOTO LIGHTBOX */}
+      {selectedAlbumPhoto && createPortal(
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0, 0, 0, 0.95)",
+            zIndex: 99999,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            fontFamily: "system-ui, sans-serif"
+          }}
+          onClick={() => setSelectedAlbumPhoto(null)}
+        >
+          {/* Close Button */}
+          <button
+            onClick={() => setSelectedAlbumPhoto(null)}
+            style={{
+              position: "absolute",
+              top: "20px",
+              right: "20px",
+              background: "rgba(255, 255, 255, 0.2)",
+              border: "none",
+              borderRadius: "50%",
+              width: "44px",
+              height: "44px",
+              color: "white",
+              fontSize: "20px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
+            ✕
+          </button>
+
+          {/* Fullscreen Image */}
+          <img
+            src={selectedAlbumPhoto.photoUrl}
+            alt={selectedAlbumPhoto.find.title}
+            style={{
+              maxWidth: "90%",
+              maxHeight: "70%",
+              objectFit: "contain",
+              borderRadius: "12px",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          {/* Details / Action Button */}
+          <div
+            style={{
+              marginTop: "20px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "10px",
+              color: "white",
+              textAlign: "center",
+              width: "90%",
+              maxWidth: "400px"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "bold" }}>
+              {categoryEmojis[selectedAlbumPhoto.find.category] || "📍"} {selectedAlbumPhoto.find.title}
+            </h3>
+            {selectedAlbumPhoto.find.sub_category && (
+              <p style={{ margin: 0, opacity: 0.8, fontSize: "14px" }}>
+                Sous-catégorie : {selectedAlbumPhoto.find.sub_category}
+              </p>
+            )}
+
+            <button
+              onClick={() => {
+                setSelectedFind(selectedAlbumPhoto.find);
+                setSelectedAlbumPhoto(null);
+                setShowAlbum(false);
+              }}
+              style={{
+                border: "none",
+                borderRadius: "14px",
+                padding: "12px 24px",
+                background: "#2563eb",
+                color: "white",
+                fontWeight: "bold",
+                fontSize: "14px",
+                cursor: "pointer",
+                boxShadow: "0 4px 15px rgba(37, 99, 235, 0.4)"
+              }}
+            >
+              🔗 Voir la trouvaille sur la carte
+            </button>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

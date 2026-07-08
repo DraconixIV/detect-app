@@ -80,7 +80,8 @@ export default function StatsPanel({
         position: "relative",
         boxSizing: "border-box",
         boxShadow:
-          "0 0 20px rgba(0,0,0,0.4)"
+          "0 0 20px rgba(0,0,0,0.4)",
+        fontFamily: "system-ui, sans-serif"
       }}
     >
       {/* CROIX */}
@@ -106,27 +107,26 @@ export default function StatsPanel({
       <h3
         style={{
           marginTop: 0,
-          marginBottom: "15px"
+          marginBottom: "15px",
+          fontWeight: "800",
+          letterSpacing: "-0.5px"
         }}
       >
         📊 Statistiques
       </h3>
 
-      <p>
-        📍 Trouvailles : {finds.length}
-      </p>
-
-      <p>
-  ⭐ Favoris : {
-    finds.filter(
-      (find) => find.favorite
-    ).length
-  }
-</p>
-
-      <p>
-        🛰️ Sorties GPS : {savedTracks.length}
-      </p>
+      <div style={{ display: "flex", gap: "8px", marginBottom: "15px" }}>
+        <div style={{ flex: 1, background: "rgba(255, 255, 255, 0.06)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "10px", borderRadius: "14px", textAlign: "center" }}>
+          <div style={{ fontSize: "16px" }}>📍</div>
+          <div style={{ fontSize: "9px", opacity: 0.7, marginTop: "2px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.2px" }}>Trouvailles</div>
+          <div style={{ fontSize: "15px", fontWeight: "800", marginTop: "4px", color: "#facc15" }}>{finds.length}</div>
+        </div>
+        <div style={{ flex: 1, background: "rgba(255, 255, 255, 0.06)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "10px", borderRadius: "14px", textAlign: "center" }}>
+          <div style={{ fontSize: "16px" }}>⭐</div>
+          <div style={{ fontSize: "9px", opacity: 0.7, marginTop: "2px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.2px" }}>Favoris</div>
+          <div style={{ fontSize: "15px", fontWeight: "800", marginTop: "4px", color: "#ec4899" }}>{finds.filter(find => find.favorite).length}</div>
+        </div>
+      </div>
 
       <hr
   style={{
@@ -239,42 +239,6 @@ export default function StatsPanel({
     );
   })}
 
-      <button
-        onClick={exportData}
-        style={{
-          width: "100%",
-          marginTop: "10px",
-          padding: "10px",
-          borderRadius: "12px",
-          border: "none",
-          fontSize: "15px",
-          cursor: "pointer"
-        }}
-      >
-        📤 Export backup
-      </button>
-
-      <button
-        onClick={importData}
-        style={{
-          width: "100%",
-          marginTop: "10px",
-          padding: "10px",
-          borderRadius: "12px",
-          border: "none",
-          fontSize: "15px",
-          cursor: "pointer"
-        }}
-      >
-        📥 Import backup
-      </button>
-
-      <hr
-        style={{
-          margin: "15px 0"
-        }}
-      />
-
       <h3>📅 Journal des Sorties</h3>
 
       <button
@@ -362,6 +326,44 @@ export default function StatsPanel({
             </div>
           );
         })}
+      </div>
+
+      <hr style={{ margin: "15px 0", border: "none", borderBottom: "1px solid rgba(255, 255, 255, 0.15)" }} />
+
+      <div style={{ display: "flex", gap: "8px" }}>
+        <button
+          onClick={exportData}
+          style={{
+            flex: 1,
+            padding: "8px 10px",
+            borderRadius: "12px",
+            fontSize: "12px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            background: "rgba(255,255,255,0.08)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            color: "white"
+          }}
+        >
+          📤 Export
+        </button>
+
+        <button
+          onClick={importData}
+          style={{
+            flex: 1,
+            padding: "8px 10px",
+            borderRadius: "12px",
+            fontSize: "12px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            background: "rgba(255,255,255,0.08)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            color: "white"
+          }}
+        >
+          📥 Import
+        </button>
       </div>
     </div>
   );
