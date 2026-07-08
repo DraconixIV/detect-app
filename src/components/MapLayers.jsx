@@ -26,9 +26,8 @@ export default function MapLayers({
       {showHistoricalMap && (
         <TileLayer
           key="cassini-overlay"
-          pane="overlayPane"
           attribution="&copy; IGN, BnF"
-          url="https://data.geopf.fr/wmts?layer=BNF-IGNF_GEOGRAPHICALGRIDSYSTEMS.CASSINI&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix={z}&TileCol={x}&TileRow={y}"
+          url="https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=BNF-IGNF_GEOGRAPHICALGRIDSYSTEMS.CASSINI&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png"
           opacity={historicalMapOpacity}
           maxZoom={20}
           minZoom={0}

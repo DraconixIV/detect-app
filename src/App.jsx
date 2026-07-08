@@ -13,6 +13,7 @@ import {
 } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 import { supabase } from "./supabase";
 
@@ -26,6 +27,34 @@ import StatsPanel from "./components/StatsPanel";
 import MarkerClusterGroup from "react-leaflet-cluster";
 
 import { icons } from "./icons";
+
+const createClusterCustomIcon = (cluster) => {
+  const count = cluster.getChildCount();
+  return L.divIcon({
+    html: `
+      <div style="
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        border: 3px solid white;
+        border-radius: 50%;
+        color: white;
+        font-weight: 800;
+        font-size: 15px;
+        font-family: system-ui, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+      ">
+        ${count}
+      </div>
+    `,
+    className: "custom-cluster-marker",
+    iconSize: L.point(40, 40, true),
+    iconAnchor: L.point(20, 20, true)
+  });
+};
 
 import {
   loadFinds as fetchFinds,
@@ -1413,7 +1442,7 @@ return (
         />
 
         {useClustering ? (
-          <MarkerClusterGroup>
+          <MarkerClusterGroup iconCreateFunction={createClusterCustomIcon}>
             {positionedFinds.map((find) => (
               <Marker
                 key={find.id}
