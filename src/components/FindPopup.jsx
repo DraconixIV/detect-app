@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { supabase } from "../supabase";
 import imageCompression from "browser-image-compression";
-import { categoriesWithSub, categoryEmojis } from "../subCategories";
+import { categoriesWithSub, categoryEmojis, materials, materialEmojis } from "../subCategories";
 
 export default function FindPopup({
   find,
@@ -19,6 +19,7 @@ export default function FindPopup({
   const [date, setDate] = useState(find.date || "");
   const [category, setCategory] = useState(find.category || "");
   const [subCategory, setSubCategory] = useState(find.sub_category || "");
+  const [material, setMaterial] = useState(find.description || "Indéterminé");
   const [photos, setPhotos] = useState([]);
   const [discoveryIndex, setDiscoveryIndex] = useState(0);
   const [cleanIndex, setCleanIndex] = useState(0);
@@ -98,7 +99,8 @@ export default function FindPopup({
         longitude: Number(longitude),
         date,
         category,
-        sub_category: subCategory || null
+        sub_category: subCategory || null,
+        description: material
       })
       .eq("id", find.id);
 
@@ -119,6 +121,7 @@ export default function FindPopup({
     find.date = date;
     find.category = category;
     find.sub_category = subCategory || null;
+    find.description = material;
 
     alert("Sauvegardé ✅");
   };
@@ -259,6 +262,7 @@ export default function FindPopup({
 
         <div style={{ fontSize: "11px", color: "#6b7280", fontWeight: "700" }}>
           {categoryEmojis[category]} {category} {subCategory ? `• ${subCategory}` : ""}
+          {material && material !== "Indéterminé" ? ` • ${materialEmojis[material]} ${material}` : ""}
         </div>
 
         {coverPhoto ? (
@@ -538,6 +542,21 @@ export default function FindPopup({
                   </select>
                 </div>
               )}
+
+              <div>
+                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Matière</label>
+                <select
+                  value={material}
+                  onChange={(e) => setMaterial(e.target.value)}
+                  style={{ ...inputStyle, background: "#1f2937" }}
+                >
+                  {materials.map((mat) => (
+                    <option key={mat} value={mat}>
+                      {materialEmojis[mat] || ""} {mat}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               {/* Photos */}
               <div style={{ display: "flex", gap: "8px", marginTop: "5px" }}>

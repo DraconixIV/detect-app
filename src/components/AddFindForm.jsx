@@ -1,4 +1,4 @@
-import { categoriesWithSub, categoryEmojis } from "../subCategories";
+import { categoriesWithSub, categoryEmojis, materials, materialEmojis } from "../subCategories";
 
 export default function AddFindForm({
   
@@ -118,6 +118,20 @@ export default function AddFindForm({
           )}
         </select>
       )}
+
+      {/* MATIERE */}
+      <select
+        value={newDescription}
+        onChange={(e) => setNewDescription(e.target.value)}
+        style={inputStyle}
+      >
+        <option value="">Matière</option>
+        {materials.map((mat) => (
+          <option key={mat} value={mat}>
+            {materialEmojis[mat] || ""} {mat}
+          </option>
+        ))}
+      </select>
 
     <input
   type="date"

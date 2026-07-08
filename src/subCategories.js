@@ -98,3 +98,33 @@ export const categoriesWithSub = {
 
 // Retro-compatibility
 export const monnaieSubCategories = categoriesWithSub["Monnaie"];
+
+export const materials = [
+  "Indéterminé",
+  "Or",
+  "Argent",
+  "Bronze",
+  "Cuivre",
+  "Billon",
+  "Étain",
+  "Aluminium",
+  "Plomb",
+  "Fer",
+  "Laiton",
+  "Autre"
+];
+
+export const materialEmojis = {
+  "Indéterminé": "❓",
+  "Or": "🪙",
+  "Argent": "🥈",
+  "Bronze": "🥉",
+  "Cuivre": "🟫",
+  "Billon": "💿",
+  "Étain": "⚖️",
+  "Aluminium": "📎",
+  "Plomb": "🛡️",
+  "Fer": "⚙️",
+  "Laiton": "🔔",
+  "Autre": "📦"
+};
