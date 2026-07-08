@@ -101,7 +101,16 @@ const handleCategoryChange = (e) => {
       return;
     }
 
-    setPhotos(data || []);
+    const fetchedPhotos = data || [];
+    setPhotos(fetchedPhotos);
+
+    // Preload images to eliminate switching latency
+    fetchedPhotos.forEach((photo) => {
+      if (photo.image_url) {
+        const img = new Image();
+        img.src = photo.image_url;
+      }
+    });
   };
 
   const saveChanges = async () => {
@@ -618,7 +627,9 @@ const handleCategoryChange = (e) => {
                   }}
                 >
                   <button
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
                       setDiscoveryIndex(
                         (
                           discoveryIndex -
@@ -626,23 +637,25 @@ const handleCategoryChange = (e) => {
                           discoveryPhotos.length
                         ) %
                           discoveryPhotos.length
-                      )
-                    }
+                      );
+                    }}
                     style={buttonStyle}
                   >
                     ←
                   </button>
 
                   <button
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
                       setDiscoveryIndex(
                         (
                           discoveryIndex +
                           1
                         ) %
                           discoveryPhotos.length
-                      )
-                    }
+                      );
+                    }}
                     style={buttonStyle}
                   >
                     →
@@ -752,7 +765,9 @@ const handleCategoryChange = (e) => {
                   }}
                 >
                   <button
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
                       setCleanIndex(
                         (
                           cleanIndex -
@@ -760,23 +775,25 @@ const handleCategoryChange = (e) => {
                           cleanPhotos.length
                         ) %
                           cleanPhotos.length
-                      )
-                    }
+                      );
+                    }}
                     style={buttonStyle}
                   >
                     ←
                   </button>
 
                   <button
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
                       setCleanIndex(
                         (
                           cleanIndex +
                           1
                         ) %
                           cleanPhotos.length
-                      )
-                    }
+                      );
+                    }}
                     style={buttonStyle}
                   >
                     →
