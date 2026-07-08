@@ -202,6 +202,7 @@ function App() {
   const [selectedAlbumPhoto, setSelectedAlbumPhoto] = useState(null);
   const [zoomTargetPosition, setZoomTargetPosition] = useState(null);
   const [openPopupFind, setOpenPopupFind] = useState(null);
+  const [activePopupId, setActivePopupId] = useState(null);
 
   const isRecordingRef = useRef(isRecordingSortie);
   const positionsRef = useRef(sortiePositions);
@@ -1262,12 +1263,24 @@ return (
               autoPan={false}
               keepInView={false}
               closeOnClick={false}
+              eventHandlers={{
+                add: () => setActivePopupId(find.id),
+                remove: () => {
+                  setActivePopupId((current) => current === find.id ? null : current);
+                }
+              }}
             >
-              <FindPopup
-                find={find}
-                onDelete={deleteFind}
-                onFavorite={handleFavorite}
-              />
+              {activePopupId === find.id ? (
+                <FindPopup
+                  find={find}
+                  onDelete={deleteFind}
+                  onFavorite={handleFavorite}
+                />
+              ) : (
+                <div style={{ padding: "10px", color: "black", fontFamily: "system-ui, sans-serif", fontSize: "12px" }}>
+                  Chargement...
+                </div>
+              )}
             </Popup>
           </Marker>
         ))}        
