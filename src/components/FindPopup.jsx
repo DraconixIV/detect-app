@@ -83,11 +83,28 @@ const handleCategoryChange = (e) => {
   const [uploading, setUploading] =
     useState(false);
 
+  const [compareSliderPos, setCompareSliderPos] =
+    useState(50);
+
   useEffect(() => {
     loadPhotos();
   }, []);
 
   const loadPhotos = async () => {
+    if (find.isOfflinePending) {
+      if (find.offlinePhoto) {
+        setPhotos([
+          {
+            id: "offline",
+            image_url: find.offlinePhoto,
+            type: "discovery"
+          }
+        ]);
+      } else {
+        setPhotos([]);
+      }
+      return;
+    }
     const { data, error } =
       await supabase
         .from("find_photos")
@@ -454,6 +471,24 @@ const handleCategoryChange = (e) => {
           >
             ID
           </button>
+
+          {discoveryPhotos.length > 0 && cleanPhotos.length > 0 && (
+            <button
+              onClick={() => setActiveTab("compare")}
+              style={{
+                flex: 1.2,
+                padding: "8px",
+                border: "none",
+                borderRadius: "10px",
+                background: activeTab === "compare" ? "#2563eb" : "#e5e7eb",
+                color: activeTab === "compare" ? "white" : "#111827",
+                fontWeight: "600",
+                cursor: "pointer"
+              }}
+            >
+              Avant/Après ↔️
+            </button>
+          )}
         </div>
 
         {/* DISCOVERY */}
@@ -582,31 +617,35 @@ const handleCategoryChange = (e) => {
   )}
 </div>
 
-            <button
-              disabled={uploading}
-              onClick={() =>
-                uploadPhoto(
-                  "discovery",
-                  true
-                )
-              }
-              style={buttonStyle}
-            >
-              📸 Caméra
-            </button>
+            {!find.isOfflinePending && (
+              <>
+                <button
+                  disabled={uploading}
+                  onClick={() =>
+                    uploadPhoto(
+                      "discovery",
+                      true
+                    )
+                  }
+                  style={buttonStyle}
+                >
+                  📸 Caméra
+                </button>
 
-            <button
-              disabled={uploading}
-              onClick={() =>
-                uploadPhoto(
-                  "discovery",
-                  false
-                )
-              }
-              style={buttonStyle}
-            >
-              🖼️ Galerie
-            </button>
+                <button
+                  disabled={uploading}
+                  onClick={() =>
+                    uploadPhoto(
+                      "discovery",
+                      false
+                    )
+                  }
+                  style={buttonStyle}
+                >
+                  🖼️ Galerie
+                </button>
+              </>
+            )}
 
             {discoveryPhotos.length >
               0 && (
@@ -720,31 +759,35 @@ const handleCategoryChange = (e) => {
   }}
 />
 
-            <button
-              disabled={uploading}
-              onClick={() =>
-                uploadPhoto(
-                  "clean",
-                  true
-                )
-              }
-              style={buttonStyle}
-            >
-              📸 Caméra
-            </button>
+            {!find.isOfflinePending && (
+              <>
+                <button
+                  disabled={uploading}
+                  onClick={() =>
+                    uploadPhoto(
+                      "clean",
+                      true
+                    )
+                  }
+                  style={buttonStyle}
+                >
+                  📸 Caméra
+                </button>
 
-            <button
-              disabled={uploading}
-              onClick={() =>
-                uploadPhoto(
-                  "clean",
-                  false
-                )
-              }
-              style={buttonStyle}
-            >
-              🖼️ Galerie
-            </button>
+                <button
+                  disabled={uploading}
+                  onClick={() =>
+                    uploadPhoto(
+                      "clean",
+                      false
+                    )
+                  }
+                  style={buttonStyle}
+                >
+                  🖼️ Galerie
+                </button>
+              </>
+            )}
 
             {cleanPhotos.length >
               0 && (
@@ -873,6 +916,143 @@ const handleCategoryChange = (e) => {
           </>
         )}
 
+        {/* COMPARE SLIDER */}
+        {activeTab === "compare" && (
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              height: "250px",
+              overflow: "hidden",
+              borderRadius: "14px",
+              border: "2px solid #e5e7eb",
+              userSelect: "none"
+            }}
+          >
+            {/* Before (Discovery) Image */}
+            <img
+              src={discoveryPhotos[discoveryIndex]?.image_url || discoveryPhotos[0]?.image_url}
+              alt="Avant"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                position: "absolute",
+                top: 0,
+                left: 0
+              }}
+            />
+
+            {/* After (Clean) Image */}
+            <img
+              src={cleanPhotos[cleanIndex]?.image_url || cleanPhotos[0]?.image_url}
+              alt="Après"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                clipPath: `inset(0 ${100 - compareSliderPos}% 0 0)`
+              }}
+            />
+
+            {/* Labels */}
+            <div
+              style={{
+                position: "absolute",
+                left: "10px",
+                bottom: "10px",
+                background: "rgba(0,0,0,0.68)",
+                color: "white",
+                padding: "4px 8px",
+                borderRadius: "6px",
+                fontSize: "11px",
+                fontWeight: "bold",
+                zIndex: 10
+              }}
+            >
+              Avant (Brut)
+            </div>
+
+            <div
+              style={{
+                position: "absolute",
+                right: "10px",
+                bottom: "10px",
+                background: "rgba(0,0,0,0.68)",
+                color: "white",
+                padding: "4px 8px",
+                borderRadius: "6px",
+                fontSize: "11px",
+                fontWeight: "bold",
+                zIndex: 10
+              }}
+            >
+              Après (Propre)
+            </div>
+
+            {/* Range Input Slider overlay */}
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={compareSliderPos}
+              onChange={(e) => setCompareSliderPos(Number(e.target.value))}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                opacity: 0,
+                cursor: "ew-resize",
+                zIndex: 20,
+                margin: 0
+              }}
+            />
+
+            {/* Visual divider bar */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                left: `${compareSliderPos}%`,
+                width: "3px",
+                background: "white",
+                boxShadow: "0 0 8px rgba(0,0,0,0.5)",
+                transform: "translateX(-50%)",
+                pointerEvents: "none",
+                zIndex: 15
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: "32px",
+                  height: "32px",
+                  background: "white",
+                  borderRadius: "50%",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  color: "#4b5563"
+                }}
+              >
+                ↔
+              </div>
+            </div>
+          </div>
+        )}
+
       <button
   onClick={() => onFavorite(find)}
   style={{
@@ -911,24 +1091,30 @@ const handleCategoryChange = (e) => {
         </button>
 
         {/* SAVE */}
-        <button
-          disabled={saving}
-          onClick={saveChanges}
-          style={{
-            border: "none",
-            borderRadius: "14px",
-            padding: "12px",
-            background: "#16a34a",
-            color: "white",
-            fontWeight: "700",
-            cursor: "pointer",
-            fontSize: "14px"
-          }}
-        >
-          {saving
-            ? "Sauvegarde..."
-            : "💾 Sauvegarder"}
-        </button>
+        {!find.isOfflinePending ? (
+          <button
+            disabled={saving}
+            onClick={saveChanges}
+            style={{
+              border: "none",
+              borderRadius: "14px",
+              padding: "12px",
+              background: "#16a34a",
+              color: "white",
+              fontWeight: "700",
+              cursor: "pointer",
+              fontSize: "14px"
+            }}
+          >
+            {saving
+              ? "Sauvegarde..."
+              : "💾 Sauvegarder"}
+          </button>
+        ) : (
+          <div style={{ background: "rgba(245, 158, 11, 0.15)", color: "#f59e0b", padding: "10px", borderRadius: "10px", fontSize: "12px", textAlign: "center", width: "100%", fontWeight: "600", border: "1px solid rgba(245, 158, 11, 0.2)" }}>
+            💾 Trouvaille hors-ligne. Les modifications seront disponibles après synchronisation.
+          </div>
+        )}
       </div>
 
       {/* FULLSCREEN */}

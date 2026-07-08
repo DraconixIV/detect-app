@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { categoryEmojis } from "./subCategories";
 
 // Build refresh June 2026
@@ -34,6 +34,17 @@ import {
   exportData,
   importData
 } from "./services/backupService";
+
+import {
+  addPendingFind,
+  getPendingFinds,
+  deletePendingFind
+} from "./services/offlineStore";
+
+import {
+  loadTracks,
+  saveTrack
+} from "./services/tracksService";
 
 
 function offsetPosition(
@@ -177,6 +188,84 @@ function App() {
 
   const [followGps, setFollowGps] =
     useState(true);
+
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [syncing, setSyncing] = useState(false);
+  const [isRecordingSortie, setIsRecordingSortie] = useState(false);
+  const [sortieDistance, setSortieDistance] = useState(0);
+  const [sortiePositions, setSortiePositions] = useState([]);
+  const [savedTracks, setSavedTracks] = useState([]);
+  const [showAlbum, setShowAlbum] = useState(false);
+  const [albumFilter, setAlbumFilter] = useState("Tous");
+  const [allPhotos, setAllPhotos] = useState([]);
+
+  const isRecordingRef = useRef(isRecordingSortie);
+  const positionsRef = useRef(sortiePositions);
+
+  useEffect(() => {
+    isRecordingRef.current = isRecordingSortie;
+  }, [isRecordingSortie]);
+
+  useEffect(() => {
+    positionsRef.current = sortiePositions;
+  }, [sortiePositions]);
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      syncOfflineFinds();
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    // Initial outings list load
+    const loadSavedTracksList = async () => {
+      const tracks = await loadTracks();
+      setSavedTracks(tracks || []);
+    };
+    loadSavedTracksList();
+
+    if (navigator.onLine) {
+      syncOfflineFinds();
+    }
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  const startSortie = () => {
+    setIsRecordingSortie(true);
+    setSortieDistance(0);
+    setSortiePositions(position ? [position] : []);
+    alert("⏱️ Sortie démarrée ! Les déplacements GPS accumuleront la distance marchée en arrière-plan.");
+  };
+
+  const stopSortie = async () => {
+    if (sortiePositions.length < 2 || sortieDistance === 0) {
+      const forceClose = window.confirm("Pas assez de déplacements enregistrés. Annuler la sortie ?");
+      if (forceClose) {
+        setIsRecordingSortie(false);
+        setSortiePositions([]);
+        setSortieDistance(0);
+      }
+      return;
+    }
+
+    setIsRecordingSortie(false);
+    const success = await saveTrack(sortiePositions);
+    if (success) {
+      const tracks = await loadTracks();
+      setSavedTracks(tracks || []);
+    }
+    setSortiePositions([]);
+    setSortieDistance(0);
+  };
   
   const [favoritesOnly, setFavoritesOnly] =
     useState(false);
@@ -207,6 +296,18 @@ function App() {
           ];
 
           setPosition(newPosition);
+
+          if (isRecordingRef.current) {
+            setSortiePositions((prev) => {
+              const next = [...prev, newPosition];
+              if (prev.length > 0) {
+                const last = prev[prev.length - 1];
+                const d = distanceBetween(last, newPosition);
+                setSortieDistance((dist) => dist + d);
+              }
+              return next;
+            });
+          }
         },
 
         (err) => {
@@ -231,16 +332,64 @@ function App() {
       );
   }, []);
 
-  const loadFinds = async () => {
-    const data =
-      await fetchFinds();
-    console.log("FINDS APP", data);
-    console.log(
-  "DERNIER FIND",
-  finds[0]
-);
+  const syncOfflineFinds = async () => {
+    try {
+      const offlineFinds = await getPendingFinds();
+      if (offlineFinds.length === 0) return;
 
-    setFinds(data || []);
+      setSyncing(true);
+      for (const f of offlineFinds) {
+        await createFind({
+          position: f.position,
+          newTitle: f.newTitle,
+          newDescription: f.newDescription,
+          newCategory: f.newCategory,
+          newSubCategory: f.newSubCategory,
+          newPhoto: f.photo,
+          customDate: f.customDate
+        });
+        await deletePendingFind(f.id);
+      }
+      alert("Synchronisation réussie : trouvailles hors-ligne sauvegardées sur Vercel/Supabase ! 🔄");
+      await loadFinds();
+    } catch (err) {
+      console.error("Synchro error:", err);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const loadFinds = async () => {
+    const data = await fetchFinds();
+    
+    // Charger également toutes les photos de Supabase pour l'Album
+    const { data: photoData } = await supabase
+      .from("find_photos")
+      .select("*");
+    if (photoData) {
+      setAllPhotos(photoData);
+    }
+
+    try {
+      const offlineFinds = await getPendingFinds();
+      const formattedOffline = offlineFinds.map((f) => ({
+        id: `offline-${f.id}`,
+        title: f.newTitle,
+        description: f.newDescription,
+        category: f.newCategory,
+        sub_category: f.newSubCategory,
+        latitude: f.position[0],
+        longitude: f.position[1],
+        position: f.position,
+        date: f.customDate || f.createdAt,
+        isOfflinePending: true,
+        offlinePhoto: f.photo ? URL.createObjectURL(f.photo) : null
+      }));
+      setFinds([...formattedOffline, ...(data || [])]);
+    } catch (e) {
+      console.error(e);
+      setFinds(data || []);
+    }
   };
 
   const toggleFilter = (
@@ -275,64 +424,57 @@ function App() {
     };
 
   const addFind = async () => {
+    const finalPosition =
+      customLat && customLng
+        ? [Number(customLat), Number(customLng)]
+        : position;
 
-  const finalPosition =
-  customLat && customLng
-    ? [
-        Number(customLat),
-        Number(customLng)
-      ]
-    : position;
-
-if (!finalPosition) {
-  alert("GPS indisponible");
-  return;
-}
+    if (!finalPosition) {
+      alert("GPS indisponible");
+      return;
+    }
 
     if (addingFind) return;
-
     setAddingFind(true);
 
     try {
-     await createFind({
-  position: finalPosition,
+      if (!isOnline) {
+        await addPendingFind({
+          position: finalPosition,
+          newTitle,
+          newDescription,
+          newCategory,
+          newSubCategory,
+          customDate: customDate || null
+        }, newPhoto);
 
-  newTitle,
-  newDescription,
-  newCategory,
-  newSubCategory,
-  newPhoto,
-
-  customDate:
-  customDate || null,
-});
+        alert("Trouvaille sauvegardée localement (Hors-ligne) ! Elle sera synchronisée dès le retour d'internet. 💾");
+      } else {
+        await createFind({
+          position: finalPosition,
+          newTitle,
+          newDescription,
+          newCategory,
+          newSubCategory,
+          newPhoto,
+          customDate: customDate || null,
+        });
+      }
 
       setCustomDate("");
-
       setCustomLat("");
-
       setCustomLng("");
-
       setShowForm(false);
-
       setNewTitle("");
-
       setNewDescription("");
-
       setNewCategory("Monnaie");
-
       setNewSubCategory("");
-
       setNewPhoto(null);
 
       await loadFinds();
-
     } catch (error) {
       console.error(error);
-
-      alert(
-        "Erreur ajout trouvaille"
-      );
+      alert("Erreur ajout trouvaille");
     }
 
     setAddingFind(false);
@@ -361,6 +503,13 @@ if (!finalPosition) {
       );
 
     if (!confirmed) return;
+
+    if (typeof findId === "string" && findId.startsWith("offline-")) {
+      const offlineId = Number(findId.replace("offline-", ""));
+      await deletePendingFind(offlineId);
+      await loadFinds();
+      return;
+    }
 
     const { data: photos } =
       await supabase
@@ -571,6 +720,7 @@ return (
         onClick={() => {
           setShowStats(!showStats);
           setShowMenu(false);
+          setShowAlbum(false);
         }}
         style={{
           position: "absolute",
@@ -581,14 +731,43 @@ return (
           height: "52px",
           borderRadius: "50%",
           border: "none",
-          background: "#111827",
+          background: showStats ? "#2563eb" : "#111827",
           color: "white",
           fontSize: "20px",
           boxShadow:
-            "0 4px 15px rgba(0,0,0,0.35)"
+            "0 4px 15px rgba(0,0,0,0.35)",
+          cursor: "pointer",
+          transition: "background 0.2s"
         }}
       >
         📊
+      </button>
+
+      {/* ALBUM BUTTON */}
+      <button
+        onClick={() => {
+          setShowAlbum(!showAlbum);
+          setShowMenu(false);
+          setShowStats(false);
+        }}
+        style={{
+          position: "absolute",
+          top: 215,
+          left: 15,
+          zIndex: 5000,
+          width: "52px",
+          height: "52px",
+          borderRadius: "50%",
+          border: "none",
+          background: showAlbum ? "#2563eb" : "#111827",
+          color: "white",
+          fontSize: "20px",
+          boxShadow: "0 4px 15px rgba(0,0,0,0.35)",
+          cursor: "pointer",
+          transition: "background 0.2s"
+        }}
+      >
+        🖼️
       </button>
 
       {/* MENU PANEL */}
@@ -669,6 +848,47 @@ return (
               ? "📍 ON"
               : "📍 OFF"}
           </button>
+
+          {/* OUTING RECORDING BUTTON */}
+          {!isRecordingSortie ? (
+            <button
+              onClick={() => {
+                startSortie();
+                setShowMenu(false);
+              }}
+              style={{
+                borderRadius: "12px",
+                padding: "8px",
+                border: "none",
+                fontSize: "13px",
+                background: "#16a34a",
+                color: "white",
+                fontWeight: "bold",
+                cursor: "pointer"
+              }}
+            >
+              ⏱️ Démarrer sortie
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                stopSortie();
+                setShowMenu(false);
+              }}
+              style={{
+                borderRadius: "12px",
+                padding: "8px",
+                border: "none",
+                fontSize: "13px",
+                background: "#dc2626",
+                color: "white",
+                fontWeight: "bold",
+                cursor: "pointer"
+              }}
+            >
+              🛑 Arrêter ({(sortieDistance / 1000).toFixed(2)} km)
+            </button>
+          )}
 
           <button
   onClick={() =>
@@ -806,7 +1026,7 @@ return (
         >
           <StatsPanel
             finds={finds}
-            savedTracks={[]}
+            savedTracks={savedTracks}
             exportData={
               handleExport
             }
@@ -826,6 +1046,173 @@ return (
           />
         </div>
       )}
+
+      {/* ALBUM PANEL */}
+      {showAlbum && (
+        <div
+          style={{
+            position: "absolute",
+            top: 20,
+            right: 20,
+            width: "calc(100% - 40px)",
+            maxWidth: "430px",
+            height: "calc(100vh - 40px)",
+            background: "rgba(17, 24, 39, 0.95)",
+            backdropFilter: "blur(16px)",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
+            borderRadius: "24px",
+            boxShadow: "0 12px 40px rgba(0, 0, 0, 0.5)",
+            zIndex: 5000,
+            display: "flex",
+            flexDirection: "column",
+            padding: "20px",
+            boxSizing: "border-box",
+            fontFamily: "system-ui, sans-serif",
+            color: "white"
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+            <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "800" }}>🖼️ Album de Collection</h2>
+            <button
+              onClick={() => setShowAlbum(false)}
+              style={{
+                background: "rgba(255,255,255,0.1)",
+                border: "none",
+                borderRadius: "50%",
+                width: "30px",
+                height: "30px",
+                color: "white",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: "bold"
+              }}
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Album Filter */}
+          <div style={{ display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "10px", marginBottom: "15px" }}>
+            {["Tous", ...Object.keys(icons)].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setAlbumFilter(cat)}
+                style={{
+                  background: albumFilter === cat ? "#2563eb" : "rgba(255,255,255,0.1)",
+                  color: "white",
+                  border: "none",
+                  padding: "6px 12px",
+                  borderRadius: "12px",
+                  fontSize: "11px",
+                  fontWeight: "bold",
+                  whiteSpace: "nowrap",
+                  cursor: "pointer"
+                }}
+              >
+                {cat === "Tous" ? "📁 Tous" : `${categoryEmojis[cat] || ""} ${cat}`}
+              </button>
+            ))}
+          </div>
+
+          {/* Grid */}
+          <div style={{ flex: 1, overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px", paddingRight: "4px" }}>
+            {finds
+              .filter((f) => albumFilter === "Tous" || f.category === albumFilter)
+              .map((find) => {
+                const photoUrl = find.isOfflinePending
+                  ? find.offlinePhoto
+                  : allPhotos.find((p) => p.find_id === find.id)?.image_url;
+
+                if (!photoUrl) return null;
+
+                return (
+                  <div
+                    key={find.id}
+                    onClick={() => {
+                      setSelectedFind(find);
+                      setShowAlbum(false);
+                    }}
+                    style={{
+                      position: "relative",
+                      aspectRatio: "1/1",
+                      borderRadius: "12px",
+                      overflow: "hidden",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      cursor: "pointer",
+                      transition: "transform 0.15s"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.03)"}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                  >
+                    <img
+                      src={photoUrl}
+                      alt={find.title}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                    <div style={{ position: "absolute", top: "4px", left: "4px", background: "rgba(0,0,0,0.6)", padding: "2px 4px", borderRadius: "4px", fontSize: "9px" }}>
+                      {categoryEmojis[find.category] || "📍"}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
+
+      {/* STATUS BADGES */}
+      <div
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "20px",
+          zIndex: 5000,
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+          fontFamily: "system-ui, sans-serif",
+          fontSize: "12px",
+          fontWeight: "700"
+        }}
+      >
+        <div
+          style={{
+            background: isOnline ? "rgba(22, 163, 74, 0.9)" : "rgba(245, 158, 11, 0.9)",
+            color: "white",
+            padding: "6px 12px",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px"
+          }}
+        >
+          <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: "white" }}></span>
+          {isOnline ? "En ligne" : "Hors-ligne 💾"}
+          {syncing && " (Synchro...)"}
+        </div>
+
+        {isRecordingSortie && (
+          <div
+            style={{
+              background: "rgba(239, 68, 68, 0.9)",
+              color: "white",
+              padding: "6px 12px",
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              backdropFilter: "blur(4px)",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px"
+            }}
+          >
+            <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: "white" }}></span>
+            Sortie active : {(sortieDistance / 1000).toFixed(2)} km
+          </div>
+        )}
+      </div>
 
       <MapContainer
         center={position}

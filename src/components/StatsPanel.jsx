@@ -1,5 +1,30 @@
 import { categoriesWithSub, categoryEmojis } from "../subCategories";
 
+function getDistance(p1, p2) {
+  const R = 6371e3; // metres
+  const phi1 = (p1[0] * Math.PI) / 180;
+  const phi2 = (p2[0] * Math.PI) / 180;
+  const deltaPhi = ((p2[0] - p1[0]) * Math.PI) / 180;
+  const deltaLambda = ((p2[1] - p1[1]) * Math.PI) / 180;
+
+  const a =
+    Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+    Math.cos(phi1) * Math.cos(phi2) *
+    Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // in metres
+}
+
+function getDistanceOfTrack(positions) {
+  if (!positions || positions.length < 2) return 0;
+  let dist = 0;
+  for (let i = 0; i < positions.length - 1; i++) {
+    dist += getDistance(positions[i], positions[i + 1]);
+  }
+  return dist / 1000; // in km
+}
+
 export default function StatsPanel({
   finds = [],
   savedTracks = [],
@@ -89,6 +114,64 @@ export default function StatsPanel({
 
 <h3>🏆 Catégories & Détails</h3>
 
+{(() => {
+  const categoryData = Object.entries(
+    finds.reduce(
+      (acc, find) => {
+        acc[find.category] = (acc[find.category] || 0) + 1;
+        return acc;
+      },
+      {}
+    )
+  ).sort((a, b) => b[1] - a[1]);
+
+  const maxCount = categoryData.length > 0 ? Math.max(...categoryData.map(d => d[1])) : 1;
+
+  return (
+    <>
+      {categoryData.length > 0 && (
+        <div style={{ margin: "10px 0 15px 0", background: "rgba(255,255,255,0.06)", padding: "10px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.08)" }}>
+          <h4 style={{ margin: "0 0 8px 0", fontSize: "11px", opacity: 0.8, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+            📊 Répartition
+          </h4>
+          <svg width="100%" height={categoryData.slice(0, 5).length * 28 + 5} style={{ overflow: "visible" }}>
+            {categoryData.slice(0, 5).map(([category, count], idx) => {
+              const barWidth = (count / maxCount) * 110; // max width 110px
+              const y = idx * 28 + 12;
+              return (
+                <g key={category}>
+                  <text x="0" y={y} fill="white" fontSize="9px" fontWeight="bold">
+                    {categoryEmojis[category] || ""} {category.substring(0, 7)} ({count})
+                  </text>
+                  <rect x="75" y={y - 8} width="110" height="6" rx="3" fill="rgba(255,255,255,0.1)" />
+                  <rect
+                    x="75"
+                    y={y - 8}
+                    width={barWidth}
+                    height="6"
+                    rx="3"
+                    fill={
+                      category === "Monnaie" ? "#facc15" :
+                      category === "Bijou" ? "#ec4899" :
+                      category === "Boucle" ? "#8b5cf6" :
+                      category === "Bouton" ? "#10b981" :
+                      category === "Médaille" ? "#3b82f6" :
+                      category === "Munition" ? "#ef4444" :
+                      category === "Outil" ? "#f97316" :
+                      category === "Plomb" ? "#6b7280" :
+                      category === "Religieux" ? "#d97706" : "#4b5563"
+                    }
+                  />
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+      )}
+    </>
+  );
+})()}
+
 {Object.entries(
   finds.reduce(
     (acc, find) => {
@@ -163,6 +246,33 @@ export default function StatsPanel({
       >
         📥 Import backup
       </button>
+
+      <hr
+        style={{
+          margin: "15px 0"
+        }}
+      />
+
+      <h3>🛰️ Historique Sorties</h3>
+      {savedTracks.length === 0 && (
+        <p style={{ opacity: 0.7, fontSize: "13px", fontStyle: "italic" }}>Aucune sortie enregistrée</p>
+      )}
+      {savedTracks.map((track) => {
+        const dist = getDistanceOfTrack(track.positions);
+        const dateStr = track.created_at ? new Date(track.created_at).toLocaleDateString() : "";
+        return (
+          <div key={track.id} style={{ margin: "8px 0", padding: "10px", background: "rgba(255,255,255,0.06)", borderRadius: "10px", fontSize: "12px", border: "1px solid rgba(255,255,255,0.08)" }}>
+            <div style={{ fontWeight: "bold", display: "flex", justifyContent: "space-between" }}>
+              <span>🚶 {track.session_name}</span>
+              <span style={{ fontSize: "10px", opacity: 0.6 }}>{dateStr}</span>
+            </div>
+            <div style={{ opacity: 0.8, fontSize: "11px", marginTop: "4px", display: "flex", gap: "10px" }}>
+              <span>📏 <strong>{dist.toFixed(2)}</strong> km</span>
+              <span>📍 <strong>{track.positions?.length || 0}</strong> points</span>
+            </div>
+          </div>
+        );
+      })}
 
       <hr
         style={{
