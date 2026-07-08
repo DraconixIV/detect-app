@@ -200,6 +200,8 @@ function App() {
   const [albumFilter, setAlbumFilter] = useState("Tous");
   const [allPhotos, setAllPhotos] = useState([]);
   const [selectedAlbumPhoto, setSelectedAlbumPhoto] = useState(null);
+  const [zoomTargetPosition, setZoomTargetPosition] = useState(null);
+  const [openPopupFind, setOpenPopupFind] = useState(null);
 
   const isRecordingRef = useRef(isRecordingSortie);
   const positionsRef = useRef(sortiePositions);
@@ -397,19 +399,12 @@ function App() {
   const toggleFilter = (
     category
   ) => {
-    if (
-      filters.includes(category)
-    ) {
-      setFilters(
-        filters.filter(
-          (f) => f !== category
-        )
-      );
+    // Si la catégorie cliquée est déjà la seule active, on réactive tout
+    if (filters.length === 1 && filters[0] === category) {
+      setFilters(Object.keys(icons));
     } else {
-      setFilters([
-        ...filters,
-        category
-      ]);
+      // Sinon, on isole cette catégorie
+      setFilters([category]);
     }
   };
 
@@ -561,23 +556,12 @@ function App() {
       );
 
     const matchesSearch =
-  find.title
-    ?.toLowerCase()
-    .includes(
-      search.toLowerCase()
-    ) ||
-
-  find.description
-    ?.toLowerCase()
-    .includes(
-      search.toLowerCase()
-    ) ||
-
-  find.sub_category
-    ?.toLowerCase()
-    .includes(
-      search.toLowerCase()
-    );
+      !search ||
+      find.title?.toLowerCase().includes(search.toLowerCase()) ||
+      find.description?.toLowerCase().includes(search.toLowerCase()) ||
+      find.category?.toLowerCase().includes(search.toLowerCase()) ||
+      find.sub_category?.toLowerCase().includes(search.toLowerCase()) ||
+      find.date?.toLowerCase().includes(search.toLowerCase());
 
     const matchesDate =
       !selectedDate ||
@@ -777,179 +761,173 @@ return (
         <div
           style={{
             position: "absolute",
-            zIndex: 5000,
+            zIndex: 6000,
             top: 85,
             left: 75,
-            background:
-              "rgba(20,20,20,0.72)",
-            backdropFilter:
-              "blur(10px)",
-            padding: "8px",
-            borderRadius: "18px",
+            background: "rgba(17, 24, 39, 0.95)",
+            backdropFilter: "blur(16px)",
+            padding: "18px",
+            borderRadius: "24px",
             display: "flex",
             flexDirection: "column",
-            gap: "6px",
+            gap: "10px",
             alignItems: "stretch",
-            width: "190px",
-            maxHeight: "65vh",
+            width: "280px",
+            maxHeight: "75vh",
             overflowY: "auto",
             color: "white",
-            boxShadow:
-              "0 0 20px rgba(0,0,0,0.4)"
+            boxShadow: "0 12px 40px rgba(0, 0, 0, 0.5)",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
+            fontFamily: "system-ui, sans-serif"
           }}
         >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "5px" }}>
+            <h3 style={{ margin: 0, fontSize: "15px", fontWeight: "800" }}>⚙️ Menu de Contrôle</h3>
+            <button
+              onClick={() => setShowMenu(false)}
+              style={{
+                width: "28px",
+                height: "28px",
+                borderRadius: "50%",
+                border: "none",
+                background: "rgba(255,255,255,0.1)",
+                color: "white",
+                fontSize: "14px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+            >
+              ✕
+            </button>
+          </div>
           <button
-            onClick={() =>
-              setShowMenu(false)
-            }
+            onClick={() => setShowForm(!showForm)}
             style={{
-              alignSelf: "flex-end",
-              width: "28px",
-              height: "28px",
-              borderRadius: "50%",
+              borderRadius: "12px",
+              padding: "10px",
               border: "none",
-              background: "#ef4444",
+              background: "#16a34a",
               color: "white",
-              fontSize: "16px",
+              fontWeight: "bold",
+              fontSize: "13px",
               cursor: "pointer"
-            }}
-          >
-            ✕
-          </button>
-
-          <button
-            onClick={() =>
-              setShowForm(!showForm)
-            }
-            style={{
-              borderRadius:
-                "12px",
-              padding: "7px",
-              border: "none",
-              fontSize: "13px"
             }}
           >
             ➕ Ajouter trouvaille
           </button>
 
-          <button
-            onClick={() =>
-              setFollowGps(
-                !followGps
-              )
-            }
-            style={{
-              borderRadius:
-                "12px",
-              padding: "7px",
-              border: "none",
-              fontSize: "13px"
-            }}
-          >
-            {followGps
-              ? "📍 ON"
-              : "📍 OFF"}
-          </button>
-
-          {/* OUTING RECORDING BUTTON */}
-          {!isRecordingSortie ? (
+          {/* 2x2 Toggle Grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", margin: "5px 0" }}>
+            {/* Map Style */}
             <button
-              onClick={() => {
-                startSortie();
-                setShowMenu(false);
-              }}
+              onClick={() => setMapStyle(mapStyle === "plan" ? "satellite" : "plan")}
               style={{
+                background: "rgba(255, 255, 255, 0.06)",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
                 borderRadius: "12px",
                 padding: "8px",
-                border: "none",
-                fontSize: "13px",
-                background: "#16a34a",
                 color: "white",
+                fontSize: "11px",
                 fontWeight: "bold",
                 cursor: "pointer"
               }}
             >
-              ⏱️ Démarrer sortie
+              {mapStyle === "plan" ? "🛰️ Satellite" : "🗺️ Plan"}
             </button>
-          ) : (
+
+            {/* Follow GPS */}
             <button
-              onClick={() => {
-                stopSortie();
-                setShowMenu(false);
-              }}
+              onClick={() => setFollowGps(!followGps)}
               style={{
+                background: followGps ? "rgba(37, 99, 235, 0.15)" : "rgba(255, 255, 255, 0.06)",
+                border: followGps ? "1px solid #2563eb" : "1px solid rgba(255, 255, 255, 0.08)",
                 borderRadius: "12px",
                 padding: "8px",
-                border: "none",
-                fontSize: "13px",
-                background: "#dc2626",
-                color: "white",
+                color: followGps ? "#60a5fa" : "white",
+                fontSize: "11px",
                 fontWeight: "bold",
                 cursor: "pointer"
               }}
             >
-              🛑 Arrêter ({(sortieDistance / 1000).toFixed(2)} km)
+              🎯 Suivi : {followGps ? "On" : "Off"}
             </button>
-          )}
 
-          <button
-  onClick={() =>
-    setFavoritesOnly(
-      !favoritesOnly
-    )
-  }
-  style={{
-    borderRadius: "12px",
-    padding: "7px",
-    border: "none",
-    fontSize: "13px"
-  }}
->
-  {favoritesOnly
-    ? "⭐ Favoris ON"
-    : "⭐ Favoris OFF"}
-</button>
+            {/* Outing Recording */}
+            {!isRecordingSortie ? (
+              <button
+                onClick={startSortie}
+                style={{
+                  background: "rgba(22, 163, 74, 0.15)",
+                  border: "1px solid #16a34a",
+                  borderRadius: "12px",
+                  padding: "8px",
+                  color: "#4ade80",
+                  fontSize: "11px",
+                  fontWeight: "bold",
+                  cursor: "pointer"
+                }}
+              >
+                ⏱️ Marche
+              </button>
+            ) : (
+              <button
+                onClick={stopSortie}
+                style={{
+                  background: "rgba(239, 68, 68, 0.15)",
+                  border: "1px solid #ef4444",
+                  borderRadius: "12px",
+                  padding: "8px",
+                  color: "#f87171",
+                  fontSize: "11px",
+                  fontWeight: "bold",
+                  cursor: "pointer"
+                }}
+              >
+                🛑 Stop ({(sortieDistance / 1000).toFixed(2)}k)
+              </button>
+            )}
 
-          <button
-            onClick={() => {
-              setMapStyle(
-                mapStyle === "plan"
-                  ? "satellite"
-                  : "plan"
-              );
-
-              setShowMenu(false);
-            }}
-            style={{
-              borderRadius:
-                "12px",
-              padding: "7px",
-              border: "none",
-              fontSize: "13px"
-            }}
-          >
-            {mapStyle ===
-            "plan"
-              ? "🛰️ Satellite"
-              : "🗺️ Plan"}
-          </button>
+            {/* Favorites Toggle */}
+            <button
+              onClick={() => setFavoritesOnly(!favoritesOnly)}
+              style={{
+                background: favoritesOnly ? "rgba(245, 158, 11, 0.15)" : "rgba(255, 255, 255, 0.06)",
+                border: favoritesOnly ? "1px solid #f59e0b" : "1px solid rgba(255, 255, 255, 0.08)",
+                borderRadius: "12px",
+                padding: "8px",
+                color: favoritesOnly ? "#facc15" : "white",
+                fontSize: "11px",
+                fontWeight: "bold",
+                cursor: "pointer"
+              }}
+            >
+              ⭐ Favoris : {favoritesOnly ? "On" : "Off"}
+            </button>
+          </div>
 
           <input
             type="text"
-            placeholder="Recherche..."
+            placeholder="🔍 Rechercher titre, époque..."
             value={search}
-            onChange={(e) =>
-              setSearch(
-                e.target.value
-              )
-            }
+            onChange={(e) => setSearch(e.target.value)}
             style={{
-              padding: "7px",
-              borderRadius:
-                "10px",
-              border: "none",
-              fontSize: "13px"
+              width: "100%",
+              padding: "10px 12px",
+              borderRadius: "12px",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              background: "rgba(255, 255, 255, 0.08)",
+              color: "white",
+              fontSize: "12px",
+              fontWeight: "500",
+              outline: "none",
+              boxSizing: "border-box",
+              margin: "5px 0",
+              transition: "border-color 0.2s"
             }}
+            onFocus={(e) => e.currentTarget.style.borderColor = "#2563eb"}
+            onBlur={(e) => e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.12)"}
           />
 
           <div
@@ -1064,7 +1042,7 @@ return (
             border: "1px solid rgba(255, 255, 255, 0.12)",
             borderRadius: "24px",
             boxShadow: "0 12px 40px rgba(0, 0, 0, 0.5)",
-            zIndex: 5000,
+            zIndex: 6000,
             display: "flex",
             flexDirection: "column",
             padding: "20px",
@@ -1168,7 +1146,7 @@ return (
           position: "absolute",
           top: "20px",
           right: "20px",
-          zIndex: 5000,
+          zIndex: 2000,
           display: "flex",
           flexDirection: "column",
           gap: "8px",
@@ -1223,13 +1201,29 @@ return (
           width: "100%"
         }}
       >
-        {false && (
-  <RecenterMap
-    position={
-      zoomPosition || position
-    }
-  />
-)}
+        {zoomTargetPosition && (
+          <RecenterMap
+            position={zoomTargetPosition}
+            onRecentered={() => setZoomTargetPosition(null)}
+          />
+        )}
+
+        {openPopupFind && (
+          <Popup
+            position={openPopupFind.position}
+            onClose={() => setOpenPopupFind(null)}
+            eventHandlers={{
+              remove: () => setOpenPopupFind(null)
+            }}
+          >
+            <FindPopup
+              find={openPopupFind}
+              onClose={() => setOpenPopupFind(null)}
+              onDelete={deleteFind}
+              onFavorite={handleFavorite}
+            />
+          </Popup>
+        )}
 
         <MapLayers
           mapStyle={mapStyle}
@@ -1371,7 +1365,8 @@ return (
 
             <button
               onClick={() => {
-                setSelectedFind(selectedAlbumPhoto.find);
+                setZoomTargetPosition(selectedAlbumPhoto.find.position);
+                setOpenPopupFind(selectedAlbumPhoto.find);
                 setSelectedAlbumPhoto(null);
                 setShowAlbum(false);
               }}
