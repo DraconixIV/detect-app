@@ -112,15 +112,19 @@ function distanceBetween(
 }
 
 function RecenterMap({
-  position
+  target,
+  onRecentered
 }) {
   const map = useMap();
 
   useEffect(() => {
-    if (position) {
-      map.setView(position, 20);
+    if (target) {
+      map.setView(target.position, target.zoom || 20);
+      if (onRecentered) {
+        onRecentered();
+      }
     }
-  }, [position, map]);
+  }, [target, map, onRecentered]);
 
   return null;
 }
@@ -201,13 +205,13 @@ function App() {
   const [albumFilter, setAlbumFilter] = useState("Tous");
   const [allPhotos, setAllPhotos] = useState([]);
   const [selectedAlbumPhoto, setSelectedAlbumPhoto] = useState(null);
-  const [zoomTargetPosition, setZoomTargetPosition] = useState(null);
+  const [zoomTarget, setZoomTarget] = useState(null);
   const [openPopupFind, setOpenPopupFind] = useState(null);
   const [activePopupId, setActivePopupId] = useState(null);
   const [gpsAccuracy, setGpsAccuracy] = useState(null);
   const [showHistoricalMap, setShowHistoricalMap] = useState(false);
   const [historicalMapOpacity, setHistoricalMapOpacity] = useState(0.5);
-  const [useClustering, setUseClustering] = useState(true);
+  const [useClustering, setUseClustering] = useState(false);
 
   const isRecordingRef = useRef(isRecordingSortie);
   const positionsRef = useRef(sortiePositions);
@@ -1401,10 +1405,10 @@ return (
           width: "100%"
         }}
       >
-        {zoomTargetPosition && (
+        {zoomTarget && (
           <RecenterMap
-            position={zoomTargetPosition}
-            onRecentered={() => setZoomTargetPosition(null)}
+            target={zoomTarget}
+            onRecentered={() => setZoomTarget(null)}
           />
         )}
 
@@ -1457,8 +1461,10 @@ return (
                 position={node.position}
                 icon={createClusterIcon(node.count)}
                 eventHandlers={{
-                  click: () => {
-                    setZoomTargetPosition(node.position);
+                  click: (e) => {
+                    const mapInstance = e.target._map;
+                    const nextZoom = Math.min(mapInstance.getZoom() + 3, 20);
+                    setZoomTarget({ position: node.position, zoom: nextZoom });
                   }
                 }}
               />
@@ -1625,7 +1631,7 @@ return (
 
             <button
               onClick={() => {
-                setZoomTargetPosition(selectedAlbumPhoto.find.position);
+                setZoomTarget({ position: selectedAlbumPhoto.find.position, zoom: 20 });
                 setOpenPopupFind(selectedAlbumPhoto.find);
                 setSelectedAlbumPhoto(null);
                 setShowAlbum(false);
