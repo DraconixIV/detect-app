@@ -27,6 +27,7 @@ import StatsPanel from "./components/StatsPanel";
 import PerformancePanel from "./components/PerformancePanel";
 import CropperModal from "./components/CropperModal";
 import ToastNotification from "./components/ToastNotification";
+import ConfirmModal from "./components/ConfirmModal";
 import MarkerClusterGroup from "react-leaflet-cluster";
 
 import { icons } from "./icons";
@@ -241,6 +242,7 @@ function App() {
   const [allPhotos, setAllPhotos] = useState([]);
   const [selectedAlbumPhoto, setSelectedAlbumPhoto] = useState(null);
   const [toast, setToast] = useState(null);
+  const [confirmConfig, setConfirmConfig] = useState(null);
   const [quickAddFile, setQuickAddFile] = useState(null);
   const [showQuickAddModal, setShowQuickAddModal] = useState(false);
   const [quickAddTitleInput, setQuickAddTitleInput] = useState("Trouvaille Rapide");
@@ -342,12 +344,14 @@ function App() {
 
   const stopSortie = async () => {
     if (sortiePositions.length < 2 || sortieDistance === 0) {
-      const forceClose = window.confirm("Pas assez de déplacements enregistrés. Annuler la sortie ?");
-      if (forceClose) {
-        setIsRecordingSortie(false);
-        setSortiePositions([]);
-        setSortieDistance(0);
-      }
+      setConfirmConfig({
+        message: "Pas assez de déplacements enregistrés. Annuler la sortie ?",
+        onConfirm: () => {
+          setIsRecordingSortie(false);
+          setSortiePositions([]);
+          setSortieDistance(0);
+        }
+      });
       return;
     }
 
@@ -688,15 +692,7 @@ function App() {
     }
   };
 
-  const deleteFind = async (
-    findId
-  ) => {
-    const confirmed =
-      window.confirm(
-        "Supprimer définitivement cette trouvaille ?"
-      );
-
-    if (!confirmed) return;
+  const deleteFind = async (findId) => {
 
     if (typeof findId === "string" && findId.startsWith("offline-")) {
       const offlineId = Number(findId.replace("offline-", ""));
@@ -1926,6 +1922,18 @@ return (
             </div>
           </div>
         </div>
+      )}
+
+      {/* Custom Confirm Dialog */}
+      {confirmConfig && (
+        <ConfirmModal
+          message={confirmConfig.message}
+          onConfirm={() => {
+            confirmConfig.onConfirm();
+            setConfirmConfig(null);
+          }}
+          onCancel={() => setConfirmConfig(null)}
+        />
       )}
 
       {/* Toast Notifications */}

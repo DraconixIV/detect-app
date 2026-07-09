@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { supabase } from "../supabase";
 import imageCompression from "browser-image-compression";
 import CropperModal from "./CropperModal";
+import ConfirmModal from "./ConfirmModal";
 import { categoriesWithSub, categoryEmojis, materials, materialEmojis } from "../subCategories";
 
 export default function FindPopup({
@@ -30,6 +31,7 @@ export default function FindPopup({
   const [compareSliderPos, setCompareSliderPos] = useState(50);
   const [croppingStep, setCroppingStep] = useState("none"); // 'none' | 'before' | 'after' | 'saving'
   const [croppedBeforeBlob, setCroppedBeforeBlob] = useState(null);
+  const [confirmConfig, setConfirmConfig] = useState(null);
 
   useEffect(() => {
     loadPhotos();
@@ -268,20 +270,20 @@ export default function FindPopup({
     }
   };
 
-  const deletePhoto = async (photo) => {
-    const confirmed = window.confirm("Supprimer cette photo ?");
-    if (!confirmed) return;
+  const deletePhoto = (photo) => {
+    setConfirmConfig({
+      message: "Supprimer cette photo ?",
+      onConfirm: async () => {
+        const fileName = photo.image_url.split("/").pop();
+        await supabase.storage.from("find-photos").remove([fileName]);
+        await supabase.from("find_photos").delete().eq("id", photo.id);
 
-    const fileName = photo.image_url.split("/").pop();
-
-    await supabase.storage.from("find-photos").remove([fileName]);
-    await supabase.from("find_photos").delete().eq("id", photo.id);
-
-    // Clear local cache to force reload
-    if (window.findPhotosCache) {
-      delete window.findPhotosCache[find.id];
-    }
-    await loadPhotos();
+        if (window.findPhotosCache) {
+          delete window.findPhotosCache[find.id];
+        }
+        await loadPhotos();
+      }
+    });
   };
 
   const discoveryPhotos = photos.filter((p) => p.type === "discovery");
@@ -906,12 +908,15 @@ export default function FindPopup({
         {/* Footer Actions */}
         <div style={{ display: "flex", gap: "10px", marginTop: "8px", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "14px" }}>
           <button
-            onClick={() => {
-              const confirmed = window.confirm("Supprimer définitivement cette trouvaille ?");
-              if (confirmed) {
-                onDelete(find.id);
-                setIsModalOpen(false);
-              }
+            onClick={(e) => {
+              e.stopPropagation();
+              setConfirmConfig({
+                message: "Supprimer définitivement cette trouvaille ?",
+                onConfirm: () => {
+                  onDelete(find.id);
+                  setIsModalOpen(false);
+                }
+              });
             }}
             style={{ ...buttonStyle, background: "#ef4444", flex: 1, padding: "10px" }}
           >
@@ -919,7 +924,8 @@ export default function FindPopup({
           </button>
 
           <button
-            onClick={async () => {
+            onClick={async (e) => {
+              e.stopPropagation();
               await saveChanges();
               setIsModalOpen(false);
             }}
@@ -1005,6 +1011,16 @@ export default function FindPopup({
           <span style={{ fontSize: "36px", marginBottom: "16px" }}>⚙️</span>
           <span style={{ fontSize: "16px", fontWeight: "bold" }}>Alignement et compression des photos en cours...</span>
         </div>
+      )}
+      {confirmConfig && (
+        <ConfirmModal
+          message={confirmConfig.message}
+          onConfirm={() => {
+            confirmConfig.onConfirm();
+            setConfirmConfig(null);
+          }}
+          onCancel={() => setConfirmConfig(null)}
+        />
       )}
     </div>,
     document.body
