@@ -383,10 +383,21 @@ function App() {
         }
       );
 
-    return () =>
-      navigator.geolocation.clearWatch(
-        watchId
-      );
+    const channel = supabase
+      .channel("realtime-finds-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "finds" },
+        () => {
+          loadFinds();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const syncOfflineFinds = async () => {
