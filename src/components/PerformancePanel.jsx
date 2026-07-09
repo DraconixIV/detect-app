@@ -535,6 +535,63 @@ export default function PerformancePanel({
 
   const activeSettings = SETTINGS_MATRIX[selectedDetector]?.[selectedSoil] || {};
 
+  const getDynamicSettings = () => {
+    const base = { ...activeSettings };
+    if (!base.freq) return base;
+    if (soilMoisture === null) return { ...base, weatherImpactTip: "Chargement de la météo..." };
+
+    let adjustedSens = base.sensitivity;
+    let adjustedReact = base.reactivity;
+    let weatherImpactTip = "";
+
+    const isXP = selectedDetector.startsWith("XP");
+    const isManticore = selectedDetector === "Minelab Manticore";
+    const isEquinox = selectedDetector === "Minelab Equinox";
+
+    if (soilMoisture > 65) {
+      if (isXP) {
+        adjustedSens = "94 à 96 (Poussée +2)";
+        adjustedReact = `${base.reactivity.split(" ")[0]} (Baisse pour profondeur max)`;
+        weatherImpactTip = "🌧️ Sol très conducteur : vous pouvez monter la sensibilité à 95-96 et baisser la réactivité à 1.5 ou 1.0 pour capter les cibles à des profondeurs extrêmes.";
+      } else if (isManticore) {
+        adjustedSens = "23 à 25 (Poussée +1)";
+        weatherImpactTip = "🌧️ Sol très conducteur : augmentez la sensibilité à 24-25 et réduisez les filtres ferreux au minimum.";
+      } else if (isEquinox) {
+        adjustedSens = "22 à 24 (Poussée +1)";
+        weatherImpactTip = "🌧️ Sol conducteur : montez la sensibilité à 23 et réduisez la vitesse de récupération d'un cran.";
+      } else {
+        adjustedSens = "90% à 95% (Maximum)";
+        weatherImpactTip = "🌧️ Sol mouillé : vous pouvez maximiser la sensibilité de votre appareil.";
+      }
+    } else if (soilMoisture < 30) {
+      if (isXP) {
+        adjustedSens = "88 à 90 (Réduite -3)";
+        adjustedReact = "2.5 à 3 (Augmentée pour contrer le bruit)";
+        weatherImpactTip = "🏜️ Sol sec et résistant : baissez la sensibilité à 89 pour éliminer les faux signaux de poussière et augmentez la réactivité à 2.5 ou 3.";
+      } else if (isManticore) {
+        adjustedSens = "19 à 21 (Réduite)";
+        weatherImpactTip = "🏜️ Sol sec et poussiéreux : calmez l'appareil en abaissant la sensibilité vers 20.";
+      } else if (isEquinox) {
+        adjustedSens = "18 à 20 (Réduite)";
+        weatherImpactTip = "🏜️ Sol sec : diminuez la sensibilité de 2 crans pour éviter le crépitement de l'herbe sèche.";
+      } else {
+        adjustedSens = "80% (Réduite)";
+        weatherImpactTip = "🏜️ Sol sec : baissez la sensibilité et augmentez la discrimination d'un cran.";
+      }
+    } else {
+      weatherImpactTip = "🌤️ Conditions de sol standard. Les réglages de base sont optimaux.";
+    }
+
+    return {
+      ...base,
+      sensitivity: adjustedSens,
+      reactivity: adjustedReact,
+      weatherImpactTip
+    };
+  };
+
+  const dynamicSettings = getDynamicSettings();
+
   return (
     <div
       style={{
@@ -768,17 +825,17 @@ export default function PerformancePanel({
 
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ opacity: 0.6 }}>Réactivité :</span>
-              <span style={{ fontWeight: "700", textAlign: "right" }}>{activeSettings.reactivity}</span>
+              <span style={{ fontWeight: "700", textAlign: "right" }}>{dynamicSettings.reactivity}</span>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ opacity: 0.6 }}>Sensibilité :</span>
-              <span style={{ fontWeight: "700", color: "#34d399", textAlign: "right" }}>{activeSettings.sensitivity}</span>
+              <span style={{ fontWeight: "700", color: "#34d399", textAlign: "right" }}>{dynamicSettings.sensitivity}</span>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ opacity: 0.6 }}>Effets de Sol :</span>
-              <span style={{ fontWeight: "700", textAlign: "right" }}>{activeSettings.ground}</span>
+              <span style={{ fontWeight: "700", textAlign: "right" }}>{dynamicSettings.ground}</span>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -789,6 +846,12 @@ export default function PerformancePanel({
             <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "8px", marginTop: "4px", fontSize: "10px", lineHeight: "1.4", fontStyle: "italic", opacity: 0.9, color: "#fbcfe8" }}>
               💡 <strong>Astuce :</strong> {activeSettings.tip}
             </div>
+
+            {dynamicSettings.weatherImpactTip && (
+              <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "8px", marginTop: "4px", fontSize: "10px", lineHeight: "1.4", color: "#67e8f9", fontWeight: "700" }}>
+                {dynamicSettings.weatherImpactTip}
+              </div>
+            )}
           </div>
         </div>
       </div>
