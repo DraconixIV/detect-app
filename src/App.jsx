@@ -332,6 +332,19 @@ function App() {
     useState("");
 
   useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setPosition((current) => {
+        if (current === null) {
+          console.warn("GPS timeout: falling back to central France coordinate to load the map.");
+          return [47.081, 2.399];
+        }
+        return current;
+      });
+    }, 6000);
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  useEffect(() => {
     loadFinds();
 
     const watchId =
@@ -359,12 +372,8 @@ function App() {
         },
 
         (err) => {
-          console.error(err);
-
-          alert(
-            "Erreur GPS : " +
-              err.message
-          );
+          console.error("GPS Error:", err);
+          setPosition((current) => current || [47.081, 2.399]);
         },
 
         {
