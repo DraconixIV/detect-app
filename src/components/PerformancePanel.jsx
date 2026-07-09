@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 
 const DETECTORS = [
-  "XP Deus II (FMF)",
+  "XP Deus II (Avec Télécommande)",
+  "XP Deus II WS6 Master (Casque)",
+  "XP Deus Icon (Nouveau)",
   "XP Deus I / ORX",
   "Minelab Manticore",
   "Minelab Equinox",
@@ -19,7 +21,7 @@ const SOILS = [
 ];
 
 const SETTINGS_MATRIX = {
-  "XP Deus II (FMF)": {
+  "XP Deus II (Avec Télécommande)": {
     "Forêt (Humus)": {
       freq: "Multifréquence FMF (Max Profondeur)",
       reactivity: "1.5 à 2 (Sol propre, favorise la profondeur)",
@@ -67,6 +69,106 @@ const SETTINGS_MATRIX = {
       ground: "Grab automatique fréquent",
       disc: "10.0 (Éliminer les ferreux denses)",
       tip: "Utilisez le programme 4 (FAST) ou le programme PITCH. Écoutez les signaux courts cachés sous les ferreux."
+    }
+  },
+  "XP Deus II WS6 Master (Casque)": {
+    "Forêt (Humus)": {
+      freq: "FMF (Prog 1 - Deus Mono ou Prog 3 - Sensitive)",
+      reactivity: "1.5 (Maximise la profondeur sur sol propre)",
+      sensitivity: "92 à 94",
+      ground: "Grab au sol (Menu SOL du WS6)",
+      disc: "6.8",
+      tip: "AUDIO : Utilisez le mode '5 Tons' ou 'Pitch' pour analyser la conductivité uniquement à l'oreille. Pas de télécommande = fiez-vous au son aigu."
+    },
+    "Champs labourés (Terre meuble)": {
+      freq: "FMF (Prog 3 - Sensitive)",
+      reactivity: "2.5 (Bonne coupure entre ferreux et bonne cible)",
+      sensitivity: "90",
+      ground: "Grab rapide au sol",
+      disc: "7.0",
+      tip: "AUDIO : Le mode 'Pitch' est idéal ici car il détache parfaitement la cible sonore des bruits de sol remué."
+    },
+    "Prairie (Terre tassée)": {
+      freq: "FMF (Prog 5 - Deep High)",
+      reactivity: "1.5 (Balayage lent obligatoire)",
+      sensitivity: "92",
+      ground: "Tracking actif",
+      disc: "6.5",
+      tip: "AUDIO : Le mode 'Full Tones' est conseillé. Il traduit la conductivité en fréquences de son (grave pour fer, très aigu pour argent)."
+    },
+    "Plage (Sable sec)": {
+      freq: "FMF (Prog 2 - Sensitive)",
+      reactivity: "2.0",
+      sensitivity: "93",
+      ground: "Manuel (Ajuster vers 80)",
+      disc: "5.5",
+      tip: "AUDIO : Mettez le volume des tons faibles à 3 ou 4 pour bien entendre les petits bijoux légers en or profonds."
+    },
+    "Plage (Sable mouillé salé)": {
+      freq: "FMF (Prog 11 - Beach)",
+      reactivity: "2.5 (Stabilité accrue)",
+      sensitivity: "85 (Réduire si crépitements du sel)",
+      ground: "Mode Beach/Sel actif sur le WS6",
+      disc: "8.0",
+      tip: "Prog 11 obligatoire. Si l'eau salée sature l'audio, passez l'option Sol en manuel sur le WS6 et réduisez la sensibilité."
+    },
+    "Pollué / Minéralisé": {
+      freq: "FMF (Prog 4 - Fast)",
+      reactivity: "3 à 4 (Tri ultra-rapide)",
+      sensitivity: "88",
+      ground: "Grab fréquent",
+      disc: "10.0",
+      tip: "AUDIO : Montez la réactivité à 3.5 via le bouton du module WS6. Le mode 'Pitch' vous fera entendre les bonnes cibles serrées contre les clous."
+    }
+  },
+  "XP Deus Icon (Nouveau)": {
+    "Forêt (Humus)": {
+      freq: "FMF v2 (Prog Icon-Deep)",
+      reactivity: "1.0 (Performances de profondeur maximale)",
+      sensitivity: "96",
+      ground: "Auto-Tracking Intelligent",
+      disc: "5.0 (Discrimination chirurgicale)",
+      tip: "Technologie Icon : Activez le mode audio spatialisé 3D (Audio 3D) sur votre casque pour mieux localiser la profondeur de la cible."
+    },
+    "Champs labourés (Terre meuble)": {
+      freq: "FMF v2 (Prog Icon-General)",
+      reactivity: "2.0",
+      sensitivity: "92",
+      ground: "Auto-Track",
+      disc: "6.0",
+      tip: "L'analyse spectrale du nouveau XP Icon élimine les faux signaux dus à l'effet de sol irrégulier du labour."
+    },
+    "Prairie (Terre tassée)": {
+      freq: "FMF v2 (Prog Icon-Coins)",
+      reactivity: "1.5",
+      sensitivity: "94",
+      ground: "Auto-Track",
+      disc: "5.5",
+      tip: "Utilisez le mode audio multiton HD pour entendre la pureté et la clarté des métaux nobles profonds."
+    },
+    "Plage (Sable sec)": {
+      freq: "FMF v2 (Prog Icon-Gold)",
+      reactivity: "2.0",
+      sensitivity: "95",
+      ground: "Manuel",
+      disc: "4.0",
+      tip: "Sensibilité maximale recommandée pour accrocher les micro-alliages et chaînettes fines."
+    },
+    "Plage (Sable mouillé salé)": {
+      freq: "FMF v2 (Prog Icon-WetBeach)",
+      reactivity: "2.5",
+      sensitivity: "88",
+      ground: "Auto-Plage (Calibrage Sel)",
+      disc: "8.0",
+      tip: "Activez le filtre de réduction du bruit salin numérique. Balayez lentement à 2 cm du sable."
+    },
+    "Pollué / Minéralisé": {
+      freq: "FMF v2 (Prog Icon-Relics / Fast)",
+      reactivity: "4.0 (Vitesse d'analyse instantanée)",
+      sensitivity: "90",
+      ground: "Grab fréquent",
+      disc: "9.0",
+      tip: "L'Icon sépare les métaux avec une résolution doublée. Rapprochez votre balayage pour ne rien rater."
     }
   },
   "XP Deus I / ORX": {
