@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function CropperModal({
   imageSrc,
@@ -14,11 +14,38 @@ export default function CropperModal({
   const [posX, setPosX] = useState(0);
   const [posY, setPosY] = useState(0);
   const [maskShape, setMaskShape] = useState("circle"); // 'circle' | 'rect'
+  const [imgDims, setImgDims] = useState({ w: 300, h: 300 });
 
   const containerRef = useRef(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const startY = useRef(0);
+
+  const handleImageLoad = (e) => {
+    const { naturalWidth, naturalHeight } = e.target;
+    if (!naturalWidth || !naturalHeight) return;
+    const ratio = naturalWidth / naturalHeight;
+    let w, h;
+    if (ratio > 1) {
+      h = 300;
+      w = 300 * ratio;
+    } else {
+      w = 300;
+      h = 300 / ratio;
+    }
+    setImgDims({ w, h });
+  };
+
+  // Constrain position when zoom or image dimensions change
+  useEffect(() => {
+    const maxPosX = (imgDims.w * zoom) / 2 - 100;
+    const minPosX = 100 - (imgDims.w * zoom) / 2;
+    const maxPosY = (imgDims.h * zoom) / 2 - 100;
+    const minPosY = 100 - (imgDims.h * zoom) / 2;
+
+    setPosX((x) => (maxPosX > minPosX ? Math.max(minPosX, Math.min(maxPosX, x)) : 0));
+    setPosY((y) => (maxPosY > minPosY ? Math.max(minPosY, Math.min(maxPosY, y)) : 0));
+  }, [zoom, imgDims]);
 
   // Mouse / Touch drag handlers
   const handleStart = (e) => {
@@ -33,8 +60,19 @@ export default function CropperModal({
     if (!isDragging.current) return;
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    setPosX(clientX - startX.current);
-    setPosY(clientY - startY.current);
+    const targetX = clientX - startX.current;
+    const targetY = clientY - startY.current;
+
+    const maxPosX = (imgDims.w * zoom) / 2 - 100;
+    const minPosX = 100 - (imgDims.w * zoom) / 2;
+    const maxPosY = (imgDims.h * zoom) / 2 - 100;
+    const minPosY = 100 - (imgDims.h * zoom) / 2;
+
+    const posXConstrained = maxPosX > minPosX ? Math.max(minPosX, Math.min(maxPosX, targetX)) : 0;
+    const posYConstrained = maxPosY > minPosY ? Math.max(minPosY, Math.min(maxPosY, targetY)) : 0;
+
+    setPosX(posXConstrained);
+    setPosY(posYConstrained);
   };
 
   const handleEnd = () => {
@@ -57,16 +95,18 @@ export default function CropperModal({
       // Save state
       ctx.save();
       
-      // Translate to center of canvas for rotation and zoom
+      // Translate to center of canvas
       ctx.translate(250, 250);
+      
+      // Apply translation in unrotated and unscaled coordinates
+      const scaleFactor = 500 / 300;
+      ctx.translate(posX * scaleFactor, posY * scaleFactor);
+
+      // Rotate and scale
       ctx.rotate((rotation * Math.PI) / 180);
       ctx.scale(zoom, zoom);
-      
-      // Scale translation to match canvas resolution (500px vs 300px viewport)
-      const scaleFactor = 500 / 300;
-      ctx.translate(posX * scaleFactor / zoom, posY * scaleFactor / zoom);
 
-      // Determine dimensions to fill viewport
+      // Determine dimensions to fill viewport (cover mode)
       const imgRatio = img.width / img.height;
       let drawW, drawH;
       if (imgRatio > 1) {
@@ -81,7 +121,6 @@ export default function CropperModal({
       const canvasDrawH = drawH * scaleFactor;
 
       ctx.drawImage(img, -canvasDrawW / 2, -canvasDrawH / 2, canvasDrawW, canvasDrawH);
-      
       ctx.restore();
 
       canvas.toBlob(
@@ -180,6 +219,7 @@ export default function CropperModal({
             crossOrigin="anonymous"
             alt="To Crop"
             draggable="false"
+            onLoad={handleImageLoad}
             style={{
               width: "100%",
               height: "100%",

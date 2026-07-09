@@ -511,7 +511,8 @@ function App() {
     // Charger également toutes les photos de Supabase pour l'Album
     const { data: photoData } = await supabase
       .from("find_photos")
-      .select("*");
+      .select("*")
+      .order("id", { ascending: true });
     if (photoData) {
       setAllPhotos(photoData);
     }

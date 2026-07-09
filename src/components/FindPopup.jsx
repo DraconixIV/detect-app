@@ -64,7 +64,8 @@ export default function FindPopup({
     const { data, error } = await supabase
       .from("find_photos")
       .select("*")
-      .eq("find_id", find.id);
+      .eq("find_id", find.id)
+      .order("id", { ascending: true });
 
     if (error) {
       console.error(error);
