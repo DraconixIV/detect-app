@@ -26,6 +26,7 @@ import MapLayers from "./components/MapLayers";
 import StatsPanel from "./components/StatsPanel";
 import PerformancePanel from "./components/PerformancePanel";
 import CropperModal from "./components/CropperModal";
+import ToastNotification from "./components/ToastNotification";
 import MarkerClusterGroup from "react-leaflet-cluster";
 
 import { icons } from "./icons";
@@ -239,6 +240,7 @@ function App() {
   const [albumFilter, setAlbumFilter] = useState("Tous");
   const [allPhotos, setAllPhotos] = useState([]);
   const [selectedAlbumPhoto, setSelectedAlbumPhoto] = useState(null);
+  const [toast, setToast] = useState(null);
   const [zoomTarget, setZoomTarget] = useState(null);
   const [openPopupFind, setOpenPopupFind] = useState(null);
   const [activePopupId, setActivePopupId] = useState(null);
@@ -251,6 +253,45 @@ function App() {
   const isRecordingRef = useRef(isRecordingSortie);
   const positionsRef = useRef(sortiePositions);
   const quickAddInputRef = useRef(null);
+
+  useEffect(() => {
+    window.__showToast = (message, type = "info") => {
+      setToast({ message, type });
+    };
+
+    const nativeAlert = window.alert;
+    window.alert = (msg) => {
+      let type = "info";
+      const normalized = String(msg).toLowerCase();
+      if (
+        normalized.includes("✅") ||
+        normalized.includes("succès") ||
+        normalized.includes("success") ||
+        normalized.includes("✨") ||
+        normalized.includes("enregistré") ||
+        normalized.includes("démarrée") ||
+        normalized.includes("démarré") ||
+        normalized.includes("terminée") ||
+        normalized.includes("partagée")
+      ) {
+        type = "success";
+      } else if (
+        normalized.includes("⚠️") ||
+        normalized.includes("erreur") ||
+        normalized.includes("échec") ||
+        normalized.includes("impossible") ||
+        normalized.includes("indisponible") ||
+        normalized.includes("blocage")
+      ) {
+        type = "error";
+      }
+      window.__showToast(msg, type);
+    };
+
+    return () => {
+      window.alert = nativeAlert;
+    };
+  }, []);
 
   useEffect(() => {
     isRecordingRef.current = isRecordingSortie;
@@ -1770,6 +1811,14 @@ return (
           </div>
         </div>,
         document.body
+      )}
+      {/* Toast Notifications */}
+      {toast && (
+        <ToastNotification
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </div>
   );
