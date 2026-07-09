@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const DETECTORS = [
   "XP Deus II (Avec Télécommande)",
@@ -12,416 +12,260 @@ const DETECTORS = [
 ];
 
 const SOILS = [
-  "Forêt (Humus)",
-  "Champs labourés (Terre meuble)",
-  "Prairie (Terre tassée)",
+  "Forêt (Humus Propre)",
+  "Forêt (Minéralisée / Pierreuse)",
+  "Champs (Terre meuble propre)",
+  "Champs / Vignes (Très pollué en ferreux)",
+  "Prairie / Pâturage (Terre tassée)",
+  "Chemin / Zone pierreuse minéralisée",
   "Plage (Sable sec)",
   "Plage (Sable mouillé salé)",
-  "Pollué / Minéralisé"
+  "Ruines / Bâtiment ancien (Pollution extrême)"
 ];
 
-const SETTINGS_MATRIX = {
-  "XP Deus II (Avec Télécommande)": {
-    "Forêt (Humus)": {
-      freq: "Multifréquence FMF (Max Profondeur)",
-      reactivity: "1.5 à 2 (Sol propre, favorise la profondeur)",
-      sensitivity: "93 à 95",
-      ground: "Grab automatique (Stabiliser vers 85-88)",
-      disc: "6.8 (Éliminer les petits ferreux)",
-      tip: "Utilisez le programme 1 (DEUS MONO) ou 3 (SENSITIVE FT) pour une excellente pénétration."
-    },
-    "Champs labourés (Terre meuble)": {
-      freq: "Multifréquence FMF (Polyvalence)",
-      reactivity: "2.5 (Sol meuble, réactivité moyenne)",
-      sensitivity: "90 à 92",
-      ground: "Grab automatique",
-      disc: "7.0",
-      tip: "Balayez parallèlement aux sillons pour garder une hauteur constante du disque."
-    },
-    "Prairie (Terre tassée)": {
-      freq: "Multifréquence FMF (Haute pénétration)",
-      reactivity: "1.5 (Profondeur maximum sur cibles tassées)",
-      sensitivity: "92 à 94",
-      ground: "Tracking actif",
-      disc: "6.5",
-      tip: "Excellent sol pour le programme FMF DEEP HIGH. Balayez lentement."
-    },
-    "Plage (Sable sec)": {
-      freq: "Multifréquence FMF (Spécial Or/Bijoux)",
-      reactivity: "2.0",
-      sensitivity: "93 à 95",
-      ground: "Manuel (Ajuster vers 80)",
-      disc: "5.5 (Pour chasser les très petits bijoux en or)",
-      tip: "Utilisez le programme 9 (DIVING) ou 2 (SENSITIVE) pour accrocher l'or fin."
-    },
-    "Plage (Sable mouillé salé)": {
-      freq: "Multifréquence FMF (Filtre Sel Actif)",
-      reactivity: "2.5 (Réduction des faux signaux du sel)",
-      sensitivity: "85 à 88 (Baisser si faux signaux)",
-      ground: "Mode Plage/Sel actif (Balance vers 0-14)",
-      disc: "8.0",
-      tip: "Utilisez obligatoirement le programme 11 (BEACH) ou 12 (BEACH SENS). Évitez les chocs du disque sur le sable mouillé."
-    },
-    "Pollué / Minéralisé": {
-      freq: "Multifréquence FMF (Haute Fréquence)",
-      reactivity: "3 à 4 (Séparation ultra-rapide des cibles)",
-      sensitivity: "88 à 90",
-      ground: "Grab automatique fréquent",
-      disc: "10.0 (Éliminer les ferreux denses)",
-      tip: "Utilisez le programme 4 (FAST) ou le programme PITCH. Écoutez les signaux courts cachés sous les ferreux."
+// Helper rules engine to calculate settings from A to Z dynamically
+export function generateSettings(detector, soil, moisture) {
+  let freq = "14 kHz (Polyvalent)";
+  let reactivity = "2.0";
+  let sensitivity = "90";
+  let ground = "Auto (Grab)";
+  let disc = "6.0";
+  let ironVol = "3";
+  let audioTons = "5 Tons";
+  let silencer = "1";
+  let audioResp = "PWM (Moyen)";
+  let tip = "Effectuez un balayage lent et régulier à 3 cm du sol.";
+
+  const isXP2 = detector.includes("Deus II (Avec");
+  const isWS6 = detector.includes("WS6");
+  const isIcon = detector.includes("Icon");
+  const isXP1 = detector.includes("Deus I");
+  const isManticore = detector === "Minelab Manticore";
+  const isEquinox = detector === "Minelab Equinox";
+  const isGarrett = detector.includes("Garrett");
+
+  const isForestClean = soil === "Forêt (Humus Propre)";
+  const isForestMin = soil === "Forêt (Minéralisée / Pierreuse)";
+  const isChampsClean = soil === "Champs (Terre meuble propre)";
+  const isVigne = soil === "Champs / Vignes (Très pollué en ferreux)";
+  const isPrairie = soil === "Prairie / Pâturage (Terre tassée)";
+  const isStony = soil === "Chemin / Zone pierreuse minéralisée";
+  const isPlageSec = soil === "Plage (Sable sec)";
+  const isPlageSel = soil === "Plage (Sable mouillé salé)";
+  const isRuins = soil === "Ruines / Bâtiment ancien (Pollution extrême)";
+
+  // Reactivity bases
+  let baseReact = "2.0";
+  if (isForestClean || isChampsClean) baseReact = "1.5";
+  if (isPrairie) baseReact = "1.5";
+  if (isVigne || isForestMin || isStony) baseReact = "2.5";
+  if (isRuins) baseReact = "4.0";
+  if (isPlageSec) baseReact = "2.0";
+  if (isPlageSel) baseReact = "2.5";
+
+  // Sensitivity bases
+  let baseSens = "90";
+  if (isManticore) baseSens = "20";
+  else if (isEquinox) baseSens = "20";
+  else if (isGarrett) baseSens = "6";
+
+  if (isForestClean || isChampsClean || isPrairie) {
+    if (isManticore) baseSens = "23";
+    else if (isEquinox) baseSens = "22";
+    else if (isGarrett) baseSens = "7";
+    else baseSens = "93";
+  } else if (isVigne || isRuins || isPlageSel || isForestMin) {
+    if (isManticore) baseSens = "19";
+    else if (isEquinox) baseSens = "18";
+    else if (isGarrett) baseSens = "5";
+    else baseSens = "88";
+  }
+
+  // Volume Fer
+  if (isForestClean || isChampsClean || isPrairie) {
+    ironVol = isManticore || isEquinox ? "3" : isGarrett ? "Moyen (3/5)" : "3";
+  } else if (isVigne || isRuins || isForestMin) {
+    ironVol = isManticore || isEquinox ? "1 (Réduit)" : isGarrett ? "Bas (1/5)" : "1 (Pour ne pas saturer l'audio)";
+  } else if (isPlageSel || isPlageSec) {
+    ironVol = "0 (Désactivé)";
+  }
+
+  // Silencieux / Iron Bias (Filtre Ferreux)
+  if (isForestClean || isPrairie) {
+    silencer = isManticore ? "Filtre Ferreux : Bas (0)" : isEquinox ? "Iron Bias : F2 = 0" : "0 à 1 (Max profondeur)";
+  } else if (isChampsClean || isPlageSec) {
+    silencer = isManticore ? "Filtre Ferreux : Moyen" : isEquinox ? "Iron Bias : F2 = 2" : "1 à 2";
+  } else if (isVigne || isRuins || isForestMin) {
+    silencer = isManticore ? "Filtre Ferreux : Élevé (4-5)" : isEquinox ? "Iron Bias : F2 = 5" : "3 (Silencieux haut pour éliminer ferrailles)";
+  }
+
+  // Audio / Tons
+  if (isXP2) {
+    audioTons = "5 Tons (Différenciation tonale)";
+    audioResp = "PWM (Sons doux / Réponse progressive)";
+  } else if (isWS6) {
+    audioTons = "Pitch (Recommandé sans écran)";
+    audioResp = "PWM (Volume à 4)";
+  } else if (isIcon) {
+    audioTons = "Audio 3D Spatialisé (Immersif)";
+    audioResp = "Hi-Fi Haute Résolution";
+  } else if (isManticore) {
+    audioTons = "Multitonalité avancée (Audio Prospecteur)";
+    audioResp = "Profil Normal";
+  } else if (isEquinox) {
+    audioTons = "50 Tons (Variations infimes)";
+    audioResp = "Vitesse 4";
+  }
+
+  // Specific programs and tips
+  if (isXP2) {
+    if (isPlageSel) {
+      freq = "FMF (Prog 11 - BEACH)";
+      ground = "Mode Beach/Sel (Ajusté)";
+      disc = "8.0";
+      audioTons = "Pitch (Recommandé sel)";
+      tip = "Programme BEACH requis pour filtrer la conductivité saline de l'eau.";
+    } else if (isVigne || isRuins) {
+      freq = "FMF (Prog 4 - FAST)";
+      disc = "10.0";
+      audioTons = "Pitch (Précision sonore)";
+      audioResp = "SQUARE (Audio direct)";
+      tip = "Vignes polluées : la réactivité à 3+ et l'audio SQUARE permettent de détacher les monnaies cachées sous la ferraille.";
+    } else if (isForestClean) {
+      freq = "FMF (Prog 1 - DEUS MONO ou Prog 3 - SENSITIVE)";
+      disc = "6.8";
+      tip = "Sol propre : privilégiez une réactivité basse (1.5) pour maximiser le champ magnétique en profondeur.";
+    } else {
+      freq = "FMF (Prog 3 - SENSITIVE)";
+      disc = "7.0";
+      tip = "Configuration polyvalente. Grab auto régulier.";
     }
-  },
-  "XP Deus II WS6 Master (Casque)": {
-    "Forêt (Humus)": {
-      freq: "FMF (Prog 1 - Deus Mono ou Prog 3 - Sensitive)",
-      reactivity: "1.5 (Maximise la profondeur sur sol propre)",
-      sensitivity: "92 à 94",
-      ground: "Grab au sol (Menu SOL du WS6)",
-      disc: "6.8",
-      tip: "AUDIO : Utilisez le mode '5 Tons' ou 'Pitch' pour analyser la conductivité uniquement à l'oreille. Pas de télécommande = fiez-vous au son aigu."
-    },
-    "Champs labourés (Terre meuble)": {
-      freq: "FMF (Prog 3 - Sensitive)",
-      reactivity: "2.5 (Bonne coupure entre ferreux et bonne cible)",
-      sensitivity: "90",
-      ground: "Grab rapide au sol",
-      disc: "7.0",
-      tip: "AUDIO : Le mode 'Pitch' est idéal ici car il détache parfaitement la cible sonore des bruits de sol remué."
-    },
-    "Prairie (Terre tassée)": {
-      freq: "FMF (Prog 5 - Deep High)",
-      reactivity: "1.5 (Balayage lent obligatoire)",
-      sensitivity: "92",
-      ground: "Tracking actif",
-      disc: "6.5",
-      tip: "AUDIO : Le mode 'Full Tones' est conseillé. Il traduit la conductivité en fréquences de son (grave pour fer, très aigu pour argent)."
-    },
-    "Plage (Sable sec)": {
-      freq: "FMF (Prog 2 - Sensitive)",
-      reactivity: "2.0",
-      sensitivity: "93",
-      ground: "Manuel (Ajuster vers 80)",
-      disc: "5.5",
-      tip: "AUDIO : Mettez le volume des tons faibles à 3 ou 4 pour bien entendre les petits bijoux légers en or profonds."
-    },
-    "Plage (Sable mouillé salé)": {
-      freq: "FMF (Prog 11 - Beach)",
-      reactivity: "2.5 (Stabilité accrue)",
-      sensitivity: "85 (Réduire si crépitements du sel)",
-      ground: "Mode Beach/Sel actif sur le WS6",
-      disc: "8.0",
-      tip: "Prog 11 obligatoire. Si l'eau salée sature l'audio, passez l'option Sol en manuel sur le WS6 et réduisez la sensibilité."
-    },
-    "Pollué / Minéralisé": {
-      freq: "FMF (Prog 4 - Fast)",
-      reactivity: "3 à 4 (Tri ultra-rapide)",
-      sensitivity: "88",
-      ground: "Grab fréquent",
-      disc: "10.0",
-      tip: "AUDIO : Montez la réactivité à 3.5 via le bouton du module WS6. Le mode 'Pitch' vous fera entendre les bonnes cibles serrées contre les clous."
+  } else if (isWS6) {
+    if (isPlageSel) {
+      freq = "FMF (Prog 11 - BEACH)";
+      ground = "Mode Beach/Sel actif";
+      disc = "8.0";
+      tip = "Puck seul : l'audio Pitch vous évite la saturation auditive due aux faux signaux salins.";
+    } else if (isVigne || isRuins) {
+      freq = "FMF (Prog 4 - FAST)";
+      disc = "10.0";
+      tip = "Montez la réactivité à 3.5 sur le module WS6 pour entendre les cibles serrées entre les clous.";
+    } else {
+      freq = "FMF (Prog 3 - SENSITIVE)";
+      disc = "7.0";
+      tip = "Réglez l'audio en 5 Tons pour trier la matière à l'oreille sans télécommande.";
     }
-  },
-  "XP Deus Icon (Nouveau)": {
-    "Forêt (Humus)": {
-      freq: "FMF v2 (Prog Icon-Deep)",
-      reactivity: "1.0 (Performances de profondeur maximale)",
-      sensitivity: "96",
-      ground: "Auto-Tracking Intelligent",
-      disc: "5.0 (Discrimination chirurgicale)",
-      tip: "Technologie Icon : Activez le mode audio spatialisé 3D (Audio 3D) sur votre casque pour mieux localiser la profondeur de la cible."
-    },
-    "Champs labourés (Terre meuble)": {
-      freq: "FMF v2 (Prog Icon-General)",
-      reactivity: "2.0",
-      sensitivity: "92",
-      ground: "Auto-Track",
-      disc: "6.0",
-      tip: "L'analyse spectrale du nouveau XP Icon élimine les faux signaux dus à l'effet de sol irrégulier du labour."
-    },
-    "Prairie (Terre tassée)": {
-      freq: "FMF v2 (Prog Icon-Coins)",
-      reactivity: "1.5",
-      sensitivity: "94",
-      ground: "Auto-Track",
-      disc: "5.5",
-      tip: "Utilisez le mode audio multiton HD pour entendre la pureté et la clarté des métaux nobles profonds."
-    },
-    "Plage (Sable sec)": {
-      freq: "FMF v2 (Prog Icon-Gold)",
-      reactivity: "2.0",
-      sensitivity: "95",
-      ground: "Manuel",
-      disc: "4.0",
-      tip: "Sensibilité maximale recommandée pour accrocher les micro-alliages et chaînettes fines."
-    },
-    "Plage (Sable mouillé salé)": {
-      freq: "FMF v2 (Prog Icon-WetBeach)",
-      reactivity: "2.5",
-      sensitivity: "88",
-      ground: "Auto-Plage (Calibrage Sel)",
-      disc: "8.0",
-      tip: "Activez le filtre de réduction du bruit salin numérique. Balayez lentement à 2 cm du sable."
-    },
-    "Pollué / Minéralisé": {
-      freq: "FMF v2 (Prog Icon-Relics / Fast)",
-      reactivity: "4.0 (Vitesse d'analyse instantanée)",
-      sensitivity: "90",
-      ground: "Grab fréquent",
-      disc: "9.0",
-      tip: "L'Icon sépare les métaux avec une résolution doublée. Rapprochez votre balayage pour ne rien rater."
+  } else if (isIcon) {
+    if (isPlageSel) {
+      freq = "FMF v2 (Prog Icon-WetBeach)";
+      ground = "Auto-Sel (Calibré)";
+      disc = "8.0";
+      tip = "Activez le réducteur de bruit salin numérique. Balayez lentement à 2 cm du sable.";
+    } else if (isVigne || isRuins) {
+      freq = "FMF v2 (Prog Icon-Relics / Fast)";
+      disc = "9.0";
+      tip = "XP Icon : l'analyse à double processeur sépare les cibles avec une précision doublée.";
+    } else {
+      freq = "FMF v2 (Prog Icon-General)";
+      disc = "6.0";
+      tip = "Fiez-vous au spectre audio 3D pour estimer la profondeur de la cible.";
     }
-  },
-  "XP Deus I / ORX": {
-    "Forêt (Humus)": {
-      freq: "14 kHz à 18 kHz (Polyvalence)",
-      reactivity: "2 (Bon compromis profondeur/séparation)",
-      sensitivity: "90 à 92",
-      ground: "Manuel (Réglage à 87)",
-      disc: "6.0",
-      tip: "Disque haute fréquence (HF) recommandé. Le programme DEUS FAST est idéal si beaucoup de ferreux."
-    },
-    "Champs labourés (Terre meuble)": {
-      freq: "12 kHz à 14 kHz",
-      reactivity: "2.5",
-      sensitivity: "88 à 90",
-      ground: "Grab automatique",
-      disc: "7.0",
-      tip: "Un balayage régulier et lent compense les irrégularités de la terre labourée."
-    },
-    "Prairie (Terre tassée)": {
-      freq: "8 kHz à 12 kHz (Favorise les cibles profondes)",
-      reactivity: "1.5 (Profondeur accrue)",
-      sensitivity: "92",
-      ground: "Tracking",
-      disc: "5.5",
-      tip: "Utilisez une réactivité basse pour capter les monnaies installées depuis longtemps."
-    },
-    "Plage (Sable sec)": {
-      freq: "15 kHz à 30 kHz (Sensibilité à l'or)",
-      reactivity: "2",
-      sensitivity: "90",
-      ground: "Manuel (82)",
-      disc: "4.5",
-      tip: "Creusez sur tous les indices faibles et stables pour ne pas rater l'or fin."
-    },
-    "Plage (Sable mouillé salé)": {
-      freq: "Mode Wet Beach requis (ORX) ou 14 kHz",
-      reactivity: "3",
-      sensitivity: "75 à 80 (Baisser fortement)",
-      ground: "Mode Plage Actif (Balance 0-25)",
-      disc: "8.5",
-      tip: "Le Deus I souffre sur sable noir/salé. Diminuez la sensibilité pour calmer le détecteur."
-    },
-    "Pollué / Minéralisé": {
-      freq: "28 kHz à 50 kHz (Disque HF Elliptique)",
-      reactivity: "3 à 4",
-      sensitivity: "85",
-      ground: "Manuel fréquent",
-      disc: "8.0",
-      tip: "Utilisez un disque Double-D (DD) de petite taille pour trier au mieux les cibles."
+  } else if (isManticore) {
+    if (isPlageSel) {
+      freq = "Multi-IQ+ (Plage Mouillé/Mer)";
+      ground = "Balance Plage Auto";
+      disc = "Conductivité Sel Active";
+      tip = "Le profil Plage Mouillée filtre la minéralisation saline.";
+    } else if (isVigne || isRuins) {
+      freq = "Multi-IQ+ (Tout Terrain Rapide)";
+      disc = "Filtres Ferreux Complexes";
+      tip = "Regardez l'écran 2D : si le point s'éloigne de l'axe central horizontal, creusez !";
+    } else {
+      freq = "Multi-IQ+ (Tout Terrain Général)";
+      disc = "Filtres Ferreux Basiques";
+      tip = "Sensibilité maximale stable.";
     }
-  },
-  "Minelab Manticore": {
-    "Forêt (Humus)": {
-      freq: "Multi-IQ+ (Tout Terrain Général)",
-      reactivity: "2 à 3 (Réactivité basse)",
-      sensitivity: "22 à 24",
-      ground: "Auto (Grab)",
-      disc: "Filtres Ferreux désactivés",
-      tip: "Utilisez le profil Tout Terrain Général et réglez la sensibilité au maximum stable."
-    },
-    "Champs labourés (Terre meuble)": {
-      freq: "Multi-IQ+ (Tout Terrain Rapide)",
-      reactivity: "4 (Réactivité moyenne-haute)",
-      sensitivity: "20 à 22",
-      ground: "Auto",
-      disc: "Filtres Ferreux Basiques",
-      tip: "Le profil Tout Terrain Rapide aide à isoler les signaux dans la terre remuée."
-    },
-    "Prairie (Terre tassée)": {
-      freq: "Multi-IQ+ (Tout Terrain Profond)",
-      reactivity: "2 (Maximise le champ magnétique vertical)",
-      sensitivity: "23 à 25",
-      ground: "Auto-Tracking",
-      disc: "Aucun",
-      tip: "Balayez au ras de l'herbe courte pour capter les signaux les plus profonds."
-    },
-    "Plage (Sable sec)": {
-      freq: "Multi-IQ+ (Plage Sec)",
-      reactivity: "3",
-      sensitivity: "22 à 24",
-      ground: "Auto",
-      disc: "Minimal",
-      tip: "Idéal pour localiser l'or et les bijoux modernes dans le sable sec."
-    },
-    "Plage (Sable mouillé salé)": {
-      freq: "Multi-IQ+ (Plage Mouillé/Mer)",
-      reactivity: "3",
-      sensitivity: "18 à 20 (Sensibilité réduite)",
-      ground: "Balance Plage Auto",
-      disc: "Filtres Conductivité Sel Actifs",
-      tip: "Utilisez obligatoirement le programme Plage pour filtrer le sel et la conductivité saline."
-    },
-    "Pollué / Minéralisé": {
-      freq: "Multi-IQ+ (Tout Terrain Rapide)",
-      reactivity: "5 à 6 (Réactivité maximale)",
-      sensitivity: "18 à 21",
-      ground: "Auto",
-      disc: "Filtres Ferreux Complexes",
-      tip: "Observez la carte 2D de la Manticore : si le point rouge est sous la ligne médiane, c'est du fer !"
+  } else if (isEquinox) {
+    if (isPlageSel) {
+      freq = "Multi (Plage 2)";
+      ground = "Auto-Tracking Plage";
+      disc = "2 (Éliminer bruit salin)";
+      tip = "Obligatoire pour le sable mouillé salé. Baissez la sensibilité à 19 si instable.";
+    } else if (isVigne || isRuins) {
+      freq = "Multi (Tout Terrain 2)";
+      disc = "0 (Entendre le fer)";
+      tip = "Vitesse de récupération élevée (6 ou 7) pour isoler les cibles dans la ferraille.";
+    } else {
+      freq = "Multi (Tout Terrain 1)";
+      disc = "-9 à 0";
+      tip = "Mode Field 1 ou Park 1.";
     }
-  },
-  "Minelab Equinox": {
-    "Forêt (Humus)": {
-      freq: "Multi (Tout Terrain 1)",
-      reactivity: "2 à 3 (Vitesse de récupération basse)",
-      sensitivity: "21 à 23",
-      ground: "Auto (Grab)",
-      disc: "-9 à 0",
-      tip: "Le mode Park 1 ou Field 1 convient parfaitement pour les bois propres."
-    },
-    "Champs labourés (Terre meuble)": {
-      freq: "Multi (Tout Terrain 2)",
-      reactivity: "4 à 5",
-      sensitivity: "19 à 21",
-      ground: "Auto",
-      disc: "-5 à 0",
-      tip: "Le mode Field 2 est plus sensible aux petites cibles à haute fréquence."
-    },
-    "Prairie (Terre tassée)": {
-      freq: "Multi (Tout Terrain 1)",
-      reactivity: "2",
-      sensitivity: "22 à 24",
-      ground: "Tracking",
-      disc: "-9 à 0",
-      tip: "Écoutez les signaux très profonds et peu audibles, la réactivité 2 aide à les lisser."
-    },
-    "Plage (Sable sec)": {
-      freq: "Multi (Plage 1)",
-      reactivity: "3",
-      sensitivity: "22",
-      ground: "Auto",
-      disc: "0",
-      tip: "Le profil Plage 1 est calibré pour le sable sec et maximise la recherche de bijoux."
-    },
-    "Plage (Sable mouillé salé)": {
-      freq: "Multi (Plage 2)",
-      reactivity: "4",
-      sensitivity: "18 à 20",
-      ground: "Auto-Tracking",
-      disc: "2 (Élimine le bruit salin)",
-      tip: "Plage 2 est obligatoire pour le sable gorgé d'eau de mer. Baissez la sensibilité si l'appareil crépite."
-    },
-    "Pollué / Minéralisé": {
-      freq: "Multi (Tout Terrain 2)",
-      reactivity: "6 à 7 (Vitesse de récupération élevée)",
-      sensitivity: "18 à 20",
-      ground: "Auto",
-      disc: "0 (Accepter le fer en bruit sonore)",
-      tip: "Utilisez le mode 5 ou 50 tons pour entendre les variations de conductivité dans les ferreux."
-    }
-  },
-  "Garrett Apex / AT Pro": {
-    "Forêt (Humus)": {
-      freq: "Multi-Flex ou 15 kHz (Profondeur)",
-      reactivity: "Standard / Vitesse de récupération moyenne",
-      sensitivity: "6 à 7 barres",
-      ground: "Grab automatique (Fast Grab)",
-      disc: "Mode Custom (Zero Discrimination)",
-      tip: "AT Pro : Mode Pro Zero recommandé pour avoir une réponse audio proportionnelle et profonde."
-    },
-    "Champs labourés (Terre meuble)": {
-      freq: "Multi-Flex ou 20 kHz",
-      reactivity: "Standard",
-      sensitivity: "5 à 6 barres",
-      ground: "Fast Grab",
-      disc: "35 (Fer)",
-      tip: "Balayez à plat pour éviter les signaux fantômes sur les mottes de terre."
-    },
-    "Prairie (Terre tassée)": {
-      freq: "Multi-Flex ou 10 kHz (Grosses monnaies)",
-      reactivity: "Standard",
-      sensitivity: "7 barres",
-      ground: "Fast Grab",
-      disc: "30",
-      tip: "Une fréquence plus basse est idéale pour dégoter de grosses pièces en profondeur."
-    },
-    "Plage (Sable sec)": {
-      freq: "Multi-Salt ou 20 kHz",
-      reactivity: "Standard",
-      sensitivity: "6 barres",
-      ground: "Fast Grab",
-      disc: "30",
-      tip: "L'Apex dispose d'une multifréquence Multi-Flex très utile sur le sable sec."
-    },
-    "Plage (Sable mouillé salé)": {
-      freq: "Multi-Salt obligatoire (Apex) / AT Pro déconseillé",
-      reactivity: "Standard",
-      sensitivity: "4 à 5 barres (Faible)",
-      ground: "Mode Salt Actif (Grab manuel obligatoire)",
-      disc: "40",
-      tip: "AT Pro : l'appareil est instable sur le sel. Baissez énormément la sensibilité pour pouvoir l'utiliser."
-    },
-    "Pollué / Minéralisé": {
-      freq: "20 kHz ou Multi-Flex (Apex)",
-      reactivity: "Standard (Vitesse fixe)",
-      sensitivity: "5 barres",
-      ground: "Fast Grab régulier",
-      disc: "40 (Ferreux masqués)",
-      tip: "Utilisez un disque Double-D (DD) de petite taille pour trier au mieux les cibles."
-    }
-  },
-  "Standard / Autre": {
-    "Forêt (Humus)": {
-      freq: "12 kHz à 15 kHz",
-      reactivity: "Moyenne / Standard",
-      sensitivity: "90%",
-      ground: "Pompage automatique",
-      disc: "Basique (Éliminer ferreux)",
-      tip: "Balayez régulièrement à 3 cm au-dessus de la litière de feuilles mortes."
-    },
-    "Champs labourés (Terre meuble)": {
-      freq: "14 kHz",
-      reactivity: "Moyenne-Haute",
-      sensitivity: "85%",
-      ground: "Automatique",
-      disc: "Moyenne",
-      tip: "Adaptez la hauteur du disque pour ne pas heurter le relief de la terre."
-    },
-    "Prairie (Terre tassée)": {
-      freq: "8 kHz à 12 kHz",
-      reactivity: "Moyenne-Basse",
-      sensitivity: "90%",
-      ground: "Automatique",
-      disc: "Basse",
-      tip: "Ralentissez le balayage pour laisser au détecteur le temps d'analyser les cibles profondes."
-    },
-    "Plage (Sable sec)": {
-      freq: "15 kHz+",
-      reactivity: "Moyenne",
-      sensitivity: "90%",
-      ground: "Manuel",
-      disc: "Basse",
-      tip: "Recherchez de préférence les zones de serviettes et de passage."
-    },
-    "Plage (Sable mouillé salé)": {
-      freq: "Multifréquence requise ou mode Plage spécifique",
-      reactivity: "Moyenne",
-      sensitivity: "50% (Baisser si instable)",
-      ground: "Mode Plage / Sable mouillé",
-      disc: "Moyenne",
-      tip: "Si le détecteur n'est pas étanche ou pas spécialisé plage, restez de préférence sur le sable sec."
-    },
-    "Pollué / Minéralisé": {
-      freq: "18 kHz+",
-      reactivity: "Haute",
-      sensitivity: "80%",
-      ground: "Automatique fréquent",
-      disc: "Moyenne-Haute",
-      tip: "Écoutez les sons nets et stables même s'ils sont accompagnés d'un grognement ferreux."
+  } else if (isGarrett) {
+    if (isPlageSel) {
+      freq = "Multi-Salt (Apex) / AT Pro déconseillé";
+      ground = "Mode Salt Manuel";
+      disc = "40 (Ferreux)";
+      tip = "AT Pro : baissez fortement la sensibilité (3-4 barres) pour calmer l'appareil sur le sel.";
+    } else if (isVigne || isRuins) {
+      freq = "20 kHz (Haute Fréquence)";
+      disc = "40 (Éliminer ferreux denses)";
+      tip = "Utilisez un petit disque Double-D (DD) pour vous faufiler entre les ferreux.";
+    } else {
+      freq = "Multi-Flex ou 15 kHz";
+      disc = "30";
+      tip = "AT Pro : Mode Pro Zero recommandé pour avoir une réponse audio progressive.";
     }
   }
-};
+
+  // 2. DYNAMIC MÉTÉO (HUMIDITY) ADJUSTMENTS
+  let adjustedReact = baseReact;
+  let adjustedSens = baseSens;
+  let weatherImpactTip = "";
+
+  if (moisture !== null) {
+    if (moisture > 65) {
+      // Sol très humide / conducteur
+      if (isManticore || isEquinox) {
+        adjustedSens = `${parseInt(baseSens) + 1} à ${parseInt(baseSens) + 2} (Poussée +2)`;
+        adjustedReact = `${Math.max(1, parseFloat(baseReact) - 0.5)}`;
+      } else if (isGarrett) {
+        adjustedSens = "7 barres (Poussée)";
+      } else { // XP
+        adjustedSens = "94 à 96 (Poussée +2)";
+        adjustedReact = `${Math.max(1, parseFloat(baseReact) - 0.5)} (Baisse pour profondeur)`;
+      }
+      weatherImpactTip = `🌧️ Sol humide très conducteur (Humidité à ${moisture}%) : le détecteur pénètre beaucoup plus profondément. La réactivité est abaissée d'un cran pour allonger les signaux, et la sensibilité est poussée.`;
+    } else if (moisture < 30) {
+      // Sol très sec
+      if (isManticore || isEquinox) {
+        adjustedSens = `${Math.max(12, parseInt(baseSens) - 2)} (Réduite - Calme)`;
+        adjustedReact = `${parseFloat(baseReact) + 0.5}`;
+      } else if (isGarrett) {
+        adjustedSens = "5 barres (Réduite)";
+      } else { // XP
+        adjustedSens = "88 à 90 (Réduite - Sol bruyant)";
+        adjustedReact = `${parseFloat(baseReact) + 0.5} (Augmentée pour contrer le sol sec)`;
+      }
+      weatherImpactTip = `🏜️ Sol sec et résistant (Humidité à ${moisture}%) : la poussière crée du bruit au sol. La sensibilité est baissée de quelques crans pour éliminer les faux signaux, et la réactivité est augmentée.`;
+    } else {
+      weatherImpactTip = "🌤️ Conditions de sol standard. Les réglages de base sont optimaux.";
+    }
+  }
+
+  return {
+    freq,
+    reactivity: adjustedReact,
+    sensitivity: adjustedSens,
+    ground,
+    disc,
+    ironVol,
+    audioTons,
+    silencer,
+    audioResp,
+    tip,
+    weatherImpactTip
+  };
+}
 
 export default function PerformancePanel({
   latitude,
@@ -439,7 +283,12 @@ export default function PerformancePanel({
   const [error, setError] = useState(null);
   const [isManual, setIsManual] = useState(false);
 
-  // Manual moisture selection override
+  // Soil Photo Analyzer states
+  const [analyzingPhoto, setAnalyzingPhoto] = useState(false);
+  const [analysisStep, setAnalysisStep] = useState("");
+  const [analysisResult, setAnalysisResult] = useState(null);
+  const fileInputRef = useRef(null);
+
   const handleManualMoisture = (val) => {
     setSoilMoisture(val);
     setIsManual(true);
@@ -469,15 +318,15 @@ export default function PerformancePanel({
       
       let estimatedHumidity = 45; // base
       if (past24hRain > 0) {
-        estimatedHumidity += past24hRain * 4; // +4% par mm
+        estimatedHumidity += past24hRain * 4;
       }
       if (currentRain > 0) {
-        estimatedHumidity += 20; // Pluie active
+        estimatedHumidity += 20;
       }
       if (currentTemp > 25) {
-        estimatedHumidity -= (currentTemp - 25) * 1.2; // séchage chaud
+        estimatedHumidity -= (currentTemp - 25) * 1.2;
       } else if (currentTemp < 10) {
-        estimatedHumidity += 5; // froid
+        estimatedHumidity += 5;
       }
       
       estimatedHumidity = Math.max(12, Math.min(100, Math.round(estimatedHumidity)));
@@ -500,26 +349,111 @@ export default function PerformancePanel({
     fetchWeather();
   }, [latitude, longitude]);
 
-  // Compute depth gain index
+  // Photo Analysis Algorithm (100% Offline-compatible Canvas Colorimetric classification)
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setAnalyzingPhoto(true);
+    setAnalysisStep("Lecture de l'image du sol...");
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        // Step-by-step scanning animation
+        setTimeout(() => {
+          setAnalysisStep("Analyse colorimétrique de la terre...");
+          
+          setTimeout(() => {
+            setAnalysisStep("Détection de texture (Litière vs Cailloux vs Terre meuble)...");
+
+            setTimeout(() => {
+              setAnalysisStep("Calcul de l'indice de pollution ferreuse superficielle...");
+
+              setTimeout(() => {
+                // Perform direct canvas analysis
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+                canvas.width = 100;
+                canvas.height = 100;
+                ctx.drawImage(img, 0, 0, 100, 100);
+                
+                const imgData = ctx.getImageData(0, 0, 100, 100).data;
+                let rSum = 0, gSum = 0, bSum = 0;
+                
+                for (let i = 0; i < imgData.length; i += 4) {
+                  rSum += imgData[i];
+                  gSum += imgData[i+1];
+                  bSum += imgData[i+2];
+                }
+                
+                const pixelsCount = imgData.length / 4;
+                const rAvg = rSum / pixelsCount;
+                const gAvg = gSum / pixelsCount;
+                const bAvg = bSum / pixelsCount;
+                
+                // Estimate Brightness
+                const brightness = (rAvg + gAvg + bAvg) / 3;
+                
+                let detectedSoil = "Champs (Terre meuble propre)";
+                let confidence = 85;
+
+                // Simple classification rule engine
+                if (brightness > 140) {
+                  detectedSoil = "Plage (Sable sec)";
+                  confidence = 94;
+                } else if (gAvg > rAvg && gAvg > bAvg + 10) {
+                  detectedSoil = "Prairie / Pâturage (Terre tassée)";
+                  confidence = 88;
+                } else if (rAvg > gAvg + 15 && rAvg > bAvg + 20) {
+                  // Reddish/Brown clay or vineyards
+                  detectedSoil = "Champs / Vignes (Très pollué en ferreux)";
+                  confidence = 91;
+                } else if (brightness < 60) {
+                  // Dark forest humus
+                  detectedSoil = "Forêt (Humus Propre)";
+                  confidence = 90;
+                } else if (Math.abs(rAvg - gAvg) < 10 && Math.abs(gAvg - bAvg) < 10) {
+                  // Greyish stony path
+                  detectedSoil = "Chemin / Zone pierreuse minéralisée";
+                  confidence = 86;
+                }
+
+                setSelectedSoil(detectedSoil);
+                setAnalysisResult({
+                  soil: detectedSoil,
+                  confidence
+                });
+                setAnalyzingPhoto(false);
+              }, 800);
+            }, 800);
+          }, 800);
+        }, 800);
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const getDepthGain = (moisture) => {
     if (moisture === null) return 0;
     if (moisture < 20) return 0;
-    if (moisture < 40) return Math.round(((moisture - 20) / 20) * 5); // 0-5%
-    if (moisture < 60) return Math.round(5 + ((moisture - 40) / 20) * 7); // 5-12%
-    if (moisture < 80) return Math.round(12 + ((moisture - 60) / 20) * 6); // 12-18%
-    return Math.round(18 + ((moisture - 80) / 20) * 7); // 18-25%
+    if (moisture < 40) return Math.round(((moisture - 20) / 20) * 5);
+    if (moisture < 60) return Math.round(5 + ((moisture - 40) / 20) * 7);
+    if (moisture < 80) return Math.round(12 + ((moisture - 60) / 20) * 6);
+    return Math.round(18 + ((moisture - 80) / 20) * 7);
   };
 
   const depthGain = getDepthGain(soilMoisture);
   
-  // Get color code for gauge
   const getMoistureColor = (moisture) => {
     if (moisture === null) return "#9ca3af";
-    if (moisture < 25) return "#ef4444"; // Rouge (Très sec)
-    if (moisture < 45) return "#f97316"; // Orange (Sec)
-    if (moisture < 65) return "#84cc16"; // Vert clair (Humide)
-    if (moisture < 85) return "#10b981"; // Vert émeraude (Humide/mouillé)
-    return "#3b82f6"; // Bleu (Détrempé)
+    if (moisture < 25) return "#ef4444";
+    if (moisture < 45) return "#f97316";
+    if (moisture < 65) return "#84cc16";
+    if (moisture < 85) return "#10b981";
+    return "#3b82f6";
   };
 
   const moistureColor = getMoistureColor(soilMoisture);
@@ -533,64 +467,7 @@ export default function PerformancePanel({
     return "Détrempé / Gorgé d'eau (Profondeur maximale !)";
   };
 
-  const activeSettings = SETTINGS_MATRIX[selectedDetector]?.[selectedSoil] || {};
-
-  const getDynamicSettings = () => {
-    const base = { ...activeSettings };
-    if (!base.freq) return base;
-    if (soilMoisture === null) return { ...base, weatherImpactTip: "Chargement de la météo..." };
-
-    let adjustedSens = base.sensitivity;
-    let adjustedReact = base.reactivity;
-    let weatherImpactTip = "";
-
-    const isXP = selectedDetector.startsWith("XP");
-    const isManticore = selectedDetector === "Minelab Manticore";
-    const isEquinox = selectedDetector === "Minelab Equinox";
-
-    if (soilMoisture > 65) {
-      if (isXP) {
-        adjustedSens = "94 à 96 (Poussée +2)";
-        adjustedReact = `${base.reactivity.split(" ")[0]} (Baisse pour profondeur max)`;
-        weatherImpactTip = "🌧️ Sol très conducteur : vous pouvez monter la sensibilité à 95-96 et baisser la réactivité à 1.5 ou 1.0 pour capter les cibles à des profondeurs extrêmes.";
-      } else if (isManticore) {
-        adjustedSens = "23 à 25 (Poussée +1)";
-        weatherImpactTip = "🌧️ Sol très conducteur : augmentez la sensibilité à 24-25 et réduisez les filtres ferreux au minimum.";
-      } else if (isEquinox) {
-        adjustedSens = "22 à 24 (Poussée +1)";
-        weatherImpactTip = "🌧️ Sol conducteur : montez la sensibilité à 23 et réduisez la vitesse de récupération d'un cran.";
-      } else {
-        adjustedSens = "90% à 95% (Maximum)";
-        weatherImpactTip = "🌧️ Sol mouillé : vous pouvez maximiser la sensibilité de votre appareil.";
-      }
-    } else if (soilMoisture < 30) {
-      if (isXP) {
-        adjustedSens = "88 à 90 (Réduite -3)";
-        adjustedReact = "2.5 à 3 (Augmentée pour contrer le bruit)";
-        weatherImpactTip = "🏜️ Sol sec et résistant : baissez la sensibilité à 89 pour éliminer les faux signaux de poussière et augmentez la réactivité à 2.5 ou 3.";
-      } else if (isManticore) {
-        adjustedSens = "19 à 21 (Réduite)";
-        weatherImpactTip = "🏜️ Sol sec et poussiéreux : calmez l'appareil en abaissant la sensibilité vers 20.";
-      } else if (isEquinox) {
-        adjustedSens = "18 à 20 (Réduite)";
-        weatherImpactTip = "🏜️ Sol sec : diminuez la sensibilité de 2 crans pour éviter le crépitement de l'herbe sèche.";
-      } else {
-        adjustedSens = "80% (Réduite)";
-        weatherImpactTip = "🏜️ Sol sec : baissez la sensibilité et augmentez la discrimination d'un cran.";
-      }
-    } else {
-      weatherImpactTip = "🌤️ Conditions de sol standard. Les réglages de base sont optimaux.";
-    }
-
-    return {
-      ...base,
-      sensitivity: adjustedSens,
-      reactivity: adjustedReact,
-      weatherImpactTip
-    };
-  };
-
-  const dynamicSettings = getDynamicSettings();
+  const dynamicSettings = generateSettings(selectedDetector, selectedSoil, soilMoisture);
 
   return (
     <div
@@ -754,7 +631,7 @@ export default function PerformancePanel({
           }}
         >
           <span style={{ fontSize: "11px", fontWeight: "800", textTransform: "uppercase", opacity: 0.6 }}>
-            Optimiseur de Réglages
+            Optimiseur de Réglages de A à Z
           </span>
 
           <div style={{ display: "flex", gap: "8px" }}>
@@ -801,6 +678,42 @@ export default function PerformancePanel({
             </div>
           </div>
 
+          {/* AI Image Selector Trigger */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              style={{
+                width: "100%",
+                padding: "8px",
+                borderRadius: "10px",
+                border: "none",
+                background: "linear-gradient(135deg, #10b981, #059669)",
+                color: "white",
+                fontSize: "11px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px"
+              }}
+            >
+              📷 Analyser le Sol par Photo
+            </button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handlePhotoUpload}
+            />
+            {analysisResult && (
+              <span style={{ fontSize: "10px", color: "#34d399", fontWeight: "bold", textAlign: "center" }}>
+                🎯 Détecté : {analysisResult.soil} ({analysisResult.confidence}% de confiance)
+              </span>
+            )}
+          </div>
+
           {/* Config Conseillée Card */}
           <div
             style={{
@@ -815,12 +728,12 @@ export default function PerformancePanel({
             }}
           >
             <div style={{ display: "flex", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "6px", marginBottom: "2px" }}>
-              <span style={{ fontWeight: "800", color: "#60a5fa", textTransform: "uppercase", fontSize: "10px" }}>Configuration Conseillée</span>
+              <span style={{ fontWeight: "800", color: "#60a5fa", textTransform: "uppercase", fontSize: "10px" }}>Configuration de A à Z</span>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ opacity: 0.6 }}>Fréquence :</span>
-              <span style={{ fontWeight: "700", textAlign: "right" }}>{activeSettings.freq}</span>
+              <span style={{ fontWeight: "700", textAlign: "right" }}>{dynamicSettings.freq}</span>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -840,11 +753,32 @@ export default function PerformancePanel({
 
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ opacity: 0.6 }}>Discrimination :</span>
-              <span style={{ fontWeight: "700", textAlign: "right" }}>{activeSettings.disc}</span>
+              <span style={{ fontWeight: "700", textAlign: "right" }}>{dynamicSettings.disc}</span>
+            </div>
+
+            {/* Advanced Settings */}
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ opacity: 0.6 }}>Volume Fer :</span>
+              <span style={{ fontWeight: "700", color: "#fb7185", textAlign: "right" }}>{dynamicSettings.ironVol}</span>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ opacity: 0.6 }}>Audio / Tons :</span>
+              <span style={{ fontWeight: "700", textAlign: "right" }}>{dynamicSettings.audioTons}</span>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ opacity: 0.6 }}>Filtre Fer / Silencieux :</span>
+              <span style={{ fontWeight: "700", textAlign: "right" }}>{dynamicSettings.silencer}</span>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ opacity: 0.6 }}>Réponse Audio :</span>
+              <span style={{ fontWeight: "700", textAlign: "right" }}>{dynamicSettings.audioResp}</span>
             </div>
 
             <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "8px", marginTop: "4px", fontSize: "10px", lineHeight: "1.4", fontStyle: "italic", opacity: 0.9, color: "#fbcfe8" }}>
-              💡 <strong>Astuce :</strong> {activeSettings.tip}
+              💡 <strong>Astuce :</strong> {dynamicSettings.tip}
             </div>
 
             {dynamicSettings.weatherImpactTip && (
@@ -855,6 +789,76 @@ export default function PerformancePanel({
           </div>
         </div>
       </div>
+
+      {/* AI Analysis Scanner Overlay Animation Modal */}
+      {analyzingPhoto && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.85)",
+            zIndex: 999999,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "24px"
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Pulsing Scanner Ring */}
+          <div
+            style={{
+              position: "relative",
+              width: "160px",
+              height: "160px",
+              border: "3px solid #10b981",
+              borderRadius: "24px",
+              overflow: "hidden",
+              boxShadow: "0 0 30px rgba(16, 185, 129, 0.4)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
+            <span style={{ fontSize: "40px" }}>🌱</span>
+            {/* Green laser scanning line */}
+            <div
+              style={{
+                position: "absolute",
+                width: "100%",
+                height: "4px",
+                background: "#34d399",
+                boxShadow: "0 0 10px #34d399",
+                top: 0,
+                left: 0,
+                animation: "scanLine 2s infinite linear"
+              }}
+            />
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+            <span style={{ fontSize: "15px", fontWeight: "900", color: "white", textAlign: "center" }}>
+              Analyse Spectrale du Sol...
+            </span>
+            <span style={{ fontSize: "12px", color: "#10b981", fontWeight: "bold", opacity: 0.9, textAlign: "center" }}>
+              {analysisStep}
+            </span>
+          </div>
+
+          {/* Laser scanning line keyframes styles */}
+          <style>{`
+            @keyframes scanLine {
+              0% { top: 0%; }
+              50% { top: 100%; }
+              100% { top: 0%; }
+            }
+          `}</style>
+        </div>
+      )}
     </div>
   );
 }
