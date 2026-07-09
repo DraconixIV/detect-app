@@ -4,6 +4,7 @@ import { supabase } from "../supabase";
 import imageCompression from "browser-image-compression";
 import CropperModal from "./CropperModal";
 import ConfirmModal from "./ConfirmModal";
+import BeforeAfterSlider from "./BeforeAfterSlider";
 import { categoriesWithSub, categoryEmojis, materials, materialEmojis } from "../subCategories";
 
 export default function FindPopup({
@@ -28,7 +29,6 @@ export default function FindPopup({
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [compareSliderPos, setCompareSliderPos] = useState(50);
   const [croppingStep, setCroppingStep] = useState("none"); // 'none' | 'before' | 'after' | 'saving'
   const [croppedBeforeBlob, setCroppedBeforeBlob] = useState(null);
   const [confirmConfig, setConfirmConfig] = useState(null);
@@ -785,103 +785,17 @@ export default function FindPopup({
 
           {/* Tab 3: Comparateur slider */}
           {activeTab === "compare" && discoveryPhotos.length > 0 && cleanPhotos.length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "center" }}>
-              <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", alignSelf: "flex-start" }}>
-                Comparaison Avant / Après
-              </label>
-
-              <div
-                style={{
-                  position: "relative",
-                  width: "100%",
-                  height: "240px",
-                  borderRadius: "14px",
-                  overflow: "hidden",
-                  userSelect: "none",
-                  border: "1px solid rgba(255, 255, 255, 0.12)"
-                }}
-              >
-                <img
-                  src={cleanPhotos[0].image_url}
-                  alt="Après"
-                  style={{ width: "100%", height: "100%", objectFit: "contain", background: "rgba(0,0,0,0.5)", position: "absolute", top: 0, left: 0 }}
-                />
-
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    clipPath: `polygon(0 0, ${compareSliderPos}% 0, ${compareSliderPos}% 100%, 0 100%)`
-                  }}
-                >
-                  <img
-                    src={discoveryPhotos[0].image_url}
-                    alt="Avant"
-                    style={{ width: "100%", height: "100%", objectFit: "contain", background: "rgba(0,0,0,0.5)" }}
-                  />
-                </div>
-
-                {/* Slider handle */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    bottom: 0,
-                    left: `${compareSliderPos}%`,
-                    width: "2px",
-                    background: "white",
-                    boxShadow: "0 0 8px rgba(0,0,0,0.5)",
-                    cursor: "ew-resize",
-                    zIndex: 10
-                  }}
-                >
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      width: "30px",
-                      height: "30px",
-                      background: "white",
-                      border: "2px solid #2563eb",
-                      borderRadius: "50%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "#2563eb",
-                      fontWeight: "bold",
-                      fontSize: "12px",
-                      boxShadow: "0 2px 6px rgba(0,0,0,0.3)"
-                    }}
-                  >
-                    ↔️
-                  </div>
-                </div>
-
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={compareSliderPos}
-                  onChange={(e) => setCompareSliderPos(Number(e.target.value))}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    opacity: 0,
-                    cursor: "ew-resize",
-                  }}
-                />
-              </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "center", width: "100%" }}>
+              <BeforeAfterSlider
+                beforeUrl={discoveryPhotos[0].image_url}
+                afterUrl={cleanPhotos[0].image_url}
+              />
 
               <button
-                onClick={() => setCroppingStep("before")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCroppingStep("before");
+                }}
                 style={{
                   width: "100%",
                   padding: "10px",

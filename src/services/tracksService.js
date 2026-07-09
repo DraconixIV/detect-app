@@ -14,50 +14,29 @@ export async function loadTracks() {
   return data || [];
 }
 
-export async function saveTrack(
-  track
-) {
+export async function saveTrack(track, sessionName) {
   if (track.length < 2) {
-    alert(
-      "Pas assez de points GPS"
-    );
-
+    alert("Pas assez de points GPS");
     return false;
   }
 
-  const sessionName =
-    prompt(
-      "Nom de la sortie ?"
-    );
+  if (!sessionName) return false;
 
-  if (!sessionName)
-    return false;
-
-  const { error } =
-    await supabase
-      .from("gps_tracks")
-      .insert([
-        {
-          session_name:
-            sessionName,
-
-          positions: track
-        }
-      ]);
+  const { error } = await supabase
+    .from("gps_tracks")
+    .insert([
+      {
+        session_name: sessionName,
+        positions: track
+      }
+    ]);
 
   if (error) {
     console.error(error);
-
-    alert(
-      "Erreur sauvegarde"
-    );
-
+    alert("Erreur de sauvegarde du tracé");
     return false;
   }
 
-  alert(
-    "Trajet sauvegardé ✅"
-  );
-
+  alert("Trajet sauvegardé ✅");
   return true;
 }
