@@ -515,6 +515,23 @@ export default function FindPopup({
               Description
             </button>
 
+            <button
+              onClick={() => setActiveTab("identification")}
+              style={{
+                flex: 1.2,
+                padding: "8px",
+                border: "none",
+                borderRadius: "10px",
+                background: activeTab === "identification" ? "#2563eb" : "rgba(255,255,255,0.06)",
+                color: "white",
+                fontWeight: "600",
+                fontSize: "11px",
+                cursor: "pointer"
+              }}
+            >
+              Identification 🔗
+            </button>
+
             {discoveryPhotos.length > 0 && cleanPhotos.length > 0 && (
               <button
                 onClick={() => setActiveTab("compare")}
@@ -782,6 +799,67 @@ export default function FindPopup({
               )}
             </div>
           )}
+          {/* Tab 3: Identification Link */}
+          {activeTab === "identification" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div>
+                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px", color: "#9ca3af" }}>
+                  Lien d'identification (URL de référence)
+                </label>
+                <input
+                  type="text"
+                  value={identificationLink}
+                  onChange={(e) => setIdentificationLink(e.target.value)}
+                  placeholder="https://exemplesite.com/catalogue-piece"
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    borderRadius: "12px",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    background: "rgba(255,255,255,0.06)",
+                    color: "white",
+                    fontSize: "13px",
+                    outline: "none",
+                    boxSizing: "border-box"
+                  }}
+                />
+              </div>
+
+              {identificationLink && (
+                <div style={{ marginTop: "10px" }}>
+                  <a
+                    href={identificationLink.startsWith("http") ? identificationLink : `https://${identificationLink}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "8px",
+                      padding: "12px",
+                      borderRadius: "14px",
+                      background: "rgba(59, 130, 246, 0.15)",
+                      border: "1px solid rgba(59, 130, 246, 0.3)",
+                      color: "#60a5fa",
+                      textDecoration: "none",
+                      fontSize: "13px",
+                      fontWeight: "700",
+                      textAlign: "center",
+                      transition: "0.2s"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
+                    }}
+                  >
+                    🌐 Ouvrir le lien de référence
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Tab 3: Comparateur slider */}
           {activeTab === "compare" && discoveryPhotos.length > 0 && cleanPhotos.length > 0 && (
@@ -821,21 +899,23 @@ export default function FindPopup({
 
         {/* Footer Actions */}
         <div style={{ display: "flex", gap: "10px", marginTop: "8px", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "14px" }}>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setConfirmConfig({
-                message: "Supprimer définitivement cette trouvaille ?",
-                onConfirm: () => {
-                  onDelete(find.id);
-                  setIsModalOpen(false);
-                }
-              });
-            }}
-            style={{ ...buttonStyle, background: "#ef4444", flex: 1, padding: "10px" }}
-          >
-            🗑️ Supprimer
-          </button>
+          {activeTab !== "compare" && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setConfirmConfig({
+                  message: "Supprimer définitivement cette trouvaille ?",
+                  onConfirm: () => {
+                    onDelete(find.id);
+                    setIsModalOpen(false);
+                  }
+                });
+              }}
+              style={{ ...buttonStyle, background: "#ef4444", flex: 1, padding: "10px" }}
+            >
+              🗑️ Supprimer
+            </button>
+          )}
 
           <button
             onClick={async (e) => {
