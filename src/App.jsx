@@ -235,6 +235,7 @@ function App() {
   const [savedTracks, setSavedTracks] = useState([]);
   const [showAlbum, setShowAlbum] = useState(false);
   const [albumFilter, setAlbumFilter] = useState("Tous");
+  const [allPhotos, setAllPhotos] = useState([]);
   const [selectedAlbumPhoto, setSelectedAlbumPhoto] = useState(null);
   const [zoomTarget, setZoomTarget] = useState(null);
   const [openPopupFind, setOpenPopupFind] = useState(null);
@@ -422,6 +423,14 @@ function App() {
 
   const loadFinds = async () => {
     const data = await fetchFinds();
+
+    // Charger également toutes les photos de Supabase pour l'Album
+    const { data: photoData } = await supabase
+      .from("find_photos")
+      .select("*");
+    if (photoData) {
+      setAllPhotos(photoData);
+    }
 
     try {
       const offlineFinds = await getPendingFinds();
@@ -1304,7 +1313,7 @@ return (
               .map((find) => {
                 const photoUrl = find.isOfflinePending
                   ? find.offlinePhoto
-                  : find.find_photos?.[0]?.image_url;
+                  : allPhotos.find((p) => p.find_id === find.id)?.image_url;
 
                 if (!photoUrl) return null;
 

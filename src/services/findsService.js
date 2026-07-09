@@ -44,7 +44,7 @@ export async function loadFinds() {
     const { data, error } =
       await supabase
         .from("finds")
-        .select("*, find_photos(*)")
+        .select("*")
         .order("id", {
           ascending: false
         });
