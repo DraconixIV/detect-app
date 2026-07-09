@@ -211,7 +211,7 @@ export default function FindPopup({
       const cleanPhoto = cleanPhotos[0];
 
       if (!discoveryPhoto || !cleanPhoto) {
-        alert("Erreur : photos introuvables.");
+        alert("Erreur : photos d'origine introuvables.");
         setCroppingStep("none");
         return;
       }
@@ -221,10 +221,16 @@ export default function FindPopup({
 
       const beforeOldName = discoveryPhoto.image_url.split("/").pop();
       const afterOldName = cleanPhoto.image_url.split("/").pop();
-      await supabase.storage.from("find-photos").remove([beforeOldName, afterOldName]);
+      
+      try {
+        await supabase.storage.from("find-photos").remove([beforeOldName, afterOldName]);
+      } catch (err) {
+        console.warn("Storage removal warning:", err);
+      }
 
-      const beforeNewName = `${Date.now()}-cropped-before.jpg`;
-      const afterNewName = `${Date.now()}-cropped-after.jpg`;
+      const timestamp = Date.now();
+      const beforeNewName = `${timestamp}-cropped-before.jpg`;
+      const afterNewName = `${timestamp}-cropped-after.jpg`;
 
       const { error: errorBefore } = await supabase.storage
         .from("find-photos")
@@ -235,7 +241,7 @@ export default function FindPopup({
         .upload(afterNewName, afterFile);
 
       if (errorBefore || errorAfter) {
-        throw new Error("Erreur de téléversement.");
+        throw new Error(`Erreur de téléversement : ${errorBefore?.message || ""} ${errorAfter?.message || ""}`);
       }
 
       const { data: { publicUrl: beforeUrl } } = supabase.storage
@@ -246,15 +252,19 @@ export default function FindPopup({
         .from("find-photos")
         .getPublicUrl(afterNewName);
 
-      await supabase
+      const { error: dbErrorBefore } = await supabase
         .from("find_photos")
         .update({ image_url: beforeUrl })
         .eq("id", discoveryPhoto.id);
 
-      await supabase
+      const { error: dbErrorAfter } = await supabase
         .from("find_photos")
         .update({ image_url: afterUrl })
         .eq("id", cleanPhoto.id);
+
+      if (dbErrorBefore || dbErrorAfter) {
+        throw new Error(`Erreur de mise à jour base de données : ${dbErrorBefore?.message || ""} ${dbErrorAfter?.message || ""}`);
+      }
 
       if (window.findPhotosCache) {
         delete window.findPhotosCache[find.id];
@@ -263,7 +273,7 @@ export default function FindPopup({
       alert("Photos alignées et cadrées avec succès ! ✨");
     } catch (err) {
       console.error(err);
-      alert("Erreur lors de la sauvegarde du cadrage.");
+      alert(err.message || "Une erreur est survenue lors de la sauvegarde.");
     } finally {
       setCroppingStep("none");
       setCroppedBeforeBlob(null);
@@ -962,6 +972,7 @@ export default function FindPopup({
       {/* 2-Step Before/After Cropper Modal */}
       {croppingStep === "before" && (
         <CropperModal
+          key="crop-before"
           imageSrc={discoveryPhotos[0]?.image_url}
           onCrop={(blob) => {
             setCroppedBeforeBlob(blob);
@@ -973,6 +984,7 @@ export default function FindPopup({
 
       {croppingStep === "after" && (
         <CropperModal
+          key="crop-after"
           imageSrc={cleanPhotos[0]?.image_url}
           onCrop={(blob) => {
             saveCroppedPhotos(croppedBeforeBlob, blob);
