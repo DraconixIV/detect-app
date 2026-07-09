@@ -10,7 +10,8 @@ import { categoriesWithSub, categoryEmojis, materials, materialEmojis } from "..
 export default function FindPopup({
   find,
   onDelete,
-  onFavorite
+  onFavorite,
+  onUpdate
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("discovery");
@@ -129,6 +130,7 @@ export default function FindPopup({
     find.description = material;
 
     alert("Sauvegardé ✅");
+    if (onUpdate) onUpdate();
   };
 
   const uploadPhoto = async (type, useCamera = false) => {
@@ -193,6 +195,7 @@ export default function FindPopup({
           delete window.findPhotosCache[find.id];
         }
         await loadPhotos();
+        if (onUpdate) onUpdate();
       } catch (err) {
         console.error(err);
         alert("Erreur lors de l'envoi de la photo.");
@@ -294,6 +297,7 @@ export default function FindPopup({
         delete window.findPhotosCache[find.id];
       }
       await loadPhotos();
+      if (onUpdate) onUpdate();
       alert("Photos alignées et cadrées avec succès ! ✨");
     } catch (err) {
       console.error(err);
@@ -316,6 +320,7 @@ export default function FindPopup({
           delete window.findPhotosCache[find.id];
         }
         await loadPhotos();
+        if (onUpdate) onUpdate();
       }
     });
   };

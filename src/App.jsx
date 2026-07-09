@@ -1584,6 +1584,7 @@ return (
               onClose={() => setOpenPopupFind(null)}
               onDelete={deleteFind}
               onFavorite={handleFavorite}
+              onUpdate={loadFinds}
             />
           </Popup>
         )}
@@ -1636,6 +1637,7 @@ return (
                       find={find}
                       onDelete={deleteFind}
                       onFavorite={handleFavorite}
+                      onUpdate={loadFinds}
                     />
                   ) : (
                     <div style={{ padding: "10px", color: "black", fontFamily: "system-ui, sans-serif", fontSize: "12px" }}>
@@ -1669,6 +1671,7 @@ return (
                     find={find}
                     onDelete={deleteFind}
                     onFavorite={handleFavorite}
+                    onUpdate={loadFinds}
                   />
                 ) : (
                   <div style={{ padding: "10px", color: "black", fontFamily: "system-ui, sans-serif", fontSize: "12px" }}>

@@ -183,7 +183,7 @@ export default function CropperModal({
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "contain",
+              objectFit: "cover",
               transform: `translate(${posX}px, ${posY}px) rotate(${rotation}deg) scale(${zoom})`,
               transformOrigin: "center",
               pointerEvents: "none"
@@ -254,7 +254,7 @@ export default function CropperModal({
             </div>
             <input
               type="range"
-              min="0.3"
+              min="0.7"
               max="3"
               step="0.1"
               value={zoom}
