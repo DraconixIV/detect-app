@@ -5,6 +5,10 @@ export default function CropperModal({
   onCrop,
   onClose
 }) {
+  const displaySrc = (imageSrc && (imageSrc.startsWith("http://") || imageSrc.startsWith("https://")))
+    ? `${imageSrc}${imageSrc.includes("?") ? "&" : "?"}nocache=${Date.now()}`
+    : imageSrc;
+
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [posX, setPosX] = useState(0);
@@ -46,6 +50,7 @@ export default function CropperModal({
     canvas.height = 500;
 
     const img = new Image();
+    img.crossOrigin = "anonymous";
     img.onload = () => {
       ctx.clearRect(0, 0, 500, 500);
       
@@ -87,7 +92,7 @@ export default function CropperModal({
         0.85
       );
     };
-    img.src = imageSrc;
+    img.src = displaySrc;
   };
 
   return (
@@ -171,7 +176,8 @@ export default function CropperModal({
         >
           {/* Image to crop */}
           <img
-            src={imageSrc}
+            src={displaySrc}
+            crossOrigin="anonymous"
             alt="To Crop"
             draggable="false"
             style={{
