@@ -235,7 +235,6 @@ function App() {
   const [savedTracks, setSavedTracks] = useState([]);
   const [showAlbum, setShowAlbum] = useState(false);
   const [albumFilter, setAlbumFilter] = useState("Tous");
-  const [allPhotos, setAllPhotos] = useState([]);
   const [selectedAlbumPhoto, setSelectedAlbumPhoto] = useState(null);
   const [zoomTarget, setZoomTarget] = useState(null);
   const [openPopupFind, setOpenPopupFind] = useState(null);
@@ -386,20 +385,34 @@ function App() {
       if (offlineFinds.length === 0) return;
 
       setSyncing(true);
+      let syncedCount = 0;
+      let failedCount = 0;
+
       for (const f of offlineFinds) {
-        await createFind({
-          position: f.position,
-          newTitle: f.newTitle,
-          newDescription: f.newDescription,
-          newCategory: f.newCategory,
-          newSubCategory: f.newSubCategory,
-          newPhoto: f.photo,
-          customDate: f.customDate
-        });
-        await deletePendingFind(f.id);
+        try {
+          await createFind({
+            position: f.position,
+            newTitle: f.newTitle,
+            newDescription: f.newDescription,
+            newCategory: f.newCategory,
+            newSubCategory: f.newSubCategory,
+            newPhoto: f.photo,
+            customDate: f.customDate
+          });
+          await deletePendingFind(f.id);
+          syncedCount++;
+        } catch (singleErr) {
+          console.error(`Failed to sync find id ${f.id}:`, singleErr);
+          failedCount++;
+        }
       }
-      alert("Synchronisation réussie : trouvailles hors-ligne sauvegardées sur Vercel/Supabase ! 🔄");
-      await loadFinds();
+
+      if (syncedCount > 0) {
+        alert(`Synchronisation : ${syncedCount} trouvaille(s) transférée(s) avec succès ! 🔄${failedCount > 0 ? ` (${failedCount} échecs)` : ""}`);
+        await loadFinds();
+      } else if (failedCount > 0) {
+        alert(`⚠️ Échec de la synchronisation pour ${failedCount} trouvaille(s). Veuillez vérifier votre connexion.`);
+      }
     } catch (err) {
       console.error("Synchro error:", err);
     } finally {
@@ -409,14 +422,6 @@ function App() {
 
   const loadFinds = async () => {
     const data = await fetchFinds();
-    
-    // Charger également toutes les photos de Supabase pour l'Album
-    const { data: photoData } = await supabase
-      .from("find_photos")
-      .select("*");
-    if (photoData) {
-      setAllPhotos(photoData);
-    }
 
     try {
       const offlineFinds = await getPendingFinds();
@@ -525,8 +530,34 @@ function App() {
         alert("📸 Trouvaille rapide enregistrée !");
       }
     } catch (error) {
-      console.error(error);
-      alert("Erreur ajout trouvaille");
+      console.error("Supabase creation failed, falling back to local storage:", error);
+      try {
+        await addPendingFind({
+          position: finalPosition,
+          newTitle: titleVal,
+          newDescription: descVal,
+          newCategory: catVal,
+          newSubCategory: subCatVal,
+          customDate: dateVal
+        }, photoVal);
+
+        alert("⚠️ Erreur de réseau ou connexion instable. Votre trouvaille a été sauvegardée localement (Hors-ligne) par précaution ! Elle sera synchronisée dès le retour d'internet. 💾");
+
+        setCustomDate("");
+        setCustomLat("");
+        setCustomLng("");
+        setShowForm(false);
+        setNewTitle("");
+        setNewDescription("");
+        setNewCategory("Monnaie");
+        setNewSubCategory("");
+        setNewPhoto(null);
+
+        await loadFinds();
+      } catch (fallbackError) {
+        console.error("Critical fallback save error:", fallbackError);
+        alert("Erreur critique : impossible d'enregistrer la trouvaille même localement.");
+      }
     }
 
     setAddingFind(false);
@@ -1273,7 +1304,7 @@ return (
               .map((find) => {
                 const photoUrl = find.isOfflinePending
                   ? find.offlinePhoto
-                  : allPhotos.find((p) => p.find_id === find.id)?.image_url;
+                  : find.find_photos?.[0]?.image_url;
 
                 if (!photoUrl) return null;
 
