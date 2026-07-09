@@ -239,8 +239,6 @@ function App() {
   const [albumFilter, setAlbumFilter] = useState("Tous");
   const [allPhotos, setAllPhotos] = useState([]);
   const [selectedAlbumPhoto, setSelectedAlbumPhoto] = useState(null);
-  const [quickCropTitle, setQuickCropTitle] = useState("");
-  const [quickCropImgSrc, setQuickCropImgSrc] = useState(null);
   const [zoomTarget, setZoomTarget] = useState(null);
   const [openPopupFind, setOpenPopupFind] = useState(null);
   const [activePopupId, setActivePopupId] = useState(null);
@@ -613,13 +611,16 @@ function App() {
     }
 
     const title = titleInput.trim() || "Trouvaille Rapide";
-    setQuickCropTitle(title);
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setQuickCropImgSrc(event.target.result);
-    };
-    reader.readAsDataURL(file);
+    await addFind({
+      position,
+      newTitle: title,
+      newDescription: "Indéterminé",
+      newCategory: "Autre",
+      newSubCategory: "",
+      newPhoto: file,
+      customDate: new Date().toLocaleString("fr-FR")
+    });
 
     e.target.value = "";
   };
@@ -1296,28 +1297,6 @@ return (
           latitude={position?.[0]}
           longitude={position?.[1]}
           onClose={() => setShowPerformance(false)}
-        />
-      )}
-
-      {/* QUICK ADD CROPPER MODAL */}
-      {quickCropImgSrc && (
-        <CropperModal
-          imageSrc={quickCropImgSrc}
-          onCrop={async (croppedBlob) => {
-            const croppedFile = new File([croppedBlob], "quick-cropped.jpg", { type: "image/jpeg" });
-            setQuickCropImgSrc(null);
-            
-            await addFind({
-              position,
-              newTitle: quickCropTitle,
-              newDescription: "Indéterminé",
-              newCategory: "Autre",
-              newSubCategory: "",
-              newPhoto: croppedFile,
-              customDate: new Date().toLocaleString("fr-FR")
-            });
-          }}
-          onClose={() => setQuickCropImgSrc(null)}
         />
       )}
 

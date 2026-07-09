@@ -1,5 +1,3 @@
-import { useState } from "react";
-import CropperModal from "./CropperModal";
 import { categoriesWithSub, categoryEmojis, materials, materialEmojis } from "../subCategories";
 
 export default function AddFindForm({
@@ -26,8 +24,6 @@ export default function AddFindForm({
   setCustomLng,
 }) {
 
-
-  const [cropImgSrc, setCropImgSrc] = useState(null);
 
   if (!showForm) return null;
 
@@ -195,11 +191,7 @@ export default function AddFindForm({
             const file = e.target.files?.[0];
             if (!file) return;
 
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              setCropImgSrc(event.target.result);
-            };
-            reader.readAsDataURL(file);
+            setNewPhoto(file);
           }}
         />
       </label>
@@ -296,17 +288,6 @@ export default function AddFindForm({
           ? "Ajout en cours..."
           : "✅ Sauvegarder trouvaille"}
       </button>
-      {cropImgSrc && (
-        <CropperModal
-          imageSrc={cropImgSrc}
-          onCrop={(croppedBlob) => {
-            const croppedFile = new File([croppedBlob], "cropped-find.jpg", { type: "image/jpeg" });
-            setNewPhoto(croppedFile);
-            setCropImgSrc(null);
-          }}
-          onClose={() => setCropImgSrc(null)}
-        />
-      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { supabase } from "../supabase";
 import imageCompression from "browser-image-compression";
+import CropperModal from "./CropperModal";
 import { categoriesWithSub, categoryEmojis, materials, materialEmojis } from "../subCategories";
 
 export default function FindPopup({
@@ -27,6 +28,8 @@ export default function FindPopup({
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [compareSliderPos, setCompareSliderPos] = useState(50);
+  const [croppingStep, setCroppingStep] = useState("none"); // 'none' | 'before' | 'after' | 'saving'
+  const [croppedBeforeBlob, setCroppedBeforeBlob] = useState(null);
 
   useEffect(() => {
     loadPhotos();
@@ -197,6 +200,72 @@ export default function FindPopup({
     };
 
     input.click();
+  };
+
+  const saveCroppedPhotos = async (beforeBlob, afterBlob) => {
+    setCroppingStep("saving");
+    try {
+      const discoveryPhoto = discoveryPhotos[0];
+      const cleanPhoto = cleanPhotos[0];
+
+      if (!discoveryPhoto || !cleanPhoto) {
+        alert("Erreur : photos introuvables.");
+        setCroppingStep("none");
+        return;
+      }
+
+      const beforeFile = new File([beforeBlob], "cropped-before.jpg", { type: "image/jpeg" });
+      const afterFile = new File([afterBlob], "cropped-after.jpg", { type: "image/jpeg" });
+
+      const beforeOldName = discoveryPhoto.image_url.split("/").pop();
+      const afterOldName = cleanPhoto.image_url.split("/").pop();
+      await supabase.storage.from("find-photos").remove([beforeOldName, afterOldName]);
+
+      const beforeNewName = `${Date.now()}-cropped-before.jpg`;
+      const afterNewName = `${Date.now()}-cropped-after.jpg`;
+
+      const { error: errorBefore } = await supabase.storage
+        .from("find-photos")
+        .upload(beforeNewName, beforeFile);
+
+      const { error: errorAfter } = await supabase.storage
+        .from("find-photos")
+        .upload(afterNewName, afterFile);
+
+      if (errorBefore || errorAfter) {
+        throw new Error("Erreur de téléversement.");
+      }
+
+      const { data: { publicUrl: beforeUrl } } = supabase.storage
+        .from("find-photos")
+        .getPublicUrl(beforeNewName);
+
+      const { data: { publicUrl: afterUrl } } = supabase.storage
+        .from("find-photos")
+        .getPublicUrl(afterNewName);
+
+      await supabase
+        .from("find_photos")
+        .update({ image_url: beforeUrl })
+        .eq("id", discoveryPhoto.id);
+
+      await supabase
+        .from("find_photos")
+        .update({ image_url: afterUrl })
+        .eq("id", cleanPhoto.id);
+
+      if (window.findPhotosCache) {
+        delete window.findPhotosCache[find.id];
+      }
+      await loadPhotos();
+      alert("Photos alignées et cadrées avec succès ! ✨");
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors de la sauvegarde du cadrage.");
+    } finally {
+      setCroppingStep("none");
+      setCroppedBeforeBlob(null);
+    }
   };
 
   const deletePhoto = async (photo) => {
@@ -805,10 +874,31 @@ export default function FindPopup({
                     height: "100%",
                     opacity: 0,
                     cursor: "ew-resize",
-                    zIndex: 20
                   }}
                 />
               </div>
+
+              <button
+                onClick={() => setCroppingStep("before")}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "12px",
+                  border: "none",
+                  background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
+                  color: "white",
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  marginTop: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "6px"
+                }}
+              >
+                📐 Cadrer & Aligner les Photos
+              </button>
             </div>
           )}
         </div>
@@ -866,6 +956,54 @@ export default function FindPopup({
             alt=""
             style={{ maxWidth: "95%", maxHeight: "95%", objectFit: "contain", borderRadius: "10px" }}
           />
+        </div>
+      )}
+
+      {/* 2-Step Before/After Cropper Modal */}
+      {croppingStep === "before" && (
+        <CropperModal
+          imageSrc={discoveryPhotos[0]?.image_url}
+          onCrop={(blob) => {
+            setCroppedBeforeBlob(blob);
+            setCroppingStep("after");
+          }}
+          onClose={() => setCroppingStep("none")}
+        />
+      )}
+
+      {croppingStep === "after" && (
+        <CropperModal
+          imageSrc={cleanPhotos[0]?.image_url}
+          onCrop={(blob) => {
+            saveCroppedPhotos(croppedBeforeBlob, blob);
+          }}
+          onClose={() => {
+            setCroppingStep("none");
+            setCroppedBeforeBlob(null);
+          }}
+        />
+      )}
+
+      {croppingStep === "saving" && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.85)",
+            zIndex: 99999999,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "white",
+            fontFamily: "system-ui, sans-serif"
+          }}
+        >
+          <span style={{ fontSize: "36px", marginBottom: "16px" }}>⚙️</span>
+          <span style={{ fontSize: "16px", fontWeight: "bold" }}>Alignement et compression des photos en cours...</span>
         </div>
       )}
     </div>,
