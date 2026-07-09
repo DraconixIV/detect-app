@@ -254,7 +254,7 @@ export default function CropperModal({
             </div>
             <input
               type="range"
-              min="1"
+              min="0.3"
               max="3"
               step="0.1"
               value={zoom}
@@ -286,11 +286,12 @@ export default function CropperModal({
         </div>
 
         {/* Buttons */}
-        <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
+        <div style={{ display: "flex", gap: "8px", marginTop: "4px", flexWrap: "wrap" }}>
           <button
             onClick={onClose}
             style={{
               flex: 1,
+              minWidth: "80px",
               padding: "10px",
               borderRadius: "12px",
               border: "1px solid rgba(255,255,255,0.12)",
@@ -303,10 +304,30 @@ export default function CropperModal({
           >
             Annuler
           </button>
+          
+          <button
+            onClick={() => onCrop(null)}
+            style={{
+              flex: 1.5,
+              minWidth: "100px",
+              padding: "10px",
+              borderRadius: "12px",
+              border: "1px solid rgba(255, 255, 255, 0.15)",
+              background: "rgba(255, 255, 255, 0.06)",
+              color: "#d1d5db",
+              fontSize: "12px",
+              fontWeight: "bold",
+              cursor: "pointer"
+            }}
+          >
+            Passer ⏭️
+          </button>
+
           <button
             onClick={handleCropClick}
             style={{
               flex: 2,
+              minWidth: "130px",
               padding: "10px",
               borderRadius: "12px",
               border: "none",
@@ -317,7 +338,7 @@ export default function CropperModal({
               cursor: "pointer"
             }}
           >
-            Valider le Cadrage
+            Valider
           </button>
         </div>
       </div>

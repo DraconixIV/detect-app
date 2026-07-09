@@ -205,6 +205,12 @@ export default function FindPopup({
   };
 
   const saveCroppedPhotos = async (beforeBlob, afterBlob) => {
+    if (!beforeBlob && !afterBlob) {
+      setCroppingStep("none");
+      alert("Cadrage ignoré (images conservées d'origine).");
+      return;
+    }
+
     setCroppingStep("saving");
     try {
       const discoveryPhoto = discoveryPhotos[0];
@@ -216,54 +222,72 @@ export default function FindPopup({
         return;
       }
 
-      const beforeFile = new File([beforeBlob], "cropped-before.jpg", { type: "image/jpeg" });
-      const afterFile = new File([afterBlob], "cropped-after.jpg", { type: "image/jpeg" });
-
-      const beforeOldName = discoveryPhoto.image_url.split("/").pop();
-      const afterOldName = cleanPhoto.image_url.split("/").pop();
-      
-      try {
-        await supabase.storage.from("find-photos").remove([beforeOldName, afterOldName]);
-      } catch (err) {
-        console.warn("Storage removal warning:", err);
-      }
-
       const timestamp = Date.now();
-      const beforeNewName = `${timestamp}-cropped-before.jpg`;
-      const afterNewName = `${timestamp}-cropped-after.jpg`;
 
-      const { error: errorBefore } = await supabase.storage
-        .from("find-photos")
-        .upload(beforeNewName, beforeFile);
+      // Process Avant (Before)
+      if (beforeBlob) {
+        const beforeFile = new File([beforeBlob], "cropped-before.jpg", { type: "image/jpeg" });
+        const beforeOldName = discoveryPhoto.image_url.split("/").pop();
+        try {
+          await supabase.storage.from("find-photos").remove([beforeOldName]);
+        } catch (err) {
+          console.warn("Storage removal warning (Before):", err);
+        }
 
-      const { error: errorAfter } = await supabase.storage
-        .from("find-photos")
-        .upload(afterNewName, afterFile);
+        const beforeNewName = `${timestamp}-cropped-before.jpg`;
+        const { error: errorBefore } = await supabase.storage
+          .from("find-photos")
+          .upload(beforeNewName, beforeFile);
 
-      if (errorBefore || errorAfter) {
-        throw new Error(`Erreur de téléversement : ${errorBefore?.message || ""} ${errorAfter?.message || ""}`);
+        if (errorBefore) {
+          throw new Error(`Erreur de téléversement 'Avant' : ${errorBefore.message}`);
+        }
+
+        const { data: { publicUrl: beforeUrl } } = supabase.storage
+          .from("find-photos")
+          .getPublicUrl(beforeNewName);
+
+        const { error: dbErrorBefore } = await supabase
+          .from("find_photos")
+          .update({ image_url: beforeUrl })
+          .eq("id", discoveryPhoto.id);
+
+        if (dbErrorBefore) {
+          throw new Error(`Erreur de base de données 'Avant' : ${dbErrorBefore.message}`);
+        }
       }
 
-      const { data: { publicUrl: beforeUrl } } = supabase.storage
-        .from("find-photos")
-        .getPublicUrl(beforeNewName);
+      // Process Après (After)
+      if (afterBlob) {
+        const afterFile = new File([afterBlob], "cropped-after.jpg", { type: "image/jpeg" });
+        const afterOldName = cleanPhoto.image_url.split("/").pop();
+        try {
+          await supabase.storage.from("find-photos").remove([afterOldName]);
+        } catch (err) {
+          console.warn("Storage removal warning (After):", err);
+        }
 
-      const { data: { publicUrl: afterUrl } } = supabase.storage
-        .from("find-photos")
-        .getPublicUrl(afterNewName);
+        const afterNewName = `${timestamp}-cropped-after.jpg`;
+        const { error: errorAfter } = await supabase.storage
+          .from("find-photos")
+          .upload(afterNewName, afterFile);
 
-      const { error: dbErrorBefore } = await supabase
-        .from("find_photos")
-        .update({ image_url: beforeUrl })
-        .eq("id", discoveryPhoto.id);
+        if (errorAfter) {
+          throw new Error(`Erreur de téléversement 'Après' : ${errorAfter.message}`);
+        }
 
-      const { error: dbErrorAfter } = await supabase
-        .from("find_photos")
-        .update({ image_url: afterUrl })
-        .eq("id", cleanPhoto.id);
+        const { data: { publicUrl: afterUrl } } = supabase.storage
+          .from("find-photos")
+          .getPublicUrl(afterNewName);
 
-      if (dbErrorBefore || dbErrorAfter) {
-        throw new Error(`Erreur de mise à jour base de données : ${dbErrorBefore?.message || ""} ${dbErrorAfter?.message || ""}`);
+        const { error: dbErrorAfter } = await supabase
+          .from("find_photos")
+          .update({ image_url: afterUrl })
+          .eq("id", cleanPhoto.id);
+
+        if (dbErrorAfter) {
+          throw new Error(`Erreur de base de données 'Après' : ${dbErrorAfter.message}`);
+        }
       }
 
       if (window.findPhotosCache) {
