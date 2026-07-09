@@ -241,6 +241,9 @@ function App() {
   const [allPhotos, setAllPhotos] = useState([]);
   const [selectedAlbumPhoto, setSelectedAlbumPhoto] = useState(null);
   const [toast, setToast] = useState(null);
+  const [quickAddFile, setQuickAddFile] = useState(null);
+  const [showQuickAddModal, setShowQuickAddModal] = useState(false);
+  const [quickAddTitleInput, setQuickAddTitleInput] = useState("Trouvaille Rapide");
   const [zoomTarget, setZoomTarget] = useState(null);
   const [openPopupFind, setOpenPopupFind] = useState(null);
   const [activePopupId, setActivePopupId] = useState(null);
@@ -636,6 +639,25 @@ function App() {
     setAddingFind(false);
   };
 
+  const submitQuickAdd = async () => {
+    if (!quickAddFile) return;
+    const title = quickAddTitleInput.trim() || "Trouvaille Rapide";
+
+    setShowQuickAddModal(false);
+
+    await addFind({
+      position,
+      newTitle: title,
+      newDescription: "Indéterminé",
+      newCategory: "Autre",
+      newSubCategory: "",
+      newPhoto: quickAddFile,
+      customDate: new Date().toLocaleString("fr-FR")
+    });
+
+    setQuickAddFile(null);
+  };
+
   const handleQuickAdd = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -645,23 +667,9 @@ function App() {
       return;
     }
 
-    const titleInput = window.prompt("Titre de la trouvaille :", "Trouvaille Rapide");
-    if (titleInput === null) {
-      e.target.value = "";
-      return;
-    }
-
-    const title = titleInput.trim() || "Trouvaille Rapide";
-
-    await addFind({
-      position,
-      newTitle: title,
-      newDescription: "Indéterminé",
-      newCategory: "Autre",
-      newSubCategory: "",
-      newPhoto: file,
-      customDate: new Date().toLocaleString("fr-FR")
-    });
+    setQuickAddFile(file);
+    setQuickAddTitleInput("Trouvaille Rapide");
+    setShowQuickAddModal(true);
 
     e.target.value = "";
   };
@@ -1812,6 +1820,114 @@ return (
         </div>,
         document.body
       )}
+      {/* QUICK ADD CUSTOM TITLE PROMPT MODAL */}
+      {showQuickAddModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.8)",
+            zIndex: 999999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontFamily: "system-ui, sans-serif",
+            padding: "16px",
+            boxSizing: "border-box"
+          }}
+          onClick={() => {
+            setShowQuickAddModal(false);
+            setQuickAddFile(null);
+          }}
+        >
+          <div
+            style={{
+              background: "#111827",
+              border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: "24px",
+              width: "100%",
+              maxWidth: "360px",
+              padding: "20px",
+              boxSizing: "border-box",
+              display: "flex",
+              flexDirection: "column",
+              gap: "16px",
+              boxShadow: "0 12px 36px rgba(0,0,0,0.5)"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h4 style={{ margin: 0, color: "white", fontSize: "16px", fontWeight: "800" }}>
+              📷 Titre de la trouvaille rapide :
+            </h4>
+
+            <input
+              type="text"
+              value={quickAddTitleInput}
+              onChange={(e) => setQuickAddTitleInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  submitQuickAdd();
+                }
+              }}
+              autoFocus
+              style={{
+                padding: "12px",
+                borderRadius: "12px",
+                border: "1px solid rgba(255,255,255,0.15)",
+                background: "rgba(255,255,255,0.06)",
+                color: "white",
+                fontSize: "14px",
+                fontWeight: "600",
+                width: "100%",
+                boxSizing: "border-box",
+                outline: "none"
+              }}
+            />
+
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button
+                onClick={() => {
+                  setShowQuickAddModal(false);
+                  setQuickAddFile(null);
+                }}
+                style={{
+                  flex: 1,
+                  padding: "10px",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  background: "transparent",
+                  color: "white",
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                  cursor: "pointer"
+                }}
+              >
+                Annuler
+              </button>
+              <button
+                onClick={submitQuickAdd}
+                style={{
+                  flex: 1.5,
+                  padding: "10px",
+                  borderRadius: "12px",
+                  border: "none",
+                  background: "#16a34a",
+                  color: "white",
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                  cursor: "pointer"
+                }}
+              >
+                Valider ✅
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Toast Notifications */}
       {toast && (
         <ToastNotification
