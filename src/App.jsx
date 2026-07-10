@@ -1443,6 +1443,7 @@ return (
               setOpenPopupFind(findItem);
               setShowWiki(false);
             }}
+            onUpdate={loadFinds}
           />
         </div>
       )}

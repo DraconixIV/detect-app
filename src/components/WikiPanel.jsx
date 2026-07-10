@@ -1,11 +1,23 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { supabase } from "../supabase";
 
-export default function WikiPanel({ finds, photos, onOpenFindDetails }) {
+export default function WikiPanel({ finds, photos, onOpenFindDetails, onUpdate }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMetal, setSelectedMetal] = useState("Tous");
   const [selectedEpoch, setSelectedEpoch] = useState("Toutes");
   const [selectedCoin, setSelectedCoin] = useState(null);
   const [flippedCoins, setFlippedCoins] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedDescription, setEditedDescription] = useState("");
+
+  // Sync editedDescription when selectedCoin changes
+  useEffect(() => {
+    if (selectedCoin) {
+      setEditedDescription(selectedCoin.clean_description || "");
+      setIsEditing(false);
+    }
+  }, [selectedCoin]);
 
   // 1. Filter findings to only show Coins ("Monnaie")
   const coins = useMemo(() => {
@@ -19,6 +31,97 @@ export default function WikiPanel({ finds, photos, onOpenFindDetails }) {
       ...prev,
       [coinId]: !prev[coinId]
     }));
+  };
+
+  const handleSaveDescription = async () => {
+    try {
+      const { error } = await supabase
+        .from("finds")
+        .update({ clean_description: editedDescription })
+        .eq("id", selectedCoin.id);
+
+      if (error) throw error;
+
+      selectedCoin.clean_description = editedDescription;
+      setIsEditing(false);
+      alert("Notice numismatique enregistrée ! ✅");
+      if (onUpdate) onUpdate();
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors de la sauvegarde.");
+    }
+  };
+
+  const handleGenerateSheetInsideMuseum = () => {
+    const cleanTitleLower = (selectedCoin.title || "").toLowerCase();
+    const matLower = (selectedCoin.description || "").toLowerCase();
+    const subCatLower = (selectedCoin.sub_category || "").toLowerCase();
+
+    let regime = "Indéterminé";
+    let epoque = "Inconnue";
+    let aversDesc = "Buste ou portrait du souverain / profil représenté avec légendes circulaires.";
+    let reversDesc = "Armoiries, croix ou symbole de l'émetteur avec légendes et millésime.";
+    let rarete = "Commune (C)";
+    let contexte = "Cette monnaie a circulé durant une période de transition économique. Les frappes de l'époque servaient aux échanges quotidiens et locaux, reflétant la puissance de l'autorité émettrice.";
+
+    if (cleanTitleLower.includes("romain") || cleanTitleLower.includes("denier") || cleanTitleLower.includes("hadrien") || cleanTitleLower.includes("sesterce") || subCatLower.includes("romaine")) {
+      regime = "Empire Romain";
+      epoque = "Antiquité (Ier - IVème siècle)";
+      aversDesc = "Tête laurée ou buste de l'Empereur de profil à droite, entouré de ses titres impériaux (ex: IMP AVG...).";
+      reversDesc = "Divinité debout ou assise (Pax, Providentia, Victoria) ou scène militaire, avec légende décrivant les vertus impériales.";
+      contexte = "Le denier ou le sesterce constituait le pilier monétaire de l'Empire Romain, facilitant la solde des légions et le commerce florissant de la Pax Romana dans toute l'Europe méditerranéenne.";
+    } else if (cleanTitleLower.includes("louis") || cleanTitleLower.includes("tournois") || cleanTitleLower.includes("royal") || subCatLower.includes("royale")) {
+      regime = "Royaume de France (Ancien Régime)";
+      epoque = "Médiévale / Moderne (Valois ou Bourbons)";
+      aversDesc = "Buste du Roi couronné ou profil enfantin/adulte entouré de la légende de droit divin (FRANC.ET.NAV.REX).";
+      reversDesc = "Écu aux trois fleurs de lys surmonté d'une couronne royale, ou trois fleurs de lys posées 2 et 1.";
+      contexte = "Le double tournois, le liard ou l'écu royal étaient les témoins de la centralisation monétaire française. Frappés en masse sous Henri IV, Louis XIII et Louis XIV pour standardiser le commerce national.";
+    } else if (cleanTitleLower.includes("napoleon") || cleanTitleLower.includes("empire") || cleanTitleLower.includes("franc")) {
+      regime = "Empire Français / République";
+      epoque = "Moderne (XIXème - XXème siècle)";
+      aversDesc = "Buste ou effigie de profil (Napoléon Empereur lauré ou Cérès/Hercule pour la République).";
+      reversDesc = "Valeur faciale (ex : 5 Francs) entourée d'une couronne de laurier et de chêne avec la devise républicaine ou impériale.";
+      contexte = "Créé par la loi du 7 germinal an XI (1803), le système du Franc Germinal instaure une stabilité monétaire remarquable qui accompagnera la révolution industrielle française.";
+    }
+
+    let composition = selectedCoin.description || "Métal cuivreux ou alliage d'usage";
+    if (matLower.includes("argent") || matLower.includes("silver")) {
+      composition = "Argent (Ag)";
+      rarete = "Peu commune (R1)";
+    } else if (matLower.includes("or") || matLower.includes("gold")) {
+      composition = "Or (Au)";
+      rarete = "Très rare (R3)";
+    } else if (matLower.includes("billon")) {
+      composition = "Billon (alliage pauvre d'argent et de cuivre)";
+    } else if (matLower.includes("bronze")) {
+      composition = "Bronze (Cu-Sn)";
+    }
+
+    const generatedMarkdown = `### 🏛️ FICHE WIKI NUMISMATIQUE
+**Monnaie** : ${selectedCoin.title || "Non renseignée"}
+**Règne / Autorité** : ${regime}
+**Époque** : ${epoque}
+**Composition** : ${composition}
+
+---
+
+#### 🪙 DESCRIPTION DES FACES
+*   **Avers (Face)** : ${aversDesc}
+*   **Revers (Pile)** : ${reversDesc}
+
+---
+
+#### 📜 CONTEXTE HISTORIQUE
+${contexte}
+
+---
+
+#### 🔍 RARETÉ & DÉTAILS
+*   **Indice de rareté** : ${rarete}
+*   **Notes additionnelles** : Fiche générée automatiquement pour enrichir la collection interne.`;
+
+    setEditedDescription(generatedMarkdown);
+    setIsEditing(true);
   };
 
   // 2. Fetch associated avers / revers photos for each coin
@@ -348,7 +451,7 @@ export default function WikiPanel({ finds, photos, onOpenFindDetails }) {
       )}
 
       {/* FULLSCREEN EXHIBITION PANEL (Museum Card Details) */}
-      {selectedCoin && (
+      {selectedCoin && createPortal(
         <div
           style={{
             position: "fixed",
@@ -451,30 +554,130 @@ export default function WikiPanel({ finds, photos, onOpenFindDetails }) {
               </div>
             </div>
 
-            {/* Historical / Wiki details pre-wrap formatting */}
-            <div
-              style={{
-                background: "rgba(255, 255, 255, 0.03)",
-                border: "1px solid rgba(255, 255, 255, 0.06)",
-                padding: "16px",
-                borderRadius: "16px",
-                fontSize: "12.5px",
-                lineHeight: "1.6",
-                color: "#d1d5db",
-                maxHeight: "260px",
-                overflowY: "auto"
-              }}
-            >
-              {selectedCoin.clean_description ? (
-                <div style={{ whiteSpace: "pre-wrap", fontFamily: "inherit" }}>
-                  {selectedCoin.clean_description.replace("### 🏛️ FICHE WIKI NUMISMATIQUE", "")}
-                </div>
-              ) : (
-                <div style={{ textAlign: "center", opacity: 0.5, padding: "10px 0" }}>
-                  📝 Aucune description numismatique rédigée. Ouvrez la fiche d'édition pour la générer automatiquement !
-                </div>
+            {/* Notice header block */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: "11px", opacity: 0.6, fontWeight: "700", textTransform: "uppercase" }}>
+                📜 Notice Historique
+              </span>
+              {!isEditing && selectedCoin.clean_description && (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#60a5fa",
+                    fontSize: "11px",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                    padding: 0
+                  }}
+                >
+                  ✏️ Modifier
+                </button>
               )}
             </div>
+
+            {/* Historical / Wiki details rendering or inline editor */}
+            {isEditing ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <textarea
+                  value={editedDescription}
+                  onChange={(e) => setEditedDescription(e.target.value)}
+                  style={{
+                    width: "100%",
+                    minHeight: "220px",
+                    background: "#1e293b",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    borderRadius: "12px",
+                    color: "white",
+                    padding: "12px",
+                    fontSize: "12px",
+                    fontFamily: "system-ui, sans-serif",
+                    lineHeight: "1.5",
+                    resize: "vertical",
+                    outline: "none",
+                    boxSizing: "border-box"
+                  }}
+                />
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <button
+                    onClick={handleSaveDescription}
+                    style={{
+                      flex: 1,
+                      padding: "10px",
+                      borderRadius: "8px",
+                      background: "#10b981",
+                      color: "white",
+                      border: "none",
+                      fontWeight: "bold",
+                      fontSize: "11px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    💾 Enregistrer
+                  </button>
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    style={{
+                      padding: "10px 14px",
+                      borderRadius: "8px",
+                      background: "rgba(255,255,255,0.08)",
+                      color: "white",
+                      border: "none",
+                      fontSize: "11px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {!selectedCoin.clean_description && (
+                  <button
+                    onClick={handleGenerateSheetInsideMuseum}
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      borderRadius: "10px",
+                      border: "none",
+                      background: "linear-gradient(135deg, #a855f7, #6b21a8)",
+                      color: "white",
+                      fontSize: "11.5px",
+                      fontWeight: "bold",
+                      cursor: "pointer"
+                    }}
+                  >
+                    🪄 Générer la Fiche Historique
+                  </button>
+                )}
+                
+                <div
+                  style={{
+                    background: "rgba(255, 255, 255, 0.03)",
+                    border: "1px solid rgba(255, 255, 255, 0.06)",
+                    padding: "16px",
+                    borderRadius: "16px",
+                    fontSize: "12.5px",
+                    lineHeight: "1.6",
+                    color: "#d1d5db",
+                    maxHeight: "260px",
+                    overflowY: "auto"
+                  }}
+                >
+                  {selectedCoin.clean_description ? (
+                    <div style={{ whiteSpace: "pre-wrap", fontFamily: "inherit" }}>
+                      {selectedCoin.clean_description.replace("### 🏛️ FICHE WIKI NUMISMATIQUE", "")}
+                    </div>
+                  ) : (
+                    <div style={{ textAlign: "center", opacity: 0.5, padding: "10px 0" }}>
+                      📝 Aucune description numismatique rédigée. Cliquez sur le bouton ci-dessus pour la générer !
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Actions Footer */}
             <div style={{ display: "flex", gap: "10px", marginTop: "6px" }}>
@@ -495,7 +698,7 @@ export default function WikiPanel({ finds, photos, onOpenFindDetails }) {
                   cursor: "pointer"
                 }}
               >
-                ✏️ Éditer & Référencer
+                ✏️ Éditer la trouvaille
               </button>
 
               {selectedCoin.identification_link && (
@@ -524,7 +727,8 @@ export default function WikiPanel({ finds, photos, onOpenFindDetails }) {
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
