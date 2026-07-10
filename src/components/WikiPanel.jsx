@@ -115,28 +115,33 @@ export default function WikiPanel({ finds, photos, onOpenFindDetails, onUpdate }
       composition = "Bronze (Cu-Sn)";
     }
 
-    const generatedMarkdown = `### 🏛️ FICHE WIKI NUMISMATIQUE
-**Monnaie** : ${selectedCoin.title || "Non renseignée"}
-**Règne / Autorité** : ${regime}
-**Époque** : ${epoque}
-**Composition** : ${composition}
+    const generatedMarkdown = `### 🏛️ CABINET NUMISMATIQUE : ${selectedCoin.title || "Monnaie à identifier"}
 
 ---
 
-#### 🪙 DESCRIPTION DES FACES
-*   **Avers (Face)** : ${aversDesc}
-*   **Revers (Pile)** : ${reversDesc}
+#### 📋 CARACTÉRISTIQUES DE L'EXEMPLAIRE
+*   **Monnaie** : ${selectedCoin.title || "Non renseignée"}
+*   **Émetteur / Autorité** : ${regime}
+*   **Période historique** : ${epoque}
+*   **Métal & Alliage** : ${composition}
+*   **Rareté estimée** : ${rarete}
 
 ---
 
-#### 📜 CONTEXTE HISTORIQUE
+#### 📜 LE RÉCIT HISTORIQUE
 ${contexte}
 
 ---
 
-#### 🔍 RARETÉ & DÉTAILS
-*   **Indice de rareté** : ${rarete}
-*   **Notes additionnelles** : Fiche générée automatiquement pour enrichir la collection interne.`;
+#### 🪙 SYMBOLIQUE & ICONOGRAPHIE
+*   **Sur l'Avers (Face)**, le graveur a représenté ${aversDesc.charAt(0).toLowerCase() + aversDesc.slice(1)}
+*   **Au Revers (Pile)**, on contemple ${reversDesc.charAt(0).toLowerCase() + reversDesc.slice(1)}
+
+---
+
+#### 🔍 L'AVIS DU COLLECTIONNEUR
+*   **Conservation & Aspect** : Cet exemplaire présente une usure liée à sa circulation d'époque. Sa patine témoigne de son long séjour en terre, préservant les reliefs essentiels qui racontent son histoire.
+*   **Anecdote & Rôle** : Cette monnaie d'usage quotidien servait aux transactions courantes du peuple de l'époque. Elle constitue un lien direct et palpable avec le quotidien des générations passées.`;
 
     setEditedDescription(generatedMarkdown);
     setIsEditing(true);
