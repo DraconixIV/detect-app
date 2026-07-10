@@ -24,7 +24,7 @@ export default function WikiPanel({ finds, photos, onOpenFindDetails }) {
   // 2. Fetch associated avers / revers photos for each coin
   const coinCards = useMemo(() => {
     return coins.map((coin) => {
-      const coinPhotos = photos.filter((p) => p.find_id === coin.id);
+      const coinPhotos = photos.filter((p) => p.find_id === coin.id && (p.type === "clean" || p.type === "avers" || p.type === "revers"));
       const aversPhoto = coinPhotos.find((p) => p.type === "avers") || coinPhotos.find((p) => p.type === "clean") || coinPhotos[0];
       const reversPhoto = coinPhotos.find((p) => p.type === "revers") || coinPhotos.find((p) => p.type === "clean" && p.id !== aversPhoto?.id) || coinPhotos[1] || aversPhoto;
 
