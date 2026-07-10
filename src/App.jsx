@@ -25,6 +25,7 @@ import GpsMarker from "./components/GpsMarker";
 import MapLayers from "./components/MapLayers";
 import StatsPanel from "./components/StatsPanel";
 import PerformancePanel from "./components/PerformancePanel";
+import WikiPanel from "./components/WikiPanel";
 import CropperModal from "./components/CropperModal";
 import ToastNotification from "./components/ToastNotification";
 import ConfirmModal from "./components/ConfirmModal";
@@ -257,6 +258,7 @@ function App() {
   const [historicalMapOpacity, setHistoricalMapOpacity] = useState(0.5);
   const [useClustering, setUseClustering] = useState(false);
   const [showPerformance, setShowPerformance] = useState(false);
+  const [showWiki, setShowWiki] = useState(false);
 
   const isRecordingRef = useRef(isRecordingSortie);
   const positionsRef = useRef(sortiePositions);
@@ -918,6 +920,7 @@ return (
         onClick={() => {
           setShowMenu(!showMenu);
           setShowStats(false);
+          setShowWiki(false);
         }}
         style={{
           position: "absolute",
@@ -945,6 +948,7 @@ return (
           setShowMenu(false);
           setShowAlbum(false);
           setShowPerformance(false);
+          setShowWiki(false);
         }}
         style={{
           position: "absolute",
@@ -974,6 +978,7 @@ return (
           setShowMenu(false);
           setShowStats(false);
           setShowPerformance(false);
+          setShowWiki(false);
         }}
         style={{
           position: "absolute",
@@ -1002,6 +1007,7 @@ return (
           setShowMenu(false);
           setShowStats(false);
           setShowAlbum(false);
+          setShowWiki(false);
         }}
         style={{
           position: "absolute",
@@ -1022,6 +1028,36 @@ return (
         title="Assistant de Terrain"
       >
         ⚡
+      </button>
+
+      {/* WIKI BUTTON */}
+      <button
+        onClick={() => {
+          setShowWiki(!showWiki);
+          setShowMenu(false);
+          setShowStats(false);
+          setShowAlbum(false);
+          setShowPerformance(false);
+        }}
+        style={{
+          position: "absolute",
+          top: 345,
+          left: 15,
+          zIndex: 5000,
+          width: "52px",
+          height: "52px",
+          borderRadius: "50%",
+          border: "none",
+          background: showWiki ? "#2563eb" : "#111827",
+          color: "white",
+          fontSize: "20px",
+          boxShadow: "0 4px 15px rgba(0,0,0,0.35)",
+          cursor: "pointer",
+          transition: "background 0.2s"
+        }}
+        title="Musée Numismatique & Wiki"
+      >
+        🏛️
       </button>
 
       {/* MENU PANEL */}
@@ -1359,7 +1395,58 @@ return (
         />
       )}
 
-      {/* ALBUM PANEL */}
+      {/* WIKI PANEL */}
+      {showWiki && (
+        <div
+          style={{
+            position: "absolute",
+            top: 20,
+            right: 20,
+            width: "calc(100% - 40px)",
+            maxWidth: "430px",
+            height: "calc(100vh - 40px)",
+            background: "rgba(17, 24, 39, 0.95)",
+            backdropFilter: "blur(16px)",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
+            borderRadius: "24px",
+            boxShadow: "0 12px 40px rgba(0, 0, 0, 0.5)",
+            zIndex: 6000,
+            overflowY: "auto",
+            display: "flex",
+            flexDirection: "column",
+            boxSizing: "border-box"
+          }}
+        >
+          {/* Header Close button */}
+          <div style={{ display: "flex", justifyContent: "flex-end", padding: "16px 16px 0 16px" }}>
+            <button
+              onClick={() => setShowWiki(false)}
+              style={{
+                width: "30px",
+                height: "30px",
+                borderRadius: "50%",
+                border: "none",
+                background: "rgba(255, 255, 255, 0.08)",
+                color: "white",
+                fontSize: "14px",
+                cursor: "pointer"
+              }}
+            >
+              ✕
+            </button>
+          </div>
+          <WikiPanel
+            finds={finds}
+            photos={allPhotos}
+            onOpenFindDetails={(findItem) => {
+              setActivePopupId(findItem.id);
+              setOpenPopupFind(findItem);
+              setShowWiki(false);
+            }}
+          />
+        </div>
+      )}
+
       {showAlbum && (
         <div
           style={{

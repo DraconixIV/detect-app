@@ -134,6 +134,78 @@ export default function FindPopup({
     if (onUpdate) onUpdate();
   };
 
+  const handleGenerateSheet = () => {
+    const cleanTitleLower = (title || "").toLowerCase();
+    const matLower = (material || "").toLowerCase();
+    const subCatLower = (subCategory || "").toLowerCase();
+
+    let regime = "Indéterminé";
+    let epoque = "Inconnue";
+    let aversDesc = "Buste ou portrait du souverain / profil représenté avec légendes circulaires.";
+    let reversDesc = "Armoiries, croix ou symbole de l'émetteur avec légendes et millésime.";
+    let rarete = "Commune (C)";
+    let contexte = "Cette monnaie a circulé durant une période de transition économique. Les frappes de l'époque servaient aux échanges quotidiens et locaux, reflétant la puissance de l'autorité émettrice.";
+
+    if (cleanTitleLower.includes("romain") || cleanTitleLower.includes("denier") || cleanTitleLower.includes("hadrien") || cleanTitleLower.includes("sesterce") || subCatLower.includes("romaine")) {
+      regime = "Empire Romain";
+      epoque = "Antiquité (Ier - IVème siècle)";
+      aversDesc = "Tête laurée ou buste de l'Empereur de profil à droite, entouré de ses titres impériaux (ex: IMP AVG...).";
+      reversDesc = "Divinité debout ou assise (Pax, Providentia, Victoria) ou scène militaire, avec légende décrivant les vertus impériales.";
+      contexte = "Le denier ou le sesterce constituait le pilier monétaire de l'Empire Romain, facilitant la solde des légions et le commerce florissant de la Pax Romana dans toute l'Europe méditerranéenne.";
+    } else if (cleanTitleLower.includes("louis") || cleanTitleLower.includes("tournois") || cleanTitleLower.includes("royal") || subCatLower.includes("royale")) {
+      regime = "Royaume de France (Ancien Régime)";
+      epoque = "Médiévale / Moderne (Valois ou Bourbons)";
+      aversDesc = "Buste du Roi couronné ou profil enfantin/adulte entouré de la légende de droit divin (FRANC.ET.NAV.REX).";
+      reversDesc = "Écu aux trois fleurs de lys surmonté d'une couronne royale, ou trois fleurs de lys posées 2 et 1.";
+      contexte = "Le double tournois, le liard ou l'écu royal étaient les témoins de la centralisation monétaire française. Frappés en masse sous Henri IV, Louis XIII et Louis XIV pour standardiser le commerce national.";
+    } else if (cleanTitleLower.includes("napoleon") || cleanTitleLower.includes("empire") || cleanTitleLower.includes("franc")) {
+      regime = "Empire Français / République";
+      epoque = "Moderne (XIXème - XXème siècle)";
+      aversDesc = "Buste ou effigie de profil (Napoléon Empereur lauré ou Cérès/Hercule pour la République).";
+      reversDesc = "Valeur faciale (ex : 5 Francs) entourée d'une couronne de laurier et de chêne avec la devise républicaine ou impériale.";
+      contexte = "Créé par la loi du 7 germinal an XI (1803), le système du Franc Germinal instaure une stabilité monétaire remarquable qui accompagnera la révolution industrielle française.";
+    }
+
+    let composition = material || "Métal cuivreux ou alliage d'usage";
+    if (matLower.includes("argent") || matLower.includes("silver")) {
+      composition = "Argent (Ag)";
+      rarete = "Peu commune (R1)";
+    } else if (matLower.includes("or") || matLower.includes("gold")) {
+      composition = "Or (Au)";
+      rarete = "Très rare (R3)";
+    } else if (matLower.includes("billon")) {
+      composition = "Billon (alliage pauvre d'argent et de cuivre)";
+    } else if (matLower.includes("bronze")) {
+      composition = "Bronze (Cu-Sn)";
+    }
+
+    const generatedMarkdown = `### 🏛️ FICHE WIKI NUMISMATIQUE
+**Monnaie** : ${title || "Non renseignée"}
+**Règne / Autorité** : ${regime}
+**Époque** : ${epoque}
+**Composition** : ${composition}
+
+---
+
+#### 🪙 DESCRIPTION DES FACES
+*   **Avers (Face)** : ${aversDesc}
+*   **Revers (Pile)** : ${reversDesc}
+
+---
+
+#### 📜 CONTEXTE HISTORIQUE
+${contexte}
+
+---
+
+#### 🔍 RARETÉ & DÉTAILS
+*   **Indice de rareté** : ${rarete}
+*   **Notes additionnelles** : Fiche générée automatiquement pour enrichir la collection interne.`;
+
+    setCleanDescription(generatedMarkdown);
+    alert("Fiche Wiki générée avec succès dans l'onglet Description ! 🪄✨ (Pensez à cliquer sur Enregistrer)");
+  };
+
   const uploadPhoto = async (type, useCamera = false) => {
     if (uploading) return;
 
@@ -326,8 +398,33 @@ export default function FindPopup({
     });
   };
 
+  const setPhotoAsType = async (selectedPhoto, typeName) => {
+    try {
+      const sameTypePhotos = photos.filter((p) => p.type === typeName);
+      for (const p of sameTypePhotos) {
+        await supabase
+          .from("find_photos")
+          .update({ type: "clean" })
+          .eq("id", p.id);
+      }
+
+      await supabase
+        .from("find_photos")
+        .update({ type: typeName })
+        .eq("id", selectedPhoto.id);
+
+      if (window.findPhotosCache) {
+        delete window.findPhotosCache[find.id];
+      }
+      await loadPhotos();
+      if (onUpdate) onUpdate();
+    } catch (err) {
+      console.error("Error setting photo type:", err);
+    }
+  };
+
   const discoveryPhotos = photos.filter((p) => p.type === "discovery");
-  const cleanPhotos = photos.filter((p) => p.type === "clean");
+  const cleanPhotos = photos.filter((p) => p.type === "clean" || p.type === "avers" || p.type === "revers");
 
   const inputStyle = {
     width: "100%",
@@ -829,6 +926,41 @@ export default function FindPopup({
                       </button>
                     </div>
                   )}
+                  {/* Role designation buttons */}
+                  <div style={{ display: "flex", gap: "6px", width: "100%", marginTop: "2px" }}>
+                    {cleanPhotos[cleanIndex].type === "avers" ? (
+                      <button
+                        onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "clean")}
+                        style={{ ...buttonStyle, flex: 1, background: "#3b82f6", padding: "6px", fontSize: "11px", fontWeight: "bold" }}
+                      >
+                        🪙 Avers (Face) ✓
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "avers")}
+                        style={{ ...buttonStyle, flex: 1, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", padding: "6px", fontSize: "11px", color: "#9ca3af" }}
+                      >
+                        🪙 Définir comme Avers
+                      </button>
+                    )}
+
+                    {cleanPhotos[cleanIndex].type === "revers" ? (
+                      <button
+                        onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "clean")}
+                        style={{ ...buttonStyle, flex: 1, background: "#10b981", padding: "6px", fontSize: "11px", fontWeight: "bold" }}
+                      >
+                        🪙 Revers (Pile) ✓
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "revers")}
+                        style={{ ...buttonStyle, flex: 1, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", padding: "6px", fontSize: "11px", color: "#9ca3af" }}
+                      >
+                        🪙 Définir comme Revers
+                      </button>
+                    )}
+                  </div>
+
                   <button
                     onClick={() => deletePhoto(cleanPhotos[cleanIndex])}
                     style={{ ...buttonStyle, background: "#ef4444", padding: "6px 12px", fontSize: "11px", marginTop: "2px" }}
@@ -896,6 +1028,38 @@ export default function FindPopup({
                   >
                     🌐 Ouvrir le lien de référence
                   </a>
+                </div>
+              )}
+
+              {category === "Monnaie" && (
+                <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "12px", marginTop: "4px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", color: "#9ca3af" }}>
+                    Wiki Numismatique & Histoire
+                  </label>
+                  <button
+                    onClick={handleGenerateSheet}
+                    style={{
+                      width: "100%",
+                      padding: "10px 12px",
+                      borderRadius: "12px",
+                      border: "none",
+                      background: "linear-gradient(135deg, #a855f7, #6b21a8)",
+                      color: "white",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "6px",
+                      boxShadow: "0 4px 12px rgba(168, 85, 247, 0.2)"
+                    }}
+                  >
+                    🪄 Générer la Fiche Historique
+                  </button>
+                  <p style={{ margin: 0, fontSize: "10px", color: "#9ca3af", textAlign: "center", lineHeight: "1.3" }}>
+                    Crée automatiquement une description structurée (Avers, Revers, Contexte historique) dans l'onglet Description en fonction des informations saisies.
+                  </p>
                 </div>
               )}
             </div>
