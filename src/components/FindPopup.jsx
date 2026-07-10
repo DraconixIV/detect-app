@@ -33,6 +33,7 @@ export default function FindPopup({
   const [croppingStep, setCroppingStep] = useState("none"); // 'none' | 'before' | 'after' | 'saving'
   const [croppedBeforeBlob, setCroppedBeforeBlob] = useState(null);
   const [confirmConfig, setConfirmConfig] = useState(null);
+  const [isFlipped, setIsFlipped] = useState(false);
 
   useEffect(() => {
     loadPhotos();
@@ -134,100 +135,6 @@ export default function FindPopup({
     if (onUpdate) onUpdate();
   };
 
-  const handleGenerateSheet = () => {
-    const cleanTitleLower = (title || "").toLowerCase();
-    const matLower = (material || "").toLowerCase();
-    const subCatLower = (subCategory || "").toLowerCase();
-
-    let regime = "Indéterminé";
-    let epoque = "Inconnue";
-    let aversDesc = "Buste ou portrait du souverain / profil représenté avec légendes circulaires.";
-    let reversDesc = "Armoiries, croix ou symbole de l'émetteur avec légendes et millésime.";
-    let rarete = "Commune (C)";
-    let contexte = "Cette monnaie a circulé durant une période de transition économique. Les frappes de l'époque servaient aux échanges quotidiens et locaux, reflétant la puissance de l'autorité émettrice.";
-
-    if (cleanTitleLower.includes("romain") || cleanTitleLower.includes("denier") || cleanTitleLower.includes("hadrien") || cleanTitleLower.includes("sesterce") || cleanTitleLower.includes("antoninien") || cleanTitleLower.includes("dupondius") || cleanTitleLower.includes("as ") || subCatLower.includes("romaine") || subCatLower.includes("antique")) {
-      regime = "Empire Romain";
-      epoque = "Antiquité (Ier - IVème siècle)";
-      aversDesc = "Tête laurée ou buste de l'Empereur de profil à droite, entouré de ses titres impériaux (ex: IMP AVG...).";
-      reversDesc = "Divinité debout ou assise (Pax, Providentia, Victoria) ou scène militaire, avec légende décrivant les vertus impériales.";
-      contexte = "Le denier ou le sesterce constituait le pilier monétaire de l'Empire Romain, facilitant la solde des légions et le commerce florissant de la Pax Romana dans toute l'Europe méditerranéenne.";
-    } else if (cleanTitleLower.includes("gaulois") || cleanTitleLower.includes("gauloise") || cleanTitleLower.includes("potin") || cleanTitleLower.includes("statère") || cleanTitleLower.includes("celte") || subCatLower.includes("gauloise") || subCatLower.includes("celte")) {
-      regime = "Peuple Celte / Gaule";
-      epoque = "Protohistoire (IIème - Ier siècle av. J.-C.)";
-      aversDesc = "Tête stylisée de profil à gauche ou à droite, chevelure sauvage avec motifs géométriques.";
-      reversDesc = "Animal mythologique (cheval ailé, sanglier) ou figure stylisée entourée de symboles sacrés.";
-      contexte = "Les potins et statères gaulois étaient utilisés pour les échanges commerciaux entre tribus et avec les marchands romains. Inspirés des monnaies grecques, ils témoignent du raffinement artistique et de l'indépendance économique des peuples celtes avant la conquête romaine.";
-    } else if (cleanTitleLower.includes("féodal") || cleanTitleLower.includes("feodal") || cleanTitleLower.includes("obole") || cleanTitleLower.includes("carolingien") || cleanTitleLower.includes("mérovingien") || cleanTitleLower.includes("capet") || subCatLower.includes("féodale") || subCatLower.includes("medievale")) {
-      regime = "Seigneurie locale / Comté féodal";
-      epoque = "Moyen Âge (Xème - XVème siècle)";
-      aversDesc = "Croix pattée ou monogramme du seigneur émetteur entouré de son nom.";
-      reversDesc = "Temple stylisé, façade de cathédrale, ou monogramme religieux entouré du nom de la cité.";
-      contexte = "À l'époque féodale, le pouvoir de battre monnaie était morcelé entre seigneurs locaux et évêques. Ces monnaies en argent ou billon servaient au commerce régional et au paiement des taxes seigneuriales.";
-    } else if (cleanTitleLower.includes("louis") || cleanTitleLower.includes("tournois") || cleanTitleLower.includes("royal") || cleanTitleLower.includes("liard") || cleanTitleLower.includes("écu") || cleanTitleLower.includes("sol") || cleanTitleLower.includes("denier tournois") || subCatLower.includes("royale")) {
-      regime = "Royaume de France (Ancien Régime)";
-      epoque = "Médiévale / Moderne (Valois ou Bourbons)";
-      aversDesc = "Buste du Roi couronné ou profil enfantin/adulte entouré de la légende de droit divin (FRANC.ET.NAV.REX).";
-      reversDesc = "Écu aux trois fleurs de lys surmonté d'une couronne royale, ou trois fleurs de lys posées 2 et 1.";
-      contexte = "Le double tournois, le liard ou l'écu royal étaient les témoins de la centralisation monétaire française. Frappés en masse sous Henri IV, Louis XIII et Louis XIV pour standardiser le commerce national.";
-    } else if (cleanTitleLower.includes("napoleon") || cleanTitleLower.includes("empire") || cleanTitleLower.includes("cérès") || cleanTitleLower.includes("ceres") || cleanTitleLower.includes("décime") || cleanTitleLower.includes("decime") || cleanTitleLower.includes("monneron") || cleanTitleLower.includes("semeuse") || cleanTitleLower.includes("semeur")) {
-      regime = "Empire Français / République / Consulat";
-      epoque = "XIXème siècle (Consulat, Empire, Restauration)";
-      aversDesc = "Effigie de profil du souverain (Napoléon Ier, Charles X, Louis-Philippe) ou figure de la République (Cérès, Hercule).";
-      reversDesc = "Couronne de laurier ou de chêne encadrant la valeur faciale et le millésime, ou armoiries impériales/royales.";
-      contexte = "Le XIXème siècle a vu naître le Franc Germinal, pilier de la stabilité financière de la France post-révolutionnaire. Cette monnaie témoigne de l'industrialisation rapide et des changements de régimes politiques successifs.";
-    } else if (cleanTitleLower.includes("lindauer") || cleanTitleLower.includes("morlon") || cleanTitleLower.includes("chambre") || cleanTitleLower.includes("commerce") || cleanTitleLower.includes("etat") || cleanTitleLower.includes("français") || cleanTitleLower.includes("franc") || cleanTitleLower.includes("centime")) {
-      regime = "République Française / État Français";
-      epoque = "XXème siècle (Guerres Mondiales, Reconstruction)";
-      aversDesc = "Allégorie de la République (profil de Morlon avec bonnet phrygien) ou monogramme RF avec branches de chêne.";
-      reversDesc = "Épis de blé ou branches d'olivier entourant la valeur faciale, ou pièce trouée caractéristique (type Lindauer).";
-      contexte = "Le XXème siècle est marqué par les guerres mondiales et les crises monétaires, entraînant l'utilisation de métaux non-nobles (zinc, aluminium, maillechort) et la frappe de monnaies de nécessité par les Chambres de Commerce.";
-    }
-
-    let composition = material || "Métal cuivreux ou alliage d'usage";
-    if (matLower.includes("argent") || matLower.includes("silver")) {
-      composition = "Argent (Ag)";
-      rarete = "Peu commune (R1)";
-    } else if (matLower.includes("or") || matLower.includes("gold")) {
-      composition = "Or (Au)";
-      rarete = "Très rare (R3)";
-    } else if (matLower.includes("billon")) {
-      composition = "Billon (alliage pauvre d'argent et de cuivre)";
-    } else if (matLower.includes("bronze")) {
-      composition = "Bronze (Cu-Sn)";
-    }
-
-    const generatedMarkdown = `### 🏛️ CABINET NUMISMATIQUE : ${title || "Monnaie à identifier"}
-
----
-
-#### 📋 CARACTÉRISTIQUES DE L'EXEMPLAIRE
-*   **Monnaie** : ${title || "Non renseignée"}
-*   **Émetteur / Autorité** : ${regime}
-*   **Période historique** : ${epoque}
-*   **Métal & Alliage** : ${composition}
-*   **Rareté estimée** : ${rarete}
-
----
-
-#### 📜 LE RÉCIT HISTORIQUE
-${contexte}
-
----
-
-#### 🪙 SYMBOLIQUE & ICONOGRAPHIE
-*   **Sur l'Avers (Face)**, le graveur a représenté ${aversDesc.charAt(0).toLowerCase() + aversDesc.slice(1)}
-*   **Au Revers (Pile)**, on contemple ${reversDesc.charAt(0).toLowerCase() + reversDesc.slice(1)}
-
----
-
-#### 🔍 L'AVIS DU COLLECTIONNEUR
-*   **Conservation & Aspect** : Cet exemplaire présente une usure liée à sa circulation d'époque. Sa patine témoigne de son long séjour en terre, préservant les reliefs essentiels qui racontent son histoire.
-*   **Anecdote & Rôle** : Cette monnaie d'usage quotidien servait aux transactions courantes du peuple de l'époque. Elle constitue un lien direct et palpable avec le quotidien des générations passées.`;
-
-    setCleanDescription(generatedMarkdown);
-    alert("Fiche Wiki générée avec succès dans l'onglet Description ! 🪄✨ (Pensez à cliquer sur Enregistrer)");
-  };
 
   const uploadPhoto = async (type, useCamera = false) => {
     if (uploading) return;
@@ -911,86 +818,251 @@ ${contexte}
                 )}
               </div>
 
-              {cleanPhotos.length > 0 && (
-                <div style={{ marginTop: "5px", display: "flex", flexDirection: "column", gap: "6px" }}>
-                  <img
-                    src={cleanPhotos[cleanIndex].image_url}
-                    alt=""
-                    onClick={() => setFullscreenImage(cleanPhotos[cleanIndex].image_url)}
-                    style={{
-                      width: "100%",
-                      height: "180px",
-                      objectFit: "contain",
-                      background: "rgba(0,0,0,0.4)",
-                      borderRadius: "14px",
-                      cursor: "pointer",
-                      border: "1px solid rgba(255,255,255,0.08)"
-                    }}
-                  />
-                  {cleanPhotos.length > 1 && (
-                    <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCleanIndex((cleanIndex - 1 + cleanPhotos.length) % cleanPhotos.length);
-                        }}
-                        style={{ ...buttonStyle, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", padding: "4px 10px" }}
+              {category === "Monnaie" && cleanPhotos.length > 0 ? (
+                <div style={{ marginTop: "5px", display: "flex", flexDirection: "column", gap: "8px", alignItems: "center" }}>
+                  <style>{`
+                    .coin-popup-3d {
+                      perspective: 1000px;
+                      width: 130px;
+                      height: 130px;
+                      cursor: pointer;
+                      margin: 5px auto;
+                    }
+                    .coin-popup-inner {
+                      position: relative;
+                      width: 100%;
+                      height: 100%;
+                      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+                      transform-style: preserve-3d;
+                    }
+                    .coin-popup-3d.flipped .coin-popup-inner {
+                      transform: rotateY(180deg);
+                    }
+                    .coin-popup-front, .coin-popup-back {
+                      position: absolute;
+                      width: 100%;
+                      height: 100%;
+                      -webkit-backface-visibility: hidden;
+                      backface-visibility: hidden;
+                      border-radius: 50%;
+                      overflow: hidden;
+                      border: 2px solid rgba(255, 255, 255, 0.2);
+                      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+                    }
+                    .coin-popup-back {
+                      transform: rotateY(180deg);
+                    }
+                    .coin-popup-front img, .coin-popup-back img {
+                      width: 100%;
+                      height: 100%;
+                      object-fit: cover;
+                    }
+                    .coin-revers-placeholder {
+                      width: 100%;
+                      height: 100%;
+                      background: linear-gradient(135deg, #1e293b, #0f172a);
+                      display: flex;
+                      flex-direction: column;
+                      align-items: center;
+                      justify-content: center;
+                      color: #fbbf24;
+                      font-size: 8px;
+                      font-weight: bold;
+                      text-transform: uppercase;
+                      border-radius: 50%;
+                      border: 2px dashed rgba(251, 191, 36, 0.4);
+                      box-sizing: border-box;
+                      padding: 8px;
+                      text-align: center;
+                    }
+                  `}</style>
+
+                  {/* The 3D coin */}
+                  {(() => {
+                    const avers = cleanPhotos.find((p) => p.type === "avers") || cleanPhotos[0];
+                    const revers = cleanPhotos.find((p) => p.type === "revers") || (cleanPhotos.length > 1 ? cleanPhotos.find((p) => p.id !== avers?.id) : null);
+                    
+                    return (
+                      <div
+                        className={`coin-popup-3d ${isFlipped ? "flipped" : ""}`}
+                        onClick={() => setIsFlipped(!isFlipped)}
                       >
-                        ←
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCleanIndex((cleanIndex + 1) % cleanPhotos.length);
+                        <div className="coin-popup-inner">
+                          <div className="coin-popup-front">
+                            {avers ? (
+                              <img src={avers.image_url} alt="Avers" />
+                            ) : (
+                              <div className="coin-revers-placeholder">Avers</div>
+                            )}
+                          </div>
+                          <div className="coin-popup-back">
+                            {revers ? (
+                              <img src={revers.image_url} alt="Revers" />
+                            ) : (
+                              <div className="coin-revers-placeholder">
+                                <span style={{ fontSize: "14px", marginBottom: "2px", display: "block" }}>🪙</span>
+                                <span>Revers non</span>
+                                <span>photographié</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  <span style={{ fontSize: "10px", opacity: 0.6, marginBottom: "8px" }}>
+                    👆 Cliquez sur la pièce pour la retourner (3D)
+                  </span>
+
+                  {/* Photo manager sub-section */}
+                  <div style={{
+                    width: "100%",
+                    background: "rgba(255, 255, 255, 0.03)",
+                    border: "1px solid rgba(255, 255, 255, 0.06)",
+                    borderRadius: "12px",
+                    padding: "10px",
+                    boxSizing: "border-box"
+                  }}>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "8px" }}>
+                      <img
+                        src={cleanPhotos[cleanIndex]?.image_url}
+                        alt="Aperçu"
+                        onClick={() => setFullscreenImage(cleanPhotos[cleanIndex]?.image_url)}
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          objectFit: "cover",
+                          borderRadius: "8px",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          cursor: "pointer"
                         }}
-                        style={{ ...buttonStyle, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", padding: "4px 10px" }}
+                      />
+                      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "2px" }}>
+                        <span style={{ fontSize: "10px", fontWeight: "bold" }}>
+                          Photo {cleanIndex + 1} sur {cleanPhotos.length}
+                        </span>
+                        <span style={{ fontSize: "9px", opacity: 0.5 }}>
+                          Rôle actuel : {
+                            cleanPhotos[cleanIndex]?.type === "avers" ? "🪙 Avers" :
+                            cleanPhotos[cleanIndex]?.type === "revers" ? "🪙 Revers" : "Non assigné"
+                          }
+                        </span>
+                      </div>
+
+                      {cleanPhotos.length > 1 && (
+                        <div style={{ display: "flex", gap: "4px" }}>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCleanIndex((cleanIndex - 1 + cleanPhotos.length) % cleanPhotos.length);
+                            }}
+                            style={{ ...buttonStyle, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", padding: "2px 8px" }}
+                          >
+                            ←
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCleanIndex((cleanIndex + 1) % cleanPhotos.length);
+                            }}
+                            style={{ ...buttonStyle, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", padding: "2px 8px" }}
+                          >
+                            →
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <div style={{ display: "flex", gap: "4px" }}>
+                      {cleanPhotos[cleanIndex]?.type === "avers" ? (
+                        <button
+                          onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "clean")}
+                          style={{ ...buttonStyle, flex: 1, background: "#3b82f6", padding: "4px", fontSize: "10px", fontWeight: "bold" }}
+                        >
+                          Avers ✓
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "avers")}
+                          style={{ ...buttonStyle, flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", padding: "4px", fontSize: "10px", color: "#9ca3af" }}
+                        >
+                          Définir Avers
+                        </button>
+                      )}
+
+                      {cleanPhotos[cleanIndex]?.type === "revers" ? (
+                        <button
+                          onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "clean")}
+                          style={{ ...buttonStyle, flex: 1, background: "#10b981", padding: "4px", fontSize: "10px", fontWeight: "bold" }}
+                        >
+                          Revers ✓
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "revers")}
+                          style={{ ...buttonStyle, flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", padding: "4px", fontSize: "10px", color: "#9ca3af" }}
+                        >
+                          Définir Revers
+                        </button>
+                      )}
+
+                      <button
+                        onClick={() => deletePhoto(cleanPhotos[cleanIndex])}
+                        style={{ ...buttonStyle, background: "#ef4444", padding: "4px 8px", fontSize: "10px" }}
                       >
-                        →
+                        🗑️
                       </button>
                     </div>
-                  )}
-                  {/* Role designation buttons */}
-                  <div style={{ display: "flex", gap: "6px", width: "100%", marginTop: "2px" }}>
-                    {cleanPhotos[cleanIndex].type === "avers" ? (
-                      <button
-                        onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "clean")}
-                        style={{ ...buttonStyle, flex: 1, background: "#3b82f6", padding: "6px", fontSize: "11px", fontWeight: "bold" }}
-                      >
-                        🪙 Avers (Face) ✓
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "avers")}
-                        style={{ ...buttonStyle, flex: 1, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", padding: "6px", fontSize: "11px", color: "#9ca3af" }}
-                      >
-                        🪙 Définir comme Avers
-                      </button>
-                    )}
-
-                    {cleanPhotos[cleanIndex].type === "revers" ? (
-                      <button
-                        onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "clean")}
-                        style={{ ...buttonStyle, flex: 1, background: "#10b981", padding: "6px", fontSize: "11px", fontWeight: "bold" }}
-                      >
-                        🪙 Revers (Pile) ✓
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "revers")}
-                        style={{ ...buttonStyle, flex: 1, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", padding: "6px", fontSize: "11px", color: "#9ca3af" }}
-                      >
-                        🪙 Définir comme Revers
-                      </button>
-                    )}
                   </div>
-
-                  <button
-                    onClick={() => deletePhoto(cleanPhotos[cleanIndex])}
-                    style={{ ...buttonStyle, background: "#ef4444", padding: "6px 12px", fontSize: "11px", marginTop: "2px" }}
-                  >
-                    🗑️ Supprimer la photo
-                  </button>
                 </div>
+              ) : (
+                cleanPhotos.length > 0 && (
+                  <div style={{ marginTop: "5px", display: "flex", flexDirection: "column", gap: "6px" }}>
+                    <img
+                      src={cleanPhotos[cleanIndex].image_url}
+                      alt=""
+                      onClick={() => setFullscreenImage(cleanPhotos[cleanIndex].image_url)}
+                      style={{
+                        width: "100%",
+                        height: "180px",
+                        objectFit: "contain",
+                        background: "rgba(0,0,0,0.4)",
+                        borderRadius: "14px",
+                        cursor: "pointer",
+                        border: "1px solid rgba(255,255,255,0.08)"
+                      }}
+                    />
+                    {cleanPhotos.length > 1 && (
+                      <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCleanIndex((cleanIndex - 1 + cleanPhotos.length) % cleanPhotos.length);
+                          }}
+                          style={{ ...buttonStyle, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", padding: "4px 10px" }}
+                        >
+                          ←
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCleanIndex((cleanIndex + 1) % cleanPhotos.length);
+                          }}
+                          style={{ ...buttonStyle, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", padding: "4px 10px" }}
+                        >
+                          →
+                        </button>
+                      </div>
+                    )}
+                    <button
+                      onClick={() => deletePhoto(cleanPhotos[cleanIndex])}
+                      style={{ ...buttonStyle, background: "#ef4444", padding: "6px 12px", fontSize: "11px", marginTop: "2px" }}
+                    >
+                      🗑️ Supprimer la photo
+                    </button>
+                  </div>
+                )
               )}
             </div>
           )}
@@ -1054,37 +1126,6 @@ ${contexte}
                 </div>
               )}
 
-              {category === "Monnaie" && (
-                <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "12px", marginTop: "4px", display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", color: "#9ca3af" }}>
-                    Wiki Numismatique & Histoire
-                  </label>
-                  <button
-                    onClick={handleGenerateSheet}
-                    style={{
-                      width: "100%",
-                      padding: "10px 12px",
-                      borderRadius: "12px",
-                      border: "none",
-                      background: "linear-gradient(135deg, #a855f7, #6b21a8)",
-                      color: "white",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "6px",
-                      boxShadow: "0 4px 12px rgba(168, 85, 247, 0.2)"
-                    }}
-                  >
-                    🪄 Générer la Fiche Historique
-                  </button>
-                  <p style={{ margin: 0, fontSize: "10px", color: "#9ca3af", textAlign: "center", lineHeight: "1.3" }}>
-                    Crée automatiquement une description structurée (Avers, Revers, Contexte historique) dans l'onglet Description en fonction des informations saisies.
-                  </p>
-                </div>
-              )}
             </div>
           )}
 
