@@ -64,24 +64,42 @@ export default function WikiPanel({ finds, photos, onOpenFindDetails, onUpdate }
     let rarete = "Commune (C)";
     let contexte = "Cette monnaie a circulé durant une période de transition économique. Les frappes de l'époque servaient aux échanges quotidiens et locaux, reflétant la puissance de l'autorité émettrice.";
 
-    if (cleanTitleLower.includes("romain") || cleanTitleLower.includes("denier") || cleanTitleLower.includes("hadrien") || cleanTitleLower.includes("sesterce") || subCatLower.includes("romaine")) {
+    if (cleanTitleLower.includes("romain") || cleanTitleLower.includes("denier") || cleanTitleLower.includes("hadrien") || cleanTitleLower.includes("sesterce") || cleanTitleLower.includes("antoninien") || cleanTitleLower.includes("dupondius") || cleanTitleLower.includes("as ") || subCatLower.includes("romaine") || subCatLower.includes("antique")) {
       regime = "Empire Romain";
       epoque = "Antiquité (Ier - IVème siècle)";
       aversDesc = "Tête laurée ou buste de l'Empereur de profil à droite, entouré de ses titres impériaux (ex: IMP AVG...).";
       reversDesc = "Divinité debout ou assise (Pax, Providentia, Victoria) ou scène militaire, avec légende décrivant les vertus impériales.";
       contexte = "Le denier ou le sesterce constituait le pilier monétaire de l'Empire Romain, facilitant la solde des légions et le commerce florissant de la Pax Romana dans toute l'Europe méditerranéenne.";
-    } else if (cleanTitleLower.includes("louis") || cleanTitleLower.includes("tournois") || cleanTitleLower.includes("royal") || subCatLower.includes("royale")) {
+    } else if (cleanTitleLower.includes("gaulois") || cleanTitleLower.includes("gauloise") || cleanTitleLower.includes("potin") || cleanTitleLower.includes("statère") || cleanTitleLower.includes("celte") || subCatLower.includes("gauloise") || subCatLower.includes("celte")) {
+      regime = "Peuple Celte / Gaule";
+      epoque = "Protohistoire (IIème - Ier siècle av. J.-C.)";
+      aversDesc = "Tête stylisée de profil à gauche ou à droite, chevelure sauvage avec motifs géométriques.";
+      reversDesc = "Animal mythologique (cheval ailé, sanglier) ou figure stylisée entourée de symboles sacrés.";
+      contexte = "Les potins et statères gaulois étaient utilisés pour les échanges commerciaux entre tribus et avec les marchands romains. Inspirés des monnaies grecques, ils témoignent du raffinement artistique et de l'indépendance économique des peuples celtes avant la conquête romaine.";
+    } else if (cleanTitleLower.includes("féodal") || cleanTitleLower.includes("feodal") || cleanTitleLower.includes("obole") || cleanTitleLower.includes("carolingien") || cleanTitleLower.includes("mérovingien") || cleanTitleLower.includes("capet") || subCatLower.includes("féodale") || subCatLower.includes("medievale")) {
+      regime = "Seigneurie locale / Comté féodal";
+      epoque = "Moyen Âge (Xème - XVème siècle)";
+      aversDesc = "Croix pattée ou monogramme du seigneur émetteur entouré de son nom.";
+      reversDesc = "Temple stylisé, façade de cathédrale, ou monogramme religieux entouré du nom de la cité.";
+      contexte = "À l'époque féodale, le pouvoir de battre monnaie était morcelé entre seigneurs locaux et évêques. Ces monnaies en argent ou billon servaient au commerce régional et au paiement des taxes seigneuriales.";
+    } else if (cleanTitleLower.includes("louis") || cleanTitleLower.includes("tournois") || cleanTitleLower.includes("royal") || cleanTitleLower.includes("liard") || cleanTitleLower.includes("écu") || cleanTitleLower.includes("sol") || cleanTitleLower.includes("denier tournois") || subCatLower.includes("royale")) {
       regime = "Royaume de France (Ancien Régime)";
       epoque = "Médiévale / Moderne (Valois ou Bourbons)";
       aversDesc = "Buste du Roi couronné ou profil enfantin/adulte entouré de la légende de droit divin (FRANC.ET.NAV.REX).";
       reversDesc = "Écu aux trois fleurs de lys surmonté d'une couronne royale, ou trois fleurs de lys posées 2 et 1.";
       contexte = "Le double tournois, le liard ou l'écu royal étaient les témoins de la centralisation monétaire française. Frappés en masse sous Henri IV, Louis XIII et Louis XIV pour standardiser le commerce national.";
-    } else if (cleanTitleLower.includes("napoleon") || cleanTitleLower.includes("empire") || cleanTitleLower.includes("franc")) {
-      regime = "Empire Français / République";
-      epoque = "Moderne (XIXème - XXème siècle)";
-      aversDesc = "Buste ou effigie de profil (Napoléon Empereur lauré ou Cérès/Hercule pour la République).";
-      reversDesc = "Valeur faciale (ex : 5 Francs) entourée d'une couronne de laurier et de chêne avec la devise républicaine ou impériale.";
-      contexte = "Créé par la loi du 7 germinal an XI (1803), le système du Franc Germinal instaure une stabilité monétaire remarquable qui accompagnera la révolution industrielle française.";
+    } else if (cleanTitleLower.includes("napoleon") || cleanTitleLower.includes("empire") || cleanTitleLower.includes("cérès") || cleanTitleLower.includes("ceres") || cleanTitleLower.includes("décime") || cleanTitleLower.includes("decime") || cleanTitleLower.includes("monneron") || cleanTitleLower.includes("semeuse") || cleanTitleLower.includes("semeur")) {
+      regime = "Empire Français / République / Consulat";
+      epoque = "XIXème siècle (Consulat, Empire, Restauration)";
+      aversDesc = "Effigie de profil du souverain (Napoléon Ier, Charles X, Louis-Philippe) ou figure de la République (Cérès, Hercule).";
+      reversDesc = "Couronne de laurier ou de chêne encadrant la valeur faciale et le millésime, ou armoiries impériales/royales.";
+      contexte = "Le XIXème siècle a vu naître le Franc Germinal, pilier de la stabilité financière de la France post-révolutionnaire. Cette monnaie témoigne de l'industrialisation rapide et des changements de régimes politiques successifs.";
+    } else if (cleanTitleLower.includes("lindauer") || cleanTitleLower.includes("morlon") || cleanTitleLower.includes("chambre") || cleanTitleLower.includes("commerce") || cleanTitleLower.includes("etat") || cleanTitleLower.includes("français") || cleanTitleLower.includes("franc") || cleanTitleLower.includes("centime")) {
+      regime = "République Française / État Français";
+      epoque = "XXème siècle (Guerres Mondiales, Reconstruction)";
+      aversDesc = "Allégorie de la République (profil de Morlon avec bonnet phrygien) ou monogramme RF avec branches de chêne.";
+      reversDesc = "Épis de blé ou branches d'olivier entourant la valeur faciale, ou pièce trouée caractéristique (type Lindauer).";
+      contexte = "Le XXème siècle est marqué par les guerres mondiales et les crises monétaires, entraînant l'utilisation de métaux non-nobles (zinc, aluminium, maillechort) et la frappe de monnaies de nécessité par les Chambres de Commerce.";
     }
 
     let composition = selectedCoin.description || "Métal cuivreux ou alliage d'usage";
@@ -577,6 +595,28 @@ ${contexte}
               )}
             </div>
 
+            {/* Always visible magic generate button */}
+            <button
+              onClick={handleGenerateSheetInsideMuseum}
+              style={{
+                width: "100%",
+                padding: "10px",
+                borderRadius: "12px",
+                border: "none",
+                background: "linear-gradient(135deg, #a855f7, #6b21a8)",
+                color: "white",
+                fontSize: "11.5px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px"
+              }}
+            >
+              🪄 Générer / Mettre à jour la Notice
+            </button>
+
             {/* Historical / Wiki details rendering or inline editor */}
             {isEditing ? (
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -634,25 +674,6 @@ ${contexte}
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                {!selectedCoin.clean_description && (
-                  <button
-                    onClick={handleGenerateSheetInsideMuseum}
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      borderRadius: "10px",
-                      border: "none",
-                      background: "linear-gradient(135deg, #a855f7, #6b21a8)",
-                      color: "white",
-                      fontSize: "11.5px",
-                      fontWeight: "bold",
-                      cursor: "pointer"
-                    }}
-                  >
-                    🪄 Générer la Fiche Historique
-                  </button>
-                )}
-                
                 <div
                   style={{
                     background: "rgba(255, 255, 255, 0.03)",
