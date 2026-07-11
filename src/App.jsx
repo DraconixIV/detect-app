@@ -257,6 +257,9 @@ function App() {
   const [historicalMapOpacity, setHistoricalMapOpacity] = useState(0.5);
   const [useClustering, setUseClustering] = useState(false);
   const [showPerformance, setShowPerformance] = useState(false);
+  const [activeSubCategory, setActiveSubCategory] = useState(null);
+  const [subCategorySelectCat, setSubCategorySelectCat] = useState(null);
+  const [subCatModalStep, setSubCatModalStep] = useState(1);
 
   const isRecordingRef = useRef(isRecordingSortie);
   const positionsRef = useRef(sortiePositions);
@@ -539,15 +542,30 @@ function App() {
     }
   };
 
-  const toggleFilter = (
-    category
-  ) => {
+  const toggleFilter = (category) => {
     // Si la catégorie cliquée est déjà la seule active, on réactive tout
     if (filters.length === 1 && filters[0] === category) {
       setFilters(Object.keys(icons));
+      setActiveSubCategory(null);
     } else {
-      // Sinon, on isole cette catégorie
-      setFilters([category]);
+      // Extraire les sous-catégories uniques pour cette catégorie dans la base de données
+      const subCats = Array.from(
+        new Set(
+          finds
+            .filter((f) => f.category === category && f.sub_category)
+            .map((f) => f.sub_category)
+        )
+      ).filter(Boolean);
+
+      if (subCats.length > 0) {
+        // Ouvrir la boîte de dialogue de filtre par sous-catégorie
+        setSubCategorySelectCat(category);
+        setSubCatModalStep(1);
+      } else {
+        // S'il n'y a aucune sous-catégorie enregistrée, on filtre directement par catégorie
+        setFilters([category]);
+        setActiveSubCategory(null);
+      }
     }
   };
 
@@ -754,6 +772,7 @@ function App() {
       }
 
       const matchesCategory = filters.includes(find.category);
+      const matchesSubCategory = !activeSubCategory || find.sub_category === activeSubCategory;
 
       const matchesSearch =
         !search ||
@@ -767,9 +786,9 @@ function App() {
         !selectedDate ||
         find.date?.startsWith(selectedDate);
 
-      return matchesCategory && matchesSearch && matchesDate;
+      return matchesCategory && matchesSubCategory && matchesSearch && matchesDate;
     });
-  }, [finds, filters, search, selectedDate, favoritesOnly]);
+  }, [finds, filters, activeSubCategory, search, selectedDate, favoritesOnly]);
 
   const positionedFinds = useMemo(() => {
     if (filteredFinds.length === 0) return [];
@@ -1289,6 +1308,38 @@ return (
               </button>
             ))}
           </div>
+
+          {activeSubCategory && (
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              background: "rgba(37, 99, 235, 0.15)",
+              border: "1px solid rgba(37, 99, 235, 0.3)",
+              borderRadius: "10px",
+              padding: "6px 10px",
+              marginTop: "8px",
+              fontSize: "11px",
+              color: "#93c5fd"
+            }}>
+              <span>🎯 Sous-catégorie : <strong>{activeSubCategory}</strong></span>
+              <button
+                onClick={() => setActiveSubCategory(null)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "#ef4444",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                  padding: "0 2px"
+                }}
+                title="Effacer le filtre de sous-catégorie"
+              >
+                ✕
+              </button>
+            </div>
+          )}
 
          <AddFindForm
   showForm={showForm}
@@ -2056,6 +2107,191 @@ return (
           }}
           onCancel={() => setConfirmConfig(null)}
         />
+      )}
+      {/* Subcategory Selection Modal */}
+      {subCategorySelectCat && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0, 0, 0, 0.6)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+            padding: "20px",
+            boxSizing: "border-box"
+          }}
+        >
+          <div
+            style={{
+              background: "rgba(17, 24, 39, 0.95)",
+              backdropFilter: "blur(16px)",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              borderRadius: "24px",
+              padding: "24px",
+              width: "100%",
+              maxWidth: "380px",
+              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.5)",
+              color: "white",
+              display: "flex",
+              flexDirection: "column",
+              gap: "16px",
+              boxSizing: "border-box"
+            }}
+          >
+            {subCatModalStep === 1 ? (
+              <>
+                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", display: "flex", alignItems: "center", gap: "8px" }}>
+                  🔍 Filtrer par sous-catégorie ?
+                </h3>
+                <p style={{ margin: 0, fontSize: "13px", lineHeight: "1.5", color: "#d1d5db" }}>
+                  Souhaitez-vous affiner votre recherche par sous-catégorie pour les trouvailles de type <strong>{categoryEmojis[subCategorySelectCat] || ""} {subCategorySelectCat}</strong> ?
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" }}>
+                  <button
+                    onClick={() => setSubCatModalStep(2)}
+                    style={{
+                      padding: "12px",
+                      borderRadius: "12px",
+                      border: "none",
+                      background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
+                      color: "white",
+                      fontSize: "13px",
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                      boxShadow: "0 4px 12px rgba(59, 130, 246, 0.25)"
+                    }}
+                  >
+                    Oui (Choisir une sous-catégorie)
+                  </button>
+                  <button
+                    onClick={() => {
+                      setFilters([subCategorySelectCat]);
+                      setActiveSubCategory(null);
+                      setSubCategorySelectCat(null);
+                    }}
+                    style={{
+                      padding: "12px",
+                      borderRadius: "12px",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      background: "rgba(255,255,255,0.06)",
+                      color: "white",
+                      fontSize: "13px",
+                      fontWeight: "bold",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Non (Voir toute la catégorie)
+                  </button>
+                  <button
+                    onClick={() => setSubCategorySelectCat(null)}
+                    style={{
+                      padding: "10px",
+                      borderRadius: "12px",
+                      border: "none",
+                      background: "transparent",
+                      color: "#9ca3af",
+                      fontSize: "12px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", display: "flex", alignItems: "center", gap: "8px" }}>
+                  🏷️ Choisir la sous-catégorie
+                </h3>
+                <p style={{ margin: 0, fontSize: "12px", color: "#9ca3af" }}>
+                  Sélectionnez la sous-catégorie pour <strong>{subCategorySelectCat}</strong> :
+                </p>
+                <div style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "6px",
+                  maxHeight: "220px",
+                  overflowY: "auto",
+                  paddingRight: "4px"
+                }}>
+                  {Array.from(new Set(finds.filter(f => f.category === subCategorySelectCat && f.sub_category).map(f => f.sub_category)))
+                    .filter(Boolean)
+                    .map((subCat) => (
+                      <button
+                        key={subCat}
+                        onClick={() => {
+                          setFilters([subCategorySelectCat]);
+                          setActiveSubCategory(subCat);
+                          setSubCategorySelectCat(null);
+                        }}
+                        style={{
+                          padding: "10px 12px",
+                          borderRadius: "10px",
+                          border: "1px solid rgba(255,255,255,0.08)",
+                          background: "rgba(255,255,255,0.04)",
+                          color: "white",
+                          fontSize: "13px",
+                          textAlign: "left",
+                          cursor: "pointer",
+                          transition: "0.2s"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+                          e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                          e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+                        }}
+                      >
+                        🔹 {subCat}
+                      </button>
+                    ))}
+                </div>
+                <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
+                  <button
+                    onClick={() => setSubCatModalStep(1)}
+                    style={{
+                      flex: 1,
+                      padding: "10px",
+                      borderRadius: "10px",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      background: "transparent",
+                      color: "white",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Retour
+                  </button>
+                  <button
+                    onClick={() => setSubCategorySelectCat(null)}
+                    style={{
+                      flex: 1,
+                      padding: "10px",
+                      borderRadius: "10px",
+                      border: "none",
+                      background: "#ef4444",
+                      color: "white",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       )}
 
       {/* Toast Notifications */}
