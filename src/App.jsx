@@ -166,8 +166,17 @@ function RecenterMap({
 
 
 function App() {
-  const [position, setPosition] =
-    useState(null);
+  const [position, setPosition] = useState(() => {
+    try {
+      const cached = localStorage.getItem("lastKnownPosition");
+      if (cached) {
+        return JSON.parse(cached);
+      }
+    } catch (e) {
+      console.error("Error reading cached position", e);
+    }
+    return [43.273, 3.173]; // Par défaut Lespignan (Hérault) au lieu de Bourges
+  });
 
   const [finds, setFinds] =
     useState([]);
@@ -260,6 +269,7 @@ function App() {
   const [activeSubCategory, setActiveSubCategory] = useState(null);
   const [subCategorySelectCat, setSubCategorySelectCat] = useState(null);
   const [subCatModalStep, setSubCatModalStep] = useState(1);
+  const [gpsStyle, setGpsStyle] = useState(() => localStorage.getItem("gpsStyle") || "blue-dot");
 
   const isRecordingRef = useRef(isRecordingSortie);
   const positionsRef = useRef(sortiePositions);
@@ -399,19 +409,6 @@ function App() {
     useState("");
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setPosition((current) => {
-        if (current === null) {
-          console.warn("GPS timeout: falling back to central France coordinate to load the map.");
-          return [47.081, 2.399];
-        }
-        return current;
-      });
-    }, 6000);
-    return () => clearTimeout(timeoutId);
-  }, []);
-
-  useEffect(() => {
     loadFinds();
 
     const watchId =
@@ -423,6 +420,7 @@ function App() {
           ];
 
           setPosition(newPosition);
+          localStorage.setItem("lastKnownPosition", JSON.stringify(newPosition));
           setGpsAccuracy(pos.coords.accuracy);
 
           if (isRecordingRef.current) {
@@ -440,7 +438,7 @@ function App() {
 
         (err) => {
           console.error("GPS Error:", err);
-          setPosition((current) => current || [47.081, 2.399]);
+          // Le state garde sa valeur actuelle (cache local ou Lespignan) sans forcer Bourges
         },
 
         {
@@ -1248,7 +1246,74 @@ return (
               />
             </div>
           )}
-
+          {/* Custom style selector for GPS Marker */}
+          <div style={{ background: "rgba(255,255,255,0.04)", padding: "8px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.06)", margin: "5px 0" }}>
+            <div style={{ fontSize: "10px", color: "#d1d5db", fontWeight: "bold", marginBottom: "6px" }}>
+              🎨 Style de ma position GPS
+            </div>
+            <div style={{ display: "flex", gap: "4px" }}>
+              <button
+                onClick={() => {
+                  setGpsStyle("blue-dot");
+                  localStorage.setItem("gpsStyle", "blue-dot");
+                }}
+                style={{
+                  flex: 1,
+                  padding: "5px",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: gpsStyle === "blue-dot" ? "#2563eb" : "rgba(255,255,255,0.06)",
+                  color: "white",
+                  fontSize: "9.5px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  transition: "background 0.2s"
+                }}
+              >
+                🔵 Bleu
+              </button>
+              <button
+                onClick={() => {
+                  setGpsStyle("radar");
+                  localStorage.setItem("gpsStyle", "radar");
+                }}
+                style={{
+                  flex: 1,
+                  padding: "5px",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: gpsStyle === "radar" ? "#10b981" : "rgba(255,255,255,0.06)",
+                  color: "white",
+                  fontSize: "9.5px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  transition: "background 0.2s"
+                }}
+              >
+                🟢 Radar
+              </button>
+              <button
+                onClick={() => {
+                  setGpsStyle("royal-pointer");
+                  localStorage.setItem("gpsStyle", "royal-pointer");
+                }}
+                style={{
+                  flex: 1,
+                  padding: "5px",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: gpsStyle === "royal-pointer" ? "#d97706" : "rgba(255,255,255,0.06)",
+                  color: "white",
+                  fontSize: "9.5px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  transition: "background 0.2s"
+                }}
+              >
+                🟡 Or
+              </button>
+            </div>
+          </div>
           <input
             type="text"
             placeholder="🔍 Rechercher titre, époque..."
@@ -1662,6 +1727,7 @@ return (
 
         <GpsMarker
           position={position}
+          gpsStyle={gpsStyle}
         />
 
         {useClustering ? (
