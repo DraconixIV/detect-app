@@ -163,7 +163,25 @@ function RecenterMap({
   return null;
 }
 
+function MapEventsHandler({ onLongPress }) {
+  const map = useMap();
 
+  useEffect(() => {
+    const handleContextMenu = (e) => {
+      if (onLongPress) {
+        onLongPress(e.latlng);
+      }
+    };
+
+    map.on("contextmenu", handleContextMenu);
+
+    return () => {
+      map.off("contextmenu", handleContextMenu);
+    };
+  }, [map, onLongPress]);
+
+  return null;
+}
 
 function App() {
   const [position, setPosition] = useState(() => {
@@ -565,6 +583,17 @@ function App() {
         setActiveSubCategory(null);
       }
     }
+  };
+
+  const handleMapLongPress = (latlng) => {
+    setCustomLat(latlng.lat.toFixed(6));
+    setCustomLng(latlng.lng.toFixed(6));
+    setShowForm(true);
+    setShowMenu(true);
+    setToast({
+      message: "📍 Coordonnées ciblées depuis la carte. Remplissez le formulaire !",
+      type: "success"
+    });
   };
 
   const handleExport =
@@ -1680,6 +1709,7 @@ return (
           width: "100%"
         }}
       >
+        <MapEventsHandler onLongPress={handleMapLongPress} />
         {zoomTarget && (
           <RecenterMap
             target={zoomTarget}

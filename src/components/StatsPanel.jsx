@@ -148,6 +148,44 @@ export default function StatsPanel({
   ).sort((a, b) => b[1] - a[1]);
 
   const maxCount = categoryData.length > 0 ? Math.max(...categoryData.map(d => d[1])) : 1;
+  const totalFinds = finds.length;
+
+  const r = 36;
+  const circ = 2 * Math.PI * r;
+  const strokeWidth = 8;
+  const donutSegments = [];
+  let accumulatedLength = 0;
+
+  const getCategoryColor = (cat) => {
+    switch (cat) {
+      case "Monnaie": return "#facc15";
+      case "Bijou": return "#ec4899";
+      case "Boucle": return "#8b5cf6";
+      case "Bouton": return "#10b981";
+      case "Médaille": return "#3b82f6";
+      case "Munition": return "#ef4444";
+      case "Outil": return "#f97316";
+      case "Plomb": return "#6b7280";
+      case "Religieux": return "#d97706";
+      default: return "#4b5563";
+    }
+  };
+
+  categoryData.forEach(([category, count]) => {
+    const pct = count / (totalFinds || 1);
+    const len = circ * pct;
+    const offset = -accumulatedLength;
+    accumulatedLength += len;
+
+    donutSegments.push({
+      category,
+      count,
+      pct,
+      strokeDasharray: `${len} ${circ}`,
+      strokeDashoffset: offset,
+      color: getCategoryColor(category)
+    });
+  });
 
   return (
     <>
@@ -156,6 +194,39 @@ export default function StatsPanel({
           <h4 style={{ margin: "0 0 8px 0", fontSize: "11px", opacity: 0.8, textTransform: "uppercase", letterSpacing: "0.5px" }}>
             📊 Répartition
           </h4>
+
+          {/* Donut Chart */}
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", margin: "10px 0 16px 0", position: "relative" }}>
+            <svg width="100" height="100" viewBox="0 0 100 100" style={{ transform: "rotate(-90deg)" }}>
+              <circle
+                cx="50"
+                cy="50"
+                r={r}
+                fill="transparent"
+                stroke="rgba(255, 255, 255, 0.05)"
+                strokeWidth={strokeWidth}
+              />
+              {donutSegments.map((seg, idx) => (
+                <circle
+                  key={idx}
+                  cx="50"
+                  cy="50"
+                  r={r}
+                  fill="transparent"
+                  stroke={seg.color}
+                  strokeWidth={strokeWidth}
+                  strokeDasharray={seg.strokeDasharray}
+                  strokeDashoffset={seg.strokeDashoffset}
+                  style={{ transition: "stroke-dashoffset 0.5s ease" }}
+                />
+              ))}
+            </svg>
+            <div style={{ position: "absolute", textAlign: "center", pointerEvents: "none" }}>
+              <div style={{ fontSize: "14px", fontWeight: "800", color: "#facc15" }}>{totalFinds}</div>
+              <div style={{ fontSize: "7.5px", opacity: 0.6, textTransform: "uppercase", letterSpacing: "0.5px" }}>Objets</div>
+            </div>
+          </div>
+
           <svg width="100%" height={categoryData.slice(0, 5).length * 28 + 5} style={{ overflow: "visible" }}>
             {categoryData.slice(0, 5).map(([category, count], idx) => {
               const barWidth = (count / maxCount) * 110; // max width 110px
@@ -172,17 +243,7 @@ export default function StatsPanel({
                     width={barWidth}
                     height="6"
                     rx="3"
-                    fill={
-                      category === "Monnaie" ? "#facc15" :
-                      category === "Bijou" ? "#ec4899" :
-                      category === "Boucle" ? "#8b5cf6" :
-                      category === "Bouton" ? "#10b981" :
-                      category === "Médaille" ? "#3b82f6" :
-                      category === "Munition" ? "#ef4444" :
-                      category === "Outil" ? "#f97316" :
-                      category === "Plomb" ? "#6b7280" :
-                      category === "Religieux" ? "#d97706" : "#4b5563"
-                    }
+                    fill={getCategoryColor(category)}
                   />
                 </g>
               );
