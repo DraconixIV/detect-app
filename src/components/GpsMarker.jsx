@@ -187,7 +187,31 @@ export default function GpsMarker({ position, gpsStyle = "blue-dot" }) {
 
   return (
     <Marker position={position} icon={selectedIcon}>
-      <Popup>
+      <style>{`
+        .gps-popup .leaflet-popup-content-wrapper {
+          background: rgba(17, 24, 39, 0.92) !important;
+          backdrop-filter: blur(12px) !important;
+          color: white !important;
+          border: 1px solid rgba(255, 255, 255, 0.15) !important;
+          border-radius: 14px !important;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+        }
+        .gps-popup .leaflet-popup-tip {
+          background: rgba(17, 24, 39, 0.92) !important;
+          border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+          box-shadow: none !important;
+        }
+        .gps-popup .leaflet-popup-content {
+          margin: 6px 12px !important;
+          font-family: system-ui, -apple-system, sans-serif !important;
+          font-size: 11px !important;
+          font-weight: 700 !important;
+          color: white !important;
+          text-align: center !important;
+        }
+      `}</style>
+      <Popup className="gps-popup" closeButton={false} autoPan={false}>
         📍 Vous êtes ici
       </Popup>
     </Marker>
