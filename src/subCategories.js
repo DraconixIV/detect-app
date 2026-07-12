@@ -105,12 +105,18 @@ export const materials = [
   "Argent",
   "Bronze",
   "Cuivre",
+  "Alliage cuivreux",
+  "Laiton",
+  "Maillechort",
+  "Cupronickel",
+  "Peltre",
+  "Métal blanc",
+  "Zamac",
   "Billon",
   "Étain",
   "Aluminium",
   "Plomb",
   "Fer",
-  "Laiton",
   "Autre"
 ];
 
@@ -120,11 +126,17 @@ export const materialEmojis = {
   "Argent": "🥈",
   "Bronze": "🥉",
   "Cuivre": "🟫",
+  "Alliage cuivreux": "🏺",
+  "Laiton": "🔔",
+  "Maillechort": "🔱",
+  "Cupronickel": "💿",
+  "Peltre": "🫖",
+  "Métal blanc": "⬜",
+  "Zamac": "🚗",
   "Billon": "💿",
   "Étain": "⚖️",
   "Aluminium": "📎",
   "Plomb": "🛡️",
   "Fer": "⚙️",
-  "Laiton": "🔔",
   "Autre": "📦"
 };
