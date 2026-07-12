@@ -393,31 +393,46 @@ export default function PerformancePanel({
                 const gAvg = gSum / pixelsCount;
                 const bAvg = bSum / pixelsCount;
                 
-                // Estimate Brightness
+                // Estimate Brightness and color balances
                 const brightness = (rAvg + gAvg + bAvg) / 3;
-                
+                const isWarm = rAvg > bAvg + 25; // Red dominant over Blue (soil, clay, wood humus)
+                const isGreen = gAvg > rAvg && gAvg > bAvg + 5; // Vegetation
+                const isGreyOrWhite = Math.abs(rAvg - gAvg) < 18 && Math.abs(gAvg - bAvg) < 18; // Desaturated paths/sands
+                 
                 let detectedSoil = "Champs (Terre meuble propre)";
                 let confidence = 85;
 
-                // Simple classification rule engine
+                // Geological classification rule engine
                 if (brightness > 140) {
-                  detectedSoil = "Plage (Sable sec)";
-                  confidence = 94;
-                } else if (gAvg > rAvg && gAvg > bAvg + 10) {
+                  if (isGreyOrWhite) {
+                    detectedSoil = "Plage (Sable sec)";
+                    confidence = 92;
+                  } else if (isWarm || rAvg > gAvg + 10) {
+                    // Bright sunny fields / dry clay
+                    detectedSoil = "Champs (Terre meuble propre)";
+                    confidence = 88;
+                  } else {
+                    detectedSoil = "Champs (Terre meuble propre)";
+                    confidence = 80;
+                  }
+                } else if (isGreen) {
                   detectedSoil = "Prairie / Pâturage (Terre tassée)";
-                  confidence = 88;
-                } else if (rAvg > gAvg + 15 && rAvg > bAvg + 20) {
-                  // Reddish/Brown clay or vineyards
+                  confidence = 89;
+                } else if (rAvg > gAvg + 12 && rAvg > bAvg + 18) {
+                  // Reddish/Brown clay or vineyards (typical of southern France / Lespignan soils)
                   detectedSoil = "Champs / Vignes (Très pollué en ferreux)";
-                  confidence = 91;
+                  confidence = 93;
                 } else if (brightness < 60) {
-                  // Dark forest humus
-                  detectedSoil = "Forêt (Humus Propre)";
-                  confidence = 90;
-                } else if (Math.abs(rAvg - gAvg) < 10 && Math.abs(gAvg - bAvg) < 10) {
-                  // Greyish stony path
+                  if (isWarm) {
+                    detectedSoil = "Forêt (Humus Propre)";
+                    confidence = 90;
+                  } else {
+                    detectedSoil = "Forêt (Minéralisée / Pierreuse)";
+                    confidence = 85;
+                  }
+                } else if (isGreyOrWhite) {
                   detectedSoil = "Chemin / Zone pierreuse minéralisée";
-                  confidence = 86;
+                  confidence = 87;
                 }
 
                 setSelectedSoil(detectedSoil);

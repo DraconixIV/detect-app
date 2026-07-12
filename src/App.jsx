@@ -163,7 +163,7 @@ function RecenterMap({
   return null;
 }
 
-function MapEventsHandler({ onLongPress }) {
+function MapEventsHandler({ onLongPress, onMapDrag }) {
   const map = useMap();
 
   useEffect(() => {
@@ -173,12 +173,32 @@ function MapEventsHandler({ onLongPress }) {
       }
     };
 
+    const handleDragStart = () => {
+      if (onMapDrag) {
+        onMapDrag();
+      }
+    };
+
     map.on("contextmenu", handleContextMenu);
+    map.on("dragstart", handleDragStart);
 
     return () => {
       map.off("contextmenu", handleContextMenu);
+      map.off("dragstart", handleDragStart);
     };
-  }, [map, onLongPress]);
+  }, [map, onLongPress, onMapDrag]);
+
+  return null;
+}
+
+function GpsFollower({ position, followGps }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (position && followGps) {
+      map.setView(position, map.getZoom());
+    }
+  }, [position, followGps, map]);
 
   return null;
 }
@@ -1709,7 +1729,11 @@ return (
           width: "100%"
         }}
       >
-        <MapEventsHandler onLongPress={handleMapLongPress} />
+        <MapEventsHandler 
+          onLongPress={handleMapLongPress} 
+          onMapDrag={() => setFollowGps(false)} 
+        />
+        <GpsFollower position={position} followGps={followGps} />
         {zoomTarget && (
           <RecenterMap
             target={zoomTarget}
@@ -1841,6 +1865,43 @@ return (
         style={{ display: "none" }}
         onChange={handleQuickAdd}
       />
+
+      {/* Floating Recenter GPS Button */}
+      <button
+        onClick={() => {
+          setFollowGps(true);
+          setZoomTarget({ position: position, zoom: 20 });
+          setToast({
+            message: "🎯 Centrage et suivi GPS activés !",
+            type: "success"
+          });
+        }}
+        style={{
+          position: "absolute",
+          bottom: "105px",
+          right: "36px",
+          zIndex: 5000,
+          width: "48px",
+          height: "48px",
+          borderRadius: "50%",
+          border: "1px solid rgba(255,255,255,0.15)",
+          background: followGps ? "rgba(37, 99, 235, 0.95)" : "rgba(17, 24, 39, 0.9)",
+          backdropFilter: "blur(8px)",
+          color: "white",
+          fontSize: "20px",
+          boxShadow: "0 6px 20px rgba(0,0,0,0.35)",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "transform 0.15s, background-color 0.2s"
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.08)"}
+        onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+        title="Centrer sur ma position"
+      >
+        🎯
+      </button>
 
       {/* Floating Add Flash Button */}
       <button
