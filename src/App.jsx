@@ -1,64 +1,22 @@
 import { useEffect, useState, useRef, useMemo } from "react";
-import { createPortal } from "react-dom";
 import { categoryEmojis } from "./subCategories";
 
 // Build refresh June 2026
 
-import {
-  MapContainer,
-  Marker,
-  Popup,
-  Polyline,
-  useMap
-} from "react-leaflet";
-
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-
 import { supabase } from "./supabase";
 
-import FindPopup from "./components/FindPopup";
 import AddFindForm from "./components/AddFindForm";
-
 import LoadingScreen from "./components/LoadingScreen";
-import GpsMarker from "./components/GpsMarker";
-import MapLayers from "./components/MapLayers";
 import StatsPanel from "./components/StatsPanel";
 import PerformancePanel from "./components/PerformancePanel";
 import CropperModal from "./components/CropperModal";
 import ToastNotification from "./components/ToastNotification";
 import ConfirmModal from "./components/ConfirmModal";
-import MarkerClusterGroup from "react-leaflet-cluster";
+import GpsOnboarding from "./components/GpsOnboarding";
+import AlbumPanel from "./components/AlbumPanel";
+import MainMap from "./components/MainMap";
 
 import { icons } from "./icons";
-
-const createClusterCustomIcon = (cluster) => {
-  const count = cluster.getChildCount();
-  return L.divIcon({
-    html: `
-      <div style="
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        border: 3px solid white;
-        border-radius: 50%;
-        color: white;
-        font-weight: 800;
-        font-size: 15px;
-        font-family: system-ui, sans-serif;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-      ">
-        ${count}
-      </div>
-    `,
-    className: "custom-cluster-marker",
-    iconSize: L.point(40, 40, true),
-    iconAnchor: L.point(20, 20, true)
-  });
-};
 
 import {
   loadFinds as fetchFinds,
@@ -145,63 +103,6 @@ function distanceBetween(
   return R * c;
 }
 
-function RecenterMap({
-  target,
-  onRecentered
-}) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (target) {
-      map.setView(target.position, target.zoom || 20);
-      if (onRecentered) {
-        onRecentered();
-      }
-    }
-  }, [target, map, onRecentered]);
-
-  return null;
-}
-
-function MapEventsHandler({ onLongPress, onMapDrag }) {
-  const map = useMap();
-
-  useEffect(() => {
-    const handleContextMenu = (e) => {
-      if (onLongPress) {
-        onLongPress(e.latlng);
-      }
-    };
-
-    const handleDragStart = () => {
-      if (onMapDrag) {
-        onMapDrag();
-      }
-    };
-
-    map.on("contextmenu", handleContextMenu);
-    map.on("dragstart", handleDragStart);
-
-    return () => {
-      map.off("contextmenu", handleContextMenu);
-      map.off("dragstart", handleDragStart);
-    };
-  }, [map, onLongPress, onMapDrag]);
-
-  return null;
-}
-
-function GpsFollower({ position, followGps }) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (position && followGps) {
-      map.setView(position, map.getZoom());
-    }
-  }, [position, followGps, map]);
-
-  return null;
-}
 
 function App() {
   const [position, setPosition] = useState(() => {
@@ -285,12 +186,7 @@ function App() {
   const [sortiePositions, setSortiePositions] = useState([]);
   const [savedTracks, setSavedTracks] = useState([]);
   const [showAlbum, setShowAlbum] = useState(false);
-  const [albumFilter, setAlbumFilter] = useState("Tous");
   const [allPhotos, setAllPhotos] = useState([]);
-  const [selectedAlbumPhoto, setSelectedAlbumPhoto] = useState(null);
-  const [albumSearch, setAlbumSearch] = useState("");
-  const [albumSort, setAlbumSort] = useState("recent");
-  const [lightboxCoinFlipped, setLightboxCoinFlipped] = useState(false);
   const [toast, setToast] = useState(null);
   const [confirmConfig, setConfirmConfig] = useState(null);
   const [quickAddFile, setQuickAddFile] = useState(null);
@@ -313,11 +209,6 @@ function App() {
   const [gpsStyle, setGpsStyle] = useState(() => localStorage.getItem("gpsStyle") || "blue-dot");
 
   const [showStartupLocationScreen, setShowStartupLocationScreen] = useState(true);
-  const [startupLocationLoading, setStartupLocationLoading] = useState(false);
-  const [startupLocationError, setStartupLocationError] = useState("");
-  const [startupLocationWarning, setStartupLocationWarning] = useState(false);
-  const [tempPosition, setTempPosition] = useState(null);
-
   const gpsWatchIdRef = useRef(null);
 
   const startGpsTracking = (initialPosition = null) => {
@@ -363,73 +254,6 @@ function App() {
       startGpsTracking();
     }
   }, [followGps]);
-
-  const handleRequestLocation = () => {
-    setStartupLocationLoading(true);
-    setStartupLocationError("");
-    setStartupLocationWarning(false);
-
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setStartupLocationLoading(false);
-        const newPos = [pos.coords.latitude, pos.coords.longitude];
-        setTempPosition(newPos);
-        setGpsAccuracy(pos.coords.accuracy);
-
-        if (pos.coords.accuracy > 150) {
-          setStartupLocationWarning(true);
-        } else {
-          setFollowGps(true);
-          startGpsTracking(newPos);
-          setZoomTarget({ position: newPos, zoom: 18 });
-          setShowStartupLocationScreen(false);
-          setToast({ message: "🎯 GPS activé avec précision !", type: "success" });
-        }
-      },
-      (err) => {
-        setStartupLocationLoading(false);
-        console.error("GPS startup request error:", err);
-        setStartupLocationError(
-          "Impossible d'accéder au GPS. Veuillez autoriser la localisation dans vos paramètres ou basculer en mode Consultation."
-        );
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      }
-    );
-  };
-
-  const handleAcceptPoorLocation = () => {
-    if (tempPosition) {
-      setFollowGps(true);
-      startGpsTracking(tempPosition);
-      setZoomTarget({ position: tempPosition, zoom: 18 });
-      setShowStartupLocationScreen(false);
-      setToast({ message: "🎯 Localisation activée (précision réduite).", type: "info" });
-    }
-  };
-
-  const handleRejectPoorLocation = () => {
-    setFollowGps(false);
-    if (finds && finds.length > 0) {
-      const validFinds = finds.filter(f => (f.position ? f.position[0] : f.latitude) != null);
-      if (validFinds.length > 0) {
-        const lats = validFinds.map(f => f.position ? f.position[0] : f.latitude);
-        const lngs = validFinds.map(f => f.position ? f.position[1] : f.longitude);
-        const avgLat = lats.reduce((sum, val) => sum + val, 0) / lats.length;
-        const avgLng = lngs.reduce((sum, val) => sum + val, 0) / lngs.length;
-        setZoomTarget({ position: [avgLat, avgLng], zoom: 16 });
-      } else {
-        setZoomTarget({ position: [43.273, 3.173], zoom: 16 });
-      }
-    } else {
-      setZoomTarget({ position: [43.273, 3.173], zoom: 16 });
-    }
-    setShowStartupLocationScreen(false);
-    setToast({ message: "🗺️ Mode consultation activé à Lespignan.", type: "success" });
-  };
 
   const isRecordingRef = useRef(isRecordingSortie);
   const positionsRef = useRef(sortiePositions);
@@ -923,61 +747,6 @@ function App() {
       return matchesCategory && matchesSubCategory && matchesSearch && matchesDate;
     });
   }, [finds, filters, activeSubCategory, search, selectedDate, favoritesOnly]);
-  const albumFilteredFinds = useMemo(() => {
-    // 1. Filter by category & check that photo exists with a valid URL
-    let list = finds.filter((f) => {
-      // Category match (case-insensitive)
-      const catMatch = albumFilter === "Tous" || 
-        (f.category && f.category.toLowerCase() === albumFilter.toLowerCase());
-      if (!catMatch) return false;
-
-      // Photo match
-      const photoUrl = f.isOfflinePending
-        ? f.offlinePhoto
-        : allPhotos.find((p) => p.find_id === f.id)?.image_url;
-
-      return !!photoUrl;
-    });
-
-    // 2. Filter by search term
-    if (albumSearch.trim() !== "") {
-      const q = albumSearch.toLowerCase();
-      list = list.filter((f) => 
-        (f.title && f.title.toLowerCase().includes(q)) ||
-        (f.description && f.description.toLowerCase().includes(q)) ||
-        (f.sub_category && f.sub_category.toLowerCase().includes(q))
-      );
-    }
-
-    // 3. Sort
-    list.sort((a, b) => {
-      if (albumSort === "fav") {
-        if (a.favorite && !b.favorite) return -1;
-        if (!a.favorite && b.favorite) return 1;
-      }
-      
-      const parseDate = (dStr) => {
-        if (!dStr) return new Date(0);
-        const clean = dStr.split(",")[0].split(" ")[0].trim();
-        const parts = clean.split("/");
-        if (parts.length === 3) {
-          return new Date(parts[2], parts[1] - 1, parts[0]);
-        }
-        return new Date(dStr);
-      };
-      
-      const dateA = parseDate(a.date);
-      const dateB = parseDate(b.date);
-
-      if (albumSort === "old") {
-        return dateA - dateB;
-      } else {
-        return dateB - dateA;
-      }
-    });
-
-    return list;
-  }, [finds, allPhotos, albumFilter, albumSearch, albumSort]);
 
   const positionedFinds = useMemo(() => {
     if (filteredFinds.length === 0) return [];
@@ -1667,212 +1436,16 @@ return (
       )}
 
       {showAlbum && (
-        <div
-          style={{
-            position: "absolute",
-            top: 20,
-            right: 20,
-            width: "calc(100% - 40px)",
-            maxWidth: "430px",
-            height: "calc(100vh - 40px)",
-            background: "rgba(17, 24, 39, 0.95)",
-            backdropFilter: "blur(16px)",
-            border: "1px solid rgba(255, 255, 255, 0.12)",
-            borderRadius: "24px",
-            boxShadow: "0 12px 40px rgba(0, 0, 0, 0.5)",
-            zIndex: 6000,
-            display: "flex",
-            flexDirection: "column",
-            padding: "20px",
-            boxSizing: "border-box",
-            fontFamily: "system-ui, sans-serif",
-            color: "white"
+        <AlbumPanel
+          finds={finds}
+          allPhotos={allPhotos}
+          onClose={() => setShowAlbum(false)}
+          onOpenFindDetails={(find) => {
+            setZoomTarget({ position: find.position || [find.latitude, find.longitude], zoom: 20 });
+            setOpenPopupFind(find);
+            setShowAlbum(false);
           }}
-        >
-          <style>{`
-            .album-grid-card {
-              position: relative;
-              width: 100%;
-              height: 0;
-              padding-bottom: 100%;
-              border-radius: 14px;
-              overflow: hidden;
-              border: 1px solid rgba(255,255,255,0.08);
-              cursor: pointer;
-              transform: translateZ(0);
-              transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s, box-shadow 0.25s;
-            }
-            .album-grid-card:hover {
-              transform: scale(1.04) translateY(-2px);
-              border-color: rgba(37, 99, 235, 0.4);
-              box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-            }
-            .album-grid-img {
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-              transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            }
-            .album-grid-card:hover .album-grid-img {
-              transform: scale(1.08);
-            }
-            .album-grid-overlay {
-              position: absolute;
-              bottom: 0;
-              left: 0;
-              right: 0;
-              background: linear-gradient(to top, rgba(10, 15, 30, 0.9) 0%, rgba(10, 15, 30, 0.4) 60%, transparent 100%);
-              padding: 8px;
-              display: flex;
-              flex-direction: column;
-              gap: 2px;
-              opacity: 0;
-              transform: translateY(8px);
-              transition: opacity 0.25s, transform 0.25s;
-              pointer-events: none;
-            }
-            .album-grid-card:hover .album-grid-overlay {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          `}</style>
-
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-            <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "800" }}>🖼️ Album de Collection</h2>
-            <button
-              onClick={() => setShowAlbum(false)}
-              style={{
-                background: "rgba(255,255,255,0.1)",
-                border: "none",
-                borderRadius: "50%",
-                width: "30px",
-                height: "30px",
-                color: "white",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontWeight: "bold"
-              }}
-            >
-              ✕
-            </button>
-          </div>
-
-          {/* Search & Sort Panel */}
-          <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
-            <input
-              type="text"
-              placeholder="🔍 Rechercher titre, époque..."
-              value={albumSearch}
-              onChange={(e) => setAlbumSearch(e.target.value)}
-              style={{
-                flex: 1,
-                padding: "8px 12px",
-                borderRadius: "12px",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
-                background: "rgba(255, 255, 255, 0.06)",
-                color: "white",
-                fontSize: "12px",
-                outline: "none"
-              }}
-            />
-            <select
-              value={albumSort}
-              onChange={(e) => setAlbumSort(e.target.value)}
-              style={{
-                padding: "8px 10px",
-                borderRadius: "12px",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
-                background: "rgba(255, 255, 255, 0.06)",
-                color: "white",
-                fontSize: "12px",
-                fontWeight: "bold",
-                outline: "none",
-                cursor: "pointer"
-              }}
-            >
-              <option value="recent" style={{ background: "#1f2937" }}>📅 Récentes</option>
-              <option value="old" style={{ background: "#1f2937" }}>📅 Anciennes</option>
-              <option value="fav" style={{ background: "#1f2937" }}>⭐ Favoris</option>
-            </select>
-          </div>
-
-          {/* Album Filter */}
-          <div style={{ display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "10px", marginBottom: "15px" }}>
-            {["Tous", ...Object.keys(icons)].map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setAlbumFilter(cat)}
-                style={{
-                  background: albumFilter === cat ? "#2563eb" : "rgba(255,255,255,0.1)",
-                  color: "white",
-                  border: "none",
-                  padding: "6px 12px",
-                  borderRadius: "12px",
-                  fontSize: "11px",
-                  fontWeight: "bold",
-                  whiteSpace: "nowrap",
-                  cursor: "pointer"
-                }}
-              >
-                {cat === "Tous" ? "📁 Tous" : `${categoryEmojis[cat] || ""} ${cat}`}
-              </button>
-            ))}
-          </div>
-
-          {/* Grid */}
-          <div style={{ flex: 1, overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", paddingRight: "6px" }}>
-            {albumFilteredFinds.map((find) => {
-              const photoUrl = (find.isOfflinePending
-                ? find.offlinePhoto
-                : allPhotos.find((p) => p.find_id === find.id)?.image_url) || "";
-
-              return (
-                <div
-                  key={find.id}
-                  className="album-grid-card"
-                  onClick={() => {
-                    setSelectedAlbumPhoto({ find, photoUrl });
-                  }}
-                >
-                  <img
-                    src={photoUrl}
-                    alt={find.title}
-                    className="album-grid-img"
-                  />
-                  
-                  {/* Category Badge */}
-                  <div style={{ position: "absolute", top: "6px", left: "6px", background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {categoryEmojis[find.category] || categoryEmojis[find.category?.trim().charAt(0).toUpperCase() + find.category?.trim().slice(1).toLowerCase()] || "📍"}
-                  </div>
-
-                  {/* Favorite Badge */}
-                  {find.favorite && (
-                    <div style={{ position: "absolute", top: "6px", right: "6px", background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", color: "#facc15" }}>
-                      ⭐
-                    </div>
-                  )}
-
-                  {/* Hover Details Overlay */}
-                  <div className="album-grid-overlay">
-                    <div style={{ fontSize: "10px", fontWeight: "800", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
-                      {find.title || "Sans titre"}
-                    </div>
-                    {find.date && (
-                      <div style={{ fontSize: "8px", color: "#9ca3af" }}>
-                        {find.date.split(",")[0]}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        />
       )}
 
       {/* STATUS BADGES */}
@@ -1960,140 +1533,28 @@ return (
         )}
       </div>
 
-      <MapContainer
-        center={position}
-        zoom={20}
-        style={{
-          height: "100%",
-          width: "100%"
-        }}
-      >
-        <MapEventsHandler 
-          onLongPress={handleMapLongPress} 
-          onMapDrag={() => setFollowGps(false)} 
-        />
-        <GpsFollower position={position} followGps={followGps} />
-        {zoomTarget && (
-          <RecenterMap
-            target={zoomTarget}
-            onRecentered={() => setZoomTarget(null)}
-          />
-        )}
-
-        {openPopupFind && (
-          <Popup
-            position={openPopupFind.position}
-            onClose={() => setOpenPopupFind(null)}
-            eventHandlers={{
-              remove: () => setOpenPopupFind(null)
-            }}
-          >
-            <FindPopup
-              find={openPopupFind}
-              onClose={() => setOpenPopupFind(null)}
-              onDelete={deleteFind}
-              onFavorite={handleFavorite}
-              onUpdate={loadFinds}
-            />
-          </Popup>
-        )}
-
-        <MapLayers
-          mapStyle={mapStyle}
-          showHistoricalMap={showHistoricalMap}
-          historicalMapOpacity={historicalMapOpacity}
-        />
-
-        {selectedDateTracks.map((track, idx) => (
-          <Polyline
-            key={track.id || idx}
-            positions={track.positions}
-            pathOptions={{
-              color: "#facc15",
-              weight: 4,
-              opacity: 0.7,
-              dashArray: "6, 8",
-              lineCap: "round"
-            }}
-          />
-        ))}
-
-        <GpsMarker
-          position={position}
-          gpsStyle={gpsStyle}
-        />
-
-        {useClustering ? (
-          <MarkerClusterGroup iconCreateFunction={createClusterCustomIcon}>
-            {positionedFinds.map((find) => (
-              <Marker
-                key={find.id}
-                position={find.finalPosition}
-                icon={icons[find.category] || icons.autre}
-              >
-                <Popup
-                  autoPan={false}
-                  keepInView={false}
-                  closeOnClick={false}
-                  eventHandlers={{
-                    add: () => setActivePopupId(find.id),
-                    remove: () => {
-                      setActivePopupId((current) => current === find.id ? null : current);
-                    }
-                  }}
-                >
-                  {activePopupId === find.id ? (
-                    <FindPopup
-                      find={find}
-                      onDelete={deleteFind}
-                      onFavorite={handleFavorite}
-                      onUpdate={loadFinds}
-                    />
-                  ) : (
-                    <div style={{ padding: "10px", color: "black", fontFamily: "system-ui, sans-serif", fontSize: "12px" }}>
-                      Chargement...
-                    </div>
-                  )}
-                </Popup>
-              </Marker>
-            ))}
-          </MarkerClusterGroup>
-        ) : (
-          positionedFinds.map((find) => (
-            <Marker
-              key={find.id}
-              position={find.finalPosition}
-              icon={icons[find.category] || icons.autre}
-            >
-              <Popup
-                autoPan={false}
-                keepInView={false}
-                closeOnClick={false}
-                eventHandlers={{
-                  add: () => setActivePopupId(find.id),
-                  remove: () => {
-                    setActivePopupId((current) => current === find.id ? null : current);
-                  }
-                }}
-              >
-                {activePopupId === find.id ? (
-                  <FindPopup
-                    find={find}
-                    onDelete={deleteFind}
-                    onFavorite={handleFavorite}
-                    onUpdate={loadFinds}
-                  />
-                ) : (
-                  <div style={{ padding: "10px", color: "black", fontFamily: "system-ui, sans-serif", fontSize: "12px" }}>
-                    Chargement...
-                  </div>
-                )}
-              </Popup>
-            </Marker>
-          ))
-        )}        
-
-      </MapContainer>
+      <MainMap
+        position={position}
+        followGps={followGps}
+        setFollowGps={setFollowGps}
+        zoomTarget={zoomTarget}
+        setZoomTarget={setZoomTarget}
+        openPopupFind={openPopupFind}
+        setOpenPopupFind={setOpenPopupFind}
+        activePopupId={activePopupId}
+        setActivePopupId={setActivePopupId}
+        gpsStyle={gpsStyle}
+        useClustering={useClustering}
+        mapStyle={mapStyle}
+        showHistoricalMap={showHistoricalMap}
+        historicalMapOpacity={historicalMapOpacity}
+        positionedFinds={positionedFinds}
+        selectedDateTracks={selectedDateTracks}
+        handleMapLongPress={handleMapLongPress}
+        deleteFind={deleteFind}
+        handleFavorite={handleFavorite}
+        loadFinds={loadFinds}
+      />
 
       {/* Hidden input for quick add */}
       <input
@@ -2175,307 +1636,6 @@ return (
       >
         📸+
       </button>
-
-      {/* FULLSCREEN ALBUM PHOTO LIGHTBOX */}
-      {selectedAlbumPhoto && createPortal(
-        (() => {
-          const currentIndex = albumFilteredFinds.findIndex((f) => f.id === selectedAlbumPhoto.find.id);
-          const prevFind = currentIndex > 0 ? albumFilteredFinds[currentIndex - 1] : null;
-          const nextFind = currentIndex < albumFilteredFinds.length - 1 ? albumFilteredFinds[currentIndex + 1] : null;
-
-          const navigatePhoto = (targetFind) => {
-            if (!targetFind) return;
-            const photoUrl = targetFind.isOfflinePending
-              ? targetFind.offlinePhoto
-              : allPhotos.find((p) => p.find_id === targetFind.id)?.image_url;
-            setSelectedAlbumPhoto({ find: targetFind, photoUrl });
-            setLightboxCoinFlipped(false);
-          };
-
-          const isCoin = selectedAlbumPhoto.find.category === "Monnaie";
-          let avers = null;
-          let revers = null;
-          if (isCoin) {
-            const coinPhotos = allPhotos.filter((p) => p.find_id === selectedAlbumPhoto.find.id);
-            avers = coinPhotos.find((p) => p.type === "avers") || coinPhotos[0];
-            revers = coinPhotos.find((p) => p.type === "revers") || (coinPhotos.length > 1 ? coinPhotos.find((p) => p.id !== avers?.id) : null);
-          }
-
-          return (
-            <div
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100vw",
-                height: "100vh",
-                background: "rgba(0, 0, 0, 0.95)",
-                zIndex: 99999,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                fontFamily: "system-ui, sans-serif"
-              }}
-              onClick={() => setSelectedAlbumPhoto(null)}
-            >
-              {/* Close Button */}
-              <button
-                onClick={() => setSelectedAlbumPhoto(null)}
-                style={{
-                  position: "absolute",
-                  top: "20px",
-                  right: "20px",
-                  background: "rgba(255, 255, 255, 0.2)",
-                  border: "none",
-                  borderRadius: "50%",
-                  width: "44px",
-                  height: "44px",
-                  color: "white",
-                  fontSize: "20px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  zIndex: 10
-                }}
-              >
-                ✕
-              </button>
-
-              {/* Navigation Left Arrow */}
-              {prevFind && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigatePhoto(prevFind);
-                  }}
-                  style={{
-                    position: "absolute",
-                    left: "20px",
-                    background: "rgba(255, 255, 255, 0.1)",
-                    border: "none",
-                    borderRadius: "50%",
-                    width: "50px",
-                    height: "50px",
-                    color: "white",
-                    fontSize: "24px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    transition: "background 0.2s",
-                    zIndex: 10
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)"}
-                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)"}
-                >
-                  ‹
-                </button>
-              )}
-
-              {/* Navigation Right Arrow */}
-              {nextFind && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigatePhoto(nextFind);
-                  }}
-                  style={{
-                    position: "absolute",
-                    right: "20px",
-                    background: "rgba(255, 255, 255, 0.1)",
-                    border: "none",
-                    borderRadius: "50%",
-                    width: "50px",
-                    height: "50px",
-                    color: "white",
-                    fontSize: "24px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    transition: "background 0.2s",
-                    zIndex: 10
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)"}
-                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)"}
-                >
-                  ›
-                </button>
-              )}
-
-              {/* Content Panel (image or 3D coin) */}
-              <div 
-                style={{
-                  width: "100%",
-                  maxHeight: "70%",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "0 80px",
-                  boxSizing: "border-box"
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {isCoin ? (
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
-                    <style>{`
-                      .coin-lightbox-3d {
-                        perspective: 1000px;
-                        width: 240px;
-                        height: 240px;
-                        cursor: pointer;
-                        margin: 10px auto;
-                      }
-                      .coin-lightbox-inner {
-                        position: relative;
-                        width: 100%;
-                        height: 100%;
-                        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-                        transform-style: preserve-3d;
-                      }
-                      .coin-lightbox-3d.flipped .coin-lightbox-inner {
-                        transform: rotateY(180deg);
-                      }
-                      .coin-lightbox-front, .coin-lightbox-back {
-                        position: absolute;
-                        width: 100%;
-                        height: 100%;
-                        -webkit-backface-visibility: hidden;
-                        backface-visibility: hidden;
-                        border-radius: 50%;
-                        overflow: hidden;
-                        border: 3px solid rgba(255, 255, 255, 0.25);
-                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-                      }
-                      .coin-lightbox-back {
-                        transform: rotateY(180deg);
-                      }
-                      .coin-lightbox-front img, .coin-lightbox-back img {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                      }
-                      .coin-lightbox-revers-placeholder {
-                        width: 100%;
-                        height: 100%;
-                        background: linear-gradient(135deg, #1e293b, #0f172a);
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        justify-content: center;
-                        color: #fbbf24;
-                        font-size: 11px;
-                        font-weight: bold;
-                        text-transform: uppercase;
-                        border-radius: 50%;
-                        border: 3px dashed rgba(251, 191, 36, 0.4);
-                        box-sizing: border-box;
-                        padding: 15px;
-                        text-align: center;
-                      }
-                    `}</style>
-                    <div
-                      className={`coin-lightbox-3d ${lightboxCoinFlipped ? "flipped" : ""}`}
-                      onClick={() => setLightboxCoinFlipped(!lightboxCoinFlipped)}
-                    >
-                      <div className="coin-lightbox-inner">
-                        <div className="coin-lightbox-front">
-                          {avers ? (
-                            <img src={avers.image_url} alt="Avers" />
-                          ) : (
-                            <div className="coin-lightbox-revers-placeholder">Avers</div>
-                          )}
-                        </div>
-                        <div className="coin-lightbox-back">
-                          {revers ? (
-                            <img src={revers.image_url} alt="Revers" />
-                          ) : (
-                            <div className="coin-lightbox-revers-placeholder">
-                              <span style={{ fontSize: "36px", marginBottom: "6px", display: "block" }}>🪙</span>
-                              <span>Revers non</span>
-                              <span>photographié</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <span style={{ fontSize: "12px", color: "#a1a1aa", marginTop: "5px" }}>
-                      👆 Tapez sur la pièce pour la retourner (3D)
-                    </span>
-                  </div>
-                ) : (
-                  <img
-                    src={selectedAlbumPhoto.photoUrl}
-                    alt={selectedAlbumPhoto.find.title}
-                    style={{
-                      maxWidth: "100%",
-                      maxHeight: "65vh",
-                      objectFit: "contain",
-                      borderRadius: "16px",
-                      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.6)",
-                      border: "1px solid rgba(255, 255, 255, 0.1)"
-                    }}
-                  />
-                )}
-              </div>
-
-              {/* Details / Action Button */}
-              <div
-                style={{
-                  marginTop: "20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "10px",
-                  color: "white",
-                  textAlign: "center",
-                  width: "90%",
-                  maxWidth: "400px"
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "bold" }}>
-                  {selectedAlbumPhoto.find.title || "Sans titre"}
-                </h3>
-                <p style={{ margin: 0, opacity: 0.8, fontSize: "14px" }}>
-                  {categoryEmojis[selectedAlbumPhoto.find.category] || categoryEmojis[selectedAlbumPhoto.find.category?.trim().charAt(0).toUpperCase() + selectedAlbumPhoto.find.category?.trim().slice(1).toLowerCase()] || "📍"} {selectedAlbumPhoto.find.category}
-                  {selectedAlbumPhoto.find.sub_category ? ` • ${selectedAlbumPhoto.find.sub_category}` : ""}
-                  {selectedAlbumPhoto.find.date ? ` • 📅 ${selectedAlbumPhoto.find.date.split(",")[0]}` : ""}
-                </p>
-
-                <button
-                  onClick={() => {
-                    setZoomTarget({ position: selectedAlbumPhoto.find.position, zoom: 20 });
-                    setOpenPopupFind(selectedAlbumPhoto.find);
-                    setSelectedAlbumPhoto(null);
-                    setShowAlbum(false);
-                  }}
-                  style={{
-                    border: "none",
-                    borderRadius: "14px",
-                    padding: "12px 24px",
-                    background: "#2563eb",
-                    color: "white",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                    cursor: "pointer",
-                    boxShadow: "0 4px 15px rgba(37, 99, 235, 0.4)",
-                    transition: "transform 0.15s, background-color 0.2s"
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.03)"}
-                  onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-                >
-                  🔗 Voir la trouvaille sur la carte
-                </button>
-              </div>
-            </div>
-          );
-        })(),
-        document.body
-      )}
       {/* QUICK ADD CUSTOM TITLE PROMPT MODAL */}
       {showQuickAddModal && (
         <div
@@ -2898,191 +2058,35 @@ return (
 
       {/* Onboarding GPS Startup Screen */}
       {showStartupLocationScreen && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(8, 10, 20, 0.97)",
-            backdropFilter: "blur(12px)",
-            zIndex: 10000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px",
-            boxSizing: "border-box",
-            fontFamily: "system-ui, sans-serif"
+        <GpsOnboarding
+          finds={finds}
+          onGpsAuthorized={(pos) => {
+            setFollowGps(true);
+            startGpsTracking(pos);
+            setZoomTarget({ position: pos, zoom: 18 });
+            setShowStartupLocationScreen(false);
+            setToast({ message: "🎯 GPS activé avec précision !", type: "success" });
           }}
-        >
-          <div
-            style={{
-              width: "100%",
-              maxWidth: "420px",
-              background: "rgba(17, 24, 39, 0.75)",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-              borderRadius: "24px",
-              padding: "30px 24px",
-              boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
-              textAlign: "center",
-              color: "white"
-            }}
-          >
-            {!startupLocationWarning ? (
-              <>
-                <div style={{ fontSize: "52px", marginBottom: "15px" }}>🛰️</div>
-                <h2 style={{ fontSize: "22px", fontWeight: "800", margin: "0 0 10px 0", letterSpacing: "-0.5px" }}>
-                  Configuration GPS
-                </h2>
-                <p style={{ fontSize: "13px", color: "#9ca3af", lineHeight: "1.6", margin: "0 0 24px 0" }}>
-                  Pour cartographier et enregistrer vos trouvailles sur le terrain, l'application a besoin d'une connexion GPS fonctionnelle.
-                </p>
-
-                {startupLocationError && (
-                  <div style={{
-                    background: "rgba(239, 68, 68, 0.1)",
-                    border: "1px solid rgba(239, 68, 68, 0.2)",
-                    borderRadius: "12px",
-                    padding: "10px 12px",
-                    fontSize: "12px",
-                    color: "#f87171",
-                    marginBottom: "20px",
-                    lineHeight: "1.4"
-                  }}>
-                    {startupLocationError}
-                  </div>
-                )}
-
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <button
-                    onClick={handleRequestLocation}
-                    disabled={startupLocationLoading}
-                    style={{
-                      background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-                      border: "none",
-                      borderRadius: "14px",
-                      padding: "14px",
-                      color: "white",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "8px",
-                      boxShadow: "0 4px 15px rgba(37, 99, 235, 0.3)",
-                      transition: "transform 0.15s, opacity 0.2s"
-                    }}
-                    onMouseEnter={(e) => { if (!startupLocationLoading) e.currentTarget.style.transform = "scale(1.02)"; }}
-                    onMouseLeave={(e) => { if (!startupLocationLoading) e.currentTarget.style.transform = "scale(1)"; }}
-                  >
-                    {startupLocationLoading ? (
-                      <>
-                        <span style={{
-                          width: "16px",
-                          height: "16px",
-                          border: "2px solid white",
-                          borderTopColor: "transparent",
-                          borderRadius: "50%",
-                          animation: "spin-loader 0.8s linear infinite"
-                        }}></span>
-                        Acquisition du signal...
-                      </>
-                    ) : (
-                      <>🎯 Activer la localisation</>
-                    )}
-                  </button>
-
-                  <button
-                    onClick={handleRejectPoorLocation}
-                    disabled={startupLocationLoading}
-                    style={{
-                      background: "rgba(255, 255, 255, 0.05)",
-                      border: "1px solid rgba(255, 255, 255, 0.08)",
-                      borderRadius: "14px",
-                      padding: "14px",
-                      color: "#d1d5db",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      cursor: "pointer",
-                      transition: "background 0.2s, transform 0.15s"
-                    }}
-                    onMouseEnter={(e) => { if (!startupLocationLoading) { e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)"; e.currentTarget.style.transform = "scale(1.02)"; } }}
-                    onMouseLeave={(e) => { if (!startupLocationLoading) { e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)"; e.currentTarget.style.transform = "scale(1)"; } }}
-                  >
-                    🗺️ Mode Consultation (Lespignan)
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div style={{ fontSize: "52px", marginBottom: "15px" }}>⚠️</div>
-                <h2 style={{ fontSize: "20px", fontWeight: "800", margin: "0 0 10px 0", color: "#fbbf24" }}>
-                  Signal GPS imprécis
-                </h2>
-                <p style={{ fontSize: "13px", color: "#d1d5db", lineHeight: "1.6", margin: "0 0 20px 0" }}>
-                  Votre navigateur renvoie une position approximative (IP de connexion résolue à **Mèze** ou alentours).
-                </p>
-                <p style={{ fontSize: "12px", color: "#9ca3af", lineHeight: "1.5", margin: "0 0 24px 0" }}>
-                  Si vous êtes chez vous sur ordinateur, nous vous conseillons de centrer la carte sur votre zone de trouvailles habituelle (Lespignan) pour éviter les décalages.
-                </p>
-
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <button
-                    onClick={handleRejectPoorLocation}
-                    style={{
-                      background: "linear-gradient(135deg, #10b981, #059669)",
-                      border: "none",
-                      borderRadius: "14px",
-                      padding: "14px",
-                      color: "white",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "8px",
-                      boxShadow: "0 4px 15px rgba(16, 185, 129, 0.3)",
-                      transition: "transform 0.15s"
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-                  >
-                    🏰 Centrer sur Lespignan (Recommandé)
-                  </button>
-
-                  <button
-                    onClick={handleAcceptPoorLocation}
-                    style={{
-                      background: "rgba(255, 255, 255, 0.05)",
-                      border: "1px solid rgba(255, 255, 255, 0.08)",
-                      borderRadius: "14px",
-                      padding: "14px",
-                      color: "#9ca3af",
-                      fontSize: "13px",
-                      fontWeight: "600",
-                      cursor: "pointer",
-                      transition: "background 0.2s"
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)"}
-                    onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)"}
-                  >
-                    Utiliser quand même cette position GPS
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-          
-          <style>{`
-            @keyframes spin-loader {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
+          onModeConsultation={() => {
+            setFollowGps(false);
+            if (finds && finds.length > 0) {
+              const validFinds = finds.filter(f => (f.position ? f.position[0] : f.latitude) != null);
+              if (validFinds.length > 0) {
+                const lats = validFinds.map(f => f.position ? f.position[0] : f.latitude);
+                const lngs = validFinds.map(f => f.position ? f.position[1] : f.longitude);
+                const avgLat = lats.reduce((sum, val) => sum + val, 0) / lats.length;
+                const avgLng = lngs.reduce((sum, val) => sum + val, 0) / lngs.length;
+                setZoomTarget({ position: [avgLat, avgLng], zoom: 16 });
+              } else {
+                setZoomTarget({ position: [43.273, 3.173], zoom: 16 });
+              }
+            } else {
+              setZoomTarget({ position: [43.273, 3.173], zoom: 16 });
             }
-          `}</style>
-        </div>
+            setShowStartupLocationScreen(false);
+            setToast({ message: "🗺️ Mode consultation activé à Lespignan.", type: "success" });
+          }}
+        />
       )}
     </div>
   );
