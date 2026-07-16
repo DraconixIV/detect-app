@@ -1,11 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { categoryEmojis } from "./subCategories";
 
-// Build refresh June 2026
-
-import { supabase } from "./supabase";
-
-import AddFindForm from "./components/AddFindForm";
 import LoadingScreen from "./components/LoadingScreen";
 import StatsPanel from "./components/StatsPanel";
 import PerformancePanel from "./components/PerformancePanel";
@@ -15,31 +10,13 @@ import ConfirmModal from "./components/ConfirmModal";
 import GpsOnboarding from "./components/GpsOnboarding";
 import AlbumPanel from "./components/AlbumPanel";
 import MainMap from "./components/MainMap";
+import SidebarMenu from "./components/SidebarMenu";
+import OutingWidget from "./components/OutingWidget";
 
 import { icons } from "./icons";
 
-import {
-  loadFinds as fetchFinds,
-  addFind as createFind,
-  toggleFavorite
-} from "./services/findsService";
-
-import {
-  exportData,
-  importData
-} from "./services/backupService";
-
-import {
-  addPendingFind,
-  getPendingFinds,
-  deletePendingFind
-} from "./services/offlineStore";
-
-import {
-  loadTracks,
-  saveTrack
-} from "./services/tracksService";
-
+import useSupabaseSync from "./hooks/useSupabaseSync";
+import useSortieRecorder from "./hooks/useSortieRecorder";
 
 function offsetPosition(
   position,
@@ -59,50 +36,6 @@ function offsetPosition(
   ];
 }
 
-function distanceBetween(
-  point1,
-  point2
-) {
-  const R = 6371000;
-
-  const lat1 =
-    (point1[0] * Math.PI) /
-    180;
-
-  const lat2 =
-    (point2[0] * Math.PI) /
-    180;
-
-  const deltaLat =
-    ((point2[0] -
-      point1[0]) *
-      Math.PI) /
-    180;
-
-  const deltaLng =
-    ((point2[1] -
-      point1[1]) *
-      Math.PI) /
-    180;
-
-  const a =
-    Math.sin(deltaLat / 2) *
-      Math.sin(deltaLat / 2) +
-    Math.cos(lat1) *
-      Math.cos(lat2) *
-      Math.sin(deltaLng / 2) *
-      Math.sin(deltaLng / 2);
-
-  const c =
-    2 *
-    Math.atan2(
-      Math.sqrt(a),
-      Math.sqrt(1 - a)
-    );
-
-  return R * c;
-}
-
 
 function App() {
   const [position, setPosition] = useState(() => {
@@ -117,8 +50,7 @@ function App() {
     return [43.273, 3.173]; // Par défaut Lespignan (Hérault) au lieu de Bourges
   });
 
-  const [finds, setFinds] =
-    useState([]);
+
 
   const [search, setSearch] =
     useState("");
@@ -179,14 +111,28 @@ function App() {
   const [followGps, setFollowGps] =
     useState(false);
 
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [syncing, setSyncing] = useState(false);
-  const [isRecordingSortie, setIsRecordingSortie] = useState(false);
-  const [sortieDistance, setSortieDistance] = useState(0);
-  const [sortiePositions, setSortiePositions] = useState([]);
-  const [savedTracks, setSavedTracks] = useState([]);
+  const {
+    finds,
+    allPhotos,
+    isOnline,
+    syncing,
+    loadFinds,
+    syncOfflineFinds
+  } = useSupabaseSync(setToast);
+
+  const {
+    isRecordingSortie,
+    sortieDistance,
+    sortiePositions,
+    savedTracks,
+    startSortie: startSortieRaw,
+    recordNewPosition,
+    cancelSortie,
+    saveSortie,
+    loadTracksList
+  } = useSortieRecorder();
+
   const [showAlbum, setShowAlbum] = useState(false);
-  const [allPhotos, setAllPhotos] = useState([]);
   const [toast, setToast] = useState(null);
   const [confirmConfig, setConfirmConfig] = useState(null);
   const [quickAddFile, setQuickAddFile] = useState(null);
@@ -227,15 +173,7 @@ function App() {
         setGpsAccuracy(pos.coords.accuracy);
 
         if (isRecordingRef.current) {
-          setSortiePositions((prev) => {
-            const next = [...prev, newPosition];
-            if (prev.length > 0) {
-              const last = prev[prev.length - 1];
-              const d = distanceBetween(last, newPosition);
-              setSortieDistance((dist) => dist + d);
-            }
-            return next;
-          });
+          recordNewPosition(newPosition);
         }
       },
       (err) => {
@@ -306,51 +244,15 @@ function App() {
     positionsRef.current = sortiePositions;
   }, [sortiePositions]);
 
-  useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      syncOfflineFinds();
-    };
-    const handleOffline = () => {
-      setIsOnline(false);
-    };
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
-    // Initial outings list load
-    const loadSavedTracksList = async () => {
-      const tracks = await loadTracks();
-      setSavedTracks(tracks || []);
-    };
-    loadSavedTracksList();
-
-    if (navigator.onLine) {
-      syncOfflineFinds();
-    }
-
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
-
   const startSortie = () => {
-    setIsRecordingSortie(true);
-    setSortieDistance(0);
-    setSortiePositions(position ? [position] : []);
+    startSortieRaw(position);
     alert("⏱️ Sortie démarrée ! Les déplacements GPS accumuleront la distance marchée en arrière-plan.");
   };
 
   const submitOutingName = async () => {
     const name = outingNameInput.trim() || `Sortie du ${new Date().toLocaleDateString("fr-FR")}`;
     setShowOutingNameModal(false);
-
-    const success = await saveTrack(tempSortiePositions, name);
-    if (success) {
-      const tracks = await loadTracks();
-      setSavedTracks(tracks || []);
-    }
+    await saveSortie(tempSortiePositions, name);
     setTempSortiePositions([]);
   };
 
@@ -359,9 +261,11 @@ function App() {
       setConfirmConfig({
         message: "Pas assez de déplacements enregistrés. Annuler la sortie ?",
         onConfirm: () => {
-          setIsRecordingSortie(false);
-          setSortiePositions([]);
-          setSortieDistance(0);
+          cancelSortie();
+          setToast({
+            message: "Sortie annulée.",
+            type: "info"
+          });
         }
       });
       return;
@@ -369,9 +273,6 @@ function App() {
 
     setTempSortiePositions(sortiePositions);
     setOutingNameInput(`Sortie du ${new Date().toLocaleDateString("fr-FR")}`);
-    setIsRecordingSortie(false);
-    setSortiePositions([]);
-    setSortieDistance(0);
     setShowOutingNameModal(true);
   };
   
@@ -393,101 +294,12 @@ function App() {
     useState("");
 
   useEffect(() => {
-    loadFinds();
-
-    const channel = supabase
-      .channel("realtime-finds-changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "finds" },
-        () => {
-          loadFinds();
-        }
-      )
-      .subscribe();
-
     return () => {
       if (gpsWatchIdRef.current) {
         navigator.geolocation.clearWatch(gpsWatchIdRef.current);
       }
-      supabase.removeChannel(channel);
     };
   }, []);
-
-  const syncOfflineFinds = async () => {
-    try {
-      const offlineFinds = await getPendingFinds();
-      if (offlineFinds.length === 0) return;
-
-      setSyncing(true);
-      let syncedCount = 0;
-      let failedCount = 0;
-
-      for (const f of offlineFinds) {
-        try {
-          await createFind({
-            position: f.position,
-            newTitle: f.newTitle,
-            newDescription: f.newDescription,
-            newCategory: f.newCategory,
-            newSubCategory: f.newSubCategory,
-            newPhoto: f.photo,
-            customDate: f.customDate
-          });
-          await deletePendingFind(f.id);
-          syncedCount++;
-        } catch (singleErr) {
-          console.error(`Failed to sync find id ${f.id}:`, singleErr);
-          failedCount++;
-        }
-      }
-
-      if (syncedCount > 0) {
-        alert(`Synchronisation : ${syncedCount} trouvaille(s) transférée(s) avec succès ! 🔄${failedCount > 0 ? ` (${failedCount} échecs)` : ""}`);
-        await loadFinds();
-      } else if (failedCount > 0) {
-        alert(`⚠️ Échec de la synchronisation pour ${failedCount} trouvaille(s). Veuillez vérifier votre connexion.`);
-      }
-    } catch (err) {
-      console.error("Synchro error:", err);
-    } finally {
-      setSyncing(false);
-    }
-  };
-
-  const loadFinds = async () => {
-    const data = await fetchFinds();
-
-    // Charger également toutes les photos de Supabase pour l'Album
-    const { data: photoData } = await supabase
-      .from("find_photos")
-      .select("*")
-      .order("id", { ascending: true });
-    if (photoData) {
-      setAllPhotos(photoData);
-    }
-
-    try {
-      const offlineFinds = await getPendingFinds();
-      const formattedOffline = offlineFinds.map((f) => ({
-        id: `offline-${f.id}`,
-        title: f.newTitle,
-        description: f.newDescription,
-        category: f.newCategory,
-        sub_category: f.newSubCategory,
-        latitude: f.position[0],
-        longitude: f.position[1],
-        position: f.position,
-        date: f.customDate || f.createdAt,
-        isOfflinePending: true,
-        offlinePhoto: f.photo ? URL.createObjectURL(f.photo) : null
-      }));
-      setFinds([...formattedOffline, ...(data || [])]);
-    } catch (e) {
-      console.error(e);
-      setFinds(data || []);
-    }
-  };
 
   const toggleFilter = (category) => {
     // Si la catégorie cliquée est déjà la seule active, on réactive tout
@@ -1001,397 +813,58 @@ return (
         ⚡
       </button>
 
-      {/* MENU PANEL */}
-      {showMenu && (
-        <div
-          style={{
-            position: "absolute",
-            zIndex: 6000,
-            top: 85,
-            left: 75,
-            background: "rgba(17, 24, 39, 0.95)",
-            backdropFilter: "blur(16px)",
-            padding: "18px",
-            borderRadius: "24px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "10px",
-            alignItems: "stretch",
-            width: "280px",
-            maxHeight: "75vh",
-            overflowY: "auto",
-            color: "white",
-            boxShadow: "0 12px 40px rgba(0, 0, 0, 0.5)",
-            border: "1px solid rgba(255, 255, 255, 0.12)",
-            fontFamily: "system-ui, sans-serif"
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "5px" }}>
-            <h3 style={{ margin: 0, fontSize: "15px", fontWeight: "800" }}>⚙️ Menu de Contrôle</h3>
-            <button
-              onClick={() => setShowMenu(false)}
-              style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "50%",
-                border: "none",
-                background: "rgba(255,255,255,0.1)",
-                color: "white",
-                fontSize: "14px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}
-            >
-              ✕
-            </button>
-          </div>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            style={{
-              borderRadius: "12px",
-              padding: "10px",
-              border: "none",
-              background: "#16a34a",
-              color: "white",
-              fontWeight: "bold",
-              fontSize: "13px",
-              cursor: "pointer"
-            }}
-          >
-            ➕ Ajouter trouvaille
-          </button>
+      <SidebarMenu
+        showMenu={showMenu}
+        setShowMenu={setShowMenu}
+        showForm={showForm}
+        setShowForm={setShowForm}
+        mapStyle={mapStyle}
+        setMapStyle={setMapStyle}
+        followGps={followGps}
+        setFollowGps={setFollowGps}
+        showHistoricalMap={showHistoricalMap}
+        setShowHistoricalMap={setShowHistoricalMap}
+        historicalMapOpacity={historicalMapOpacity}
+        setHistoricalMapOpacity={setHistoricalMapOpacity}
+        useClustering={useClustering}
+        setUseClustering={setUseClustering}
+        gpsStyle={gpsStyle}
+        setGpsStyle={setGpsStyle}
+        isRecordingSortie={isRecordingSortie}
+        sortieDistance={sortieDistance}
+        startSortie={startSortie}
+        stopSortie={stopSortie}
+        onExport={handleExport}
+        onImport={handleImport}
+        onOpenAlbum={() => setShowAlbum(true)}
+        onOpenStats={() => setShowStats(true)}
+        onOpenPerformance={() => setShowPerformance(true)}
+        
+        // AddFindForm Props
+        newTitle={newTitle}
+        setNewTitle={setNewTitle}
+        newDescription={newDescription}
+        setNewDescription={setNewDescription}
+        newCategory={newCategory}
+        setNewCategory={setNewCategory}
+        newSubCategory={newSubCategory}
+        setNewSubCategory={setNewSubCategory}
+        icons={icons}
+        addFind={addFind}
+        newPhoto={newPhoto}
+        setNewPhoto={setNewPhoto}
+        addingFind={addingFind}
+        customDate={customDate}
+        setCustomDate={setCustomDate}
+        customLat={customLat}
+        setCustomLat={setCustomLat}
+        customLng={customLng}
+        setCustomLng={setCustomLng}
+        activeSubCategory={activeSubCategory}
+        setActiveSubCategory={setActiveSubCategory}
+      />
 
-          {/* 2x2 Toggle Grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", margin: "5px 0" }}>
-            {/* Map Style */}
-            <button
-              onClick={() => setMapStyle(mapStyle === "plan" ? "satellite" : "plan")}
-              style={{
-                background: "rgba(255, 255, 255, 0.06)",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
-                borderRadius: "12px",
-                padding: "8px",
-                color: "white",
-                fontSize: "11px",
-                fontWeight: "bold",
-                cursor: "pointer"
-              }}
-            >
-              {mapStyle === "plan" ? "🛰️ Satellite" : "🗺️ Plan"}
-            </button>
 
-            {/* Follow GPS */}
-            <button
-              onClick={() => setFollowGps(!followGps)}
-              style={{
-                background: followGps ? "rgba(37, 99, 235, 0.15)" : "rgba(255, 255, 255, 0.06)",
-                border: followGps ? "1px solid #2563eb" : "1px solid rgba(255, 255, 255, 0.08)",
-                borderRadius: "12px",
-                padding: "8px",
-                color: followGps ? "#60a5fa" : "white",
-                fontSize: "11px",
-                fontWeight: "bold",
-                cursor: "pointer"
-              }}
-            >
-              🎯 Suivi : {followGps ? "On" : "Off"}
-            </button>
-
-            {/* Outing Recording */}
-            {!isRecordingSortie ? (
-              <button
-                onClick={startSortie}
-                style={{
-                  background: "rgba(22, 163, 74, 0.15)",
-                  border: "1px solid #16a34a",
-                  borderRadius: "12px",
-                  padding: "8px",
-                  color: "#4ade80",
-                  fontSize: "11px",
-                  fontWeight: "bold",
-                  cursor: "pointer"
-                }}
-              >
-                ⏱️ Marche
-              </button>
-            ) : (
-              <button
-                onClick={stopSortie}
-                style={{
-                  background: "rgba(239, 68, 68, 0.15)",
-                  border: "1px solid #ef4444",
-                  borderRadius: "12px",
-                  padding: "8px",
-                  color: "#f87171",
-                  fontSize: "11px",
-                  fontWeight: "bold",
-                  cursor: "pointer"
-                }}
-              >
-                🛑 Stop ({(sortieDistance / 1000).toFixed(2)}k)
-              </button>
-            )}
-
-            {/* Favorites Toggle */}
-            <button
-              onClick={() => setFavoritesOnly(!favoritesOnly)}
-              style={{
-                background: favoritesOnly ? "rgba(245, 158, 11, 0.15)" : "rgba(255, 255, 255, 0.06)",
-                border: favoritesOnly ? "1px solid #f59e0b" : "1px solid rgba(255, 255, 255, 0.08)",
-                borderRadius: "12px",
-                padding: "8px",
-                color: favoritesOnly ? "#facc15" : "white",
-                fontSize: "11px",
-                fontWeight: "bold",
-                cursor: "pointer"
-              }}
-            >
-              ⭐ Favoris : {favoritesOnly ? "On" : "Off"}
-            </button>
-          </div>
-
-          {/* Advanced Toggles */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", margin: "5px 0" }}>
-            {/* Toggle Clustering */}
-            <button
-              onClick={() => setUseClustering(!useClustering)}
-              style={{
-                background: useClustering ? "rgba(37, 99, 235, 0.15)" : "rgba(255, 255, 255, 0.06)",
-                border: useClustering ? "1px solid #2563eb" : "1px solid rgba(255, 255, 255, 0.08)",
-                borderRadius: "12px",
-                padding: "8px",
-                color: useClustering ? "#60a5fa" : "white",
-                fontSize: "11px",
-                fontWeight: "bold",
-                cursor: "pointer"
-              }}
-            >
-              🧬 Clusters : {useClustering ? "On" : "Off"}
-            </button>
-
-            {/* Toggle Cassini */}
-            <button
-              onClick={() => setShowHistoricalMap(!showHistoricalMap)}
-              style={{
-                background: showHistoricalMap ? "rgba(217, 119, 6, 0.15)" : "rgba(255, 255, 255, 0.06)",
-                border: showHistoricalMap ? "1px solid #d97706" : "1px solid rgba(255, 255, 255, 0.08)",
-                borderRadius: "12px",
-                padding: "8px",
-                color: showHistoricalMap ? "#fbbf24" : "white",
-                fontSize: "11px",
-                fontWeight: "bold",
-                cursor: "pointer"
-              }}
-            >
-              🗺️ Cassini : {showHistoricalMap ? "On" : "Off"}
-            </button>
-          </div>
-
-          {/* Opacity slider for Cassini */}
-          {showHistoricalMap && (
-            <div style={{ background: "rgba(255,255,255,0.04)", padding: "8px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.06)", margin: "5px 0" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", color: "#d1d5db", fontWeight: "bold", marginBottom: "4px" }}>
-                <span>Opacité Cassini</span>
-                <span>{Math.round(historicalMapOpacity * 100)}%</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={historicalMapOpacity * 100}
-                onChange={(e) => setHistoricalMapOpacity(Number(e.target.value) / 100)}
-                style={{ width: "100%", cursor: "pointer", accentColor: "#d97706" }}
-              />
-            </div>
-          )}
-          {/* Custom style selector for GPS Marker */}
-          <div style={{ background: "rgba(255,255,255,0.04)", padding: "8px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.06)", margin: "5px 0" }}>
-            <div style={{ fontSize: "10px", color: "#d1d5db", fontWeight: "bold", marginBottom: "6px" }}>
-              🎨 Style de ma position GPS
-            </div>
-            <div style={{ display: "flex", gap: "4px" }}>
-              <button
-                onClick={() => {
-                  setGpsStyle("blue-dot");
-                  localStorage.setItem("gpsStyle", "blue-dot");
-                }}
-                style={{
-                  flex: 1,
-                  padding: "5px",
-                  borderRadius: "8px",
-                  border: "none",
-                  background: gpsStyle === "blue-dot" ? "#2563eb" : "rgba(255,255,255,0.06)",
-                  color: "white",
-                  fontSize: "9.5px",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  transition: "background 0.2s"
-                }}
-              >
-                🔵 Bleu
-              </button>
-              <button
-                onClick={() => {
-                  setGpsStyle("radar");
-                  localStorage.setItem("gpsStyle", "radar");
-                }}
-                style={{
-                  flex: 1,
-                  padding: "5px",
-                  borderRadius: "8px",
-                  border: "none",
-                  background: gpsStyle === "radar" ? "#10b981" : "rgba(255,255,255,0.06)",
-                  color: "white",
-                  fontSize: "9.5px",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  transition: "background 0.2s"
-                }}
-              >
-                🟢 Radar
-              </button>
-              <button
-                onClick={() => {
-                  setGpsStyle("royal-pointer");
-                  localStorage.setItem("gpsStyle", "royal-pointer");
-                }}
-                style={{
-                  flex: 1,
-                  padding: "5px",
-                  borderRadius: "8px",
-                  border: "none",
-                  background: gpsStyle === "royal-pointer" ? "#d97706" : "rgba(255,255,255,0.06)",
-                  color: "white",
-                  fontSize: "9.5px",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  transition: "background 0.2s"
-                }}
-              >
-                🟡 Or
-              </button>
-            </div>
-          </div>
-          <input
-            type="text"
-            placeholder="🔍 Rechercher titre, époque..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px 12px",
-              borderRadius: "12px",
-              border: "1px solid rgba(255, 255, 255, 0.12)",
-              background: "rgba(255, 255, 255, 0.08)",
-              color: "white",
-              fontSize: "12px",
-              fontWeight: "500",
-              outline: "none",
-              boxSizing: "border-box",
-              margin: "5px 0",
-              transition: "border-color 0.2s"
-            }}
-            onFocus={(e) => e.currentTarget.style.borderColor = "#2563eb"}
-            onBlur={(e) => e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.12)"}
-          />
-
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "5px"
-            }}
-          >
-            {Object.keys(
-              icons
-            ).map((category) => (
-              <button
-                key={category}
-                onClick={() =>
-                  toggleFilter(
-                    category
-                  )
-                }
-                style={{
-                  opacity:
-                    filters.includes(
-                      category
-                    )
-                      ? 1
-                      : 0.35,
-                  borderRadius:
-                    "10px",
-                  border: "none",
-                  padding:
-                    "4px 6px",
-                  fontSize: "11px"
-                }}
-              >
-                {categoryEmojis[category] || ""} {category}
-              </button>
-            ))}
-          </div>
-
-          {activeSubCategory && (
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              background: "rgba(37, 99, 235, 0.15)",
-              border: "1px solid rgba(37, 99, 235, 0.3)",
-              borderRadius: "10px",
-              padding: "6px 10px",
-              marginTop: "8px",
-              fontSize: "11px",
-              color: "#93c5fd"
-            }}>
-              <span>🎯 Sous-catégorie : <strong>{activeSubCategory}</strong></span>
-              <button
-                onClick={() => setActiveSubCategory(null)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#ef4444",
-                  cursor: "pointer",
-                  fontSize: "12px",
-                  fontWeight: "bold",
-                  padding: "0 2px"
-                }}
-                title="Effacer le filtre de sous-catégorie"
-              >
-                ✕
-              </button>
-            </div>
-          )}
-
-         <AddFindForm
-  showForm={showForm}
-  newTitle={newTitle}
-  setNewTitle={setNewTitle}
-  newDescription={newDescription}
-  setNewDescription={setNewDescription}
-  newCategory={newCategory}
-  setNewCategory={setNewCategory}
-  newSubCategory={newSubCategory}
-  setNewSubCategory={setNewSubCategory}
-  icons={icons}
-  addFind={addFind}
-  newPhoto={newPhoto}
-  setNewPhoto={setNewPhoto}
-  addingFind={addingFind}
-
-  customDate={customDate}
-  setCustomDate={setCustomDate}
-  customLat={customLat}
-  setCustomLat={setCustomLat}
-  customLng={customLng}
-  setCustomLng={setCustomLng}
-/>
-          
-        </div>
-      )}
 
       {/* STATS PANEL */}
       {showStats && (
@@ -1513,24 +986,10 @@ return (
           {gpsAccuracy === null ? "GPS : Recherche..." : `GPS : ± ${gpsAccuracy.toFixed(0)}m`}
         </div>
 
-        {isRecordingSortie && (
-          <div
-            style={{
-              background: "rgba(239, 68, 68, 0.9)",
-              color: "white",
-              padding: "6px 12px",
-              borderRadius: "12px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-              backdropFilter: "blur(4px)",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px"
-            }}
-          >
-            <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: "white" }}></span>
-            Sortie active : {(sortieDistance / 1000).toFixed(2)} km
-          </div>
-        )}
+        <OutingWidget
+          isRecordingSortie={isRecordingSortie}
+          sortieDistance={sortieDistance}
+        />
       </div>
 
       <MainMap

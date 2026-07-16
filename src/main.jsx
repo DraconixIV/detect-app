@@ -5,7 +5,7 @@ import App from './App.jsx'
 import { registerSW } from 'virtual:pwa-register'
 
 // FORCE CACHE BUSTER DEFINITIF POUR VIDER LE CACHE DU NAVIGATEUR
-const CACHE_VERSION = "v7_remove_castle_button";
+const CACHE_VERSION = "v8_phase2_hooks_and_sidebar";
 if (localStorage.getItem("RDL_CACHE_VERSION") !== CACHE_VERSION) {
   localStorage.setItem("RDL_CACHE_VERSION", CACHE_VERSION);
   if ('serviceWorker' in navigator) {
