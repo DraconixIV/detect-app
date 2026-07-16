@@ -1738,11 +1738,9 @@ return (
           {/* Grid */}
           <div style={{ flex: 1, overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px", paddingRight: "4px" }}>
             {albumFilteredFinds.map((find) => {
-              const photoUrl = find.isOfflinePending
+              const photoUrl = (find.isOfflinePending
                 ? find.offlinePhoto
-                : allPhotos.find((p) => p.find_id === find.id)?.image_url;
-
-              if (!photoUrl) return null;
+                : allPhotos.find((p) => p.find_id === find.id)?.image_url) || "";
 
               return (
                 <div
