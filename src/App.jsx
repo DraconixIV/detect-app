@@ -1736,7 +1736,7 @@ return (
           </div>
 
           {/* Grid */}
-          <div style={{ flex: 1, overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px", paddingRight: "4px" }}>
+          <div style={{ flex: 1, overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", paddingRight: "6px" }}>
             {albumFilteredFinds.map((find) => {
               const photoUrl = (find.isOfflinePending
                 ? find.offlinePhoto
