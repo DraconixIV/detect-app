@@ -6,7 +6,7 @@ export const categoryEmojis = {
   "Médaille": "🎖️",
   "Munition": "💣",
   "Outil": "🛠️",
-  "Plomb": "🛡️",
+  "Plomb": "⚓",
   "Religieux": "✝️",
   "Autre": "📦"
 };
@@ -136,7 +136,7 @@ export const materialEmojis = {
   "Billon": "💿",
   "Étain": "⚖️",
   "Aluminium": "📎",
-  "Plomb": "🛡️",
+  "Plomb": "⚓",
   "Fer": "⚙️",
   "Autre": "📦"
 };
