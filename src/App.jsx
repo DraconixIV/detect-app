@@ -111,6 +111,8 @@ function App() {
   const [followGps, setFollowGps] =
     useState(false);
 
+  const [toast, setToast] = useState(null);
+
   const {
     finds,
     allPhotos,
@@ -133,7 +135,6 @@ function App() {
   } = useSortieRecorder();
 
   const [showAlbum, setShowAlbum] = useState(false);
-  const [toast, setToast] = useState(null);
   const [confirmConfig, setConfirmConfig] = useState(null);
   const [quickAddFile, setQuickAddFile] = useState(null);
   const [showQuickAddModal, setShowQuickAddModal] = useState(false);
