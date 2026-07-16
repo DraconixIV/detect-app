@@ -5,7 +5,7 @@ import App from './App.jsx'
 import { registerSW } from 'virtual:pwa-register'
 
 // FORCE CACHE BUSTER DEFINITIF POUR VIDER LE CACHE DU NAVIGATEUR
-const CACHE_VERSION = "v3_force_reload";
+const CACHE_VERSION = "v4_align_reboot";
 if (localStorage.getItem("RDL_CACHE_VERSION") !== CACHE_VERSION) {
   localStorage.setItem("RDL_CACHE_VERSION", CACHE_VERSION);
   if ('serviceWorker' in navigator) {

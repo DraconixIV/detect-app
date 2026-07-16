@@ -1608,7 +1608,9 @@ return (
           <style>{`
             .album-grid-card {
               position: relative;
-              aspect-ratio: 1/1;
+              width: 100%;
+              height: 0;
+              padding-bottom: 100%;
               border-radius: 14px;
               overflow: hidden;
               border: 1px solid rgba(255,255,255,0.08);
@@ -1622,6 +1624,9 @@ return (
               box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
             }
             .album-grid-img {
+              position: absolute;
+              top: 0;
+              left: 0;
               width: 100%;
               height: 100%;
               object-fit: cover;
