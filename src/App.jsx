@@ -835,11 +835,12 @@ return (
         sortieDistance={sortieDistance}
         startSortie={startSortie}
         stopSortie={stopSortie}
-        onExport={handleExport}
-        onImport={handleImport}
-        onOpenAlbum={() => setShowAlbum(true)}
-        onOpenStats={() => setShowStats(true)}
-        onOpenPerformance={() => setShowPerformance(true)}
+        favoritesOnly={favoritesOnly}
+        setFavoritesOnly={setFavoritesOnly}
+        search={search}
+        setSearch={setSearch}
+        filters={filters}
+        toggleFilter={toggleFilter}
         
         // AddFindForm Props
         newTitle={newTitle}

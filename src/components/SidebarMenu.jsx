@@ -1,4 +1,5 @@
 import AddFindForm from "./AddFindForm";
+import { categoryEmojis } from "../subCategories";
 
 export default function SidebarMenu({
   showMenu,
@@ -21,11 +22,12 @@ export default function SidebarMenu({
   sortieDistance,
   startSortie,
   stopSortie,
-  onExport,
-  onImport,
-  onOpenAlbum,
-  onOpenStats,
-  onOpenPerformance,
+  favoritesOnly,
+  setFavoritesOnly,
+  search,
+  setSearch,
+  filters,
+  toggleFilter,
   
   // AddFindForm Props
   newTitle,
@@ -45,8 +47,8 @@ export default function SidebarMenu({
   setCustomDate,
   customLat,
   setCustomLat,
-  customLng,
   setCustomLng,
+  customLng,
   activeSubCategory,
   setActiveSubCategory
 }) {
@@ -96,6 +98,7 @@ export default function SidebarMenu({
             ✕
           </button>
         </div>
+
         <button
           onClick={() => setShowForm(!showForm)}
           style={{
@@ -112,7 +115,7 @@ export default function SidebarMenu({
           ➕ Ajouter trouvaille
         </button>
 
-        {/* 2x2 Toggle Grid */}
+        {/* 2x3 Toggle Grid */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", margin: "5px 0" }}>
           {/* Map Style */}
           <button
@@ -145,24 +148,59 @@ export default function SidebarMenu({
               cursor: "pointer"
             }}
           >
-            {followGps ? "🎯 Suivi : On" : "🎯 Suivi : Off"}
+            🎯 Suivi : {followGps ? "On" : "Off"}
           </button>
 
-          {/* Historical Map Toggle */}
+          {/* Outing Recording (Marche/Stop) */}
+          {!isRecordingSortie ? (
+            <button
+              onClick={startSortie}
+              style={{
+                background: "rgba(22, 163, 74, 0.15)",
+                border: "1px solid #16a34a",
+                borderRadius: "12px",
+                padding: "8px",
+                color: "#4ade80",
+                fontSize: "11px",
+                fontWeight: "bold",
+                cursor: "pointer"
+              }}
+            >
+              ⏱️ Marche
+            </button>
+          ) : (
+            <button
+              onClick={stopSortie}
+              style={{
+                background: "rgba(239, 68, 68, 0.15)",
+                border: "1px solid #ef4444",
+                borderRadius: "12px",
+                padding: "8px",
+                color: "#f87171",
+                fontSize: "11px",
+                fontWeight: "bold",
+                cursor: "pointer"
+              }}
+            >
+              🛑 Stop ({(sortieDistance / 1000).toFixed(2)}k)
+            </button>
+          )}
+
+          {/* Favorites Toggle */}
           <button
-            onClick={() => setShowHistoricalMap(!showHistoricalMap)}
+            onClick={() => setFavoritesOnly(!favoritesOnly)}
             style={{
-              background: showHistoricalMap ? "rgba(217, 119, 6, 0.15)" : "rgba(255, 255, 255, 0.06)",
-              border: showHistoricalMap ? "1px solid #d97706" : "1px solid rgba(255, 255, 255, 0.08)",
+              background: favoritesOnly ? "rgba(245, 158, 11, 0.15)" : "rgba(255, 255, 255, 0.06)",
+              border: "1px solid #f59e0b",
               borderRadius: "12px",
               padding: "8px",
-              color: showHistoricalMap ? "#fbbf24" : "white",
+              color: "#facc15",
               fontSize: "11px",
               fontWeight: "bold",
               cursor: "pointer"
             }}
           >
-            📜 Carte 1866
+            ⭐ Favoris : {favoritesOnly ? "On" : "Off"}
           </button>
 
           {/* Clustering Toggle */}
@@ -170,59 +208,49 @@ export default function SidebarMenu({
             onClick={() => setUseClustering(!useClustering)}
             style={{
               background: useClustering ? "rgba(139, 92, 246, 0.15)" : "rgba(255, 255, 255, 0.06)",
-              border: useClustering ? "1px solid #8b5cf6" : "1px solid rgba(255, 255, 255, 0.08)",
+              border: "1px solid #8b5cf6",
               borderRadius: "12px",
               padding: "8px",
-              color: useClustering ? "#a78bfa" : "white",
+              color: "#a78bfa",
               fontSize: "11px",
               fontWeight: "bold",
               cursor: "pointer"
             }}
           >
-            🗂️ Regrouper
+            🧬 Clusters : {useClustering ? "On" : "Off"}
           </button>
-        </div>
 
-        {/* GPS Style Selector */}
-        <div style={{ margin: "5px 0", fontSize: "12px" }}>
-          <label style={{ display: "block", marginBottom: "5px", color: "#9ca3af", fontWeight: "600" }}>
-            Curseur GPS :
-          </label>
-          <select
-            value={gpsStyle}
-            onChange={(e) => {
-              setGpsStyle(e.target.value);
-              localStorage.setItem("gpsStyle", e.target.value);
-            }}
+          {/* Cassini (Historical Map) Toggle */}
+          <button
+            onClick={() => setShowHistoricalMap(!showHistoricalMap)}
             style={{
-              width: "100%",
-              padding: "6px 8px",
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: "8px",
-              color: "white",
-              outline: "none"
+              background: showHistoricalMap ? "rgba(37, 99, 235, 0.15)" : "rgba(255, 255, 255, 0.06)",
+              border: "1px solid #2563eb",
+              borderRadius: "12px",
+              padding: "8px",
+              color: "#60a5fa",
+              fontSize: "11px",
+              fontWeight: "bold",
+              cursor: "pointer"
             }}
           >
-            <option value="blue-dot" style={{ background: "#1f2937" }}>🔵 Point classique</option>
-            <option value="crosshair" style={{ background: "#1f2937" }}>🎯 Réticule de visée</option>
-          </select>
+            🗺️ Cassini : {showHistoricalMap ? "On" : "Off"}
+          </button>
         </div>
 
         {/* Historical Map Opacity Slider */}
         {showHistoricalMap && (
-          <div style={{ margin: "5px 0", fontSize: "12px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", color: "#9ca3af", marginBottom: "4px" }}>
-              <span>Opacité 1866 :</span>
+          <div style={{ background: "rgba(255,255,255,0.04)", padding: "8px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.06)", margin: "5px 0" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", color: "#d1d5db", fontWeight: "bold", marginBottom: "4px" }}>
+              <span>Opacité Cassini</span>
               <span>{Math.round(historicalMapOpacity * 100)}%</span>
             </div>
             <input
               type="range"
               min="0"
-              max="1"
-              step="0.05"
-              value={historicalMapOpacity}
-              onChange={(e) => setHistoricalMapOpacity(parseFloat(e.target.value))}
+              max="100"
+              value={historicalMapOpacity * 100}
+              onChange={(e) => setHistoricalMapOpacity(Number(e.target.value) / 100)}
               style={{
                 width: "100%",
                 accentColor: "#d97706",
@@ -232,166 +260,165 @@ export default function SidebarMenu({
           </div>
         )}
 
-        {/* Outing Recording Controller */}
-        <div style={{
-          background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(255,255,255,0.06)",
-          borderRadius: "14px",
-          padding: "10px",
-          marginTop: "5px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "8px"
-        }}>
-          <div style={{ fontSize: "12px", fontWeight: "bold", color: "#9ca3af" }}>⏱️ Enregistreur de Sortie</div>
-          {!isRecordingSortie ? (
+        {/* GPS Style Selector */}
+        <div style={{ background: "rgba(255,255,255,0.04)", padding: "8px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.06)", margin: "5px 0" }}>
+          <div style={{ fontSize: "10px", color: "#d1d5db", fontWeight: "bold", marginBottom: "6px" }}>
+            🎨 Style de ma position GPS
+          </div>
+          <div style={{ display: "flex", gap: "4px" }}>
             <button
-              onClick={startSortie}
+              onClick={() => {
+                setGpsStyle("blue-dot");
+                localStorage.setItem("gpsStyle", "blue-dot");
+              }}
               style={{
-                background: "linear-gradient(135deg, #ef4444, #dc2626)",
+                flex: 1,
+                padding: "5px",
+                borderRadius: "8px",
                 border: "none",
-                borderRadius: "10px",
-                padding: "8px",
+                background: gpsStyle === "blue-dot" ? "#2563eb" : "rgba(255,255,255,0.06)",
                 color: "white",
+                fontSize: "9.5px",
                 fontWeight: "bold",
-                fontSize: "11px",
                 cursor: "pointer",
-                boxShadow: "0 4px 10px rgba(239, 68, 68, 0.25)"
+                transition: "background 0.2s"
               }}
             >
-              ⏺️ Démarrer la sortie
-            </button>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-              <div style={{ fontSize: "11px", color: "#fca5a5" }}>
-                🔴 Enregistrement... ({(sortieDistance / 1000).toFixed(2)} km)
-              </div>
-              <button
-                onClick={stopSortie}
-                style={{
-                  background: "rgba(255, 255, 255, 0.1)",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
-                  borderRadius: "10px",
-                  padding: "8px",
-                  color: "#fecaca",
-                  fontWeight: "bold",
-                  fontSize: "11px",
-                  cursor: "pointer"
-                }}
-              >
-                ⏹️ Arrêter et Sauvegarder
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Navigation buttons */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", margin: "5px 0" }}>
-          <button
-            onClick={onOpenAlbum}
-            style={{
-              background: "rgba(255, 255, 255, 0.06)",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-              borderRadius: "12px",
-              padding: "10px",
-              color: "white",
-              fontSize: "12px",
-              fontWeight: "bold",
-              cursor: "pointer",
-              transition: "background 0.2s"
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)"}
-            onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.06)"}
-          >
-            🖼️ Ouvrir l'Album
-          </button>
-
-          <button
-            onClick={onOpenStats}
-            style={{
-              background: "rgba(255, 255, 255, 0.06)",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-              borderRadius: "12px",
-              padding: "10px",
-              color: "white",
-              fontSize: "12px",
-              fontWeight: "bold",
-              cursor: "pointer",
-              transition: "background 0.2s"
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)"}
-            onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.06)"}
-          >
-            🏛️ Musée & Journal
-          </button>
-
-          <button
-            onClick={onOpenPerformance}
-            style={{
-              background: "rgba(255, 255, 255, 0.06)",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-              borderRadius: "12px",
-              padding: "10px",
-              color: "white",
-              fontSize: "12px",
-              fontWeight: "bold",
-              cursor: "pointer",
-              transition: "background 0.2s"
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)"}
-            onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.06)"}
-          >
-            ⚡ Diagnostics & Logs
-          </button>
-        </div>
-
-        {/* Backups Panel */}
-        <div style={{
-          borderTop: "1px solid rgba(255,255,255,0.08)",
-          paddingTop: "10px",
-          marginTop: "5px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "8px"
-        }}>
-          <div style={{ fontSize: "11px", color: "#9ca3af" }}>Sauvegardes de sécurité :</div>
-          <div style={{ display: "flex", gap: "6px" }}>
-            <button
-              onClick={onExport}
-              style={{
-                flex: 1,
-                background: "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
-                borderRadius: "8px",
-                padding: "6px",
-                color: "#9ca3af",
-                fontSize: "10px",
-                fontWeight: "bold",
-                cursor: "pointer"
-              }}
-            >
-              📥 Exporter
+              🔵 Bleu
             </button>
             <button
-              onClick={onImport}
+              onClick={() => {
+                setGpsStyle("radar");
+                localStorage.setItem("gpsStyle", "radar");
+              }}
               style={{
                 flex: 1,
-                background: "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
+                padding: "5px",
                 borderRadius: "8px",
-                padding: "6px",
-                color: "#9ca3af",
-                fontSize: "10px",
+                border: "none",
+                background: gpsStyle === "radar" ? "#10b981" : "rgba(255,255,255,0.06)",
+                color: "white",
+                fontSize: "9.5px",
                 fontWeight: "bold",
-                cursor: "pointer"
+                cursor: "pointer",
+                transition: "background 0.2s"
               }}
             >
-              📤 Importer
+              🟢 Radar
+            </button>
+            <button
+              onClick={() => {
+                setGpsStyle("royal-pointer");
+                localStorage.setItem("gpsStyle", "royal-pointer");
+              }}
+              style={{
+                flex: 1,
+                padding: "5px",
+                borderRadius: "8px",
+                border: "none",
+                background: gpsStyle === "royal-pointer" ? "#d97706" : "rgba(255,255,255,0.06)",
+                color: "white",
+                fontSize: "9.5px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                transition: "background 0.2s"
+              }}
+            >
+              🟡 Or
             </button>
           </div>
         </div>
 
-        {/* Formulaire d'ajout intégré */}
+        {/* Search Bar (White background pill shape) */}
+        <input
+          type="text"
+          placeholder="🔍 Rechercher titre, époque..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "10px 16px",
+            borderRadius: "50px",
+            border: "none",
+            background: "#ffffff",
+            color: "#1f2937",
+            fontSize: "12.5px",
+            fontWeight: "500",
+            outline: "none",
+            boxSizing: "border-box",
+            margin: "5px 0",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+          }}
+        />
+
+        {/* Categories filters (White rounded pills) */}
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "6px",
+            marginTop: "5px"
+          }}
+        >
+          {Object.keys(icons).map((category) => (
+            <button
+              key={category}
+              onClick={() => toggleFilter(category)}
+              style={{
+                background: "#ffffff",
+                color: "#1f2937",
+                border: filters.includes(category) ? "2px solid #2563eb" : "1px solid #d1d5db",
+                borderRadius: "50px",
+                padding: "5px 11px",
+                fontSize: "11.5px",
+                fontWeight: "600",
+                cursor: "pointer",
+                opacity: filters.includes(category) ? 1 : 0.35,
+                boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px"
+              }}
+            >
+              {categoryEmojis[category] || ""} {category}
+            </button>
+          ))}
+        </div>
+
+        {/* Active sub-category filter badge */}
+        {activeSubCategory && (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: "rgba(37, 99, 235, 0.15)",
+            border: "1px solid rgba(37, 99, 235, 0.3)",
+            borderRadius: "10px",
+            padding: "6px 10px",
+            marginTop: "8px",
+            fontSize: "11px",
+            color: "#93c5fd"
+          }}>
+            <span>🎯 Sous-catégorie : <strong>{activeSubCategory}</strong></span>
+            <button
+              onClick={() => setActiveSubCategory(null)}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#ef4444",
+                cursor: "pointer",
+                fontSize: "12px",
+                fontWeight: "bold",
+                padding: "0 2px"
+              }}
+              title="Effacer le filtre de sous-catégorie"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        {/* Integrated form */}
         <AddFindForm
           showForm={showForm}
           newTitle={newTitle}
