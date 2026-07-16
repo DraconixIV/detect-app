@@ -312,6 +312,125 @@ function App() {
   const [subCatModalStep, setSubCatModalStep] = useState(1);
   const [gpsStyle, setGpsStyle] = useState(() => localStorage.getItem("gpsStyle") || "blue-dot");
 
+  const [showStartupLocationScreen, setShowStartupLocationScreen] = useState(true);
+  const [startupLocationLoading, setStartupLocationLoading] = useState(false);
+  const [startupLocationError, setStartupLocationError] = useState("");
+  const [startupLocationWarning, setStartupLocationWarning] = useState(false);
+  const [tempPosition, setTempPosition] = useState(null);
+
+  const gpsWatchIdRef = useRef(null);
+
+  const startGpsTracking = (initialPosition = null) => {
+    if (gpsWatchIdRef.current) return;
+
+    if (initialPosition) {
+      setPosition(initialPosition);
+      localStorage.setItem("lastKnownPosition", JSON.stringify(initialPosition));
+    }
+
+    gpsWatchIdRef.current = navigator.geolocation.watchPosition(
+      (pos) => {
+        const newPosition = [pos.coords.latitude, pos.coords.longitude];
+        setPosition(newPosition);
+        localStorage.setItem("lastKnownPosition", JSON.stringify(newPosition));
+        setGpsAccuracy(pos.coords.accuracy);
+
+        if (isRecordingRef.current) {
+          setSortiePositions((prev) => {
+            const next = [...prev, newPosition];
+            if (prev.length > 0) {
+              const last = prev[prev.length - 1];
+              const d = distanceBetween(last, newPosition);
+              setSortieDistance((dist) => dist + d);
+            }
+            return next;
+          });
+        }
+      },
+      (err) => {
+        console.error("GPS Watch Error:", err);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 0
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (followGps) {
+      startGpsTracking();
+    }
+  }, [followGps]);
+
+  const handleRequestLocation = () => {
+    setStartupLocationLoading(true);
+    setStartupLocationError("");
+    setStartupLocationWarning(false);
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setStartupLocationLoading(false);
+        const newPos = [pos.coords.latitude, pos.coords.longitude];
+        setTempPosition(newPos);
+        setGpsAccuracy(pos.coords.accuracy);
+
+        if (pos.coords.accuracy > 150) {
+          setStartupLocationWarning(true);
+        } else {
+          setFollowGps(true);
+          startGpsTracking(newPos);
+          setZoomTarget({ position: newPos, zoom: 18 });
+          setShowStartupLocationScreen(false);
+          setToast({ message: "🎯 GPS activé avec précision !", type: "success" });
+        }
+      },
+      (err) => {
+        setStartupLocationLoading(false);
+        console.error("GPS startup request error:", err);
+        setStartupLocationError(
+          "Impossible d'accéder au GPS. Veuillez autoriser la localisation dans vos paramètres ou basculer en mode Consultation."
+        );
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  };
+
+  const handleAcceptPoorLocation = () => {
+    if (tempPosition) {
+      setFollowGps(true);
+      startGpsTracking(tempPosition);
+      setZoomTarget({ position: tempPosition, zoom: 18 });
+      setShowStartupLocationScreen(false);
+      setToast({ message: "🎯 Localisation activée (précision réduite).", type: "info" });
+    }
+  };
+
+  const handleRejectPoorLocation = () => {
+    setFollowGps(false);
+    if (finds && finds.length > 0) {
+      const validFinds = finds.filter(f => (f.position ? f.position[0] : f.latitude) != null);
+      if (validFinds.length > 0) {
+        const lats = validFinds.map(f => f.position ? f.position[0] : f.latitude);
+        const lngs = validFinds.map(f => f.position ? f.position[1] : f.longitude);
+        const avgLat = lats.reduce((sum, val) => sum + val, 0) / lats.length;
+        const avgLng = lngs.reduce((sum, val) => sum + val, 0) / lngs.length;
+        setZoomTarget({ position: [avgLat, avgLng], zoom: 16 });
+      } else {
+        setZoomTarget({ position: [43.273, 3.173], zoom: 16 });
+      }
+    } else {
+      setZoomTarget({ position: [43.273, 3.173], zoom: 16 });
+    }
+    setShowStartupLocationScreen(false);
+    setToast({ message: "🗺️ Mode consultation activé à Lespignan.", type: "success" });
+  };
+
   const isRecordingRef = useRef(isRecordingSortie);
   const positionsRef = useRef(sortiePositions);
   const quickAddInputRef = useRef(null);
@@ -452,43 +571,6 @@ function App() {
   useEffect(() => {
     loadFinds();
 
-    const watchId =
-      navigator.geolocation.watchPosition(
-        (pos) => {
-          const newPosition = [
-            pos.coords.latitude,
-            pos.coords.longitude
-          ];
-
-          setPosition(newPosition);
-          localStorage.setItem("lastKnownPosition", JSON.stringify(newPosition));
-          setGpsAccuracy(pos.coords.accuracy);
-
-          if (isRecordingRef.current) {
-            setSortiePositions((prev) => {
-              const next = [...prev, newPosition];
-              if (prev.length > 0) {
-                const last = prev[prev.length - 1];
-                const d = distanceBetween(last, newPosition);
-                setSortieDistance((dist) => dist + d);
-              }
-              return next;
-            });
-          }
-        },
-
-        (err) => {
-          console.error("GPS Error:", err);
-          // Le state garde sa valeur actuelle (cache local ou Lespignan) sans forcer Bourges
-        },
-
-        {
-          enableHighAccuracy: true,
-          timeout: 20000,
-          maximumAge: 0
-        }
-      );
-
     const channel = supabase
       .channel("realtime-finds-changes")
       .on(
@@ -501,7 +583,9 @@ function App() {
       .subscribe();
 
     return () => {
-      navigator.geolocation.clearWatch(watchId);
+      if (gpsWatchIdRef.current) {
+        navigator.geolocation.clearWatch(gpsWatchIdRef.current);
+      }
       supabase.removeChannel(channel);
     };
   }, []);
@@ -2863,6 +2947,195 @@ return (
           type={toast.type}
           onClose={() => setToast(null)}
         />
+      )}
+
+      {/* Onboarding GPS Startup Screen */}
+      {showStartupLocationScreen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(8, 10, 20, 0.97)",
+            backdropFilter: "blur(12px)",
+            zIndex: 10000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+            boxSizing: "border-box",
+            fontFamily: "system-ui, sans-serif"
+          }}
+        >
+          <div
+            style={{
+              width: "100%",
+              maxWidth: "420px",
+              background: "rgba(17, 24, 39, 0.75)",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "24px",
+              padding: "30px 24px",
+              boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+              textAlign: "center",
+              color: "white"
+            }}
+          >
+            {!startupLocationWarning ? (
+              <>
+                <div style={{ fontSize: "52px", marginBottom: "15px" }}>🛰️</div>
+                <h2 style={{ fontSize: "22px", fontWeight: "800", margin: "0 0 10px 0", letterSpacing: "-0.5px" }}>
+                  Configuration GPS
+                </h2>
+                <p style={{ fontSize: "13px", color: "#9ca3af", lineHeight: "1.6", margin: "0 0 24px 0" }}>
+                  Pour cartographier et enregistrer vos trouvailles sur le terrain, l'application a besoin d'une connexion GPS fonctionnelle.
+                </p>
+
+                {startupLocationError && (
+                  <div style={{
+                    background: "rgba(239, 68, 68, 0.1)",
+                    border: "1px solid rgba(239, 68, 68, 0.2)",
+                    borderRadius: "12px",
+                    padding: "10px 12px",
+                    fontSize: "12px",
+                    color: "#f87171",
+                    marginBottom: "20px",
+                    lineHeight: "1.4"
+                  }}>
+                    {startupLocationError}
+                  </div>
+                )}
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  <button
+                    onClick={handleRequestLocation}
+                    disabled={startupLocationLoading}
+                    style={{
+                      background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                      border: "none",
+                      borderRadius: "14px",
+                      padding: "14px",
+                      color: "white",
+                      fontSize: "14px",
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "8px",
+                      boxShadow: "0 4px 15px rgba(37, 99, 235, 0.3)",
+                      transition: "transform 0.15s, opacity 0.2s"
+                    }}
+                    onMouseEnter={(e) => { if (!startupLocationLoading) e.currentTarget.style.transform = "scale(1.02)"; }}
+                    onMouseLeave={(e) => { if (!startupLocationLoading) e.currentTarget.style.transform = "scale(1)"; }}
+                  >
+                    {startupLocationLoading ? (
+                      <>
+                        <span style={{
+                          width: "16px",
+                          height: "16px",
+                          border: "2px solid white",
+                          borderTopColor: "transparent",
+                          borderRadius: "50%",
+                          animation: "spin-loader 0.8s linear infinite"
+                        }}></span>
+                        Acquisition du signal...
+                      </>
+                    ) : (
+                      <>🎯 Activer la localisation</>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={handleRejectPoorLocation}
+                    disabled={startupLocationLoading}
+                    style={{
+                      background: "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      borderRadius: "14px",
+                      padding: "14px",
+                      color: "#d1d5db",
+                      fontSize: "14px",
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                      transition: "background 0.2s, transform 0.15s"
+                    }}
+                    onMouseEnter={(e) => { if (!startupLocationLoading) { e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)"; e.currentTarget.style.transform = "scale(1.02)"; } }}
+                    onMouseLeave={(e) => { if (!startupLocationLoading) { e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)"; e.currentTarget.style.transform = "scale(1)"; } }}
+                  >
+                    🗺️ Mode Consultation (Lespignan)
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize: "52px", marginBottom: "15px" }}>⚠️</div>
+                <h2 style={{ fontSize: "20px", fontWeight: "800", margin: "0 0 10px 0", color: "#fbbf24" }}>
+                  Signal GPS imprécis
+                </h2>
+                <p style={{ fontSize: "13px", color: "#d1d5db", lineHeight: "1.6", margin: "0 0 20px 0" }}>
+                  Votre navigateur renvoie une position approximative (IP de connexion résolue à **Mèze** ou alentours).
+                </p>
+                <p style={{ fontSize: "12px", color: "#9ca3af", lineHeight: "1.5", margin: "0 0 24px 0" }}>
+                  Si vous êtes chez vous sur ordinateur, nous vous conseillons de centrer la carte sur votre zone de trouvailles habituelle (Lespignan) pour éviter les décalages.
+                </p>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  <button
+                    onClick={handleRejectPoorLocation}
+                    style={{
+                      background: "linear-gradient(135deg, #10b981, #059669)",
+                      border: "none",
+                      borderRadius: "14px",
+                      padding: "14px",
+                      color: "white",
+                      fontSize: "14px",
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "8px",
+                      boxShadow: "0 4px 15px rgba(16, 185, 129, 0.3)",
+                      transition: "transform 0.15s"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                  >
+                    🏰 Centrer sur Lespignan (Recommandé)
+                  </button>
+
+                  <button
+                    onClick={handleAcceptPoorLocation}
+                    style={{
+                      background: "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      borderRadius: "14px",
+                      padding: "14px",
+                      color: "#9ca3af",
+                      fontSize: "13px",
+                      fontWeight: "600",
+                      cursor: "pointer",
+                      transition: "background 0.2s"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)"}
+                    onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)"}
+                  >
+                    Utiliser quand même cette position GPS
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+          
+          <style>{`
+            @keyframes spin-loader {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
       )}
     </div>
   );
