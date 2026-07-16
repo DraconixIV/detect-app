@@ -840,14 +840,19 @@ function App() {
     });
   }, [finds, filters, activeSubCategory, search, selectedDate, favoritesOnly]);
   const albumFilteredFinds = useMemo(() => {
-    // 1. Filter by category & check that photo exists
+    // 1. Filter by category & check that photo exists with a valid URL
     let list = finds.filter((f) => {
-      const hasPhoto = f.isOfflinePending
-        ? !!f.offlinePhoto
-        : allPhotos.some((p) => p.find_id === f.id);
-      if (!hasPhoto) return false;
+      // Category match (case-insensitive)
+      const catMatch = albumFilter === "Tous" || 
+        (f.category && f.category.toLowerCase() === albumFilter.toLowerCase());
+      if (!catMatch) return false;
 
-      return albumFilter === "Tous" || f.category === albumFilter;
+      // Photo match
+      const photoUrl = f.isOfflinePending
+        ? f.offlinePhoto
+        : allPhotos.find((p) => p.find_id === f.id)?.image_url;
+
+      return !!photoUrl;
     });
 
     // 2. Filter by search term
@@ -1755,7 +1760,7 @@ return (
                   
                   {/* Category Badge */}
                   <div style={{ position: "absolute", top: "6px", left: "6px", background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {categoryEmojis[find.category] || "📍"}
+                    {categoryEmojis[find.category] || categoryEmojis[find.category?.trim().charAt(0).toUpperCase() + find.category?.trim().slice(1).toLowerCase()] || "📍"}
                   </div>
 
                   {/* Favorite Badge */}
@@ -2348,7 +2353,7 @@ return (
                   {selectedAlbumPhoto.find.title || "Sans titre"}
                 </h3>
                 <p style={{ margin: 0, opacity: 0.8, fontSize: "14px" }}>
-                  {categoryEmojis[selectedAlbumPhoto.find.category] || "📍"} {selectedAlbumPhoto.find.category}
+                  {categoryEmojis[selectedAlbumPhoto.find.category] || categoryEmojis[selectedAlbumPhoto.find.category?.trim().charAt(0).toUpperCase() + selectedAlbumPhoto.find.category?.trim().slice(1).toLowerCase()] || "📍"} {selectedAlbumPhoto.find.category}
                   {selectedAlbumPhoto.find.sub_category ? ` • ${selectedAlbumPhoto.find.sub_category}` : ""}
                   {selectedAlbumPhoto.find.date ? ` • 📅 ${selectedAlbumPhoto.find.date.split(",")[0]}` : ""}
                 </p>
