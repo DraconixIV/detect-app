@@ -2105,59 +2105,6 @@ return (
         onChange={handleQuickAdd}
       />
 
-      {/* Floating Recenter Findings Button */}
-      <button
-        onClick={() => {
-          setFollowGps(false);
-          if (finds && finds.length > 0) {
-            const validFinds = finds.filter(f => {
-              const lat = f.position ? f.position[0] : f.latitude;
-              const lng = f.position ? f.position[1] : f.longitude;
-              return lat != null && lng != null;
-            });
-            if (validFinds.length > 0) {
-              const lats = validFinds.map(f => f.position ? f.position[0] : f.latitude);
-              const lngs = validFinds.map(f => f.position ? f.position[1] : f.longitude);
-              const avgLat = lats.reduce((sum, val) => sum + val, 0) / lats.length;
-              const avgLng = lngs.reduce((sum, val) => sum + val, 0) / lngs.length;
-              setZoomTarget({ position: [avgLat, avgLng], zoom: 16 });
-            } else {
-              setZoomTarget({ position: [43.273, 3.173], zoom: 16 });
-            }
-          } else {
-            setZoomTarget({ position: [43.273, 3.173], zoom: 16 });
-          }
-          setToast({
-            message: "🏰 Centré sur la zone de vos trouvailles !",
-            type: "success"
-          });
-        }}
-        style={{
-          position: "absolute",
-          bottom: "165px",
-          right: "36px",
-          zIndex: 5000,
-          width: "48px",
-          height: "48px",
-          borderRadius: "50%",
-          border: "1px solid rgba(255,255,255,0.15)",
-          background: "rgba(17, 24, 39, 0.9)",
-          backdropFilter: "blur(8px)",
-          color: "white",
-          fontSize: "20px",
-          boxShadow: "0 6px 20px rgba(0,0,0,0.35)",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          transition: "transform 0.15s, background-color 0.2s"
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.08)"}
-        onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-        title="Centrer sur la zone de trouvailles"
-      >
-        🏰
-      </button>
 
       {/* Floating Recenter GPS Button */}
       <button
