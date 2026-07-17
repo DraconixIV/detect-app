@@ -22,6 +22,7 @@ export default function MapLayers({
         key={baseLayerUrl}
         attribution={baseLayerAttribution}
         url={baseLayerUrl}
+        crossOrigin="anonymous"
       />
       {showHistoricalMap && (
         <TileLayer
@@ -34,6 +35,7 @@ export default function MapLayers({
           minZoom={0}
           updateWhenIdle={true}
           keepBuffer={1}
+          crossOrigin="anonymous"
         />
       )}
     </>

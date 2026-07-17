@@ -2,6 +2,34 @@ import { useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { categoryEmojis } from "../subCategories";
 
+function LazyImage({ src, alt }) {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div
+      className={!loaded ? "album-grid-card-loading" : ""}
+      style={{
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+        top: 0,
+        left: 0
+      }}
+    >
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        className="album-grid-img"
+        style={{
+          opacity: loaded ? 1 : 0,
+          transition: "opacity 0.3s ease-in-out"
+        }}
+        onLoad={() => setLoaded(true)}
+      />
+    </div>
+  );
+}
+
 const CATEGORIES = [
   "Tous",
   "Monnaie",
@@ -109,6 +137,14 @@ export default function AlbumPanel({
         }}
       >
         <style>{`
+          @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.25; }
+          }
+          .album-grid-card-loading {
+            background: rgba(255, 255, 255, 0.05);
+            animation: pulse 1.5s infinite ease-in-out;
+          }
           .album-grid-card {
             position: relative;
             width: 100%;
@@ -258,11 +294,7 @@ export default function AlbumPanel({
                   setSelectedAlbumPhoto({ find, photoUrl });
                 }}
               >
-                <img
-                  src={photoUrl}
-                  alt={find.title}
-                  className="album-grid-img"
-                />
+                <LazyImage src={photoUrl} alt={find.title} />
                 
                 {/* Category Badge */}
                 <div style={{ position: "absolute", top: "6px", left: "6px", background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center" }}>
