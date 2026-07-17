@@ -119,7 +119,8 @@ function App() {
     isOnline,
     syncing,
     loadFinds,
-    syncOfflineFinds
+    syncOfflineFinds,
+    loadPhotosForAlbum
   } = useSupabaseSync(setToast);
 
   const {
@@ -193,6 +194,12 @@ function App() {
       startGpsTracking();
     }
   }, [followGps]);
+
+  useEffect(() => {
+    if (showAlbum) {
+      loadPhotosForAlbum();
+    }
+  }, [showAlbum]);
 
   const isRecordingRef = useRef(isRecordingSortie);
   const positionsRef = useRef(sortiePositions);

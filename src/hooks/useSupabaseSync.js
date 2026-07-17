@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../supabase";
-import { loadFinds as fetchFinds, addFind as createFind } from "../services/findsService";
+import { loadFinds as fetchFinds, addFind as createFind, normalizeCategoryAndSub } from "../services/findsService";
 import { getPendingFinds, deletePendingFind } from "../services/offlineStore";
 
 export default function useSupabaseSync(setToast) {
@@ -9,16 +9,25 @@ export default function useSupabaseSync(setToast) {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [syncing, setSyncing] = useState(false);
 
+  const loadPhotosForAlbum = async () => {
+    try {
+      const { data: photoData } = await supabase
+        .from("find_photos")
+        .select("id, find_id, image_url, type")
+        .order("id", { ascending: true });
+      if (photoData) {
+        setAllPhotos(photoData);
+      }
+    } catch (e) {
+      console.error("Failed to load album photos:", e);
+    }
+  };
+
   const loadFinds = async () => {
     const data = await fetchFinds();
 
-    // Charger également toutes les photos de Supabase pour l'Album
-    const { data: photoData } = await supabase
-      .from("find_photos")
-      .select("*")
-      .order("id", { ascending: true });
-    if (photoData) {
-      setAllPhotos(photoData);
+    if (allPhotos.length > 0) {
+      await loadPhotosForAlbum();
     }
 
     try {
@@ -102,8 +111,40 @@ export default function useSupabaseSync(setToast) {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "finds" },
-        () => {
-          loadFinds();
+        (payload) => {
+          console.log("Realtime change received:", payload);
+          const { eventType, new: newRow, old: oldRow } = payload;
+
+          setFinds((currentFinds) => {
+            if (eventType === "INSERT") {
+              const normalized = normalizeCategoryAndSub(newRow);
+              const formatted = {
+                ...normalized,
+                position: [normalized.latitude, normalized.longitude]
+              };
+              if (currentFinds.some((f) => f.id === formatted.id)) {
+                return currentFinds;
+              }
+              const offlinePendings = currentFinds.filter((f) => f.isOfflinePending);
+              const restFinds = currentFinds.filter((f) => !f.isOfflinePending);
+              return [...offlinePendings, formatted, ...restFinds];
+            }
+
+            if (eventType === "UPDATE") {
+              const normalized = normalizeCategoryAndSub(newRow);
+              const formatted = {
+                ...normalized,
+                position: [normalized.latitude, normalized.longitude]
+              };
+              return currentFinds.map((f) => (f.id === formatted.id ? formatted : f));
+            }
+
+            if (eventType === "DELETE") {
+              return currentFinds.filter((f) => f.id !== oldRow.id);
+            }
+
+            return currentFinds;
+          });
         }
       )
       .subscribe();
@@ -136,6 +177,7 @@ export default function useSupabaseSync(setToast) {
     isOnline,
     syncing,
     loadFinds,
-    syncOfflineFinds
+    syncOfflineFinds,
+    loadPhotosForAlbum
   };
 }
