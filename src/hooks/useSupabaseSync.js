@@ -149,9 +149,10 @@ export default function useSupabaseSync(setToast) {
       )
       .subscribe();
 
-    const handleOnline = () => {
+    const handleOnline = async () => {
       setIsOnline(true);
-      syncOfflineFinds();
+      await syncOfflineFinds();
+      await loadFinds();
     };
     const handleOffline = () => {
       setIsOnline(false);
