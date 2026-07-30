@@ -17,6 +17,9 @@ import { icons } from "./icons";
 
 import useSupabaseSync from "./hooks/useSupabaseSync";
 import useSortieRecorder from "./hooks/useSortieRecorder";
+import { addPendingFind } from "./services/offlineStore";
+import { importData, exportData } from "./services/backupService";
+import { addFind as createFind } from "./services/findsService";
 
 function offsetPosition(
   position,
