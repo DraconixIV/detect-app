@@ -229,16 +229,16 @@ export default function StatsPanel({
 
           <svg width="100%" height={categoryData.slice(0, 5).length * 28 + 5} style={{ overflow: "visible" }}>
             {categoryData.slice(0, 5).map(([category, count], idx) => {
-              const barWidth = (count / maxCount) * 100; // max width 100px
+              const barWidth = (count / maxCount) * 80; // max width 80px
               const y = idx * 28 + 12;
               return (
                 <g key={category}>
                   <text x="0" y={y} fill="white" fontSize="9px" fontWeight="bold">
                     {categoryEmojis[category] || ""} {category} ({count})
                   </text>
-                  <rect x="95" y={y - 8} width="100" height="6" rx="3" fill="rgba(255,255,255,0.1)" />
+                  <rect x="105" y={y - 8} width="80" height="6" rx="3" fill="rgba(255,255,255,0.1)" />
                   <rect
-                    x="95"
+                    x="105"
                     y={y - 8}
                     width={barWidth}
                     height="6"
