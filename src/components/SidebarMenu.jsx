@@ -24,6 +24,8 @@ export default function SidebarMenu({
   stopSortie,
   favoritesOnly,
   setFavoritesOnly,
+  hideAllFinds,
+  setHideAllFinds,
   search,
   setSearch,
   filters,
@@ -237,6 +239,47 @@ export default function SidebarMenu({
             🗺️ Cassini : {showHistoricalMap ? "On" : "Off"}
           </button>
         </div>
+
+        {/* Hide All Finds Toggle */}
+        <button
+          onClick={() => setHideAllFinds(!hideAllFinds)}
+          style={{
+            borderRadius: "12px",
+            padding: "9px 12px",
+            border: hideAllFinds ? "1px solid rgba(239, 68, 68, 0.4)" : "1px solid rgba(255, 255, 255, 0.12)",
+            background: hideAllFinds ? "rgba(239, 68, 68, 0.15)" : "rgba(255, 255, 255, 0.06)",
+            color: hideAllFinds ? "#f87171" : "white",
+            fontWeight: "bold",
+            fontSize: "11px",
+            cursor: "pointer",
+            width: "100%",
+            marginTop: "2px",
+            marginBottom: "4px",
+            transition: "all 0.2s ease",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "6px"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "scale(1.02)";
+            if (hideAllFinds) {
+              e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.25)";
+            } else {
+              e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+            if (hideAllFinds) {
+              e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.15)";
+            } else {
+              e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.06)";
+            }
+          }}
+        >
+          {hideAllFinds ? "👁️ Afficher toutes les trouvailles" : "👁️ Masquer toutes les trouvailles"}
+        </button>
 
         {/* Historical Map Opacity Slider */}
         {showHistoricalMap && (

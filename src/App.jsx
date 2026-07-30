@@ -67,6 +67,14 @@ function App() {
   const [mapStyle, setMapStyle] =
     useState("plan");
 
+  const [hideAllFinds, setHideAllFinds] = useState(() => {
+    return localStorage.getItem("hideAllFinds") === "true";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("hideAllFinds", hideAllFinds);
+  }, [hideAllFinds]);
+
   const [filters, setFilters] =
     useState([
       "Monnaie",
@@ -572,7 +580,7 @@ function App() {
   }, [finds, filters, activeSubCategory, search, selectedDate, favoritesOnly]);
 
   const positionedFinds = useMemo(() => {
-    if (filteredFinds.length === 0) return [];
+    if (hideAllFinds || filteredFinds.length === 0) return [];
     
     const groups = [];
     filteredFinds.forEach((find) => {
@@ -600,7 +608,7 @@ function App() {
         finalPosition: offsetPosition(find.position, index)
       }));
     });
-  }, [filteredFinds]);
+  }, [filteredFinds, hideAllFinds]);
 
 
 
@@ -847,6 +855,8 @@ return (
         stopSortie={stopSortie}
         favoritesOnly={favoritesOnly}
         setFavoritesOnly={setFavoritesOnly}
+        hideAllFinds={hideAllFinds}
+        setHideAllFinds={setHideAllFinds}
         search={search}
         setSearch={setSearch}
         filters={filters}
