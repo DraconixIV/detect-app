@@ -132,12 +132,12 @@ export async function addFind({
           }
         );
 
-      const cleanName =
-        newPhoto.name
-          .replaceAll(" ", "-")
-          .replaceAll("é", "e")
-          .replaceAll("è", "e")
-          .replaceAll("à", "a");
+      const rawName = newPhoto.name || `photo-${Date.now()}.jpg`;
+      const cleanName = rawName
+        .replaceAll(" ", "-")
+        .replaceAll("é", "e")
+        .replaceAll("è", "e")
+        .replaceAll("à", "a");
 
       const fileName =
         `${Date.now()}-${cleanName}`;
