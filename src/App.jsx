@@ -446,7 +446,7 @@ function App() {
         await loadFinds();
       } catch (fallbackError) {
         console.error("Critical fallback save error:", fallbackError);
-        alert("Erreur critique : impossible d'enregistrer la trouvaille même localement.");
+        alert("Erreur critique : impossible d'enregistrer la trouvaille même localement. Détail : " + (fallbackError?.message || fallbackError || "Inconnu"));
       }
     }
 
