@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   MapContainer,
   Marker,
@@ -103,6 +103,21 @@ const createClusterCustomIcon = (cluster) => {
   });
 };
 
+
+// Helper: Listen to zoom events to hide markers during animations
+function ZoomEventsHandler({ onZoomStart, onZoomEnd }) {
+  const map = useMap();
+  useEffect(() => {
+    map.on("zoomstart", onZoomStart);
+    map.on("zoomend", onZoomEnd);
+    return () => {
+      map.off("zoomstart", onZoomStart);
+      map.off("zoomend", onZoomEnd);
+    };
+  }, [map, onZoomStart, onZoomEnd]);
+  return null;
+}
+
 export default function MainMap({
   position,
   followGps,
@@ -125,6 +140,8 @@ export default function MainMap({
   handleFavorite,
   loadFinds
 }) {
+  const [isZooming, setIsZooming] = useState(false);
+
   return (
     <MapContainer
       center={position}
@@ -135,6 +152,10 @@ export default function MainMap({
         width: "100%"
       }}
     >
+      <ZoomEventsHandler 
+        onZoomStart={() => setIsZooming(true)} 
+        onZoomEnd={() => setIsZooming(false)} 
+      />
       <MapEventsHandler 
         onLongPress={handleMapLongPress} 
         onMapDrag={() => setFollowGps(false)} 
@@ -149,7 +170,7 @@ export default function MainMap({
 
       {openPopupFind && (
         <Popup
-          position={openPopupFind.position}
+          position={openPopupFind.finalPosition || openPopupFind.position}
           onClose={() => setOpenPopupFind(null)}
           eventHandlers={{
             remove: () => setOpenPopupFind(null)
@@ -171,7 +192,7 @@ export default function MainMap({
         historicalMapOpacity={historicalMapOpacity}
       />
 
-      {selectedDateTracks.map((track, idx) => (
+      {!isZooming && selectedDateTracks.map((track, idx) => (
         <Polyline
           key={track.id || idx}
           positions={track.positions}
@@ -190,80 +211,38 @@ export default function MainMap({
         gpsStyle={gpsStyle}
       />
 
-      {useClustering ? (
-        <MarkerClusterGroup
-          iconCreateFunction={createClusterCustomIcon}
-          chunkedLoading={true}
-          showCoverageOnHover={false}
-          maxClusterRadius={50}
-        >
-          {positionedFinds.map((find) => (
+      {!isZooming && (
+        useClustering ? (
+          <MarkerClusterGroup
+            iconCreateFunction={createClusterCustomIcon}
+            chunkedLoading={true}
+            showCoverageOnHover={false}
+            maxClusterRadius={50}
+          >
+            {positionedFinds.map((find) => (
+              <Marker
+                key={find.id}
+                position={find.finalPosition}
+                icon={icons[find.category] || icons.autre}
+                eventHandlers={{
+                  click: () => setOpenPopupFind(find)
+                }}
+              />
+            ))}
+          </MarkerClusterGroup>
+        ) : (
+          positionedFinds.map((find) => (
             <Marker
               key={find.id}
               position={find.finalPosition}
               icon={icons[find.category] || icons.autre}
-            >
-              <Popup
-                autoPan={false}
-                keepInView={false}
-                closeOnClick={false}
-                eventHandlers={{
-                  add: () => setActivePopupId(find.id),
-                  remove: () => {
-                    setActivePopupId((current) => current === find.id ? null : current);
-                  }
-                }}
-              >
-                {activePopupId === find.id ? (
-                  <FindPopup
-                    find={find}
-                    onDelete={deleteFind}
-                    onFavorite={handleFavorite}
-                    onUpdate={loadFinds}
-                  />
-                ) : (
-                  <div style={{ padding: "10px", color: "black", fontFamily: "system-ui, sans-serif", fontSize: "12px" }}>
-                    Chargement...
-                  </div>
-                )}
-              </Popup>
-            </Marker>
-          ))}
-        </MarkerClusterGroup>
-      ) : (
-        positionedFinds.map((find) => (
-          <Marker
-            key={find.id}
-            position={find.finalPosition}
-            icon={icons[find.category] || icons.autre}
-          >
-            <Popup
-              autoPan={false}
-              keepInView={false}
-              closeOnClick={false}
               eventHandlers={{
-                add: () => setActivePopupId(find.id),
-                remove: () => {
-                  setActivePopupId((current) => current === find.id ? null : current);
-                }
+                click: () => setOpenPopupFind(find)
               }}
-            >
-              {activePopupId === find.id ? (
-                <FindPopup
-                  find={find}
-                  onDelete={deleteFind}
-                  onFavorite={handleFavorite}
-                  onUpdate={loadFinds}
-                />
-              ) : (
-                <div style={{ padding: "10px", color: "black", fontFamily: "system-ui, sans-serif", fontSize: "12px" }}>
-                  Chargement...
-                </div>
-              )}
-            </Popup>
-          </Marker>
-        ))
-      )}        
+            />
+          ))
+        )
+      )}
     </MapContainer>
   );
 }
