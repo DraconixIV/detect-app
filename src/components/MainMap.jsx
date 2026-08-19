@@ -129,6 +129,7 @@ export default function MainMap({
     <MapContainer
       center={position}
       zoom={20}
+      preferCanvas={true}
       style={{
         height: "100%",
         width: "100%"
@@ -190,7 +191,12 @@ export default function MainMap({
       />
 
       {useClustering ? (
-        <MarkerClusterGroup iconCreateFunction={createClusterCustomIcon}>
+        <MarkerClusterGroup
+          iconCreateFunction={createClusterCustomIcon}
+          chunkedLoading={true}
+          showCoverageOnHover={false}
+          maxClusterRadius={50}
+        >
           {positionedFinds.map((find) => (
             <Marker
               key={find.id}
