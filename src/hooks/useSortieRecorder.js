@@ -18,10 +18,66 @@ function distanceBetween(point1, point2) {
 }
 
 export default function useSortieRecorder() {
-  const [isRecordingSortie, setIsRecordingSortie] = useState(false);
-  const [sortieDistance, setSortieDistance] = useState(0);
-  const [sortiePositions, setSortiePositions] = useState([]);
+  const [isRecordingSortie, setIsRecordingSortie] = useState(() => {
+    return localStorage.getItem("isRecordingSortie") === "true";
+  });
+  const [sortieDistance, setSortieDistance] = useState(() => {
+    const val = localStorage.getItem("sortieDistance");
+    return val ? Number(val) : 0;
+  });
+  const [sortiePositions, setSortiePositions] = useState(() => {
+    const val = localStorage.getItem("sortiePositions");
+    return val ? JSON.parse(val) : [];
+  });
   const [savedTracks, setSavedTracks] = useState([]);
+
+  useEffect(() => {
+    localStorage.setItem("isRecordingSortie", isRecordingSortie);
+  }, [isRecordingSortie]);
+
+  useEffect(() => {
+    localStorage.setItem("sortieDistance", sortieDistance);
+  }, [sortieDistance]);
+
+  useEffect(() => {
+    localStorage.setItem("sortiePositions", JSON.stringify(sortiePositions));
+  }, [sortiePositions]);
+
+  // Keep screen awake using W3C Wake Lock API when recording is active
+  useEffect(() => {
+    let wakeLock = null;
+
+    const requestWakeLock = async () => {
+      if (isRecordingSortie && "wakeLock" in navigator) {
+        try {
+          wakeLock = await navigator.wakeLock.request("screen");
+          console.log("Wake Lock acquired successfully");
+        } catch (err) {
+          console.warn("Wake Lock request failed:", err);
+        }
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (wakeLock !== null && document.visibilityState === "visible") {
+        requestWakeLock();
+      }
+    };
+
+    if (isRecordingSortie) {
+      requestWakeLock();
+      document.addEventListener("visibilitychange", handleVisibilityChange);
+    }
+
+    return () => {
+      if (wakeLock) {
+        wakeLock.release().then(() => {
+          wakeLock = null;
+        }).catch(err => console.error("Wake Lock release err:", err));
+      }
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [isRecordingSortie]);
 
   const loadTracksList = async () => {
     const tracks = await loadTracks();
