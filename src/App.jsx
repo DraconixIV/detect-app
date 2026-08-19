@@ -3,7 +3,6 @@ import { categoryEmojis } from "./subCategories";
 
 import LoadingScreen from "./components/LoadingScreen";
 import StatsPanel from "./components/StatsPanel";
-import PerformancePanel from "./components/PerformancePanel";
 import CropperModal from "./components/CropperModal";
 import ToastNotification from "./components/ToastNotification";
 import ConfirmModal from "./components/ConfirmModal";
@@ -161,7 +160,6 @@ function App() {
   const [showHistoricalMap, setShowHistoricalMap] = useState(false);
   const [historicalMapOpacity, setHistoricalMapOpacity] = useState(0.5);
   const [useClustering, setUseClustering] = useState(false);
-  const [showPerformance, setShowPerformance] = useState(false);
   const [activeSubCategory, setActiveSubCategory] = useState(null);
   const [subCategorySelectCat, setSubCategorySelectCat] = useState(null);
   const [subCatModalStep, setSubCatModalStep] = useState(1);
@@ -752,7 +750,6 @@ return (
           setShowStats(!showStats);
           setShowMenu(false);
           setShowAlbum(false);
-          setShowPerformance(false);
         }}
         style={{
           position: "absolute",
@@ -781,7 +778,6 @@ return (
           setShowAlbum(!showAlbum);
           setShowMenu(false);
           setShowStats(false);
-          setShowPerformance(false);
         }}
         style={{
           position: "absolute",
@@ -803,34 +799,6 @@ return (
         🖼️
       </button>
 
-      {/* PERFORMANCE ASSISTANT BUTTON */}
-      <button
-        onClick={() => {
-          setShowPerformance(!showPerformance);
-          setShowMenu(false);
-          setShowStats(false);
-          setShowAlbum(false);
-        }}
-        style={{
-          position: "absolute",
-          top: 280,
-          left: 15,
-          zIndex: 5000,
-          width: "52px",
-          height: "52px",
-          borderRadius: "50%",
-          border: "none",
-          background: showPerformance ? "#2563eb" : "#111827",
-          color: "white",
-          fontSize: "20px",
-          boxShadow: "0 4px 15px rgba(0,0,0,0.35)",
-          cursor: "pointer",
-          transition: "background 0.2s"
-        }}
-        title="Assistant de Terrain"
-      >
-        ⚡
-      </button>
 
       <SidebarMenu
         showMenu={showMenu}
@@ -921,14 +889,6 @@ return (
         </div>
       )}
 
-      {/* PERFORMANCE PANEL */}
-      {showPerformance && (
-        <PerformancePanel
-          latitude={position?.[0]}
-          longitude={position?.[1]}
-          onClose={() => setShowPerformance(false)}
-        />
-      )}
 
       {showAlbum && (
         <AlbumPanel
