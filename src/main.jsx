@@ -4,27 +4,21 @@ import './index.css'
 import App from './App.jsx'
 import { registerSW } from 'virtual:pwa-register'
 
-// FORCE CACHE BUSTER DEFINITIF POUR VIDER LE CACHE DU NAVIGATEUR
-const CACHE_VERSION = "v31_chain_welcome_gate_to_legal_onboarding";
-if (localStorage.getItem("RDL_CACHE_VERSION") !== CACHE_VERSION) {
-  localStorage.setItem("RDL_CACHE_VERSION", CACHE_VERSION);
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then((registrations) => {
-      for (let registration of registrations) {
-        registration.unregister();
-      }
-    });
+// Cache buster propre sans interruption de rendu React
+const CACHE_VERSION = "v32_fix_black_screen_and_onboarding";
+try {
+  if (localStorage.getItem("RDL_CACHE_VERSION") !== CACHE_VERSION) {
+    localStorage.setItem("RDL_CACHE_VERSION", CACHE_VERSION);
+    if ('caches' in window) {
+      caches.keys().then((names) => {
+        for (let name of names) {
+          caches.delete(name);
+        }
+      });
+    }
   }
-  if ('caches' in window) {
-    caches.keys().then((names) => {
-      for (let name of names) {
-        caches.delete(name);
-      }
-    });
-  }
-  setTimeout(() => {
-    window.location.reload();
-  }, 200);
+} catch (e) {
+  console.warn("Cache reset check failed:", e);
 }
 
 // S'assure que le nouveau Service Worker s'active immédiatement
@@ -35,3 +29,4 @@ createRoot(document.getElementById('root')).render(
     <App />
   </StrictMode>,
 )
+

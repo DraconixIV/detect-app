@@ -23,12 +23,13 @@ import WelcomeGate from "./components/WelcomeGate";
 import { THEMES } from "./styles/themes";
 
 import { icons } from "./icons";
+import { supabase } from "./supabase";
 
 import useSupabaseSync from "./hooks/useSupabaseSync";
 import useSortieRecorder from "./hooks/useSortieRecorder";
-import { addPendingFind } from "./services/offlineStore";
+import { addPendingFind, deletePendingFind } from "./services/offlineStore";
 import { importData, exportData } from "./services/backupService";
-import { addFind as createFind } from "./services/findsService";
+import { addFind as createFind, toggleFavorite } from "./services/findsService";
 
 function offsetPosition(
   position,
@@ -156,6 +157,7 @@ function App() {
   } = useSortieRecorder();
 
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [activeTab, setActiveTab] = useState("map");
   const [theme, setTheme] = useState(() => localStorage.getItem("app_theme") || "dark");
   const [designTheme, setDesignTheme] = useState(() => localStorage.getItem("app_design_theme") || "tactical");
   const [showThemePicker, setShowThemePicker] = useState(false);
