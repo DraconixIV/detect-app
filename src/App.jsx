@@ -19,6 +19,7 @@ import TacticalTopHUD from "./components/TacticalTopHUD";
 import TacticalBottomHUD from "./components/TacticalBottomHUD";
 import ThemePickerModal from "./components/ThemePickerModal";
 import CategoryManagerModal from "./components/CategoryManagerModal";
+import WelcomeGate from "./components/WelcomeGate";
 import { THEMES } from "./styles/themes";
 
 import { icons } from "./icons";
@@ -160,6 +161,7 @@ function App() {
   const [designTheme, setDesignTheme] = useState(() => localStorage.getItem("app_design_theme") || "tactical");
   const [showThemePicker, setShowThemePicker] = useState(false);
   const [showCategoryManagerModal, setShowCategoryManagerModal] = useState(false);
+  const [showWelcomeGate, setShowWelcomeGate] = useState(true);
 
   useEffect(() => {
     localStorage.setItem("app_design_theme", designTheme);
@@ -1427,16 +1429,30 @@ return (
       {/* Bottom Navigation Bar */}
       <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} currentThemeKey={designTheme} />
 
-      {/* Startup Onboarding Wizard (CGU & Legal & Defaults) */}
+      {/* Startup Onboarding Wizard (First Launch: Auth -> Official Legal & Ethical Charter -> Pre-Customization) */}
       <OnboardingModal
         isOpen={showOnboarding}
-        onComplete={({ defaultMapStyle }) => {
+        onComplete={({ defaultMapStyle, designTheme: newDesignTheme, theme: newTheme, gpsStyle: newGpsStyle }) => {
           setShowOnboarding(false);
-          if (defaultMapStyle) {
-            setMapStyle(defaultMapStyle);
-          }
+          if (defaultMapStyle) setMapStyle(defaultMapStyle);
+          if (newDesignTheme) setDesignTheme(newDesignTheme);
+          if (newTheme) setTheme(newTheme);
+          if (newGpsStyle) setGpsStyle(newGpsStyle);
         }}
       />
+
+      {/* Welcome & Data Loading Gate (Shown on session opening to allow data to preload, with Dev Skip) */}
+      {!showOnboarding && showWelcomeGate && (
+        <WelcomeGate
+          isOpen={showWelcomeGate}
+          onEnter={() => setShowWelcomeGate(false)}
+          findsCount={finds.length}
+          tracksCount={savedTracks.length}
+          isOnline={isOnline}
+          currentThemeKey={designTheme}
+          theme={theme}
+        />
+      )}
     </div>
   );
 }
