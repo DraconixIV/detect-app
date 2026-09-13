@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { categoryEmojis } from "../subCategories";
+import { loadCategoriesData } from "../services/categoriesService";
 
 function LazyImage({ src, alt }) {
   const [loaded, setLoaded] = useState(false);
@@ -30,26 +30,26 @@ function LazyImage({ src, alt }) {
   );
 }
 
-const CATEGORIES = [
-  "Tous",
-  "Monnaie",
-  "Bijou",
-  "Boucle",
-  "Bouton",
-  "Médaille",
-  "Munition",
-  "Outil",
-  "Plomb",
-  "Religieux",
-  "Autre"
-];
-
 export default function AlbumPanel({
   finds = [],
   allPhotos = [],
   onClose,
-  onOpenFindDetails
+  onOpenFindDetails,
+  isTab = false
 }) {
+  const [categoriesData, setCategoriesData] = useState(() => loadCategoriesData());
+
+  useEffect(() => {
+    const handleCategoriesUpdate = () => {
+      setCategoriesData(loadCategoriesData());
+    };
+    window.addEventListener("categories-updated", handleCategoriesUpdate);
+    return () => window.removeEventListener("categories-updated", handleCategoriesUpdate);
+  }, []);
+
+  const categoryEmojis = categoriesData.emojis || {};
+  const categoriesList = useMemo(() => ["Tous", ...Object.keys(categoriesData.categories || {})], [categoriesData]);
+
   const [albumFilter, setAlbumFilter] = useState("Tous");
   const [albumSearch, setAlbumSearch] = useState("");
   const [albumSort, setAlbumSort] = useState("recent");
@@ -116,21 +116,26 @@ export default function AlbumPanel({
     <>
       <div
         style={{
-          position: "absolute",
-          top: 20,
-          right: 20,
-          width: "calc(100% - 40px)",
-          maxWidth: "430px",
-          height: "calc(100vh - 40px)",
+          position: isTab ? "fixed" : "absolute",
+          top: isTab ? 0 : 20,
+          right: isTab ? 0 : 20,
+          bottom: isTab ? "60px" : "auto",
+          left: isTab ? 0 : "auto",
+          width: isTab ? "100%" : "calc(100% - 40px)",
+          maxWidth: isTab ? "680px" : "430px",
+          margin: isTab ? "0 auto" : undefined,
+          height: isTab ? "calc(100vh - 60px)" : "calc(100vh - 40px)",
           background: "rgba(17, 24, 39, 0.95)",
           backdropFilter: "blur(16px)",
-          border: "1px solid rgba(255, 255, 255, 0.12)",
-          borderRadius: "24px",
-          boxShadow: "0 12px 40px rgba(0, 0, 0, 0.5)",
+          border: isTab ? "none" : "1px solid rgba(255, 255, 255, 0.12)",
+          borderRight: isTab ? "1px solid rgba(255, 255, 255, 0.08)" : undefined,
+          borderLeft: isTab ? "1px solid rgba(255, 255, 255, 0.08)" : undefined,
+          borderRadius: isTab ? 0 : "24px",
+          boxShadow: isTab ? "none" : "0 12px 40px rgba(0, 0, 0, 0.5)",
           zIndex: 6000,
           display: "flex",
           flexDirection: "column",
-          padding: "20px",
+          padding: "20px 16px 20px 16px",
           boxSizing: "border-box",
           fontFamily: "system-ui, sans-serif",
           color: "white"
@@ -197,24 +202,26 @@ export default function AlbumPanel({
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
           <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "800" }}>🖼️ Album de Collection</h2>
-          <button
-            onClick={onClose}
-            style={{
-              background: "rgba(255,255,255,0.1)",
-              border: "none",
-              borderRadius: "50%",
-              width: "30px",
-              height: "30px",
-              color: "white",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontWeight: "bold"
-            }}
-          >
-            ✕
-          </button>
+          {!isTab && onClose && (
+            <button
+              onClick={onClose}
+              style={{
+                background: "rgba(255,255,255,0.1)",
+                border: "none",
+                borderRadius: "50%",
+                width: "30px",
+                height: "30px",
+                color: "white",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: "bold"
+              }}
+            >
+              ✕
+            </button>
+          )}
         </div>
 
         {/* Search & Sort Panel */}
@@ -258,7 +265,7 @@ export default function AlbumPanel({
 
         {/* Album Filter */}
         <div style={{ display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "10px", marginBottom: "15px" }}>
-          {CATEGORIES.map((cat) => (
+          {categoriesList.map((cat) => (
             <button
               key={cat}
               onClick={() => setAlbumFilter(cat)}
@@ -274,7 +281,7 @@ export default function AlbumPanel({
                 cursor: "pointer"
               }}
             >
-              {cat === "Tous" ? "📁 Tous" : `${categoryEmojis[cat] || ""} ${cat}`}
+              {cat === "Tous" ? "📁 Tous" : `${categoryEmojis[cat] || "🏷️"} ${cat}`}
             </button>
           ))}
         </div>

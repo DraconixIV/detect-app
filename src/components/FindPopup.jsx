@@ -4,8 +4,8 @@ import { supabase } from "../supabase";
 import imageCompression from "browser-image-compression";
 import CropperModal from "./CropperModal";
 import ConfirmModal from "./ConfirmModal";
-import BeforeAfterSlider from "./BeforeAfterSlider";
-import { categoriesWithSub, categoryEmojis, materials, materialEmojis } from "../subCategories";
+import { materials, materialEmojis } from "../subCategories";
+import { loadCategoriesData } from "../services/categoriesService";
 
 export default function FindPopup({
   find,
@@ -33,7 +33,7 @@ export default function FindPopup({
   const [croppingStep, setCroppingStep] = useState("none"); // 'none' | 'before' | 'after' | 'saving'
   const [croppedBeforeBlob, setCroppedBeforeBlob] = useState(null);
   const [confirmConfig, setConfirmConfig] = useState(null);
-  const [isFlipped, setIsFlipped] = useState(false);
+  const { categories: categoriesWithSub, emojis: categoryEmojis } = loadCategoriesData();
 
   useEffect(() => {
     loadPhotos();
@@ -598,25 +598,6 @@ export default function FindPopup({
             >
               Identification 🔗
             </button>
-
-            {discoveryPhotos.length > 0 && cleanPhotos.length > 0 && (
-              <button
-                onClick={() => setActiveTab("compare")}
-                style={{
-                  flex: 1.2,
-                  padding: "8px",
-                  border: "none",
-                  borderRadius: "10px",
-                  background: activeTab === "compare" ? "#2563eb" : "rgba(255,255,255,0.06)",
-                  color: "white",
-                  fontWeight: "600",
-                  fontSize: "11px",
-                  cursor: "pointer"
-                }}
-              >
-                Avant/Après ↔️
-              </button>
-            )}
           </div>
 
           {/* Tab 1: Discovery */}
@@ -818,251 +799,51 @@ export default function FindPopup({
                 )}
               </div>
 
-              {category === "Monnaie" && cleanPhotos.length > 0 ? (
-                <div style={{ marginTop: "5px", display: "flex", flexDirection: "column", gap: "8px", alignItems: "center" }}>
-                  <style>{`
-                    .coin-popup-3d {
-                      perspective: 1000px;
-                      width: 130px;
-                      height: 130px;
-                      cursor: pointer;
-                      margin: 5px auto;
-                    }
-                    .coin-popup-inner {
-                      position: relative;
-                      width: 100%;
-                      height: 100%;
-                      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-                      transform-style: preserve-3d;
-                    }
-                    .coin-popup-3d.flipped .coin-popup-inner {
-                      transform: rotateY(180deg);
-                    }
-                    .coin-popup-front, .coin-popup-back {
-                      position: absolute;
-                      width: 100%;
-                      height: 100%;
-                      -webkit-backface-visibility: hidden;
-                      backface-visibility: hidden;
-                      border-radius: 50%;
-                      overflow: hidden;
-                      border: 2px solid rgba(255, 255, 255, 0.2);
-                      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-                    }
-                    .coin-popup-back {
-                      transform: rotateY(180deg);
-                    }
-                    .coin-popup-front img, .coin-popup-back img {
-                      width: 100%;
-                      height: 100%;
-                      object-fit: cover;
-                    }
-                    .coin-revers-placeholder {
-                      width: 100%;
-                      height: 100%;
-                      background: linear-gradient(135deg, #1e293b, #0f172a);
-                      display: flex;
-                      flex-direction: column;
-                      align-items: center;
-                      justify-content: center;
-                      color: #fbbf24;
-                      font-size: 8px;
-                      font-weight: bold;
-                      text-transform: uppercase;
-                      border-radius: 50%;
-                      border: 2px dashed rgba(251, 191, 36, 0.4);
-                      box-sizing: border-box;
-                      padding: 8px;
-                      text-align: center;
-                    }
-                  `}</style>
-
-                  {/* The 3D coin */}
-                  {(() => {
-                    const avers = cleanPhotos.find((p) => p.type === "avers") || cleanPhotos[0];
-                    const revers = cleanPhotos.find((p) => p.type === "revers") || (cleanPhotos.length > 1 ? cleanPhotos.find((p) => p.id !== avers?.id) : null);
-                    
-                    return (
-                      <div
-                        className={`coin-popup-3d ${isFlipped ? "flipped" : ""}`}
-                        onClick={() => setIsFlipped(!isFlipped)}
-                      >
-                        <div className="coin-popup-inner">
-                          <div className="coin-popup-front">
-                            {avers ? (
-                              <img src={avers.image_url} alt="Avers" />
-                            ) : (
-                              <div className="coin-revers-placeholder">Avers</div>
-                            )}
-                          </div>
-                          <div className="coin-popup-back">
-                            {revers ? (
-                              <img src={revers.image_url} alt="Revers" />
-                            ) : (
-                              <div className="coin-revers-placeholder">
-                                <span style={{ fontSize: "14px", marginBottom: "2px", display: "block" }}>🪙</span>
-                                <span>Revers non</span>
-                                <span>photographié</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })()}
-
-                  <span style={{ fontSize: "10px", opacity: 0.6, marginBottom: "8px" }}>
-                    👆 Cliquez sur la pièce pour la retourner (3D)
-                  </span>
-
-                  {/* Photo manager sub-section */}
-                  <div style={{
-                    width: "100%",
-                    background: "rgba(255, 255, 255, 0.03)",
-                    border: "1px solid rgba(255, 255, 255, 0.06)",
-                    borderRadius: "12px",
-                    padding: "10px",
-                    boxSizing: "border-box"
-                  }}>
-                    <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "8px" }}>
-                      <img
-                        src={cleanPhotos[cleanIndex]?.image_url}
-                        alt="Aperçu"
-                        onClick={() => setFullscreenImage(cleanPhotos[cleanIndex]?.image_url)}
-                        style={{
-                          width: "50px",
-                          height: "50px",
-                          objectFit: "cover",
-                          borderRadius: "8px",
-                          border: "1px solid rgba(255,255,255,0.1)",
-                          cursor: "pointer"
-                        }}
-                      />
-                      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "2px" }}>
-                        <span style={{ fontSize: "10px", fontWeight: "bold" }}>
-                          Photo {cleanIndex + 1} sur {cleanPhotos.length}
-                        </span>
-                        <span style={{ fontSize: "9px", opacity: 0.5 }}>
-                          Rôle actuel : {
-                            cleanPhotos[cleanIndex]?.type === "avers" ? "🪙 Avers" :
-                            cleanPhotos[cleanIndex]?.type === "revers" ? "🪙 Revers" : "Non assigné"
-                          }
-                        </span>
-                      </div>
-
-                      {cleanPhotos.length > 1 && (
-                        <div style={{ display: "flex", gap: "4px" }}>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setCleanIndex((cleanIndex - 1 + cleanPhotos.length) % cleanPhotos.length);
-                            }}
-                            style={{ ...buttonStyle, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", padding: "2px 8px" }}
-                          >
-                            ←
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setCleanIndex((cleanIndex + 1) % cleanPhotos.length);
-                            }}
-                            style={{ ...buttonStyle, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", padding: "2px 8px" }}
-                          >
-                            →
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    <div style={{ display: "flex", gap: "4px" }}>
-                      {cleanPhotos[cleanIndex]?.type === "avers" ? (
-                        <button
-                          onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "clean")}
-                          style={{ ...buttonStyle, flex: 1, background: "#3b82f6", padding: "4px", fontSize: "10px", fontWeight: "bold" }}
-                        >
-                          Avers ✓
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "avers")}
-                          style={{ ...buttonStyle, flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", padding: "4px", fontSize: "10px", color: "#9ca3af" }}
-                        >
-                          Définir Avers
-                        </button>
-                      )}
-
-                      {cleanPhotos[cleanIndex]?.type === "revers" ? (
-                        <button
-                          onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "clean")}
-                          style={{ ...buttonStyle, flex: 1, background: "#10b981", padding: "4px", fontSize: "10px", fontWeight: "bold" }}
-                        >
-                          Revers ✓
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => setPhotoAsType(cleanPhotos[cleanIndex], "revers")}
-                          style={{ ...buttonStyle, flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", padding: "4px", fontSize: "10px", color: "#9ca3af" }}
-                        >
-                          Définir Revers
-                        </button>
-                      )}
-
+              {cleanPhotos.length > 0 && (
+                <div style={{ marginTop: "5px", display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <img
+                    src={cleanPhotos[cleanIndex]?.image_url}
+                    alt=""
+                    onClick={() => setFullscreenImage(cleanPhotos[cleanIndex]?.image_url)}
+                    style={{
+                      width: "100%",
+                      height: "180px",
+                      objectFit: "contain",
+                      background: "rgba(0,0,0,0.4)",
+                      borderRadius: "14px",
+                      cursor: "pointer",
+                      border: "1px solid rgba(255,255,255,0.08)"
+                    }}
+                  />
+                  {cleanPhotos.length > 1 && (
+                    <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
                       <button
-                        onClick={() => deletePhoto(cleanPhotos[cleanIndex])}
-                        style={{ ...buttonStyle, background: "#ef4444", padding: "4px 8px", fontSize: "10px" }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCleanIndex((cleanIndex - 1 + cleanPhotos.length) % cleanPhotos.length);
+                        }}
+                        style={{ ...buttonStyle, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", padding: "4px 10px" }}
                       >
-                        🗑️
+                        ←
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCleanIndex((cleanIndex + 1) % cleanPhotos.length);
+                        }}
+                        style={{ ...buttonStyle, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", padding: "4px 10px" }}
+                      >
+                        →
                       </button>
                     </div>
-                  </div>
+                  )}
+                  <button
+                    onClick={() => deletePhoto(cleanPhotos[cleanIndex])}
+                    style={{ ...buttonStyle, background: "#ef4444", padding: "6px 12px", fontSize: "11px", marginTop: "2px" }}
+                  >
+                    🗑️ Supprimer la photo
+                  </button>
                 </div>
-              ) : (
-                cleanPhotos.length > 0 && (
-                  <div style={{ marginTop: "5px", display: "flex", flexDirection: "column", gap: "6px" }}>
-                    <img
-                      src={cleanPhotos[cleanIndex].image_url}
-                      alt=""
-                      onClick={() => setFullscreenImage(cleanPhotos[cleanIndex].image_url)}
-                      style={{
-                        width: "100%",
-                        height: "180px",
-                        objectFit: "contain",
-                        background: "rgba(0,0,0,0.4)",
-                        borderRadius: "14px",
-                        cursor: "pointer",
-                        border: "1px solid rgba(255,255,255,0.08)"
-                      }}
-                    />
-                    {cleanPhotos.length > 1 && (
-                      <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setCleanIndex((cleanIndex - 1 + cleanPhotos.length) % cleanPhotos.length);
-                          }}
-                          style={{ ...buttonStyle, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", padding: "4px 10px" }}
-                        >
-                          ←
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setCleanIndex((cleanIndex + 1) % cleanPhotos.length);
-                          }}
-                          style={{ ...buttonStyle, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", padding: "4px 10px" }}
-                        >
-                          →
-                        </button>
-                      </div>
-                    )}
-                    <button
-                      onClick={() => deletePhoto(cleanPhotos[cleanIndex])}
-                      style={{ ...buttonStyle, background: "#ef4444", padding: "6px 12px", fontSize: "11px", marginTop: "2px" }}
-                    >
-                      🗑️ Supprimer la photo
-                    </button>
-                  </div>
-                )
               )}
             </div>
           )}
@@ -1129,40 +910,6 @@ export default function FindPopup({
             </div>
           )}
 
-          {/* Tab 3: Comparateur slider */}
-          {activeTab === "compare" && discoveryPhotos.length > 0 && cleanPhotos.length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "center", width: "100%" }}>
-              <BeforeAfterSlider
-                beforeUrl={discoveryPhotos[0].image_url}
-                afterUrl={cleanPhotos[0].image_url}
-              />
-
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCroppingStep("before");
-                }}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  borderRadius: "12px",
-                  border: "none",
-                  background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
-                  color: "white",
-                  fontSize: "12px",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  marginTop: "8px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "6px"
-                }}
-              >
-                📐 Cadrer & Aligner les Photos
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Footer Actions */}

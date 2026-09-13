@@ -1,4 +1,5 @@
-import { categoriesWithSub, categoryEmojis } from "../subCategories";
+import { categoriesWithSub } from "../subCategories";
+import { loadCategoriesData } from "../services/categoriesService";
 
 function getDistance(p1, p2) {
   const R = 6371e3; // metres
@@ -32,8 +33,11 @@ export default function StatsPanel({
   importData,
   groupedDates = {},
   setSelectedDate,
-  onClose
+  onClose,
+  isFullTab = false
 }) {
+  const { emojis: categoryEmojis } = loadCategoriesData();
+
   // Grouper les trouvailles par date (DD/MM/YYYY)
   const findsByDate = finds.reduce((acc, find) => {
     if (!find.date) return acc;
@@ -67,42 +71,42 @@ export default function StatsPanel({
   return (
     <div
       style={{
-        background:
-          "rgba(20,20,20,0.72)",
-        backdropFilter:
-          "blur(10px)",
+        background: isFullTab ? "rgba(255, 255, 255, 0.04)" : "rgba(20,20,20,0.72)",
+        backdropFilter: isFullTab ? "none" : "blur(10px)",
         color: "white",
-        padding: "15px",
-        borderRadius: "18px",
-        width: "250px",
-        maxHeight: "70vh",
-        overflowY: "auto",
+        padding: "16px",
+        borderRadius: "20px",
+        border: isFullTab ? "1px solid rgba(255, 255, 255, 0.08)" : "none",
+        width: isFullTab ? "100%" : "250px",
+        maxHeight: isFullTab ? "none" : "70vh",
+        overflowY: isFullTab ? "visible" : "auto",
         position: "relative",
         boxSizing: "border-box",
-        boxShadow:
-          "0 0 20px rgba(0,0,0,0.4)",
+        boxShadow: isFullTab ? "none" : "0 0 20px rgba(0,0,0,0.4)",
         fontFamily: "system-ui, sans-serif"
       }}
     >
-      {/* CROIX */}
-      <button
-        onClick={onClose}
-        style={{
-          position: "absolute",
-          top: "10px",
-          right: "10px",
-          width: "32px",
-          height: "32px",
-          borderRadius: "50%",
-          border: "none",
-          background: "#ef4444",
-          color: "white",
-          fontSize: "18px",
-          cursor: "pointer"
-        }}
-      >
-        ✕
-      </button>
+      {/* CROIX ONLY IF NOT FULL TAB */}
+      {!isFullTab && onClose && (
+        <button
+          onClick={onClose}
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            width: "32px",
+            height: "32px",
+            borderRadius: "50%",
+            border: "none",
+            background: "#ef4444",
+            color: "white",
+            fontSize: "18px",
+            cursor: "pointer"
+          }}
+        >
+          ✕
+        </button>
+      )}
 
       <h3
         style={{

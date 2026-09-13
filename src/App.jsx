@@ -11,6 +11,11 @@ import AlbumPanel from "./components/AlbumPanel";
 import MainMap from "./components/MainMap";
 import SidebarMenu from "./components/SidebarMenu";
 import OutingWidget from "./components/OutingWidget";
+import BottomNav from "./components/BottomNav";
+import OnboardingModal from "./components/OnboardingModal";
+import ReportsPanel from "./components/ReportsPanel";
+import ShortcutsPanel from "./components/ShortcutsPanel";
+import SettingsPanel from "./components/SettingsPanel";
 
 import { icons } from "./icons";
 
@@ -144,6 +149,22 @@ function App() {
     saveSortie,
     loadTracksList
   } = useSortieRecorder();
+
+  const [activeTab, setActiveTab] = useState("map");
+  const [showOnboarding, setShowOnboarding] = useState(() => localStorage.getItem("rdl_onboarding_completed") !== "true");
+  const [theme, setTheme] = useState(() => localStorage.getItem("app_theme") || "dark");
+
+  useEffect(() => {
+    localStorage.setItem("app_theme", theme);
+    document.documentElement.setAttribute("data-theme", theme);
+    if (theme === "light") {
+      document.body.classList.add("theme-light");
+      document.body.classList.remove("theme-dark");
+    } else {
+      document.body.classList.add("theme-dark");
+      document.body.classList.remove("theme-light");
+    }
+  }, [theme]);
 
   const [showAlbum, setShowAlbum] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState(null);
@@ -719,87 +740,34 @@ return (
         </div>
       )}
 
-      {/* MENU BUTTON */}
-      <button
-        onClick={() => {
-          setShowMenu(!showMenu);
-          setShowStats(false);
-        }}
-        style={{
-          position: "absolute",
-          top: 85,
-          left: 15,
-          zIndex: 5000,
-          width: "52px",
-          height: "52px",
-          borderRadius: "50%",
-          border: "none",
-          background: "#111827",
-          color: "white",
-          fontSize: "22px",
-          boxShadow:
-            "0 4px 15px rgba(0,0,0,0.35)"
-        }}
-      >
-        ☰
-      </button>
+      {/* MENU BUTTON (MAP ONLY) */}
+      {activeTab === "map" && (
+        <button
+          onClick={() => {
+            setShowMenu(!showMenu);
+          }}
+          style={{
+            position: "absolute",
+            top: 85,
+            left: 15,
+            zIndex: 5000,
+            width: "52px",
+            height: "52px",
+            borderRadius: "50%",
+            border: "none",
+            background: "#111827",
+            color: "white",
+            fontSize: "22px",
+            boxShadow:
+              "0 4px 15px rgba(0,0,0,0.35)"
+          }}
+          title="Menu & Filtres"
+        >
+          ☰
+        </button>
+      )}
 
-      {/* STATS BUTTON */}
-      <button
-        onClick={() => {
-          setShowStats(!showStats);
-          setShowMenu(false);
-          setShowAlbum(false);
-        }}
-        style={{
-          position: "absolute",
-          top: 150,
-          left: 15,
-          zIndex: 5000,
-          width: "52px",
-          height: "52px",
-          borderRadius: "50%",
-          border: "none",
-          background: showStats ? "#2563eb" : "#111827",
-          color: "white",
-          fontSize: "20px",
-          boxShadow:
-            "0 4px 15px rgba(0,0,0,0.35)",
-          cursor: "pointer",
-          transition: "background 0.2s"
-        }}
-      >
-        📊
-      </button>
-
-      {/* ALBUM BUTTON */}
-      <button
-        onClick={() => {
-          setShowAlbum(!showAlbum);
-          setShowMenu(false);
-          setShowStats(false);
-        }}
-        style={{
-          position: "absolute",
-          top: 215,
-          left: 15,
-          zIndex: 5000,
-          width: "52px",
-          height: "52px",
-          borderRadius: "50%",
-          border: "none",
-          background: showAlbum ? "#2563eb" : "#111827",
-          color: "white",
-          fontSize: "20px",
-          boxShadow: "0 4px 15px rgba(0,0,0,0.35)",
-          cursor: "pointer",
-          transition: "background 0.2s"
-        }}
-      >
-        🖼️
-      </button>
-
-
+      {/* SIDEBAR MENU */}
       <SidebarMenu
         showMenu={showMenu}
         setShowMenu={setShowMenu}
@@ -854,52 +822,71 @@ return (
         setActiveSubCategory={setActiveSubCategory}
       />
 
-
-
-      {/* STATS PANEL */}
-      {showStats && (
-        <div
-          style={{
-            position: "absolute",
-            top: 150,
-            left: 75,
-            zIndex: 5000
-          }}
-        >
-          <StatsPanel
-            finds={finds}
-            savedTracks={savedTracks}
-            exportData={
-              handleExport
-            }
-            importData={
-              handleImport
-            }
-            groupedDates={
-              groupedDates
-            }
-            setSelectedDate={(date) => {
-              setSelectedDate(date);
-              setZoomToDate(date);
-            }}
-            onClose={() =>
-              setShowStats(false)
-            }
-          />
-        </div>
-      )}
-
-
-      {showAlbum && (
+      {/* TAB: GALERIE */}
+      {activeTab === "gallery" && (
         <AlbumPanel
           finds={finds}
           allPhotos={allPhotos}
-          onClose={() => setShowAlbum(false)}
+          isTab={true}
+          onClose={() => setActiveTab("map")}
           onOpenFindDetails={(find) => {
+            setActiveTab("map");
             setZoomTarget({ position: find.position || [find.latitude, find.longitude], zoom: 20 });
             setOpenPopupFind(find);
-            setShowAlbum(false);
           }}
+        />
+      )}
+
+      {/* TAB: RAPPORTS */}
+      {activeTab === "reports" && (
+        <ReportsPanel
+          finds={finds}
+          savedTracks={savedTracks}
+          exportData={handleExport}
+          importData={handleImport}
+          setSelectedDate={(date) => {
+            setSelectedDate(date);
+            setZoomToDate(date);
+            setActiveTab("map");
+          }}
+          onClose={() => setActiveTab("map")}
+        />
+      )}
+
+      {/* TAB: RACCOURCIS */}
+      {activeTab === "shortcuts" && (
+        <ShortcutsPanel
+          showHistoricalMap={showHistoricalMap}
+          setShowHistoricalMap={setShowHistoricalMap}
+          historicalMapOpacity={historicalMapOpacity}
+          setHistoricalMapOpacity={setHistoricalMapOpacity}
+          useClustering={useClustering}
+          setUseClustering={setUseClustering}
+          hideAllFinds={hideAllFinds}
+          setHideAllFinds={setHideAllFinds}
+          followGps={followGps}
+          setFollowGps={setFollowGps}
+          gpsStyle={gpsStyle}
+          setGpsStyle={setGpsStyle}
+          isRecordingSortie={isRecordingSortie}
+          sortieDistance={sortieDistance}
+          startSortie={startSortie}
+          stopSortie={stopSortie}
+          favoritesOnly={favoritesOnly}
+          setFavoritesOnly={setFavoritesOnly}
+          onOpenMap={() => setActiveTab("map")}
+        />
+      )}
+
+      {/* TAB: PARAMETRES */}
+      {activeTab === "settings" && (
+        <SettingsPanel
+          theme={theme}
+          setTheme={setTheme}
+          mapStyle={mapStyle}
+          setMapStyle={setMapStyle}
+          onExportBackup={handleExport}
+          onImportBackup={handleImport}
         />
       )}
 
@@ -1008,75 +995,79 @@ return (
       />
 
 
-      {/* Floating Recenter GPS Button */}
-      <button
-        onClick={() => {
-          setFollowGps(true);
-          setZoomTarget({ position: position, zoom: 20 });
-          setToast({
-            message: "🎯 Centrage et suivi GPS activés !",
-            type: "success"
-          });
-        }}
-        style={{
-          position: "absolute",
-          bottom: "105px",
-          right: "36px",
-          zIndex: 5000,
-          width: "48px",
-          height: "48px",
-          borderRadius: "50%",
-          border: "1px solid rgba(255,255,255,0.15)",
-          background: followGps ? "rgba(37, 99, 235, 0.95)" : "rgba(17, 24, 39, 0.9)",
-          backdropFilter: "blur(8px)",
-          color: "white",
-          fontSize: "20px",
-          boxShadow: "0 6px 20px rgba(0,0,0,0.35)",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          transition: "transform 0.15s, background-color 0.2s"
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.08)"}
-        onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-        title="Centrer sur ma position"
-      >
-        🎯
-      </button>
+      {/* Floating Recenter GPS Button (MAP ONLY) */}
+      {activeTab === "map" && (
+        <button
+          onClick={() => {
+            setFollowGps(true);
+            setZoomTarget({ position: position, zoom: 20 });
+            setToast({
+              message: "🎯 Centrage et suivi GPS activés !",
+              type: "success"
+            });
+          }}
+          style={{
+            position: "absolute",
+            bottom: "148px",
+            right: "20px",
+            zIndex: 5000,
+            width: "48px",
+            height: "48px",
+            borderRadius: "50%",
+            border: "1px solid rgba(255,255,255,0.15)",
+            background: followGps ? "rgba(37, 99, 235, 0.95)" : "rgba(17, 24, 39, 0.9)",
+            backdropFilter: "blur(8px)",
+            color: "white",
+            fontSize: "20px",
+            boxShadow: "0 6px 20px rgba(0,0,0,0.35)",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "transform 0.15s, background-color 0.2s"
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.08)"}
+          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+          title="Centrer sur ma position"
+        >
+          🎯
+        </button>
+      )}
 
-      {/* Floating Add Flash Button */}
-      <button
-        onClick={() => {
-          if (quickAddInputRef.current) {
-            quickAddInputRef.current.click();
-          }
-        }}
-        style={{
-          position: "absolute",
-          bottom: "30px",
-          right: "30px",
-          zIndex: 5000,
-          width: "60px",
-          height: "60px",
-          borderRadius: "50%",
-          border: "3px solid rgba(255,255,255,0.2)",
-          background: "linear-gradient(135deg, #10b981, #059669)",
-          color: "white",
-          fontSize: "24px",
-          boxShadow: "0 8px 24px rgba(5, 150, 105, 0.4)",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          transition: "transform 0.15s, background-color 0.2s"
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.08)"}
-        onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-        title="Ajout Rapide Flash"
-      >
-        📸+
-      </button>
+      {/* Floating Add Flash Button (MAP ONLY) */}
+      {activeTab === "map" && (
+        <button
+          onClick={() => {
+            if (quickAddInputRef.current) {
+              quickAddInputRef.current.click();
+            }
+          }}
+          style={{
+            position: "absolute",
+            bottom: "78px",
+            right: "20px",
+            zIndex: 5000,
+            width: "56px",
+            height: "56px",
+            borderRadius: "50%",
+            border: "3px solid rgba(255,255,255,0.2)",
+            background: "linear-gradient(135deg, #10b981, #059669)",
+            color: "white",
+            fontSize: "22px",
+            boxShadow: "0 8px 24px rgba(5, 150, 105, 0.4)",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "transform 0.15s, background-color 0.2s"
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.08)"}
+          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+          title="Ajout Rapide Flash"
+        >
+          📸+
+        </button>
+      )}
       {/* QUICK ADD CUSTOM TITLE PROMPT MODAL */}
       {showQuickAddModal && (
         <div
@@ -1497,8 +1488,22 @@ return (
         />
       )}
 
+      {/* Bottom Navigation Bar */}
+      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
+
+      {/* Startup Onboarding Wizard (CGU & Legal & Defaults) */}
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onComplete={({ defaultMapStyle }) => {
+          setShowOnboarding(false);
+          if (defaultMapStyle) {
+            setMapStyle(defaultMapStyle);
+          }
+        }}
+      />
+
       {/* Onboarding GPS Startup Screen */}
-      {showStartupLocationScreen && (
+      {!showOnboarding && showStartupLocationScreen && (
         <GpsOnboarding
           finds={finds}
           onGpsAuthorized={(pos) => {
