@@ -19,6 +19,7 @@ import SettingsPanel from "./components/SettingsPanel";
 import TacticalTopHUD from "./components/TacticalTopHUD";
 import TacticalBottomHUD from "./components/TacticalBottomHUD";
 import ThemePickerModal from "./components/ThemePickerModal";
+import CategoryManagerModal from "./components/CategoryManagerModal";
 import { THEMES } from "./styles/themes";
 
 import { icons } from "./icons";
@@ -159,6 +160,7 @@ function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem("app_theme") || "dark");
   const [designTheme, setDesignTheme] = useState(() => localStorage.getItem("app_design_theme") || "tactical");
   const [showThemePicker, setShowThemePicker] = useState(false);
+  const [showCategoryManagerModal, setShowCategoryManagerModal] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("app_design_theme", designTheme);
@@ -834,6 +836,8 @@ return (
           allPhotos={allPhotos}
           isTab={true}
           onClose={() => setActiveTab("map")}
+          theme={theme}
+          onOpenCategoryManager={() => setShowCategoryManagerModal(true)}
           onOpenFindDetails={(find) => {
             setActiveTab("map");
             setZoomTarget({ position: find.position || [find.latitude, find.longitude], zoom: 20 });
@@ -849,6 +853,8 @@ return (
           savedTracks={savedTracks}
           exportData={handleExport}
           importData={handleImport}
+          theme={theme}
+          onOpenCategoryManager={() => setShowCategoryManagerModal(true)}
           setSelectedDate={(date) => {
             setSelectedDate(date);
             setZoomToDate(date);
@@ -879,6 +885,8 @@ return (
           stopSortie={stopSortie}
           favoritesOnly={favoritesOnly}
           setFavoritesOnly={setFavoritesOnly}
+          theme={theme}
+          onOpenCategoryManager={() => setShowCategoryManagerModal(true)}
           onOpenMap={() => setActiveTab("map")}
         />
       )}
@@ -895,6 +903,7 @@ return (
           currentThemeKey={designTheme}
           setDesignTheme={setDesignTheme}
           onOpenThemePicker={() => setShowThemePicker(true)}
+          onOpenCategoryManager={() => setShowCategoryManagerModal(true)}
         />
       )}
 
@@ -971,6 +980,13 @@ return (
             type: "success"
           });
         }}
+      />
+
+      {/* Category Manager Modal */}
+      <CategoryManagerModal
+        isOpen={showCategoryManagerModal}
+        onClose={() => setShowCategoryManagerModal(false)}
+        theme={theme}
       />
       {/* QUICK ADD CUSTOM TITLE PROMPT MODAL */}
       {showQuickAddModal && (
@@ -1393,7 +1409,7 @@ return (
       )}
 
       {/* Bottom Navigation Bar */}
-      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
+      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} currentThemeKey={designTheme} />
 
       {/* Startup Onboarding Wizard (CGU & Legal & Defaults) */}
       <OnboardingModal

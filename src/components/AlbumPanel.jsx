@@ -35,7 +35,9 @@ export default function AlbumPanel({
   allPhotos = [],
   onClose,
   onOpenFindDetails,
-  isTab = false
+  isTab = false,
+  theme = "dark",
+  onOpenCategoryManager
 }) {
   const [categoriesData, setCategoriesData] = useState(() => loadCategoriesData());
 
@@ -55,6 +57,14 @@ export default function AlbumPanel({
   const [albumSort, setAlbumSort] = useState("recent");
   const [selectedAlbumPhoto, setSelectedAlbumPhoto] = useState(null);
   const [lightboxCoinFlipped, setLightboxCoinFlipped] = useState(false);
+
+  const isLight = theme === "light";
+  const bgPanel = isLight ? "#f8fafc" : "rgba(17, 24, 39, 0.95)";
+  const textMain = isLight ? "#0f172a" : "#f8fafc";
+  const textSub = isLight ? "#475569" : "#94a3b8";
+  const cardBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
+  const inputBg = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)";
+  const inputBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.16)";
 
   const albumFilteredFinds = useMemo(() => {
     // 1. Filter by category & check that photo exists with a valid URL
@@ -125,11 +135,11 @@ export default function AlbumPanel({
           maxWidth: isTab ? "680px" : "430px",
           margin: isTab ? "0 auto" : undefined,
           height: isTab ? "calc(100vh - 60px)" : "calc(100vh - 40px)",
-          background: "rgba(17, 24, 39, 0.95)",
+          background: bgPanel,
           backdropFilter: "blur(16px)",
-          border: isTab ? "none" : "1px solid rgba(255, 255, 255, 0.12)",
-          borderRight: isTab ? "1px solid rgba(255, 255, 255, 0.08)" : undefined,
-          borderLeft: isTab ? "1px solid rgba(255, 255, 255, 0.08)" : undefined,
+          border: isTab ? "none" : `1px solid ${cardBorder}`,
+          borderRight: isTab ? `1px solid ${cardBorder}` : undefined,
+          borderLeft: isTab ? `1px solid ${cardBorder}` : undefined,
           borderRadius: isTab ? 0 : "24px",
           boxShadow: isTab ? "none" : "0 12px 40px rgba(0, 0, 0, 0.5)",
           zIndex: 6000,
@@ -138,7 +148,7 @@ export default function AlbumPanel({
           padding: "20px 16px 20px 16px",
           boxSizing: "border-box",
           fontFamily: "system-ui, sans-serif",
-          color: "white"
+          color: textMain
         }}
       >
         <style>{`
@@ -157,15 +167,15 @@ export default function AlbumPanel({
             padding-bottom: 100%;
             border-radius: 14px;
             overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid ${cardBorder};
             cursor: pointer;
             transform: translateZ(0);
             transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s, box-shadow 0.25s;
           }
           .album-grid-card:hover {
             transform: scale(1.04) translateY(-2px);
-            border-color: rgba(37, 99, 235, 0.4);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border-color: rgba(37, 99, 235, 0.6);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
           }
           .album-grid-img {
             position: absolute;
@@ -184,7 +194,7 @@ export default function AlbumPanel({
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to top, rgba(10, 15, 30, 0.9) 0%, rgba(10, 15, 30, 0.4) 60%, transparent 100%);
+            background: linear-gradient(to top, rgba(10, 15, 30, 0.92) 0%, rgba(10, 15, 30, 0.5) 60%, transparent 100%);
             padding: 8px;
             display: flex;
             flex-direction: column;
@@ -200,28 +210,60 @@ export default function AlbumPanel({
           }
         `}</style>
 
+        {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "800" }}>🖼️ Album de Collection</h2>
-          {!isTab && onClose && (
-            <button
-              onClick={onClose}
-              style={{
-                background: "rgba(255,255,255,0.1)",
-                border: "none",
-                borderRadius: "50%",
-                width: "30px",
-                height: "30px",
-                color: "white",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontWeight: "bold"
-              }}
-            >
-              ✕
-            </button>
-          )}
+          <div>
+            <h2 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: textMain }}>
+              🖼️ Album de Collection
+            </h2>
+            <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
+              {albumFilteredFinds.length} trouvaille{albumFilteredFinds.length > 1 ? "s" : ""} photographiée{albumFilteredFinds.length > 1 ? "s" : ""}
+            </p>
+          </div>
+          
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            {onOpenCategoryManager && (
+              <button
+                onClick={onOpenCategoryManager}
+                style={{
+                  background: isLight ? "#ffffff" : "rgba(255,255,255,0.08)",
+                  border: `1px solid ${cardBorder}`,
+                  borderRadius: "10px",
+                  padding: "6px 10px",
+                  color: isLight ? "#2563eb" : "#60a5fa",
+                  cursor: "pointer",
+                  fontSize: "11px",
+                  fontWeight: "bold",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px"
+                }}
+              >
+                ⚙️ Catégories
+              </button>
+            )}
+
+            {!isTab && onClose && (
+              <button
+                onClick={onClose}
+                style={{
+                  background: isLight ? "#e2e8f0" : "rgba(255,255,255,0.1)",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "30px",
+                  height: "30px",
+                  color: textMain,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: "bold"
+                }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Search & Sort Panel */}
@@ -233,11 +275,11 @@ export default function AlbumPanel({
             onChange={(e) => setAlbumSearch(e.target.value)}
             style={{
               flex: 1,
-              padding: "8px 12px",
+              padding: "9px 12px",
               borderRadius: "12px",
-              border: "1px solid rgba(255, 255, 255, 0.12)",
-              background: "rgba(255, 255, 255, 0.06)",
-              color: "white",
+              border: `1px solid ${inputBorder}`,
+              background: inputBg,
+              color: textMain,
               fontSize: "12px",
               outline: "none"
             }}
@@ -246,90 +288,118 @@ export default function AlbumPanel({
             value={albumSort}
             onChange={(e) => setAlbumSort(e.target.value)}
             style={{
-              padding: "8px 10px",
+              padding: "9px 10px",
               borderRadius: "12px",
-              border: "1px solid rgba(255, 255, 255, 0.12)",
-              background: "rgba(255, 255, 255, 0.06)",
-              color: "white",
+              border: `1px solid ${inputBorder}`,
+              background: inputBg,
+              color: textMain,
               fontSize: "12px",
               fontWeight: "bold",
               outline: "none",
               cursor: "pointer"
             }}
           >
-            <option value="recent" style={{ background: "#1f2937" }}>📅 Récentes</option>
-            <option value="old" style={{ background: "#1f2937" }}>📅 Anciennes</option>
-            <option value="fav" style={{ background: "#1f2937" }}>⭐ Favoris</option>
+            <option value="recent" style={{ background: isLight ? "#ffffff" : "#1f2937", color: textMain }}>📅 Récentes</option>
+            <option value="old" style={{ background: isLight ? "#ffffff" : "#1f2937", color: textMain }}>📅 Anciennes</option>
+            <option value="fav" style={{ background: isLight ? "#ffffff" : "#1f2937", color: textMain }}>⭐ Favoris</option>
           </select>
         </div>
 
-        {/* Album Filter */}
-        <div style={{ display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "10px", marginBottom: "15px" }}>
-          {categoriesList.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setAlbumFilter(cat)}
-              style={{
-                background: albumFilter === cat ? "#2563eb" : "rgba(255,255,255,0.1)",
-                color: "white",
-                border: "none",
-                padding: "6px 12px",
-                borderRadius: "12px",
-                fontSize: "11px",
-                fontWeight: "bold",
-                whiteSpace: "nowrap",
-                cursor: "pointer"
-              }}
-            >
-              {cat === "Tous" ? "📁 Tous" : `${categoryEmojis[cat] || "🏷️"} ${cat}`}
-            </button>
-          ))}
-        </div>
-
-        {/* Grid */}
-        <div style={{ flex: 1, overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", paddingRight: "6px" }}>
-          {albumFilteredFinds.map((find) => {
-            const photoUrl = (find.isOfflinePending
-              ? find.offlinePhoto
-              : allPhotos.find((p) => p.find_id === find.id)?.image_url) || "";
-
+        {/* Category Filters Carousel */}
+        <div style={{ display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "10px", marginBottom: "12px" }}>
+          {categoriesList.map((cat) => {
+            const isSel = albumFilter === cat;
             return (
-              <div
-                key={find.id}
-                className="album-grid-card"
-                onClick={() => {
-                  setSelectedAlbumPhoto({ find, photoUrl });
+              <button
+                key={cat}
+                onClick={() => setAlbumFilter(cat)}
+                style={{
+                  background: isSel ? "#2563eb" : (isLight ? "#ffffff" : "rgba(255,255,255,0.08)"),
+                  color: isSel ? "#ffffff" : textMain,
+                  border: isSel ? "none" : `1px solid ${cardBorder}`,
+                  padding: "6px 12px",
+                  borderRadius: "12px",
+                  fontSize: "11px",
+                  fontWeight: "700",
+                  whiteSpace: "nowrap",
+                  cursor: "pointer",
+                  boxShadow: isSel ? "0 2px 8px rgba(37, 99, 235, 0.3)" : "none",
+                  transition: "all 0.2s"
                 }}
               >
-                <LazyImage src={photoUrl} alt={find.title} />
-                
-                {/* Category Badge */}
-                <div style={{ position: "absolute", top: "6px", left: "6px", background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {categoryEmojis[find.category] || categoryEmojis[find.category?.trim().charAt(0).toUpperCase() + find.category?.trim().slice(1).toLowerCase()] || "📍"}
-                </div>
-
-                {/* Favorite Badge */}
-                {find.favorite && (
-                  <div style={{ position: "absolute", top: "6px", right: "6px", background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", color: "#facc15" }}>
-                    ⭐
-                  </div>
-                )}
-
-                {/* Hover Details Overlay */}
-                <div className="album-grid-overlay">
-                  <div style={{ fontSize: "10px", fontWeight: "800", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
-                    {find.title || "Sans titre"}
-                  </div>
-                  {find.date && (
-                    <div style={{ fontSize: "8px", color: "#9ca3af" }}>
-                      {find.date.split(",")[0]}
-                    </div>
-                  )}
-                </div>
-              </div>
+                {cat === "Tous" ? "📁 Tous" : `${categoryEmojis[cat] || "🏷️"} ${cat}`}
+              </button>
             );
           })}
         </div>
+
+        {/* Grid or Empty State */}
+        {albumFilteredFinds.length === 0 ? (
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+              padding: "20px",
+              color: textSub
+            }}
+          >
+            <span style={{ fontSize: "40px", marginBottom: "10px" }}>📷</span>
+            <div style={{ fontWeight: "700", fontSize: "14px", color: textMain, marginBottom: "4px" }}>
+              Aucune trouvaille trouvée
+            </div>
+            <div style={{ fontSize: "12px" }}>
+              Ajoutez des photos à vos trouvailles pour les voir apparaître dans votre album de collection.
+            </div>
+          </div>
+        ) : (
+          <div style={{ flex: 1, overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", paddingRight: "4px" }}>
+            {albumFilteredFinds.map((find) => {
+              const photoUrl = (find.isOfflinePending
+                ? find.offlinePhoto
+                : allPhotos.find((p) => p.find_id === find.id)?.image_url) || "";
+
+              return (
+                <div
+                  key={find.id}
+                  className="album-grid-card"
+                  onClick={() => {
+                    setSelectedAlbumPhoto({ find, photoUrl });
+                  }}
+                >
+                  <LazyImage src={photoUrl} alt={find.title} />
+                  
+                  {/* Category Badge */}
+                  <div style={{ position: "absolute", top: "6px", left: "6px", background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {categoryEmojis[find.category] || categoryEmojis[find.category?.trim().charAt(0).toUpperCase() + find.category?.trim().slice(1).toLowerCase()] || "📍"}
+                  </div>
+
+                  {/* Favorite Badge */}
+                  {find.favorite && (
+                    <div style={{ position: "absolute", top: "6px", right: "6px", background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", color: "#facc15" }}>
+                      ⭐
+                    </div>
+                  )}
+
+                  {/* Hover Details Overlay */}
+                  <div className="album-grid-overlay">
+                    <div style={{ fontSize: "10px", fontWeight: "800", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                      {find.title || "Sans titre"}
+                    </div>
+                    {find.date && (
+                      <div style={{ fontSize: "8px", color: "#d1d5db" }}>
+                        {find.date.split(",")[0]}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* FULLSCREEN ALBUM PHOTO LIGHTBOX */}
@@ -361,10 +431,7 @@ export default function AlbumPanel({
             <div
               style={{
                 position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100vw",
-                height: "100vh",
+                inset: 0,
                 background: "rgba(0, 0, 0, 0.95)",
                 zIndex: 99999,
                 display: "flex",
@@ -409,7 +476,7 @@ export default function AlbumPanel({
                   style={{
                     position: "absolute",
                     left: "20px",
-                    background: "rgba(255, 255, 255, 0.1)",
+                    background: "rgba(255, 255, 255, 0.15)",
                     border: "none",
                     borderRadius: "50%",
                     width: "50px",
@@ -423,8 +490,8 @@ export default function AlbumPanel({
                     transition: "background 0.2s",
                     zIndex: 10
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)"}
-                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)"}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)"}
                 >
                   ‹
                 </button>
@@ -440,7 +507,7 @@ export default function AlbumPanel({
                   style={{
                     position: "absolute",
                     right: "20px",
-                    background: "rgba(255, 255, 255, 0.1)",
+                    background: "rgba(255, 255, 255, 0.15)",
                     border: "none",
                     borderRadius: "50%",
                     width: "50px",
@@ -454,8 +521,8 @@ export default function AlbumPanel({
                     transition: "background 0.2s",
                     zIndex: 10
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)"}
-                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)"}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)"}
                 >
                   ›
                 </button>
@@ -558,7 +625,7 @@ export default function AlbumPanel({
                         </div>
                       </div>
                     </div>
-                    <span style={{ fontSize: "12px", color: "#a1a1aa", marginTop: "5px" }}>
+                    <span style={{ fontSize: "12px", color: "#d1d5db", marginTop: "5px" }}>
                       👆 Tapez sur la pièce pour la retourner (3D)
                     </span>
                   </div>
@@ -593,10 +660,10 @@ export default function AlbumPanel({
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "bold" }}>
+                <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "bold", color: "#ffffff" }}>
                   {selectedAlbumPhoto.find.title || "Sans titre"}
                 </h3>
-                <p style={{ margin: 0, opacity: 0.8, fontSize: "14px" }}>
+                <p style={{ margin: 0, opacity: 0.85, fontSize: "14px", color: "#f3f4f6" }}>
                   {categoryEmojis[selectedAlbumPhoto.find.category] || categoryEmojis[selectedAlbumPhoto.find.category?.trim().charAt(0).toUpperCase() + selectedAlbumPhoto.find.category?.trim().slice(1).toLowerCase()] || "📍"} {selectedAlbumPhoto.find.category}
                   {selectedAlbumPhoto.find.sub_category ? ` • ${selectedAlbumPhoto.find.sub_category}` : ""}
                   {selectedAlbumPhoto.find.date ? ` • 📅 ${selectedAlbumPhoto.find.date.split(",")[0]}` : ""}

@@ -37,7 +37,13 @@ export default function BottomNav({ activeTab, setActiveTab, currentThemeKey = "
         return (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => {
+              if (activeTab === tab.id && tab.id !== "map") {
+                setActiveTab("map");
+              } else {
+                setActiveTab(tab.id);
+              }
+            }}
             style={{
               flex: 1,
               display: "flex",

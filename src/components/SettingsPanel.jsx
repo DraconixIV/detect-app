@@ -13,7 +13,8 @@ export default function SettingsPanel({
   onImportBackup,
   currentThemeKey = "tactical",
   setDesignTheme,
-  onOpenThemePicker
+  onOpenThemePicker,
+  onOpenCategoryManager
 }) {
   const [categoriesData, setCategoriesData] = useState(loadCategoriesData());
   const [user, setUser] = useState(null);
@@ -65,10 +66,21 @@ export default function SettingsPanel({
     setSelectedCatForSub("");
   };
 
+  const isLight = theme === "light";
+  const bgPanel = isLight ? "#f8fafc" : "#0b1329";
+  const textMain = isLight ? "#0f172a" : "#f8fafc";
+  const textSub = isLight ? "#475569" : "#94a3b8";
+  const cardBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
+  const cardBg = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)";
+  const cardShadow = isLight ? "0 2px 8px rgba(0, 0, 0, 0.06)" : "none";
+  const inputBg = isLight ? "#ffffff" : "rgba(0, 0, 0, 0.25)";
+  const inputBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.16)";
+
   const cardStyle = {
-    background: "rgba(255, 255, 255, 0.04)",
+    background: cardBg,
     borderRadius: "18px",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
+    border: `1px solid ${cardBorder}`,
+    boxShadow: cardShadow,
     padding: "16px",
     marginBottom: "16px"
   };
@@ -79,7 +91,7 @@ export default function SettingsPanel({
     textTransform: "uppercase",
     letterSpacing: "0.5px",
     marginBottom: "12px",
-    color: "#60a5fa",
+    color: isLight ? "#2563eb" : "#60a5fa",
     display: "flex",
     alignItems: "center",
     gap: "6px"
@@ -91,8 +103,8 @@ export default function SettingsPanel({
         position: "fixed",
         inset: "0 0 60px 0",
         zIndex: 5500,
-        background: theme === "light" ? "#f8fafc" : "#0b1329",
-        color: theme === "light" ? "#1e293b" : "white",
+        background: bgPanel,
+        color: textMain,
         overflowY: "auto",
         padding: "20px 16px 80px 16px",
         fontFamily: "system-ui, -apple-system, sans-serif"
@@ -103,8 +115,12 @@ export default function SettingsPanel({
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
           <div style={{ fontSize: "28px" }}>⚙️</div>
           <div>
-            <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "800" }}>Paramètres & Configuration</h1>
-            <p style={{ margin: 0, fontSize: "12px", opacity: 0.7 }}>Personnalisez votre carnet de détection</p>
+            <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: textMain }}>
+              Paramètres & Configuration
+            </h1>
+            <p style={{ margin: 0, fontSize: "12px", color: textSub }}>
+              Personnalisez votre carnet de détection
+            </p>
           </div>
         </div>
 
@@ -118,14 +134,15 @@ export default function SettingsPanel({
               <button
                 onClick={onOpenThemePicker}
                 style={{
-                  padding: "4px 10px",
-                  borderRadius: "8px",
+                  padding: "6px 12px",
+                  borderRadius: "10px",
                   border: "none",
                   background: "linear-gradient(135deg, #3b82f6, #2563eb)",
                   color: "white",
                   fontSize: "11px",
                   fontWeight: "bold",
-                  cursor: "pointer"
+                  cursor: "pointer",
+                  boxShadow: "0 2px 8px rgba(37, 99, 235, 0.3)"
                 }}
               >
                 🎨 Tester en direct
@@ -133,7 +150,7 @@ export default function SettingsPanel({
             )}
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "12px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "8px" }}>
             {Object.values(THEMES).map((th) => {
               const isSelected = currentThemeKey === th.id;
               const c = th.colors;
@@ -144,8 +161,8 @@ export default function SettingsPanel({
                   style={{
                     padding: "10px",
                     borderRadius: "12px",
-                    border: isSelected ? `2px solid ${c.accent}` : "1px solid rgba(255,255,255,0.1)",
-                    background: isSelected ? `${c.accent}15` : "rgba(255,255,255,0.04)",
+                    border: isSelected ? `2px solid ${c.accent}` : `1px solid ${cardBorder}`,
+                    background: isSelected ? (isLight ? `${c.accent}15` : `${c.accent}20`) : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
                     cursor: "pointer",
                     display: "flex",
                     flexDirection: "column",
@@ -157,10 +174,10 @@ export default function SettingsPanel({
                     <span style={{ fontSize: "18px" }}>{th.icon}</span>
                     <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: c.accent }} />
                   </div>
-                  <div style={{ fontSize: "11px", fontWeight: "800", color: isSelected ? c.accent : "#ffffff" }}>
+                  <div style={{ fontSize: "11px", fontWeight: "800", color: isSelected ? c.accent : textMain }}>
                     {th.name}
                   </div>
-                  <div style={{ fontSize: "9px", opacity: 0.6 }}>{th.badge}</div>
+                  <div style={{ fontSize: "9px", color: textSub }}>{th.badge}</div>
                 </div>
               );
             })}
@@ -181,9 +198,9 @@ export default function SettingsPanel({
               style={{
                 padding: "12px",
                 borderRadius: "14px",
-                border: theme === "dark" ? "2px solid #facc15" : "1px solid rgba(255,255,255,0.1)",
-                background: theme === "dark" ? "rgba(250, 204, 21, 0.12)" : "rgba(255,255,255,0.04)",
-                color: theme === "light" ? "#1e293b" : "white",
+                border: theme === "dark" ? "2px solid #facc15" : `1px solid ${cardBorder}`,
+                background: theme === "dark" ? (isLight ? "rgba(250, 204, 21, 0.15)" : "rgba(250, 204, 21, 0.15)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
+                color: textMain,
                 fontWeight: "bold",
                 cursor: "pointer",
                 display: "flex",
@@ -203,9 +220,9 @@ export default function SettingsPanel({
               style={{
                 padding: "12px",
                 borderRadius: "14px",
-                border: theme === "light" ? "2px solid #facc15" : "1px solid rgba(255,255,255,0.1)",
-                background: theme === "light" ? "rgba(250, 204, 21, 0.12)" : "rgba(255,255,255,0.04)",
-                color: theme === "light" ? "#1e293b" : "white",
+                border: theme === "light" ? "2px solid #2563eb" : `1px solid ${cardBorder}`,
+                background: theme === "light" ? "rgba(37, 99, 235, 0.12)" : "rgba(255,255,255,0.04)",
+                color: textMain,
                 fontWeight: "bold",
                 cursor: "pointer",
                 display: "flex",
@@ -219,7 +236,7 @@ export default function SettingsPanel({
           </div>
         </div>
 
-        {/* 2. Fond de Carte par Défaut */}
+        {/* 3. Fond de Carte par Défaut */}
         <div style={cardStyle}>
           <div style={sectionTitleStyle}>
             <span>🗺️</span> Fond de Carte
@@ -233,9 +250,9 @@ export default function SettingsPanel({
               style={{
                 padding: "12px",
                 borderRadius: "14px",
-                border: mapStyle === "satellite" ? "2px solid #3b82f6" : "1px solid rgba(255,255,255,0.1)",
-                background: mapStyle === "satellite" ? "rgba(59, 130, 246, 0.15)" : "rgba(255,255,255,0.04)",
-                color: theme === "light" ? "#1e293b" : "white",
+                border: mapStyle === "satellite" ? "2px solid #3b82f6" : `1px solid ${cardBorder}`,
+                background: mapStyle === "satellite" ? (isLight ? "rgba(59, 130, 246, 0.12)" : "rgba(59, 130, 246, 0.18)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
+                color: textMain,
                 fontWeight: "bold",
                 cursor: "pointer",
                 display: "flex",
@@ -256,9 +273,9 @@ export default function SettingsPanel({
               style={{
                 padding: "12px",
                 borderRadius: "14px",
-                border: mapStyle === "streets" ? "2px solid #3b82f6" : "1px solid rgba(255,255,255,0.1)",
-                background: mapStyle === "streets" ? "rgba(59, 130, 246, 0.15)" : "rgba(255,255,255,0.04)",
-                color: theme === "light" ? "#1e293b" : "white",
+                border: mapStyle === "streets" ? "2px solid #3b82f6" : `1px solid ${cardBorder}`,
+                background: mapStyle === "streets" ? (isLight ? "rgba(59, 130, 246, 0.12)" : "rgba(59, 130, 246, 0.18)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
+                color: textMain,
                 fontWeight: "bold",
                 cursor: "pointer",
                 display: "flex",
@@ -273,27 +290,46 @@ export default function SettingsPanel({
           </div>
         </div>
 
-        {/* 3. Gestionnaire des Catégories Personnalisées */}
+        {/* 4. Gestionnaire des Catégories Personnalisées */}
         <div style={cardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
             <div style={sectionTitleStyle}>
               <span>🏷️</span> Catégories Personnalisées
             </div>
-            <button
-              onClick={() => setShowCatManager(!showCatManager)}
-              style={{
-                padding: "6px 12px",
-                borderRadius: "10px",
-                border: "1px solid rgba(255,255,255,0.1)",
-                background: "rgba(255,255,255,0.06)",
-                color: "inherit",
-                fontSize: "11px",
-                cursor: "pointer",
-                fontWeight: "bold"
-              }}
-            >
-              {showCatManager ? "Masquer" : "Gérer les Catégories ▾"}
-            </button>
+            <div style={{ display: "flex", gap: "6px" }}>
+              {onOpenCategoryManager && (
+                <button
+                  onClick={onOpenCategoryManager}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "10px",
+                    border: "none",
+                    background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+                    color: "white",
+                    fontSize: "11px",
+                    cursor: "pointer",
+                    fontWeight: "bold"
+                  }}
+                >
+                  ⚙️ Gestionnaire
+                </button>
+              )}
+              <button
+                onClick={() => setShowCatManager(!showCatManager)}
+                style={{
+                  padding: "6px 10px",
+                  borderRadius: "10px",
+                  border: `1px solid ${cardBorder}`,
+                  background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.06)",
+                  color: textMain,
+                  fontSize: "11px",
+                  cursor: "pointer",
+                  fontWeight: "bold"
+                }}
+              >
+                {showCatManager ? "Masquer" : "Édition Rapide ▾"}
+              </button>
+            </div>
           </div>
 
           {showCatManager && (
@@ -305,14 +341,14 @@ export default function SettingsPanel({
                   value={newCatEmoji}
                   onChange={(e) => setNewCatEmoji(e.target.value)}
                   placeholder="Emoji"
-                  style={{ width: "50px", textAlign: "center", padding: "8px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(0,0,0,0.2)", color: "white", fontSize: "16px" }}
+                  style={{ width: "50px", textAlign: "center", padding: "8px", borderRadius: "10px", border: `1px solid ${inputBorder}`, background: inputBg, color: textMain, fontSize: "16px" }}
                 />
                 <input
                   type="text"
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
                   placeholder="Nouvelle catégorie (ex: Fossile)"
-                  style={{ flex: 1, padding: "8px 12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(0,0,0,0.2)", color: "white", fontSize: "12px" }}
+                  style={{ flex: 1, padding: "8px 12px", borderRadius: "10px", border: `1px solid ${inputBorder}`, background: inputBg, color: textMain, fontSize: "12px", outline: "none" }}
                 />
                 <button
                   onClick={handleAddCategory}
@@ -330,31 +366,31 @@ export default function SettingsPanel({
                     style={{
                       padding: "8px 12px",
                       borderRadius: "12px",
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.06)",
+                      background: isLight ? "#f8fafc" : "rgba(255,255,255,0.03)",
+                      border: `1px solid ${cardBorder}`,
                       display: "flex",
                       flexDirection: "column",
                       gap: "6px"
                     }}
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: "13px", fontWeight: "bold" }}>
+                      <span style={{ fontSize: "13px", fontWeight: "bold", color: textMain }}>
                         {categoriesData.emojis[cat] || "📦"} {cat}
                       </span>
                       <div style={{ display: "flex", gap: "6px" }}>
                         <button
                           onClick={() => setSelectedCatForSub(selectedCatForSub === cat ? "" : cat)}
-                          style={{ padding: "3px 8px", borderRadius: "8px", border: "none", background: "rgba(59, 130, 246, 0.2)", color: "#60a5fa", fontSize: "10px", fontWeight: "bold", cursor: "pointer" }}
+                          style={{ padding: "3px 8px", borderRadius: "8px", border: "none", background: isLight ? "rgba(37, 99, 235, 0.15)" : "rgba(59, 130, 246, 0.2)", color: isLight ? "#1d4ed8" : "#60a5fa", fontSize: "10px", fontWeight: "bold", cursor: "pointer" }}
                         >
                           + Sous-catégorie
                         </button>
                         <button
                           onClick={() => {
-                            if (confirm(`Supprimer la catégorie "${cat}" ?`)) {
+                            if (window.confirm(`Supprimer la catégorie "${cat}" ?`)) {
                               removeCategory(cat);
                             }
                           }}
-                          style={{ padding: "3px 8px", borderRadius: "8px", border: "none", background: "rgba(239, 68, 68, 0.2)", color: "#f87171", fontSize: "10px", cursor: "pointer" }}
+                          style={{ padding: "3px 8px", borderRadius: "8px", border: "none", background: "rgba(239, 68, 68, 0.15)", color: "#ef4444", fontSize: "10px", cursor: "pointer" }}
                         >
                           🗑️
                         </button>
@@ -369,9 +405,9 @@ export default function SettingsPanel({
                           style={{
                             padding: "2px 8px",
                             borderRadius: "6px",
-                            background: "rgba(255,255,255,0.06)",
+                            background: isLight ? "#e2e8f0" : "rgba(255,255,255,0.06)",
                             fontSize: "10px",
-                            opacity: 0.8,
+                            color: textMain,
                             display: "inline-flex",
                             alignItems: "center",
                             gap: "4px"
@@ -380,7 +416,7 @@ export default function SettingsPanel({
                           {sub}
                           <span
                             onClick={() => removeSubCategory(cat, sub)}
-                            style={{ cursor: "pointer", color: "#f87171", fontWeight: "bold" }}
+                            style={{ cursor: "pointer", color: "#ef4444", fontWeight: "bold" }}
                           >
                             ×
                           </span>
@@ -396,7 +432,7 @@ export default function SettingsPanel({
                           value={newSubName}
                           onChange={(e) => setNewSubName(e.target.value)}
                           placeholder={`Sous-catégorie pour ${cat}...`}
-                          style={{ flex: 1, padding: "6px 10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.2)", color: "white", fontSize: "11px" }}
+                          style={{ flex: 1, padding: "6px 10px", borderRadius: "8px", border: `1px solid ${inputBorder}`, background: inputBg, color: textMain, fontSize: "11px", outline: "none" }}
                         />
                         <button
                           onClick={() => handleAddSub(cat)}
@@ -412,11 +448,11 @@ export default function SettingsPanel({
 
               <button
                 onClick={() => {
-                  if (confirm("Réinitialiser toutes les catégories par défaut ?")) {
+                  if (window.confirm("Réinitialiser toutes les catégories par défaut ?")) {
                     resetCategories();
                   }
                 }}
-                style={{ padding: "8px", borderRadius: "10px", border: "none", background: "rgba(255,255,255,0.05)", color: "#9ca3af", fontSize: "10px", cursor: "pointer" }}
+                style={{ padding: "8px", borderRadius: "10px", border: "none", background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.05)", color: textSub, fontSize: "10px", cursor: "pointer" }}
               >
                 🔄 Réinitialiser les catégories par défaut
               </button>
@@ -424,7 +460,7 @@ export default function SettingsPanel({
           )}
         </div>
 
-        {/* 4. Compte & Synchronisation */}
+        {/* 5. Compte & Synchronisation */}
         <div style={cardStyle}>
           <div style={sectionTitleStyle}>
             <span>👤</span> Compte & Synchronisation
@@ -432,10 +468,10 @@ export default function SettingsPanel({
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: showAuthBox ? "14px" : "12px" }}>
             <div>
-              <div style={{ fontSize: "12px", fontWeight: "bold" }}>
+              <div style={{ fontSize: "12px", fontWeight: "bold", color: textMain }}>
                 {user ? user.email : "Mode 100% Local / Invité"}
               </div>
-              <div style={{ fontSize: "10px", opacity: 0.6 }}>
+              <div style={{ fontSize: "10px", color: textSub }}>
                 {user ? "Synchronisation Cloud activée ✅" : "Données stockées uniquement sur votre appareil"}
               </div>
             </div>
@@ -454,8 +490,8 @@ export default function SettingsPanel({
                   padding: "8px 14px",
                   borderRadius: "10px",
                   border: "none",
-                  background: showAuthBox ? "rgba(255,255,255,0.12)" : "linear-gradient(135deg, #3b82f6, #2563eb)",
-                  color: "white",
+                  background: showAuthBox ? (isLight ? "#e2e8f0" : "rgba(255,255,255,0.12)") : "linear-gradient(135deg, #3b82f6, #2563eb)",
+                  color: showAuthBox && isLight ? "#0f172a" : "white",
                   fontSize: "11px",
                   fontWeight: "bold",
                   cursor: "pointer"
@@ -470,18 +506,18 @@ export default function SettingsPanel({
           {!user && showAuthBox && (
             <div
               style={{
-                background: "rgba(0,0,0,0.25)",
+                background: isLight ? "#f1f5f9" : "rgba(0,0,0,0.25)",
                 borderRadius: "14px",
                 padding: "14px",
                 marginBottom: "14px",
-                border: "1px solid rgba(255,255,255,0.08)"
+                border: `1px solid ${cardBorder}`
               }}
             >
               <AuthForm onAuthSuccess={() => setShowAuthBox(false)} />
             </div>
           )}
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "12px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", borderTop: `1px solid ${cardBorder}`, paddingTop: "12px" }}>
             <button
               onClick={onExportBackup}
               style={{ padding: "10px", borderRadius: "12px", border: "none", background: "#3b82f6", color: "white", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}
@@ -490,26 +526,28 @@ export default function SettingsPanel({
             </button>
             <button
               onClick={onImportBackup}
-              style={{ padding: "10px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.06)", color: "white", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}
+              style={{ padding: "10px", borderRadius: "12px", border: `1px solid ${cardBorder}`, background: isLight ? "#f8fafc" : "rgba(255,255,255,0.06)", color: textMain, fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}
             >
               📤 Importer Sauvegarde
             </button>
           </div>
         </div>
 
-        {/* 5. Espace aux Dons ("Soutenir le projet ☕") */}
+        {/* 6. Espace aux Dons ("Soutenir le projet ☕") */}
         <div
           style={{
             ...cardStyle,
-            background: "linear-gradient(135deg, rgba(250, 204, 21, 0.12), rgba(234, 179, 8, 0.05))",
-            border: "1px solid rgba(250, 204, 21, 0.3)"
+            background: isLight
+              ? "linear-gradient(135deg, rgba(254, 240, 138, 0.3), rgba(253, 230, 138, 0.15))"
+              : "linear-gradient(135deg, rgba(250, 204, 21, 0.12), rgba(234, 179, 8, 0.05))",
+            border: isLight ? "1.5px solid #facc15" : "1px solid rgba(250, 204, 21, 0.3)"
           }}
         >
-          <div style={{ ...sectionTitleStyle, color: "#facc15" }}>
+          <div style={{ ...sectionTitleStyle, color: isLight ? "#b45309" : "#facc15" }}>
             <span>☕</span> Soutenir le Projet (Dons)
           </div>
-          <p style={{ margin: "0 0 12px 0", fontSize: "12px", opacity: 0.85, lineHeight: "1.5" }}>
-            Développé avec passion par un étudiant de 19 ans pour offrir un outil 100 % libre, sans publicité et respectueux de vos données. Si l'application vous plaît, un petit don encourage les futures améliorations !
+          <p style={{ margin: "0 0 12px 0", fontSize: "12px", color: textMain, opacity: 0.9, lineHeight: "1.5" }}>
+            Développé avec passion pour offrir un outil 100 % libre, sans publicité et respectueux de vos données. Si l'application vous plaît, un petit don encourage les futures améliorations !
           </p>
 
           <div style={{ display: "flex", gap: "10px" }}>
@@ -544,8 +582,8 @@ export default function SettingsPanel({
                 flex: 1,
                 padding: "10px",
                 borderRadius: "12px",
-                background: "rgba(255,255,255,0.1)",
-                color: "white",
+                background: isLight ? "#ffffff" : "rgba(255,255,255,0.1)",
+                color: textMain,
                 fontWeight: "700",
                 fontSize: "12px",
                 textAlign: "center",
@@ -554,7 +592,7 @@ export default function SettingsPanel({
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "6px",
-                border: "1px solid rgba(255,255,255,0.15)"
+                border: `1px solid ${cardBorder}`
               }}
             >
               <span>💳</span> PayPal
@@ -562,7 +600,7 @@ export default function SettingsPanel({
           </div>
         </div>
 
-        {/* 6. Mentions Légales & CGU */}
+        {/* 7. Mentions Légales & CGU */}
         <div style={cardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div style={sectionTitleStyle}>
@@ -570,14 +608,14 @@ export default function SettingsPanel({
             </div>
             <button
               onClick={() => setShowLegal(!showLegal)}
-              style={{ padding: "4px 8px", borderRadius: "8px", border: "none", background: "rgba(255,255,255,0.06)", color: "inherit", fontSize: "10px", cursor: "pointer" }}
+              style={{ padding: "4px 8px", borderRadius: "8px", border: `1px solid ${cardBorder}`, background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.06)", color: textMain, fontSize: "10px", cursor: "pointer" }}
             >
               {showLegal ? "Masquer" : "Lire"}
             </button>
           </div>
 
           {showLegal && (
-            <div style={{ marginTop: "10px", fontSize: "11px", opacity: 0.8, lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "6px" }}>
+            <div style={{ marginTop: "10px", fontSize: "11px", color: textSub, lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "6px" }}>
               <p style={{ margin: 0 }}>
                 Cette application est un carnet de bord numérique d'enregistrement personnel pour la détection de loisir et la recherche d'objets métalliques.
               </p>
