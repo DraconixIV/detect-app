@@ -155,13 +155,27 @@ function App() {
     loadTracksList
   } = useSortieRecorder();
 
-  const [activeTab, setActiveTab] = useState("map");
-  const [showOnboarding, setShowOnboarding] = useState(() => localStorage.getItem("rdl_onboarding_completed") !== "true");
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem("app_theme") || "dark");
   const [designTheme, setDesignTheme] = useState(() => localStorage.getItem("app_design_theme") || "tactical");
   const [showThemePicker, setShowThemePicker] = useState(false);
   const [showCategoryManagerModal, setShowCategoryManagerModal] = useState(false);
   const [showWelcomeGate, setShowWelcomeGate] = useState(true);
+
+  const handleEnterApp = () => {
+    setShowWelcomeGate(false);
+    const hasCompletedLegal = localStorage.getItem("rdl_legal_onboarding_v1") === "true";
+    if (!hasCompletedLegal) {
+      setShowOnboarding(true);
+    }
+  };
+
+  const handleDevSkipAll = () => {
+    setShowWelcomeGate(false);
+    setShowOnboarding(false);
+    localStorage.setItem("rdl_legal_onboarding_v1", "true");
+    localStorage.setItem("rdl_cgu_accepted", "true");
+  };
 
   useEffect(() => {
     localStorage.setItem("app_design_theme", designTheme);
@@ -922,6 +936,7 @@ return (
           setDesignTheme={setDesignTheme}
           onOpenThemePicker={() => setShowThemePicker(true)}
           onOpenCategoryManager={() => setShowCategoryManagerModal(true)}
+          onRestartOnboarding={() => setShowOnboarding(true)}
         />
       )}
 
@@ -1445,7 +1460,8 @@ return (
       {!showOnboarding && showWelcomeGate && (
         <WelcomeGate
           isOpen={showWelcomeGate}
-          onEnter={() => setShowWelcomeGate(false)}
+          onEnter={handleEnterApp}
+          onDevSkip={handleDevSkipAll}
           findsCount={finds.length}
           tracksCount={savedTracks.length}
           isOnline={isOnline}

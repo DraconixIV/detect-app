@@ -4,6 +4,7 @@ import { THEMES } from "../styles/themes";
 export default function WelcomeGate({
   isOpen,
   onEnter,
+  onDevSkip,
   findsCount = 0,
   tracksCount = 0,
   isOnline = true,
@@ -65,7 +66,7 @@ export default function WelcomeGate({
 
         {/* Developer Quick Bypass Button */}
         <button
-          onClick={onEnter}
+          onClick={onDevSkip || onEnter}
           style={{
             padding: "5px 10px",
             borderRadius: "8px",

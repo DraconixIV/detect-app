@@ -14,7 +14,8 @@ export default function SettingsPanel({
   currentThemeKey = "tactical",
   setDesignTheme,
   onOpenThemePicker,
-  onOpenCategoryManager
+  onOpenCategoryManager,
+  onRestartOnboarding
 }) {
   const [categoriesData, setCategoriesData] = useState(loadCategoriesData());
   const [user, setUser] = useState(null);
@@ -622,6 +623,25 @@ export default function SettingsPanel({
               <p style={{ margin: 0 }}>
                 L'utilisateur est seul responsable de sa pratique et s'engage à respecter scrupuleusement l'article L. 542-1 du Code du patrimoine, à obtenir l'autorisation expresse des propriétaires des parcelles prospectées et à déclarer toute découverte fortuite.
               </p>
+              {onRestartOnboarding && (
+                <button
+                  type="button"
+                  onClick={onRestartOnboarding}
+                  style={{
+                    marginTop: "8px",
+                    padding: "8px 12px",
+                    borderRadius: "10px",
+                    border: "none",
+                    background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+                    color: "white",
+                    fontSize: "11px",
+                    fontWeight: "bold",
+                    cursor: "pointer"
+                  }}
+                >
+                  🔄 Relancer l'Onboarding & Charte Légale
+                </button>
+              )}
             </div>
           )}
         </div>
