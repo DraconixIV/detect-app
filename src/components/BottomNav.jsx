@@ -1,6 +1,10 @@
 import React from "react";
+import { THEMES } from "../styles/themes";
 
-export default function BottomNav({ activeTab, setActiveTab }) {
+export default function BottomNav({ activeTab, setActiveTab, currentThemeKey = "tactical" }) {
+  const theme = THEMES[currentThemeKey] || THEMES.tactical;
+  const c = theme.colors;
+
   const tabs = [
     { id: "map", label: "Carte", icon: "🗺️" },
     { id: "gallery", label: "Galerie", icon: "🖼️" },
@@ -17,14 +21,14 @@ export default function BottomNav({ activeTab, setActiveTab }) {
         left: 0,
         right: 0,
         zIndex: 6500,
-        background: "rgba(15, 23, 42, 0.92)",
+        background: c.hudBg,
         backdropFilter: "blur(16px)",
-        borderTop: "1px solid rgba(255, 255, 255, 0.12)",
+        borderTop: `1px solid ${c.border}`,
         display: "flex",
         justifyContent: "space-around",
         alignItems: "center",
         padding: "6px 8px env(safe-area-inset-bottom, 8px) 8px",
-        boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.4)",
+        boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.5)",
         userSelect: "none"
       }}
     >
@@ -43,11 +47,11 @@ export default function BottomNav({ activeTab, setActiveTab }) {
               gap: "3px",
               padding: "6px 2px",
               border: "none",
-              background: isActive ? "rgba(255, 255, 255, 0.08)" : "transparent",
-              borderRadius: "14px",
+              background: isActive ? `${c.accent}20` : "transparent",
+              borderRadius: "12px",
               cursor: "pointer",
               transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-              color: isActive ? "#facc15" : "rgba(255, 255, 255, 0.65)"
+              color: isActive ? c.accent : c.textSecondary
             }}
           >
             <span

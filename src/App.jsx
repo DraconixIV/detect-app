@@ -16,6 +16,10 @@ import OnboardingModal from "./components/OnboardingModal";
 import ReportsPanel from "./components/ReportsPanel";
 import ShortcutsPanel from "./components/ShortcutsPanel";
 import SettingsPanel from "./components/SettingsPanel";
+import TacticalTopHUD from "./components/TacticalTopHUD";
+import TacticalBottomHUD from "./components/TacticalBottomHUD";
+import ThemePickerModal from "./components/ThemePickerModal";
+import { THEMES } from "./styles/themes";
 
 import { icons } from "./icons";
 
@@ -153,6 +157,12 @@ function App() {
   const [activeTab, setActiveTab] = useState("map");
   const [showOnboarding, setShowOnboarding] = useState(() => localStorage.getItem("rdl_onboarding_completed") !== "true");
   const [theme, setTheme] = useState(() => localStorage.getItem("app_theme") || "dark");
+  const [designTheme, setDesignTheme] = useState(() => localStorage.getItem("app_design_theme") || "tactical");
+  const [showThemePicker, setShowThemePicker] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem("app_design_theme", designTheme);
+  }, [designTheme]);
 
   useEffect(() => {
     localStorage.setItem("app_theme", theme);
@@ -631,6 +641,15 @@ function App() {
 
 
 
+  const todayFindsCount = useMemo(() => {
+    const today = new Date().toLocaleDateString("fr-FR");
+    const todayIso = new Date().toISOString().split("T")[0];
+    return finds.filter((f) => {
+      if (!f?.date) return false;
+      return f.date.includes(today) || f.date.startsWith(todayIso);
+    }).length;
+  }, [finds]);
+
   const selectedDateTracks = useMemo(() => {
     if (!selectedDate) return [];
     return savedTracks.filter((track) => {
@@ -740,31 +759,17 @@ return (
         </div>
       )}
 
-      {/* MENU BUTTON (MAP ONLY) */}
+      {/* TACTICAL TOP HUD (GO TERRAIN STYLE) */}
       {activeTab === "map" && (
-        <button
-          onClick={() => {
-            setShowMenu(!showMenu);
-          }}
-          style={{
-            position: "absolute",
-            top: 85,
-            left: 15,
-            zIndex: 5000,
-            width: "52px",
-            height: "52px",
-            borderRadius: "50%",
-            border: "none",
-            background: "#111827",
-            color: "white",
-            fontSize: "22px",
-            boxShadow:
-              "0 4px 15px rgba(0,0,0,0.35)"
-          }}
-          title="Menu & Filtres"
-        >
-          ☰
-        </button>
+        <TacticalTopHUD
+          currentThemeKey={designTheme}
+          onOpenMenu={() => setShowMenu(!showMenu)}
+          onOpenThemePicker={() => setShowThemePicker(true)}
+          gpsAccuracy={gpsAccuracy}
+          isOnline={isOnline}
+          isRecordingSortie={isRecordingSortie}
+          onToggleRecording={() => isRecordingSortie ? stopSortie() : startSortie(position)}
+        />
       )}
 
       {/* SIDEBAR MENU */}
@@ -887,80 +892,13 @@ return (
           setMapStyle={setMapStyle}
           onExportBackup={handleExport}
           onImportBackup={handleImport}
+          currentThemeKey={designTheme}
+          setDesignTheme={setDesignTheme}
+          onOpenThemePicker={() => setShowThemePicker(true)}
         />
       )}
 
-      {/* STATUS BADGES */}
-      <div
-        style={{
-          position: "absolute",
-          top: "20px",
-          right: "20px",
-          zIndex: 2000,
-          display: "flex",
-          flexDirection: "column",
-          gap: "8px",
-          fontFamily: "system-ui, sans-serif",
-          fontSize: "12px",
-          fontWeight: "700"
-        }}
-      >
-        <div
-          style={{
-            background: isOnline ? "rgba(22, 163, 74, 0.9)" : "rgba(245, 158, 11, 0.9)",
-            color: "white",
-            padding: "6px 12px",
-            borderRadius: "12px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-            backdropFilter: "blur(4px)",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px"
-          }}
-        >
-          <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: "white" }}></span>
-          {isOnline ? "En ligne" : "Hors-ligne 💾"}
-          {syncing && " (Synchro...)"}
-        </div>
-
-        {/* GPS Accuracy Badge */}
-        <div
-          style={{
-            background: "rgba(17, 24, 39, 0.8)",
-            color: "white",
-            padding: "6px 12px",
-            borderRadius: "12px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-            backdropFilter: "blur(4px)",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px"
-          }}
-        >
-          <span
-            style={{
-              display: "inline-block",
-              width: "8px",
-              height: "8px",
-              borderRadius: "50%",
-              background: gpsAccuracy === null
-                ? "#9ca3af" // Grey
-                : gpsAccuracy < 5
-                  ? "#10b981" // Green
-                  : gpsAccuracy < 15
-                    ? "#f59e0b" // Orange
-                    : "#ef4444" // Red
-            }}
-          ></span>
-          {gpsAccuracy === null ? "GPS : Recherche..." : `GPS : ± ${gpsAccuracy.toFixed(0)}m`}
-        </div>
-
-        <OutingWidget
-          isRecordingSortie={isRecordingSortie}
-          sortieDistance={sortieDistance}
-        />
-      </div>
-
+      {/* MAIN MAP */}
       <MainMap
         position={position}
         followGps={followGps}
@@ -984,6 +922,33 @@ return (
         loadFinds={loadFinds}
       />
 
+      {/* TACTICAL BOTTOM HUD (TELEMETRY & ACTIONS - MAP ONLY) */}
+      {activeTab === "map" && (
+        <TacticalBottomHUD
+          currentThemeKey={designTheme}
+          isRecordingSortie={isRecordingSortie}
+          sortieDistance={sortieDistance}
+          todayFindsCount={todayFindsCount}
+          onStartSortie={() => startSortie(position)}
+          onStopSortie={stopSortie}
+          onAddFindClick={() => {
+            setShowForm(true);
+            setShowMenu(true);
+          }}
+          onToggleCassini={() => setShowHistoricalMap(!showHistoricalMap)}
+          showCassini={showHistoricalMap}
+          onRecenterGps={() => {
+            setFollowGps(true);
+            setZoomTarget({ position: position, zoom: 20 });
+            setToast({
+              message: "🎯 Centrage et suivi GPS activés !",
+              type: "success"
+            });
+          }}
+          followGps={followGps}
+        />
+      )}
+
       {/* Hidden input for quick add */}
       <input
         type="file"
@@ -994,80 +959,19 @@ return (
         onChange={handleQuickAdd}
       />
 
-
-      {/* Floating Recenter GPS Button (MAP ONLY) */}
-      {activeTab === "map" && (
-        <button
-          onClick={() => {
-            setFollowGps(true);
-            setZoomTarget({ position: position, zoom: 20 });
-            setToast({
-              message: "🎯 Centrage et suivi GPS activés !",
-              type: "success"
-            });
-          }}
-          style={{
-            position: "absolute",
-            bottom: "148px",
-            right: "20px",
-            zIndex: 5000,
-            width: "48px",
-            height: "48px",
-            borderRadius: "50%",
-            border: "1px solid rgba(255,255,255,0.15)",
-            background: followGps ? "rgba(37, 99, 235, 0.95)" : "rgba(17, 24, 39, 0.9)",
-            backdropFilter: "blur(8px)",
-            color: "white",
-            fontSize: "20px",
-            boxShadow: "0 6px 20px rgba(0,0,0,0.35)",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "transform 0.15s, background-color 0.2s"
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.08)"}
-          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-          title="Centrer sur ma position"
-        >
-          🎯
-        </button>
-      )}
-
-      {/* Floating Add Flash Button (MAP ONLY) */}
-      {activeTab === "map" && (
-        <button
-          onClick={() => {
-            if (quickAddInputRef.current) {
-              quickAddInputRef.current.click();
-            }
-          }}
-          style={{
-            position: "absolute",
-            bottom: "78px",
-            right: "20px",
-            zIndex: 5000,
-            width: "56px",
-            height: "56px",
-            borderRadius: "50%",
-            border: "3px solid rgba(255,255,255,0.2)",
-            background: "linear-gradient(135deg, #10b981, #059669)",
-            color: "white",
-            fontSize: "22px",
-            boxShadow: "0 8px 24px rgba(5, 150, 105, 0.4)",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "transform 0.15s, background-color 0.2s"
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.08)"}
-          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-          title="Ajout Rapide Flash"
-        >
-          📸+
-        </button>
-      )}
+      {/* Theme Picker Modal */}
+      <ThemePickerModal
+        isOpen={showThemePicker}
+        onClose={() => setShowThemePicker(false)}
+        currentThemeKey={designTheme}
+        onSelectTheme={(newTh) => {
+          setDesignTheme(newTh);
+          setToast({
+            message: `🎨 Palette "${THEMES[newTh]?.name || newTh}" activée !`,
+            type: "success"
+          });
+        }}
+      />
       {/* QUICK ADD CUSTOM TITLE PROMPT MODAL */}
       {showQuickAddModal && (
         <div

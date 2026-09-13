@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabase";
 import { loadCategoriesData, addCategory, removeCategory, addSubCategory, removeSubCategory, resetCategories } from "../services/categoriesService";
+import { THEMES } from "../styles/themes";
 import AuthForm from "./AuthForm";
 
 export default function SettingsPanel({
@@ -9,7 +10,10 @@ export default function SettingsPanel({
   mapStyle,
   setMapStyle,
   onExportBackup,
-  onImportBackup
+  onImportBackup,
+  currentThemeKey = "tactical",
+  setDesignTheme,
+  onOpenThemePicker
 }) {
   const [categoriesData, setCategoriesData] = useState(loadCategoriesData());
   const [user, setUser] = useState(null);
@@ -104,10 +108,69 @@ export default function SettingsPanel({
           </div>
         </div>
 
-        {/* 1. Apparence & Thème */}
+        {/* 1. Direction Artistique & Cockpit */}
+        <div style={cardStyle}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+            <div style={sectionTitleStyle}>
+              <span>🎛️</span> Direction Artistique (Cockpit)
+            </div>
+            {onOpenThemePicker && (
+              <button
+                onClick={onOpenThemePicker}
+                style={{
+                  padding: "4px 10px",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+                  color: "white",
+                  fontSize: "11px",
+                  fontWeight: "bold",
+                  cursor: "pointer"
+                }}
+              >
+                🎨 Tester en direct
+              </button>
+            )}
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "12px" }}>
+            {Object.values(THEMES).map((th) => {
+              const isSelected = currentThemeKey === th.id;
+              const c = th.colors;
+              return (
+                <div
+                  key={th.id}
+                  onClick={() => setDesignTheme && setDesignTheme(th.id)}
+                  style={{
+                    padding: "10px",
+                    borderRadius: "12px",
+                    border: isSelected ? `2px solid ${c.accent}` : "1px solid rgba(255,255,255,0.1)",
+                    background: isSelected ? `${c.accent}15` : "rgba(255,255,255,0.04)",
+                    cursor: "pointer",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "18px" }}>{th.icon}</span>
+                    <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: c.accent }} />
+                  </div>
+                  <div style={{ fontSize: "11px", fontWeight: "800", color: isSelected ? c.accent : "#ffffff" }}>
+                    {th.name}
+                  </div>
+                  <div style={{ fontSize: "9px", opacity: 0.6 }}>{th.badge}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 2. Apparence & Thème Clair/Sombre */}
         <div style={cardStyle}>
           <div style={sectionTitleStyle}>
-            <span>🎨</span> Apparence & Thème
+            <span>🌓</span> Mode Nuit / Jour
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
             <button
