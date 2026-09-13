@@ -72,7 +72,7 @@ body {
 }
 
 /* =========================
-   INPUTS FIX
+   INPUTS & CONTROLS BASE
 ========================= */
 
 input,
@@ -80,20 +80,13 @@ textarea,
 select,
 button {
   font-family: inherit;
-}
-
-input,
-textarea,
-select {
-  color: #111827 !important;
-  background: white !important;
-  caret-color: #111827;
+  font-size: inherit;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #6b7280;
-  opacity: 1;
+  color: #64748b;
+  opacity: 0.8;
 }
 
 textarea {

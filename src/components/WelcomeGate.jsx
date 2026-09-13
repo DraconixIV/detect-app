@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { THEMES } from "../styles/themes";
 
 export default function WelcomeGate({
   isOpen,
@@ -7,26 +6,20 @@ export default function WelcomeGate({
   onDevSkip,
   findsCount = 0,
   tracksCount = 0,
-  isOnline = true,
-  currentThemeKey = "tactical",
-  theme = "dark"
+  isOnline = true
 }) {
   const [loaded, setLoaded] = useState(false);
-  const [progress, setProgress] = useState(15);
-  const activeTheme = THEMES[currentThemeKey] || THEMES.tactical;
-  const c = activeTheme.colors;
-  const isLight = theme === "light";
+  const [progress, setProgress] = useState(20);
 
   useEffect(() => {
     if (!isOpen) return;
 
-    // Simulate smooth asset & telemetry loading progression
-    const timer1 = setTimeout(() => setProgress(45), 250);
-    const timer2 = setTimeout(() => setProgress(80), 550);
+    const timer1 = setTimeout(() => setProgress(55), 200);
+    const timer2 = setTimeout(() => setProgress(85), 450);
     const timer3 = setTimeout(() => {
       setProgress(100);
       setLoaded(true);
-    }, 850);
+    }, 700);
 
     return () => {
       clearTimeout(timer1);
@@ -43,79 +36,94 @@ export default function WelcomeGate({
         position: "fixed",
         inset: 0,
         zIndex: 999999,
-        background: isLight ? "linear-gradient(145deg, #f8fafc, #e2e8f0)" : "radial-gradient(circle at center, #111827 0%, #030712 100%)",
-        color: isLight ? "#0f172a" : "#f8fafc",
+        background: "radial-gradient(circle at 50% 30%, #111827 0%, #080c14 100%)",
+        color: "#f8fafc",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "32px 20px env(safe-area-inset-bottom, 24px) 20px",
-        fontFamily: "system-ui, -apple-system, sans-serif",
+        padding: "24px 20px env(safe-area-inset-bottom, 24px) 20px",
+        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         boxSizing: "border-box",
         userSelect: "none"
       }}
     >
-      {/* Top Bar with Dev Skip Button */}
+      {/* Top Bar */}
       <div style={{ width: "100%", maxWidth: "420px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: isOnline ? "#10b981" : "#f59e0b" }} />
-          <span style={{ fontSize: "11px", fontWeight: "700", color: isLight ? "#475569" : "#94a3b8" }}>
-            {isOnline ? "En ligne & Synchronisé" : "Mode Hors Ligne"}
+          <span
+            style={{
+              width: "7px",
+              height: "7px",
+              borderRadius: "50%",
+              background: isOnline ? "#10b981" : "#f59e0b",
+              boxShadow: isOnline ? "0 0 8px rgba(16, 185, 129, 0.4)" : "none"
+            }}
+          />
+          <span style={{ fontSize: "11px", fontWeight: "600", color: "#94a3b8", letterSpacing: "0.2px" }}>
+            {isOnline ? "Système synchronisé" : "Mode local actif"}
           </span>
         </div>
 
         {/* Developer Quick Bypass Button */}
         <button
+          type="button"
           onClick={onDevSkip || onEnter}
           style={{
-            padding: "5px 10px",
-            borderRadius: "8px",
-            border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.15)",
-            background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
-            color: isLight ? "#2563eb" : "#facc15",
+            padding: "4px 8px",
+            borderRadius: "6px",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
+            background: "rgba(255, 255, 255, 0.04)",
+            color: "#94a3b8",
             fontSize: "10px",
-            fontWeight: "800",
+            fontWeight: "600",
             cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "4px"
+            transition: "all 0.2s ease"
           }}
-          title="Bypass direct pour le développement"
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "#ffffff";
+            e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "#94a3b8";
+            e.currentTarget.style.background = "rgba(255, 255, 255, 0.04)";
+          }}
+          title="Bypass pour le développement"
         >
-          <span>⚡ Dev Skip</span>
+          Dev Skip
         </button>
       </div>
 
       {/* Center Branding & Telemetry Cards */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", maxWidth: "380px", width: "100%" }}>
-        {/* Animated Radar/Compass Logo Badge */}
+        {/* Minimalist Vector Emblem */}
         <div
           style={{
-            width: "88px",
-            height: "88px",
-            borderRadius: "26px",
-            background: isLight ? "#ffffff" : `linear-gradient(135deg, #1e293b, #0f172a)`,
-            border: `2px solid ${c.accent}`,
-            boxShadow: `0 0 30px ${c.accent}40`,
+            width: "72px",
+            height: "72px",
+            borderRadius: "18px",
+            background: "rgba(255, 255, 255, 0.03)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: "44px",
             marginBottom: "16px",
-            transform: "translateY(0px)",
-            animation: "pulse 2s infinite ease-in-out"
+            boxShadow: "0 8px 24px rgba(0, 0, 0, 0.4)"
           }}
         >
-          🧭
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="rgba(59, 130, 246, 0.25)" />
+          </svg>
         </div>
 
         <h1
           style={{
             margin: "0 0 4px 0",
-            fontSize: "24px",
-            fontWeight: "900",
-            letterSpacing: "-0.5px",
-            color: isLight ? "#0f172a" : "#ffffff"
+            fontSize: "22px",
+            fontWeight: "800",
+            letterSpacing: "0.5px",
+            color: "#ffffff"
           }}
         >
           RDL DETECT
@@ -123,30 +131,28 @@ export default function WelcomeGate({
 
         <div
           style={{
-            fontSize: "11px",
-            fontWeight: "800",
-            textTransform: "uppercase",
-            letterSpacing: "1px",
-            color: c.accent,
-            marginBottom: "20px"
+            fontSize: "12px",
+            fontWeight: "500",
+            color: "#94a3b8",
+            marginBottom: "24px"
           }}
         >
-          {activeTheme.name} • Télémétrie de Terrain
+          Carnet de bord & Télémétrie de prospection
         </div>
 
         {/* Progress bar */}
         <div style={{ width: "100%", marginBottom: "18px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", fontWeight: "700", marginBottom: "6px", color: isLight ? "#475569" : "#94a3b8" }}>
-            <span>{loaded ? "Données & Carte prêtes" : "Chargement des données & couches..."}</span>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", fontWeight: "600", marginBottom: "6px", color: "#64748b" }}>
+            <span>{loaded ? "Prêt" : "Initialisation des cartes..."}</span>
             <span>{progress}%</span>
           </div>
-          <div style={{ width: "100%", height: "6px", borderRadius: "3px", background: isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.1)", overflow: "hidden" }}>
+          <div style={{ width: "100%", height: "4px", borderRadius: "2px", background: "rgba(255, 255, 255, 0.06)", overflow: "hidden" }}>
             <div
               style={{
                 width: `${progress}%`,
                 height: "100%",
-                borderRadius: "3px",
-                background: `linear-gradient(90deg, ${c.accent}, #3b82f6)`,
+                borderRadius: "2px",
+                background: "#3b82f6",
                 transition: "width 0.3s ease"
               }}
             />
@@ -157,67 +163,75 @@ export default function WelcomeGate({
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", width: "100%", marginBottom: "10px" }}>
           <div
             style={{
-              background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)",
-              border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.08)",
-              borderRadius: "14px",
-              padding: "12px",
-              textAlign: "center"
+              background: "rgba(255, 255, 255, 0.03)",
+              border: "1px solid rgba(255, 255, 255, 0.06)",
+              borderRadius: "12px",
+              padding: "12px 14px",
+              textAlign: "left"
             }}
           >
-            <div style={{ fontSize: "16px" }}>📍</div>
-            <div style={{ fontSize: "9px", color: isLight ? "#64748b" : "#94a3b8", fontWeight: "700", textTransform: "uppercase" }}>Trouvailles</div>
-            <div style={{ fontSize: "15px", fontWeight: "800", marginTop: "2px", color: isLight ? "#0f172a" : "#facc15" }}>{findsCount} enregistrées</div>
+            <div style={{ fontSize: "11px", color: "#64748b", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.4px" }}>
+              Trouvailles
+            </div>
+            <div style={{ fontSize: "16px", fontWeight: "700", marginTop: "2px", color: "#f8fafc" }}>
+              {findsCount} <span style={{ fontSize: "11px", fontWeight: "400", color: "#94a3b8" }}>enregistrées</span>
+            </div>
           </div>
 
           <div
             style={{
-              background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)",
-              border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.08)",
-              borderRadius: "14px",
-              padding: "12px",
-              textAlign: "center"
+              background: "rgba(255, 255, 255, 0.03)",
+              border: "1px solid rgba(255, 255, 255, 0.06)",
+              borderRadius: "12px",
+              padding: "12px 14px",
+              textAlign: "left"
             }}
           >
-            <div style={{ fontSize: "16px" }}>🚶</div>
-            <div style={{ fontSize: "9px", color: isLight ? "#64748b" : "#94a3b8", fontWeight: "700", textTransform: "uppercase" }}>Parcours GPS</div>
-            <div style={{ fontSize: "15px", fontWeight: "800", marginTop: "2px", color: isLight ? "#0f172a" : "#10b981" }}>{tracksCount} sorties</div>
+            <div style={{ fontSize: "11px", color: "#64748b", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.4px" }}>
+              Parcours
+            </div>
+            <div style={{ fontSize: "16px", fontWeight: "700", marginTop: "2px", color: "#f8fafc" }}>
+              {tracksCount} <span style={{ fontSize: "11px", fontWeight: "400", color: "#94a3b8" }}>sorties</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Big Action Entry Button */}
+      {/* Main Entry Button */}
       <div style={{ width: "100%", maxWidth: "380px" }}>
         <button
+          type="button"
           onClick={onEnter}
           style={{
             width: "100%",
-            padding: "16px 20px",
-            borderRadius: "18px",
+            padding: "14px 20px",
+            borderRadius: "12px",
             border: "none",
-            background: `linear-gradient(135deg, ${c.accent}, #2563eb)`,
+            background: "#2563eb",
             color: "#ffffff",
-            fontSize: "15px",
-            fontWeight: "900",
-            letterSpacing: "0.5px",
+            fontSize: "14px",
+            fontWeight: "700",
+            letterSpacing: "0.2px",
             cursor: "pointer",
-            boxShadow: `0 8px 24px ${c.accent}50`,
+            boxShadow: "0 4px 14px rgba(37, 99, 235, 0.3)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: "10px",
-            transform: loaded ? "scale(1.02)" : "scale(1)",
-            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
+            gap: "8px",
+            transition: "all 0.2s ease"
           }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#1d4ed8")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "#2563eb")}
         >
-          <span>🚀</span>
-          <span>ACCÉDER À L'APPLICATION</span>
-          <span style={{ fontSize: "18px" }}>➔</span>
+          <span>Accéder à l'application</span>
+          <span style={{ fontSize: "15px" }}>➔</span>
         </button>
 
-        <p style={{ margin: "10px 0 0 0", textAlign: "center", fontSize: "10px", color: isLight ? "#64748b" : "#6b7280" }}>
-          Carnet de détection privé & confidentiel • Données sécurisées
+        <p style={{ margin: "12px 0 0 0", textAlign: "center", fontSize: "11px", color: "#64748b" }}>
+          Données cryptées & carnet de prospection privé
         </p>
       </div>
     </div>
   );
 }
+
