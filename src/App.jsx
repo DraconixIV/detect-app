@@ -6,7 +6,6 @@ import StatsPanel from "./components/StatsPanel";
 import CropperModal from "./components/CropperModal";
 import ToastNotification from "./components/ToastNotification";
 import ConfirmModal from "./components/ConfirmModal";
-import GpsOnboarding from "./components/GpsOnboarding";
 import AlbumPanel from "./components/AlbumPanel";
 import MainMap from "./components/MainMap";
 import SidebarMenu from "./components/SidebarMenu";
@@ -198,8 +197,25 @@ function App() {
   const [subCatModalStep, setSubCatModalStep] = useState(1);
   const [gpsStyle, setGpsStyle] = useState(() => localStorage.getItem("gpsStyle") || "blue-dot");
 
-  const [showStartupLocationScreen, setShowStartupLocationScreen] = useState(true);
   const gpsWatchIdRef = useRef(null);
+
+  // Silent automatic GPS discovery on startup (without blocking modal)
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const currentPos = [pos.coords.latitude, pos.coords.longitude];
+          setPosition(currentPos);
+          localStorage.setItem("lastKnownPosition", JSON.stringify(currentPos));
+          setGpsAccuracy(pos.coords.accuracy);
+        },
+        (err) => {
+          console.warn("Silent GPS startup check:", err?.message);
+        },
+        { enableHighAccuracy: false, timeout: 6000, maximumAge: 60000 }
+      );
+    }
+  }, []);
 
   const startGpsTracking = (initialPosition = null) => {
     if (gpsWatchIdRef.current) return;
@@ -1421,39 +1437,6 @@ return (
           }
         }}
       />
-
-      {/* Onboarding GPS Startup Screen */}
-      {!showOnboarding && showStartupLocationScreen && (
-        <GpsOnboarding
-          finds={finds}
-          onGpsAuthorized={(pos) => {
-            setFollowGps(true);
-            startGpsTracking(pos);
-            setZoomTarget({ position: pos, zoom: 18 });
-            setShowStartupLocationScreen(false);
-            setToast({ message: "🎯 GPS activé avec précision !", type: "success" });
-          }}
-          onModeConsultation={() => {
-            setFollowGps(false);
-            if (finds && finds.length > 0) {
-              const validFinds = finds.filter(f => (f.position ? f.position[0] : f.latitude) != null);
-              if (validFinds.length > 0) {
-                const lats = validFinds.map(f => f.position ? f.position[0] : f.latitude);
-                const lngs = validFinds.map(f => f.position ? f.position[1] : f.longitude);
-                const avgLat = lats.reduce((sum, val) => sum + val, 0) / lats.length;
-                const avgLng = lngs.reduce((sum, val) => sum + val, 0) / lngs.length;
-                setZoomTarget({ position: [avgLat, avgLng], zoom: 16 });
-              } else {
-                setZoomTarget({ position: [43.273, 3.173], zoom: 16 });
-              }
-            } else {
-              setZoomTarget({ position: [43.273, 3.173], zoom: 16 });
-            }
-            setShowStartupLocationScreen(false);
-            setToast({ message: "🗺️ Mode consultation activé à Lespignan.", type: "success" });
-          }}
-        />
-      )}
     </div>
   );
 }
