@@ -1,27 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../supabase";
+import AuthForm from "./AuthForm";
 
 export default function OnboardingModal({ isOpen, onComplete }) {
   const [cguAccepted, setCguAccepted] = useState(false);
   const [selectedMapStyle, setSelectedMapStyle] = useState("satellite"); // "satellite" | "streets" | "topo"
   const [user, setUser] = useState(null);
   const [step, setStep] = useState(1); // 1: Sensibilisation & CGU, 2: Compte & Carte
+  const [showAuthSection, setShowAuthSection] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data?.user || null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => subscription?.unsubscribe();
+  }, []);
 
   if (!isOpen) return null;
-
-  const handleGoogleLogin = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: window.location.origin
-        }
-      });
-      if (error) throw error;
-    } catch (err) {
-      alert("Connexion Google indisponible en mode démo ou hors-ligne : " + err.message);
-    }
-  };
 
   const handleFinish = () => {
     if (!cguAccepted) {
@@ -195,7 +195,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
               </div>
             </div>
 
-            {/* Google Login or Local Mode */}
+            {/* Compte & Authentification */}
             <div
               style={{
                 background: "rgba(255,255,255,0.04)",
@@ -204,35 +204,62 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                 padding: "14px"
               }}
             >
-              <div style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "6px", color: "#a78bfa" }}>
-                👤 Compte & Confidentialité
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                <div style={{ fontSize: "12px", fontWeight: "bold", color: "#a78bfa" }}>
+                  👤 Compte & Synchronisation
+                </div>
+                {user && (
+                  <span style={{ fontSize: "11px", color: "#10b981", fontWeight: "bold" }}>
+                    ✅ Connecté
+                  </span>
+                )}
               </div>
-              <p style={{ margin: "0 0 10px 0", fontSize: "11px", opacity: "0.8", lineHeight: "1.4" }}>
-                L'application fonctionne en <strong>Mode 100% Local</strong> par défaut : aucune coordonnée ni photo n'est envoyée sur des serveurs distants.
-              </p>
 
-              <button
-                type="button"
-                onClick={handleGoogleLogin}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255,255,255,0.15)",
-                  background: "rgba(255,255,255,0.08)",
-                  color: "white",
-                  fontSize: "12px",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px"
-                }}
-              >
-                <span>🌐</span>
-                <span>Se connecter avec Google (Optionnel)</span>
-              </button>
+              {user ? (
+                <div style={{ fontSize: "12px", color: "#e2e8f0", padding: "8px 0" }}>
+                  Connecté en tant que <strong>{user.email}</strong>
+                </div>
+              ) : (
+                <>
+                  <p style={{ margin: "0 0 10px 0", fontSize: "11px", opacity: "0.8", lineHeight: "1.4" }}>
+                    Par défaut, l'app fonctionne en <strong>Mode 100% Local</strong> (sans compte requis). Vous pouvez vous connecter pour synchroniser vos données.
+                  </p>
+
+                  {!showAuthSection ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowAuthSection(true)}
+                      style={{
+                        width: "100%",
+                        padding: "10px",
+                        borderRadius: "12px",
+                        border: "1px solid rgba(255,255,255,0.15)",
+                        background: "rgba(255,255,255,0.08)",
+                        color: "white",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "8px"
+                      }}
+                    >
+                      <span>🔑</span>
+                      <span>Se connecter / S'inscrire (Email ou Google)</span>
+                    </button>
+                  ) : (
+                    <div style={{ marginTop: "10px" }}>
+                      <AuthForm
+                        onAuthSuccess={(u) => {
+                          setUser(u);
+                          setShowAuthSection(false);
+                        }}
+                      />
+                    </div>
+                  )}
+                </>
+              )}
             </div>
 
             {/* Navigation buttons */}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabase";
 import { loadCategoriesData, addCategory, removeCategory, addSubCategory, removeSubCategory, resetCategories } from "../services/categoriesService";
+import AuthForm from "./AuthForm";
 
 export default function SettingsPanel({
   theme,
@@ -12,6 +13,7 @@ export default function SettingsPanel({
 }) {
   const [categoriesData, setCategoriesData] = useState(loadCategoriesData());
   const [user, setUser] = useState(null);
+  const [showAuthBox, setShowAuthBox] = useState(false);
   const [newCatName, setNewCatName] = useState("");
   const [newCatEmoji, setNewCatEmoji] = useState("🪙");
   const [selectedCatForSub, setSelectedCatForSub] = useState("");
@@ -24,22 +26,20 @@ export default function SettingsPanel({
       setUser(data?.user || null);
     });
 
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+      if (session?.user) {
+        setShowAuthBox(false);
+      }
+    });
+
     const refresh = () => setCategoriesData(loadCategoriesData());
     window.addEventListener("categories-updated", refresh);
-    return () => window.removeEventListener("categories-updated", refresh);
+    return () => {
+      subscription?.unsubscribe();
+      window.removeEventListener("categories-updated", refresh);
+    };
   }, []);
-
-  const handleGoogleLogin = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: window.location.origin }
-      });
-      if (error) throw error;
-    } catch (err) {
-      alert("Erreur de connexion : " + err.message);
-    }
-  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -361,19 +361,19 @@ export default function SettingsPanel({
           )}
         </div>
 
-        {/* 4. Compte Google & Données */}
+        {/* 4. Compte & Synchronisation */}
         <div style={cardStyle}>
           <div style={sectionTitleStyle}>
-            <span>👤</span> Compte & Sauvegardes
+            <span>👤</span> Compte & Synchronisation
           </div>
 
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: showAuthBox ? "14px" : "12px" }}>
             <div>
               <div style={{ fontSize: "12px", fontWeight: "bold" }}>
                 {user ? user.email : "Mode 100% Local / Invité"}
               </div>
               <div style={{ fontSize: "10px", opacity: 0.6 }}>
-                {user ? "Synchronisation Cloud activée" : "Données stockées uniquement sur votre appareil"}
+                {user ? "Synchronisation Cloud activée ✅" : "Données stockées uniquement sur votre appareil"}
               </div>
             </div>
 
@@ -386,13 +386,37 @@ export default function SettingsPanel({
               </button>
             ) : (
               <button
-                onClick={handleGoogleLogin}
-                style={{ padding: "8px 14px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.08)", color: "white", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}
+                onClick={() => setShowAuthBox(!showAuthBox)}
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: "10px",
+                  border: "none",
+                  background: showAuthBox ? "rgba(255,255,255,0.12)" : "linear-gradient(135deg, #3b82f6, #2563eb)",
+                  color: "white",
+                  fontSize: "11px",
+                  fontWeight: "bold",
+                  cursor: "pointer"
+                }}
               >
-                🌐 Connexion Google
+                {showAuthBox ? "Fermer ✕" : "🔑 Connexion / Inscription"}
               </button>
             )}
           </div>
+
+          {/* Collapsible Auth Form */}
+          {!user && showAuthBox && (
+            <div
+              style={{
+                background: "rgba(0,0,0,0.25)",
+                borderRadius: "14px",
+                padding: "14px",
+                marginBottom: "14px",
+                border: "1px solid rgba(255,255,255,0.08)"
+              }}
+            >
+              <AuthForm onAuthSuccess={() => setShowAuthBox(false)} />
+            </div>
+          )}
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "12px" }}>
             <button
