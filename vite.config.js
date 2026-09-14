@@ -63,12 +63,12 @@ export default defineConfig({
       },
 
       manifest: {
-        name: "Le Royaume de Lespignan",
+        name: "RDL",
 
         short_name: "RDL",
 
         description:
-          "Le Royaume de Lespignan - Application premium de détection de métaux",
+          "RDL - Application premium de détection de métaux",
 
         theme_color: "#ffffff",
 

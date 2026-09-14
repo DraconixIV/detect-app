@@ -1,4 +1,4 @@
-# Le Royaume de Lespignan (RDL)
+# RDL
 
 Application mobile premium de détection de métaux.
 

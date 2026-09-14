@@ -110,7 +110,7 @@ const radarHtml = `
   </div>
 `;
 
-// Style 3: Royal Crown Gold Pointer (RDL / Lespignan theme)
+// Style 3: Royal Crown Gold Pointer (RDL theme)
 const royalHtml = `
   <style>
     @keyframes royalHalo {

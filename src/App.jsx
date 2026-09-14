@@ -63,7 +63,7 @@ function App() {
     } catch (e) {
       console.error("Error reading cached position", e);
     }
-    return [43.273, 3.173]; // Par défaut Lespignan (Hérault) au lieu de Bourges
+    return [43.273, 3.173]; // Position par défaut
   });
 
 
