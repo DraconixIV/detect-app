@@ -21,6 +21,7 @@ import ThemePickerModal from "./components/ThemePickerModal";
 import CategoryManagerModal from "./components/CategoryManagerModal";
 import TeamSessionModal from "./components/TeamSessionModal";
 import MapLayersModal from "./components/MapLayersModal";
+import SplashScreen from "./components/SplashScreen";
 import { THEMES } from "./styles/themes";
 
 import { icons } from "./icons";
@@ -175,8 +176,9 @@ function App() {
     loadTracksList
   } = useSortieRecorder();
 
+  const [showSplash, setShowSplash] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(() => {
-    return localStorage.getItem("rdl_onboarding_completed_v2") !== "true";
+    return localStorage.getItem("rdl_onboarding_completed_v3") !== "true";
   });
   const [activeTab, setActiveTab] = useState("map");
   const [theme, setTheme] = useState(() => localStorage.getItem("app_theme") || "dark");
@@ -1557,7 +1559,7 @@ return (
       {/* Bottom Navigation Bar */}
       <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} currentThemeKey={designTheme} />
 
-      {/* Startup Onboarding Wizard (First Launch: Auth -> Official Legal & Ethical Charter -> Pre-Customization) */}
+      {/* Startup Onboarding Wizard (First Launch: Feature Discovery -> Official Legal & Ethical Charter -> Auth -> Pre-Customization) */}
       <OnboardingModal
         isOpen={showOnboarding}
         onComplete={({ defaultMapStyle, designTheme: newDesignTheme, theme: newTheme, gpsStyle: newGpsStyle }) => {
@@ -1568,6 +1570,11 @@ return (
           if (newGpsStyle) setGpsStyle(newGpsStyle);
         }}
       />
+
+      {/* Animated Luminous White Splash Screen */}
+      {showSplash && (
+        <SplashScreen onFinish={() => setShowSplash(false)} duration={2200} />
+      )}
     </div>
   );
 }

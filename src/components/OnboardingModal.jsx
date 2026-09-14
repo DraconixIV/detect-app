@@ -4,7 +4,11 @@ import { THEMES } from "../styles/themes";
 import AuthForm from "./AuthForm";
 
 export default function OnboardingModal({ isOpen, onComplete }) {
-  const [step, setStep] = useState(1); // 1: Compte/Connexion, 2: Législation & Charte Éthique, 3: Pré-personnalisation
+  // Step 1: Présentation & Découverte
+  // Step 2: Cadre Légal & Charte Éthique
+  // Step 3: Authentification & Espace Compte
+  // Step 4: Configuration Initiale
+  const [step, setStep] = useState(1);
   const [user, setUser] = useState(null);
 
   // Legal Checkboxes state
@@ -37,7 +41,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
   const allLegalChecked = checkOwner && checkHeritage && checkDeclaration && checkNature && checkCgu;
 
   const handleDevSkip = () => {
-    localStorage.setItem("rdl_onboarding_completed_v2", "true");
+    localStorage.setItem("rdl_onboarding_completed_v3", "true");
     localStorage.setItem("rdl_cgu_accepted", "true");
     if (onComplete) {
       onComplete({
@@ -50,7 +54,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
   };
 
   const handleFinish = () => {
-    localStorage.setItem("rdl_onboarding_completed_v2", "true");
+    localStorage.setItem("rdl_onboarding_completed_v3", "true");
     localStorage.setItem("rdl_cgu_accepted", "true");
     localStorage.setItem("mapStyle", selectedMapStyle);
     localStorage.setItem("app_design_theme", selectedDesignTheme);
@@ -86,12 +90,12 @@ export default function OnboardingModal({ isOpen, onComplete }) {
       <div
         style={{
           width: "100%",
-          maxWidth: "460px",
-          maxHeight: "90vh",
+          maxWidth: "480px",
+          maxHeight: "92vh",
           overflowY: "auto",
           background: "#0f172a",
-          borderRadius: "20px",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
+          borderRadius: "24px",
+          border: "1px solid rgba(255, 255, 255, 0.12)",
           boxShadow: "0 25px 60px -15px rgba(0, 0, 0, 0.9)",
           padding: "24px 20px",
           color: "#f8fafc",
@@ -104,11 +108,11 @@ export default function OnboardingModal({ isOpen, onComplete }) {
           {/* Step Indicator */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <div style={{ display: "flex", gap: "4px" }}>
-              {[1, 2, 3].map((s) => (
+              {[1, 2, 3, 4].map((s) => (
                 <div
                   key={s}
                   style={{
-                    width: step === s ? "20px" : "8px",
+                    width: step === s ? "22px" : "7px",
                     height: "6px",
                     borderRadius: "3px",
                     background: step === s ? "#3b82f6" : (step > s ? "#10b981" : "rgba(255, 255, 255, 0.15)"),
@@ -118,7 +122,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
               ))}
             </div>
             <span style={{ fontSize: "11px", fontWeight: "600", color: "#94a3b8", marginLeft: "4px" }}>
-              Étape {step} sur 3
+              Étape {step} sur 4
             </span>
           </div>
 
@@ -151,109 +155,159 @@ export default function OnboardingModal({ isOpen, onComplete }) {
         </div>
 
         {/* ========================================================= */}
-        {/* ÉTAPE 1 : ESPACE COMPTE (AUTHENTIFICATION) */}
+        {/* ÉTAPE 1 : PRÉSENTATION & FONCTIONNEMENT DE L'APP */}
         {/* ========================================================= */}
         {step === 1 && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
             <div>
-              <h2 style={{ margin: "0 0 6px 0", fontSize: "20px", fontWeight: "800", color: "#f8fafc", letterSpacing: "-0.4px" }}>
-                Votre Espace Détection
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "20px", background: "rgba(59, 130, 246, 0.15)", border: "1px solid rgba(59, 130, 246, 0.3)", color: "#93c5fd", fontSize: "11px", fontWeight: "700", marginBottom: "8px" }}>
+                ✨ 100% Gratuit & Sans Abonnement
+              </div>
+              <h2 style={{ margin: "0 0 6px 0", fontSize: "21px", fontWeight: "800", color: "#f8fafc", letterSpacing: "-0.4px" }}>
+                Bienvenue sur Détect'App 🧭
               </h2>
               <p style={{ margin: 0, fontSize: "13px", color: "#94a3b8", lineHeight: "1.45" }}>
-                Synchronisez vos découvertes, photos haute résolution et parcours GPS.
+                Votre compagnon tout-en-un pour la détection de loisir, le repérage cartographique et l'inventaire de trouvailles.
               </p>
             </div>
 
-            {user ? (
+            {/* 3 Key Feature Highlight Cards */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              {/* Feature 1 */}
               <div
                 style={{
-                  background: "rgba(16, 185, 129, 0.08)",
-                  border: "1px solid rgba(16, 185, 129, 0.25)",
-                  borderRadius: "14px",
-                  padding: "16px",
                   display: "flex",
-                  flexDirection: "column",
-                  gap: "12px"
+                  gap: "12px",
+                  padding: "12px 14px",
+                  background: "rgba(255, 255, 255, 0.03)",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "14px",
+                  alignItems: "flex-start"
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <div
-                    style={{
-                      width: "36px",
-                      height: "36px",
-                      borderRadius: "50%",
-                      background: "#10b981",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "white",
-                      fontWeight: "bold",
-                      fontSize: "16px"
-                    }}
-                  >
-                    ✓
-                  </div>
-                  <div>
-                    <div style={{ fontSize: "13px", fontWeight: "700", color: "#f8fafc" }}>
-                      Connecté avec succès
-                    </div>
-                    <div style={{ fontSize: "12px", color: "#6ee7b7" }}>
-                      {user.email}
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setStep(2)}
+                <div
                   style={{
-                    width: "100%",
-                    padding: "12px",
+                    width: "36px",
+                    height: "36px",
                     borderRadius: "10px",
-                    border: "none",
-                    background: "#2563eb",
-                    color: "white",
-                    fontSize: "13px",
-                    fontWeight: "700",
-                    cursor: "pointer",
-                    boxShadow: "0 2px 10px rgba(37, 99, 235, 0.3)"
+                    background: "rgba(37, 99, 235, 0.2)",
+                    border: "1px solid rgba(59, 130, 246, 0.3)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "18px",
+                    flexShrink: 0
                   }}
                 >
-                  Continuer vers la Charte Légale ➔
-                </button>
-              </div>
-            ) : (
-              <div>
-                <AuthForm
-                  onAuthSuccess={(u) => {
-                    setUser(u);
-                    setStep(2);
-                  }}
-                  showGoogleOption={true}
-                />
-
-                <div style={{ textAlign: "center", marginTop: "16px" }}>
-                  <button
-                    type="button"
-                    onClick={() => setStep(2)}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      color: "#64748b",
-                      fontSize: "12px",
-                      fontWeight: "500",
-                      cursor: "pointer",
-                      padding: "6px 10px",
-                      textDecoration: "underline",
-                      transition: "color 0.2s"
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = "#94a3b8")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "#64748b")}
-                  >
-                    Continuer sans compte (Mode 100% hors-ligne) ➔
-                  </button>
+                  🗺️
+                </div>
+                <div>
+                  <div style={{ fontSize: "13px", fontWeight: "700", color: "#f1f5f9", marginBottom: "2px" }}>
+                    Cartes IGN & Tracé GPS en Direct
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#94a3b8", lineHeight: "1.4" }}>
+                    Superposez le <strong>Cadastre officiel</strong>, la carte de <strong>Cassini</strong> et l'<strong>État-Major 1820</strong>. Visualisez vos tracés pour ne jamais repasser au même endroit.
+                  </div>
                 </div>
               </div>
-            )}
+
+              {/* Feature 2 */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: "12px",
+                  padding: "12px 14px",
+                  background: "rgba(255, 255, 255, 0.03)",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "14px",
+                  alignItems: "flex-start"
+                }}
+              >
+                <div
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "10px",
+                    background: "rgba(245, 158, 11, 0.2)",
+                    border: "1px solid rgba(245, 158, 11, 0.3)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "18px",
+                    flexShrink: 0
+                  }}
+                >
+                  🪙
+                </div>
+                <div>
+                  <div style={{ fontSize: "13px", fontWeight: "700", color: "#f1f5f9", marginBottom: "2px" }}>
+                    Journal de Trouvailles & Photos HD
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#94a3b8", lineHeight: "1.4" }}>
+                    Épinglez chaque découverte avec ses coordonnées exactes, photos macro, catégorie et exportez vos statistiques à tout moment.
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature 3 */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: "12px",
+                  padding: "12px 14px",
+                  background: "rgba(255, 255, 255, 0.03)",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "14px",
+                  alignItems: "flex-start"
+                }}
+              >
+                <div
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "10px",
+                    background: "rgba(16, 185, 129, 0.2)",
+                    border: "1px solid rgba(16, 185, 129, 0.3)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "18px",
+                    flexShrink: 0
+                  }}
+                >
+                  👥
+                </div>
+                <div>
+                  <div style={{ fontSize: "13px", fontWeight: "700", color: "#f1f5f9", marginBottom: "2px" }}>
+                    Sessions en Équipe & Sauvegarde
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#94a3b8", lineHeight: "1.4" }}>
+                    Rejoignez une session collective en direct avec vos amis ou prospectez en mode 100% hors-ligne sécurisé.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Next Button */}
+            <button
+              type="button"
+              onClick={() => setStep(2)}
+              style={{
+                marginTop: "4px",
+                padding: "13px 18px",
+                borderRadius: "12px",
+                border: "none",
+                background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                color: "white",
+                fontSize: "14px",
+                fontWeight: "700",
+                cursor: "pointer",
+                boxShadow: "0 4px 14px rgba(37, 99, 235, 0.35)",
+                transition: "all 0.2s ease"
+              }}
+            >
+              Découvrir le Cadre Légal & Charte ➔
+            </button>
           </div>
         )}
 
@@ -264,10 +318,10 @@ export default function OnboardingModal({ isOpen, onComplete }) {
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
               <h2 style={{ margin: "0 0 6px 0", fontSize: "20px", fontWeight: "800", color: "#f8fafc", letterSpacing: "-0.4px" }}>
-                Cadre Légal & Charte Éthique
+                Cadre Légal & Charte Éthique ⚖️
               </h2>
               <p style={{ margin: 0, fontSize: "13px", color: "#94a3b8", lineHeight: "1.45" }}>
-                Réglementation officielle française encadrant l'utilisation des détecteurs de métaux.
+                La détection de métaux en France est soumise à des règles strictes pour préserver le patrimoine et respecter la propriété privée.
               </p>
             </div>
 
@@ -300,7 +354,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                   Découvertes fortuites (Art. L. 531-14)
                 </div>
                 <div style={{ color: "#94a3b8", fontSize: "11px" }}>
-                  Toute découverte d'intérêt historique ou archéologique fortuite doit être immédiatement déclarée auprès de la mairie et du Service Régional de l'Archéologie (DRAC).
+                  Toute découverte fortuite d'intérêt historique ou archéologique doit être immédiatement déclarée auprès de la mairie et du Service Régional de l'Archéologie (DRAC).
                 </div>
               </div>
             </div>
@@ -424,7 +478,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                   onChange={(e) => setCheckCgu(e.target.checked)}
                   style={{ width: "16px", height: "16px", marginTop: "2px", accentColor: "#2563eb", cursor: "pointer" }}
                 />
-                <span>J'accepte les <strong>Conditions Générales d'Utilisation</strong> et la politique de confidentialité.</span>
+                <span>J'accepte les <strong>Conditions Générales d'Utilisation</strong> et la charte éthique.</span>
               </label>
             </div>
 
@@ -472,13 +526,139 @@ export default function OnboardingModal({ isOpen, onComplete }) {
         )}
 
         {/* ========================================================= */}
-        {/* ÉTAPE 3 : PRÉ-PERSONNALISATION */}
+        {/* ÉTAPE 3 : ESPACE COMPTE (AUTHENTIFICATION) */}
         {/* ========================================================= */}
         {step === 3 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
               <h2 style={{ margin: "0 0 6px 0", fontSize: "20px", fontWeight: "800", color: "#f8fafc", letterSpacing: "-0.4px" }}>
-                Configuration Initiale
+                Votre Espace Prospecteur 👤
+              </h2>
+              <p style={{ margin: 0, fontSize: "13px", color: "#94a3b8", lineHeight: "1.45" }}>
+                Connectez-vous pour synchroniser vos trouvailles sur tous vos appareils, ou continuez en local.
+              </p>
+            </div>
+
+            {user ? (
+              <div
+                style={{
+                  background: "rgba(16, 185, 129, 0.08)",
+                  border: "1px solid rgba(16, 185, 129, 0.25)",
+                  borderRadius: "14px",
+                  padding: "16px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px"
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div
+                    style={{
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "50%",
+                      background: "#10b981",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "white",
+                      fontWeight: "bold",
+                      fontSize: "16px"
+                    }}
+                  >
+                    ✓
+                  </div>
+                  <div>
+                    <div style={{ fontSize: "13px", fontWeight: "700", color: "#f8fafc" }}>
+                      Connecté avec succès
+                    </div>
+                    <div style={{ fontSize: "12px", color: "#6ee7b7" }}>
+                      {user.email}
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setStep(4)}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    borderRadius: "10px",
+                    border: "none",
+                    background: "#2563eb",
+                    color: "white",
+                    fontSize: "13px",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                    boxShadow: "0 2px 10px rgba(37, 99, 235, 0.3)"
+                  }}
+                >
+                  Continuer vers la Configuration ➔
+                </button>
+              </div>
+            ) : (
+              <div>
+                <AuthForm
+                  onAuthSuccess={(u) => {
+                    setUser(u);
+                    setStep(4);
+                  }}
+                  showGoogleOption={true}
+                />
+
+                <div style={{ textAlign: "center", marginTop: "16px" }}>
+                  <button
+                    type="button"
+                    onClick={() => setStep(4)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "#64748b",
+                      fontSize: "12px",
+                      fontWeight: "500",
+                      cursor: "pointer",
+                      padding: "6px 10px",
+                      textDecoration: "underline",
+                      transition: "color 0.2s"
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "#94a3b8")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "#64748b")}
+                  >
+                    Continuer sans compte (Mode 100% hors-ligne) ➔
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: "10px",
+                  border: "1px solid rgba(255, 255, 255, 0.12)",
+                  background: "transparent",
+                  color: "#94a3b8",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  cursor: "pointer"
+                }}
+              >
+                ← Retour au cadre légal
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* ÉTAPE 4 : PRÉ-PERSONNALISATION & FINALISATION */}
+        {/* ========================================================= */}
+        {step === 4 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div>
+              <h2 style={{ margin: "0 0 6px 0", fontSize: "20px", fontWeight: "800", color: "#f8fafc", letterSpacing: "-0.4px" }}>
+                Configuration Initiale ⚙️
               </h2>
               <p style={{ margin: 0, fontSize: "13px", color: "#94a3b8", lineHeight: "1.45" }}>
                 Personnalisez votre affichage cartographique et l'interface de travail.
@@ -504,7 +684,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                   }}
                 >
                   <div style={{ fontSize: "13px", fontWeight: "700", color: selectedMapStyle === "satellite" ? "#ffffff" : "#94a3b8" }}>
-                    Satellite HD
+                    🛰️ Satellite HD
                   </div>
                   <div style={{ fontSize: "11px", color: "#64748b", marginTop: "2px" }}>
                     Imagerie aérienne
@@ -524,7 +704,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                   }}
                 >
                   <div style={{ fontSize: "13px", fontWeight: "700", color: selectedMapStyle === "streets" ? "#ffffff" : "#94a3b8" }}>
-                    Relief & Topo
+                    🏔️ Relief & Topo
                   </div>
                   <div style={{ fontSize: "11px", color: "#64748b", marginTop: "2px" }}>
                     Courbes de niveau
@@ -587,7 +767,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                     cursor: "pointer"
                   }}
                 >
-                  Sombre
+                  🌙 Sombre
                 </button>
                 <button
                   type="button"
@@ -603,7 +783,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                     cursor: "pointer"
                   }}
                 >
-                  Clair
+                  ☀️ Clair
                 </button>
               </div>
             </div>
@@ -612,7 +792,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
             <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
               <button
                 type="button"
-                onClick={() => setStep(2)}
+                onClick={() => setStep(3)}
                 style={{
                   padding: "12px 16px",
                   borderRadius: "10px",
@@ -644,7 +824,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                   transition: "all 0.2s ease"
                 }}
               >
-                Accéder à l'application ➔
+                Accéder à l'application 🚀
               </button>
             </div>
           </div>
@@ -653,4 +833,3 @@ export default function OnboardingModal({ isOpen, onComplete }) {
     </div>
   );
 }
-
