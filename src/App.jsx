@@ -231,17 +231,17 @@ function App() {
   const [showCadastre, setShowCadastre] = useState(() => localStorage.getItem("showCadastre") === "true");
   const [cadastreOpacity, setCadastreOpacity] = useState(() => {
     const val = localStorage.getItem("cadastreOpacity");
-    return val ? parseFloat(val) : 0.85;
+    return val ? parseFloat(val) : 1.0;
   });
   const [showCassini, setShowCassini] = useState(() => localStorage.getItem("showCassini") === "true" || localStorage.getItem("showHistoricalMap") === "true");
   const [cassiniOpacity, setCassiniOpacity] = useState(() => {
     const val = localStorage.getItem("cassiniOpacity") || localStorage.getItem("historicalMapOpacity");
-    return val ? parseFloat(val) : 0.6;
+    return val ? parseFloat(val) : 1.0;
   });
   const [showEtatMajor, setShowEtatMajor] = useState(() => localStorage.getItem("showEtatMajor") === "true");
   const [etatMajorOpacity, setEtatMajorOpacity] = useState(() => {
     const val = localStorage.getItem("etatMajorOpacity");
-    return val ? parseFloat(val) : 0.6;
+    return val ? parseFloat(val) : 1.0;
   });
   const [showMapLayersModal, setShowMapLayersModal] = useState(false);
   const [showHistoricalMap, setShowHistoricalMap] = useState(false);

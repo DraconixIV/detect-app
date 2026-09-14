@@ -61,24 +61,30 @@ export default function MapLayers({
   baseMap = "satellite",
   mapStyle, // backwards compatibility
   showCadastre = false,
-  cadastreOpacity = 0.85,
+  cadastreOpacity = 1.0,
   showCassini = false,
   showHistoricalMap, // backwards compatibility
-  cassiniOpacity = 0.6,
+  cassiniOpacity = 1.0,
   historicalMapOpacity, // backwards compatibility
   showEtatMajor = false,
-  etatMajorOpacity = 0.6
+  etatMajorOpacity = 1.0
 }) {
-  // Normalize base map
-  let effectiveBaseKey = baseMap;
-  if (mapStyle === "plan" || mapStyle === "streets") effectiveBaseKey = "osm";
-  if (mapStyle === "satellite") effectiveBaseKey = "satellite";
-  if (!BASE_MAPS[effectiveBaseKey]) effectiveBaseKey = "satellite";
+  // Normalize base map: prioritize baseMap prop first
+  let effectiveBaseKey = "satellite";
+  if (baseMap && BASE_MAPS[baseMap]) {
+    effectiveBaseKey = baseMap;
+  } else if (mapStyle === "plan" || mapStyle === "streets") {
+    effectiveBaseKey = "osm";
+  } else if (mapStyle === "satellite") {
+    effectiveBaseKey = "satellite";
+  }
 
-  const currentBase = BASE_MAPS[effectiveBaseKey];
+  const currentBase = BASE_MAPS[effectiveBaseKey] || BASE_MAPS.satellite;
 
   const isCassiniActive = showCassini || showHistoricalMap;
-  const currentCassiniOpacity = cassiniOpacity !== undefined ? cassiniOpacity : (historicalMapOpacity || 0.6);
+  const currentCassiniOpacity = cassiniOpacity !== undefined ? cassiniOpacity : (historicalMapOpacity !== undefined ? historicalMapOpacity : 1.0);
+  const currentCadastreOpacity = cadastreOpacity !== undefined ? cadastreOpacity : 1.0;
+  const currentEtatMajorOpacity = etatMajorOpacity !== undefined ? etatMajorOpacity : 1.0;
 
   return (
     <>
@@ -116,7 +122,7 @@ export default function MapLayers({
           key="overlay-etat-major"
           attribution="&copy; IGN - État-Major 1820-1866"
           url="https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=GEOGRAPHICALGRIDSYSTEMS.ETATMAJOR40&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg"
-          opacity={etatMajorOpacity}
+          opacity={currentEtatMajorOpacity}
           maxZoom={20}
           maxNativeZoom={15}
           minZoom={0}
@@ -133,7 +139,7 @@ export default function MapLayers({
           key="overlay-cadastre"
           attribution="&copy; IGN / DGFiP - Cadastre"
           url="https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&STYLE=normal&TILEMATRIXSET=PM_0_19&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png"
-          opacity={cadastreOpacity}
+          opacity={currentCadastreOpacity}
           maxZoom={22}
           maxNativeZoom={19}
           minZoom={0}
