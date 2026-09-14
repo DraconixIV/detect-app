@@ -6,9 +6,9 @@ const ACTIVE_SESSION_STORAGE_KEY = "rdl_active_session_v1";
 const JOINED_SESSIONS_HISTORY_KEY = "rdl_joined_sessions_history_v1";
 
 /**
- * Generate a random, readable 6-character alphanumeric code (e.g. "RDL-7K3P")
+ * Generate a random, readable 6-character alphanumeric code (e.g. "GEO-7K3P")
  */
-export function generateRandomCode(prefix = "RDL") {
+export function generateRandomCode(prefix = "GEO") {
   const chars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // without ambiguous 0/O, 1/I
   let result = "";
   for (let i = 0; i < 4; i++) {
@@ -24,13 +24,13 @@ export function getMyUserCode() {
   try {
     let code = localStorage.getItem(USER_CODE_STORAGE_KEY);
     if (!code) {
-      code = generateRandomCode("RDL");
+      code = generateRandomCode("GEO");
       localStorage.setItem(USER_CODE_STORAGE_KEY, code);
     }
     return code;
   } catch (e) {
     console.warn("Storage error in getMyUserCode:", e);
-    return "RDL-LOCAL";
+    return "GEO-LOCAL";
   }
 }
 

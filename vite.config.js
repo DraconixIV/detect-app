@@ -63,12 +63,12 @@ export default defineConfig({
       },
 
       manifest: {
-        name: "RDL",
+        name: "GeoProspect",
 
-        short_name: "RDL",
+        short_name: "GeoProspect",
 
         description:
-          "RDL - Application premium de détection de métaux",
+          "GeoProspect - Application premium de détection de métaux & cartographie",
 
         theme_color: "#ffffff",
 

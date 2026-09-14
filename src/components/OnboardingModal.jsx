@@ -163,7 +163,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                 ✨ 100% Gratuit & Libre
               </div>
               <h1 style={{ margin: "0 0 8px 0", fontSize: "24px", fontWeight: "900", color: "#0f172a", letterSpacing: "-0.5px" }}>
-                Bienvenue sur Détect'App 🧭
+                Bienvenue sur GeoProspect 🧭
               </h1>
               <p style={{ margin: 0, fontSize: "14px", color: "#475569", lineHeight: "1.5" }}>
                 Votre compagnon tout-en-un pour la détection de loisir, le repérage cartographique et l'inventaire de vos trouvailles.

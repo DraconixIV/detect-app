@@ -347,13 +347,13 @@ export default function TeamSessionModal({
             <form onSubmit={handleStartConsultation} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               <div>
                 <label style={{ fontSize: "11px", fontWeight: "600", color: "#94a3b8", display: "block", marginBottom: "6px" }}>
-                  Saisir le Code Détecteur de votre ami (ex: RDL-XXXX) :
+                  Saisir le Code Détecteur de votre ami (ex: GEO-XXXX) :
                 </label>
                 <input
                   type="text"
                   value={consultCodeInput}
                   onChange={(e) => setConsultCodeInput(e.target.value)}
-                  placeholder="RDL-XXXX"
+                  placeholder="GEO-XXXX"
                   required
                   style={{
                     width: "100%",

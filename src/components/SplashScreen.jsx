@@ -234,8 +234,8 @@ export default function SplashScreen({ onFinish, duration = 2200 }) {
             gap: "4px"
           }}
         >
-          <span>Détect'</span>
-          <span style={{ color: "#2563eb" }}>App</span>
+          <span>Geo</span>
+          <span style={{ color: "#2563eb" }}>Prospect</span>
         </h1>
 
         <p

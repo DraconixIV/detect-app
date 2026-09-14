@@ -1,6 +1,6 @@
-# RDL
+# GeoProspect
 
-Application mobile premium de détection de métaux.
+Application mobile premium de détection de métaux et de cartographie terrain.
 
 Currently, two official plugins are available:
 

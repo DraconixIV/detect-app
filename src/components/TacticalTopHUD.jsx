@@ -83,7 +83,7 @@ export default function TacticalTopHUD({
           }}
         >
           <span>🪙</span>
-          <span>RDL DETECT</span>
+          <span>GEOPROSPECT</span>
         </div>
       </div>
 
