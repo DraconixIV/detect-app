@@ -180,7 +180,7 @@ export default function MapLayersModal({
                 fontWeight: '800',
                 textTransform: 'uppercase',
                 letterSpacing: '0.6px',
-                color: c.accent || '#ef4444',
+                color: '#ffffff',
                 marginBottom: '8px',
                 display: 'flex',
                 alignItems: 'center',
@@ -215,7 +215,7 @@ export default function MapLayersModal({
                       background: isSelected
                         ? `${c.accent || '#ef4444'}20`
                         : (c.bgCard || 'rgba(255,255,255,0.04)'),
-                      color: c.textPrimary || '#ffffff',
+                      color: '#ffffff',
                       cursor: 'pointer',
                       textAlign: 'left',
                       display: 'flex',
@@ -225,7 +225,7 @@ export default function MapLayersModal({
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <div style={{ fontSize: '12px', fontWeight: '800' }}>{bm.name}</div>
+                      <div style={{ fontSize: '12px', fontWeight: '800', color: '#ffffff' }}>{bm.name}</div>
                       {isSelected && (
                         <span
                           style={{
@@ -242,7 +242,7 @@ export default function MapLayersModal({
                         </span>
                       )}
                     </div>
-                    <div style={{ fontSize: '10px', color: c.textSecondary || '#9ca3af', lineHeight: '1.2', marginTop: '2px' }}>
+                    <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, lineHeight: '1.2', marginTop: '2px' }}>
                       {bm.desc}
                     </div>
                   </button>
@@ -259,7 +259,7 @@ export default function MapLayersModal({
                 fontWeight: '800',
                 textTransform: 'uppercase',
                 letterSpacing: '0.6px',
-                color: c.accentSecondary || '#f97316',
+                color: '#ffffff',
                 marginBottom: '4px',
                 display: 'flex',
                 alignItems: 'center',
@@ -268,7 +268,7 @@ export default function MapLayersModal({
             >
               Surcouche Superposable (1 au choix)
             </div>
-            <p style={{ fontSize: '11px', color: c.textSecondary || '#9ca3af', margin: '0 0 10px 0' }}>
+            <p style={{ fontSize: '11px', color: '#ffffff', opacity: 0.85, margin: '0 0 10px 0' }}>
               Superposez une couche cadastrale ou historique unique sur votre fond de carte.
             </p>
 
@@ -287,10 +287,10 @@ export default function MapLayersModal({
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
-                    <div style={{ fontSize: '13px', fontWeight: '800', color: showCadastre ? '#34d399' : c.textPrimary }}>
+                    <div style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff' }}>
                       Cadastre Officiel IGN / DGFiP
                     </div>
-                    <div style={{ fontSize: '10px', color: c.textSecondary, marginTop: '1px' }}>
+                    <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, marginTop: '1px' }}>
                       Limites exactes des parcelles et numéros cadastraux
                     </div>
                   </div>
@@ -301,7 +301,7 @@ export default function MapLayersModal({
                       borderRadius: '10px',
                       border: 'none',
                       background: showCadastre ? '#10b981' : 'rgba(255,255,255,0.1)',
-                      color: showCadastre ? '#ffffff' : '#9ca3af',
+                      color: showCadastre ? '#ffffff' : '#ffffff',
                       fontSize: '11px',
                       fontWeight: '800',
                       cursor: 'pointer',
@@ -314,9 +314,9 @@ export default function MapLayersModal({
 
                 {showCadastre && (
                   <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: c.textSecondary, marginBottom: '4px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#ffffff', marginBottom: '4px' }}>
                       <span>Opacité Cadastre</span>
-                      <strong style={{ color: '#34d399' }}>{Math.round(cadastreOpacity * 100)}%</strong>
+                      <strong style={{ color: '#ffffff' }}>{Math.round(cadastreOpacity * 100)}%</strong>
                     </div>
                     <input
                       type='range'
@@ -349,10 +349,10 @@ export default function MapLayersModal({
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
-                    <div style={{ fontSize: '13px', fontWeight: '800', color: showCassini ? '#60a5fa' : c.textPrimary }}>
+                    <div style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff' }}>
                       Carte de Cassini (XVIIIe siècle - BnF / IGN)
                     </div>
-                    <div style={{ fontSize: '10px', color: c.textSecondary, marginTop: '1px' }}>
+                    <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, marginTop: '1px' }}>
                       Première carte générale du Royaume de France (1750-1815)
                     </div>
                   </div>
@@ -363,7 +363,7 @@ export default function MapLayersModal({
                       borderRadius: '10px',
                       border: 'none',
                       background: showCassini ? '#3b82f6' : 'rgba(255,255,255,0.1)',
-                      color: showCassini ? '#ffffff' : '#9ca3af',
+                      color: showCassini ? '#ffffff' : '#ffffff',
                       fontSize: '11px',
                       fontWeight: '800',
                       cursor: 'pointer',
@@ -376,9 +376,9 @@ export default function MapLayersModal({
 
                 {showCassini && (
                   <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: c.textSecondary, marginBottom: '4px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#ffffff', marginBottom: '4px' }}>
                       <span>Opacité Cassini</span>
-                      <strong style={{ color: '#60a5fa' }}>{Math.round(cassiniOpacity * 100)}%</strong>
+                      <strong style={{ color: '#ffffff' }}>{Math.round(cassiniOpacity * 100)}%</strong>
                     </div>
                     <input
                       type='range'
@@ -411,10 +411,10 @@ export default function MapLayersModal({
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
-                    <div style={{ fontSize: '13px', fontWeight: '800', color: showEtatMajor ? '#fbbf24' : c.textPrimary }}>
+                    <div style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff' }}>
                       Carte d'État-Major (1820-1866 - IGN)
                     </div>
-                    <div style={{ fontSize: '10px', color: c.textSecondary, marginTop: '1px' }}>
+                    <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, marginTop: '1px' }}>
                       Cartographie militaire du XIXe siècle (1:40 000)
                     </div>
                   </div>
@@ -425,7 +425,7 @@ export default function MapLayersModal({
                       borderRadius: '10px',
                       border: 'none',
                       background: showEtatMajor ? '#d97706' : 'rgba(255,255,255,0.1)',
-                      color: showEtatMajor ? '#ffffff' : '#9ca3af',
+                      color: showEtatMajor ? '#ffffff' : '#ffffff',
                       fontSize: '11px',
                       fontWeight: '800',
                       cursor: 'pointer',
@@ -438,9 +438,9 @@ export default function MapLayersModal({
 
                 {showEtatMajor && (
                   <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: c.textSecondary, marginBottom: '4px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#ffffff', marginBottom: '4px' }}>
                       <span>Opacité État-Major</span>
-                      <strong style={{ color: '#fbbf24' }}>{Math.round(etatMajorOpacity * 100)}%</strong>
+                      <strong style={{ color: '#ffffff' }}>{Math.round(etatMajorOpacity * 100)}%</strong>
                     </div>
                     <input
                       type='range'
@@ -473,10 +473,10 @@ export default function MapLayersModal({
               gap: '4px'
             }}
           >
-            <div style={{ fontSize: '11px', fontWeight: '800', color: c.textPrimary || '#ffffff' }}>
+            <div style={{ fontSize: '11px', fontWeight: '800', color: '#ffffff' }}>
               Charte Éthique & Limite Légale
             </div>
-            <div style={{ fontSize: '10px', color: c.textSecondary || '#9ca3af', lineHeight: '1.4' }}>
+            <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, lineHeight: '1.4' }}>
               Cette application fournit exclusivement des cartes topographiques, historiques et cadastrales publiques.
               Aucun calque archéologique (DRAC / Patriarche) n'est intégré, pour préserver le patrimoine historique et respecter la législation en vigueur.
             </div>

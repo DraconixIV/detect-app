@@ -682,7 +682,7 @@ export default function AlbumPanel({
 
                   {/* Favorite Badge */}
                   {find.favorite && (
-                    <div style={{ position: "absolute", top: "6px", right: "6px", background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", color: "#facc15" }}>
+                    <div style={{ position: "absolute", top: "6px", right: "6px", background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", color: "#ffffff", fontWeight: "700" }}>
                       ⭐
                     </div>
                   )}
@@ -931,7 +931,7 @@ export default function AlbumPanel({
                         </div>
                       </div>
                     </div>
-                    <div style={{ fontSize: "12px", color: "#facc15", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px" }}>
+                    <div style={{ fontSize: "12px", color: "#ffffff", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px" }}>
                       <span>👆</span>
                       <span>Tapez sur la pièce pour voir l'autre face ({lightboxCoinFlipped ? "Revers" : "Avers"})</span>
                     </div>
@@ -1002,11 +1002,11 @@ export default function AlbumPanel({
                   onClick={() => setEditingFlipCoinFind(selectedAlbumPhoto.find)}
                   style={{
                     width: "100%",
-                    border: "1px solid rgba(250, 204, 21, 0.4)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
                     borderRadius: "14px",
                     padding: "10px 16px",
-                    background: "rgba(250, 204, 21, 0.15)",
-                    color: "#facc15",
+                    background: "rgba(255, 255, 255, 0.1)",
+                    color: "#ffffff",
                     fontWeight: "800",
                     fontSize: "13px",
                     cursor: "pointer",

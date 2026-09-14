@@ -255,7 +255,7 @@ export default function TeamSessionModal({
                 textAlign: "center"
               }}
             >
-              <div style={{ fontSize: "11px", textTransform: "uppercase", fontWeight: "700", color: "#64748b", letterSpacing: "0.5px" }}>
+              <div style={{ fontSize: "11px", textTransform: "uppercase", fontWeight: "700", color: isLight ? "#64748b" : "#ffffff", letterSpacing: "0.5px" }}>
                 Votre Code Détecteur Unique
               </div>
               <div
@@ -263,7 +263,7 @@ export default function TeamSessionModal({
                   fontSize: "24px",
                   fontWeight: "900",
                   letterSpacing: "2px",
-                  color: "#3b82f6",
+                  color: isLight ? "#3b82f6" : "#ffffff",
                   margin: "8px 0 12px 0",
                   fontFamily: "ui-monospace, monospace"
                 }}
@@ -297,7 +297,7 @@ export default function TeamSessionModal({
 
             {/* Pseudonym field */}
             <form onSubmit={handleSaveName} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: "600", color: "#94a3b8" }}>
+              <label style={{ fontSize: "11px", fontWeight: "600", color: isLight ? "#475569" : "#ffffff" }}>
                 Votre Pseudo / Prénom affiché en session d'équipe :
               </label>
               <div style={{ display: "flex", gap: "8px" }}>
@@ -335,7 +335,7 @@ export default function TeamSessionModal({
               </div>
             </form>
 
-            <div style={{ fontSize: "11px", color: "#64748b", lineHeight: "1.4" }}>
+            <div style={{ fontSize: "11px", color: isLight ? "#64748b" : "#ffffff", opacity: 0.85, lineHeight: "1.4" }}>
               💡 Donnez votre code à un ami pour qu'il puisse charger votre carte en lecture seule, ou utilisez une session live pour détecter à plusieurs en même temps.
             </div>
           </div>

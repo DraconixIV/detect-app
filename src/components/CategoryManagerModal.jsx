@@ -136,7 +136,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
               marginBottom: "16px"
             }}
           >
-            <div style={{ fontSize: "12px", fontWeight: "800", marginBottom: "8px", color: isLight ? "#2563eb" : "#60a5fa" }}>
+            <div style={{ fontSize: "12px", fontWeight: "800", marginBottom: "8px", color: isLight ? "#2563eb" : "#ffffff" }}>
               ➕ Nouvelle Catégorie
             </div>
             <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
