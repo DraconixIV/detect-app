@@ -7,11 +7,6 @@ import AuthForm from "./AuthForm";
 export default function SettingsPanel({
   theme,
   setTheme,
-  baseMap = "satellite",
-  setBaseMap,
-  mapStyle,
-  setMapStyle,
-  onOpenMapLayers,
   onExportBackup,
   onImportBackup,
   onOpenCategoryManager,
@@ -104,6 +99,25 @@ export default function SettingsPanel({
     gap: "6px"
   };
 
+  const renderGroupHeader = (icon, title, color = isLight ? "#2563eb" : "#60a5fa", isFirst = false) => (
+    <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: isFirst ? "0 0 10px 0" : "24px 0 10px 0" }}>
+      <div style={{
+        fontSize: "11px",
+        fontWeight: "900",
+        textTransform: "uppercase",
+        letterSpacing: "1.2px",
+        color: color,
+        display: "flex",
+        alignItems: "center",
+        gap: "6px"
+      }}>
+        <span>{icon}</span>
+        <span>{title}</span>
+      </div>
+      <div style={{ flex: 1, height: "1px", background: isLight ? "rgba(0, 0, 0, 0.08)" : "rgba(255, 255, 255, 0.08)" }} />
+    </div>
+  );
+
   return (
     <div
       style={{
@@ -118,7 +132,7 @@ export default function SettingsPanel({
       }}
     >
       <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-        {/* Header */}
+        {/* Top Header */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
           <div style={{ fontSize: "28px" }}>⚙️</div>
           <div>
@@ -131,17 +145,24 @@ export default function SettingsPanel({
           </div>
         </div>
 
-        {/* 0. Code Détecteur & Partage d'Équipe */}
+        {/* ============================================================ */}
+        {/* GROUPE 1 : RÉSEAU & PARTAGE D'ÉQUIPE (MIS EN AVANT)          */}
+        {/* ============================================================ */}
+        {renderGroupHeader("👥", "Partage & Session d'Équipe", isLight ? "#1d4ed8" : "#60a5fa", true)}
+
         <div
           style={{
             ...cardStyle,
-            background: isLight ? "#eff6ff" : "linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(15, 23, 42, 0.6))",
-            border: isLight ? "1px solid #bfdbfe" : "1px solid rgba(59, 130, 246, 0.4)"
+            background: isLight
+              ? "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)"
+              : "linear-gradient(135deg, rgba(30, 58, 138, 0.35) 0%, rgba(15, 23, 42, 0.7) 100%)",
+            border: isLight ? "1.5px solid #93c5fd" : "1.5px solid rgba(96, 165, 250, 0.4)",
+            boxShadow: isLight ? "0 4px 14px rgba(37, 99, 235, 0.08)" : "0 4px 20px rgba(0, 0, 0, 0.3)"
           }}
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <div style={sectionTitleStyle}>
-              <span>👥</span> Code Détecteur & Partage d'Équipe
+            <div style={{ ...sectionTitleStyle, color: isLight ? "#1e40af" : "#93c5fd" }}>
+              <span>👥</span> Code Détecteur & Partage
             </div>
             {workspace.mode !== "personal" && (
               <span
@@ -234,9 +255,14 @@ export default function SettingsPanel({
           )}
         </div>
 
-        {/* Apparence & Thème Clair/Sombre */}
+        {/* ============================================================ */}
+        {/* GROUPE 2 : PRÉFÉRENCES & CONFORT VISUEL                      */}
+        {/* ============================================================ */}
+        {renderGroupHeader("🎨", "Préférences & Confort Visuel", isLight ? "#7c3aed" : "#c084fc")}
+
+        {/* Mode Nuit / Jour */}
         <div style={cardStyle}>
-          <div style={sectionTitleStyle}>
+          <div style={{ ...sectionTitleStyle, color: isLight ? "#7c3aed" : "#c084fc" }}>
             <span>🌓</span> Mode Nuit / Jour
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
@@ -286,74 +312,10 @@ export default function SettingsPanel({
           </div>
         </div>
 
-        {/* 3. Fond de Carte par Défaut */}
+        {/* Catégories Personnalisées */}
         <div style={cardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <div style={sectionTitleStyle}>
-              <span>🗺️</span> Fonds de Carte & Surcouches IGN
-            </div>
-            {onOpenMapLayers && (
-              <button
-                onClick={onOpenMapLayers}
-                style={{
-                  padding: "4px 10px",
-                  borderRadius: "8px",
-                  border: "none",
-                  background: isLight ? "#2563eb" : "#3b82f6",
-                  color: "#ffffff",
-                  fontSize: "11px",
-                  fontWeight: "bold",
-                  cursor: "pointer"
-                }}
-              >
-                Gérer les calques ↗
-              </button>
-            )}
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "8px" }}>
-            {[
-              { id: "satellite", name: "Satellite HD (Esri)", icon: "🛰️" },
-              { id: "ign_ortho", name: "Ortho IGN France", icon: "🇫🇷" },
-              { id: "ign_plan", name: "Plan IGN v2 Topo", icon: "🌲" },
-              { id: "osm", name: "OpenStreetMap", icon: "🧭" },
-              { id: "opentopo", name: "OpenTopoMap", icon: "⛰️" }
-            ].map((bm) => {
-              const isSelected = (baseMap === bm.id) || (!baseMap && bm.id === "satellite");
-              return (
-                <button
-                  key={bm.id}
-                  onClick={() => {
-                    if (setBaseMap) setBaseMap(bm.id);
-                    localStorage.setItem("baseMap", bm.id);
-                    if (setMapStyle) setMapStyle(bm.id === "satellite" ? "satellite" : "plan");
-                  }}
-                  style={{
-                    padding: "10px 8px",
-                    borderRadius: "12px",
-                    border: isSelected ? "2px solid #3b82f6" : `1px solid ${cardBorder}`,
-                    background: isSelected ? (isLight ? "rgba(59, 130, 246, 0.12)" : "rgba(59, 130, 246, 0.18)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
-                    color: textMain,
-                    fontWeight: "bold",
-                    cursor: "pointer",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "4px",
-                    textAlign: "center"
-                  }}
-                >
-                  <span style={{ fontSize: "18px" }}>{bm.icon}</span>
-                  <span style={{ fontSize: "11px" }}>{bm.name}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 4. Gestionnaire des Catégories Personnalisées */}
-        <div style={cardStyle}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <div style={sectionTitleStyle}>
+            <div style={{ ...sectionTitleStyle, color: isLight ? "#7c3aed" : "#c084fc", marginBottom: 0 }}>
               <span>🏷️</span> Catégories Personnalisées
             </div>
             <div style={{ display: "flex", gap: "6px" }}>
@@ -393,7 +355,7 @@ export default function SettingsPanel({
           </div>
 
           {showCatManager && (
-            <div style={{ marginTop: "10px", display: "flex", flexDirection: "column", gap: "12px" }}>
+            <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "12px" }}>
               {/* Add category form */}
               <div style={{ display: "flex", gap: "8px" }}>
                 <input
@@ -520,10 +482,14 @@ export default function SettingsPanel({
           )}
         </div>
 
-        {/* 5. Compte & Synchronisation */}
+        {/* ============================================================ */}
+        {/* GROUPE 3 : COMPTE & SYNCHRONISATION (DONNÉES)                */}
+        {/* ============================================================ */}
+        {renderGroupHeader("☁️", "Compte & Sauvegardes", isLight ? "#0284c7" : "#38bdf8")}
+
         <div style={cardStyle}>
-          <div style={sectionTitleStyle}>
-            <span>👤</span> Compte & Synchronisation
+          <div style={{ ...sectionTitleStyle, color: isLight ? "#0284c7" : "#38bdf8" }}>
+            <span>👤</span> Synchronisation & Données
           </div>
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: showAuthBox ? "14px" : "12px" }}>
@@ -593,7 +559,11 @@ export default function SettingsPanel({
           </div>
         </div>
 
-        {/* 6. Espace aux Dons ("Soutenir le projet ☕") */}
+        {/* ============================================================ */}
+        {/* GROUPE 4 : SOUTIEN AU PROJET (DONS)                          */}
+        {/* ============================================================ */}
+        {renderGroupHeader("☕", "Soutien & Communauté", isLight ? "#b45309" : "#facc15")}
+
         <div
           style={{
             ...cardStyle,
@@ -660,10 +630,14 @@ export default function SettingsPanel({
           </div>
         </div>
 
-        {/* 7. Mentions Légales & CGU */}
+        {/* ============================================================ */}
+        {/* GROUPE 5 : CADRE LÉGAL & CONDITIONS                          */}
+        {/* ============================================================ */}
+        {renderGroupHeader("⚖️", "Législation & Conditions", isLight ? "#475569" : "#94a3b8")}
+
         <div style={cardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div style={sectionTitleStyle}>
+            <div style={{ ...sectionTitleStyle, color: isLight ? "#475569" : "#94a3b8", marginBottom: 0 }}>
               <span>⚖️</span> Mentions Légales & CGU
             </div>
             <button
@@ -675,7 +649,7 @@ export default function SettingsPanel({
           </div>
 
           {showLegal && (
-            <div style={{ marginTop: "10px", fontSize: "11px", color: textSub, lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "6px" }}>
+            <div style={{ marginTop: "12px", fontSize: "11px", color: textSub, lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "8px" }}>
               <p style={{ margin: 0 }}>
                 Cette application est un carnet de bord numérique d'enregistrement personnel pour la détection de loisir et la recherche d'objets métalliques.
               </p>

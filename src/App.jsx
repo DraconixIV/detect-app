@@ -884,11 +884,6 @@ return (
         <SettingsPanel
           theme={theme}
           setTheme={setTheme}
-          baseMap={baseMap}
-          setBaseMap={setBaseMap}
-          mapStyle={mapStyle}
-          setMapStyle={setMapStyle}
-          onOpenMapLayers={() => setShowMapLayersModal(true)}
           onExportBackup={handleExport}
           onImportBackup={handleImport}
           onOpenCategoryManager={() => setShowCategoryManagerModal(true)}
