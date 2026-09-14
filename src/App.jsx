@@ -270,7 +270,7 @@ function App() {
         setGpsAccuracy(pos.coords.accuracy);
 
         if (isRecordingRef.current) {
-          recordNewPosition(newPosition);
+          recordNewPosition(newPosition, pos.coords.accuracy);
         }
       },
       (err) => {
@@ -278,17 +278,17 @@ function App() {
       },
       {
         enableHighAccuracy: true,
-        timeout: 20000,
-        maximumAge: 0
+        timeout: 15000,
+        maximumAge: 1000
       }
     );
   };
 
   useEffect(() => {
-    if (followGps) {
+    if (followGps || isRecordingSortie) {
       startGpsTracking();
     }
-  }, [followGps]);
+  }, [followGps, isRecordingSortie]);
 
   useEffect(() => {
     if (showAlbum) {
@@ -348,8 +348,13 @@ function App() {
   }, [sortiePositions]);
 
   const startSortie = () => {
+    startGpsTracking(position);
+    setFollowGps(true);
     startSortieRaw(position);
-    alert("⏱️ Sortie démarrée ! Les déplacements GPS accumuleront la distance marchée en arrière-plan.");
+    setToast({
+      message: "⏱️ Sortie démarrée ! Tracé GPS en direct activé.",
+      type: "success"
+    });
   };
 
   const submitOutingName = async () => {
@@ -991,6 +996,9 @@ return (
         workspace={workspace}
         setWorkspace={setWorkspace}
         onOpenTeamSession={() => setShowTeamSessionModal(true)}
+        isRecordingSortie={isRecordingSortie}
+        sortiePositions={sortiePositions}
+        savedTracks={savedTracks}
       />
 
       {/* TACTICAL BOTTOM HUD (TELEMETRY & ACTIONS - MAP ONLY) */}

@@ -94,15 +94,25 @@ export default function useSortieRecorder() {
     setSortiePositions(initialPosition ? [initialPosition] : []);
   };
 
-  const recordNewPosition = (newPosition) => {
+  const recordNewPosition = (newPosition, accuracy = null) => {
+    if (!newPosition || typeof newPosition[0] !== "number" || typeof newPosition[1] !== "number") return;
+    
+    // Ignore updates with poor accuracy (> 35m) to avoid erratic spikes
+    if (accuracy && accuracy > 35) return;
+
     setSortiePositions((prev) => {
-      const next = [...prev, newPosition];
-      if (prev.length > 0) {
-        const last = prev[prev.length - 1];
-        const d = distanceBetween(last, newPosition);
-        setSortieDistance((dist) => dist + d);
+      if (!prev || prev.length === 0) {
+        return [newPosition];
       }
-      return next;
+      const last = prev[prev.length - 1];
+      const d = distanceBetween(last, newPosition);
+      
+      // Only append if moved at least 1.5 meters, and filter out absurd GPS jumps (> 250m)
+      if (d >= 1.5 && d < 250) {
+        setSortieDistance((dist) => dist + d);
+        return [...prev, newPosition];
+      }
+      return prev;
     });
   };
 

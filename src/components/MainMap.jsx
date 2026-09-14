@@ -143,7 +143,10 @@ export default function MainMap({
   loadFinds,
   workspace = { mode: "personal" },
   setWorkspace,
-  onOpenTeamSession
+  onOpenTeamSession,
+  isRecordingSortie = false,
+  sortiePositions = [],
+  savedTracks = []
 }) {
   const [isZooming, setIsZooming] = useState(false);
 
@@ -309,19 +312,80 @@ export default function MainMap({
         historicalMapOpacity={historicalMapOpacity}
       />
 
+      {/* HISTORICAL / SELECTED TRACKS */}
       {!isZooming && selectedDateTracks.map((track, idx) => (
         <Polyline
-          key={track.id || idx}
+          key={track.id || `sel-track-${idx}`}
           positions={track.positions}
           pathOptions={{
-            color: "#facc15",
+            color: "#f59e0b",
             weight: 4,
-            opacity: 0.7,
+            opacity: 0.8,
             dashArray: "6, 8",
             lineCap: "round"
           }}
         />
       ))}
+
+      {/* LIVE ACTIVE SORTIE TRACK (Electric Cyan with Dark Glow Halo) */}
+      {!isZooming && isRecordingSortie && sortiePositions && sortiePositions.length > 1 && (
+        <>
+          {/* Contrast Outer Stroke (visible over bright aerials or dark maps) */}
+          <Polyline
+            positions={sortiePositions}
+            pathOptions={{
+              color: "#083344",
+              weight: 7,
+              opacity: 0.7,
+              lineCap: "round",
+              lineJoin: "round"
+            }}
+          />
+          {/* Vibrant Core Stroke */}
+          <Polyline
+            positions={sortiePositions}
+            pathOptions={{
+              color: "#06b6d4",
+              weight: 4,
+              opacity: 0.95,
+              lineCap: "round",
+              lineJoin: "round"
+            }}
+          />
+        </>
+      )}
+
+      {/* START SORTIE PIN */}
+      {!isZooming && isRecordingSortie && sortiePositions && sortiePositions.length > 0 && (
+        <Marker
+          position={sortiePositions[0]}
+          icon={L.divIcon({
+            html: `
+              <div style="
+                background: #10b981;
+                color: #ffffff;
+                font-size: 11px;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 8px;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+                border: 2px solid #ffffff;
+                white-space: nowrap;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                font-family: system-ui, sans-serif;
+              ">
+                <span>🚩</span>
+                <span>Départ</span>
+              </div>
+            `,
+            className: "start-sortie-pin-custom",
+            iconSize: [70, 26],
+            iconAnchor: [35, 13]
+          })}
+        />
+      )}
 
       <GpsMarker
         position={position}
