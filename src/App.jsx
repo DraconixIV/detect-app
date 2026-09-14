@@ -175,7 +175,9 @@ function App() {
     loadTracksList
   } = useSortieRecorder();
 
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(() => {
+    return !sessionStorage.getItem("geoprospect_splash_seen");
+  });
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return localStorage.getItem("geoprospect_onboarding_completed_v3") !== "true" && localStorage.getItem("rdl_onboarding_completed_v3") !== "true";
   });
@@ -1472,7 +1474,13 @@ return (
 
       {/* Animated Luminous White Splash Screen */}
       {showSplash && (
-        <SplashScreen onFinish={() => setShowSplash(false)} duration={2200} />
+        <SplashScreen
+          onFinish={() => {
+            setShowSplash(false);
+            sessionStorage.setItem("geoprospect_splash_seen", "true");
+          }}
+          duration={2200}
+        />
       )}
     </div>
   );
