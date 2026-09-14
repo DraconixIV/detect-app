@@ -13,8 +13,8 @@ export default function ReportsPanel({
 }) {
   const isLight = theme === "light";
   const bgPanel = isLight ? "#f8fafc" : "#0b1329";
-  const textMain = isLight ? "#0f172a" : "#f8fafc";
-  const textSub = isLight ? "#475569" : "#94a3b8";
+  const textMain = isLight ? "#0f172a" : "#ffffff";
+  const textSub = isLight ? "#475569" : "#ffffff";
 
   return (
     <div

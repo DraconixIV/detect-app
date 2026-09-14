@@ -70,8 +70,8 @@ export default function SettingsPanel({
 
   const isLight = theme === "light";
   const bgPanel = isLight ? "#f8fafc" : "#0b1329";
-  const textMain = isLight ? "#0f172a" : "#f8fafc";
-  const textSub = isLight ? "#475569" : "#94a3b8";
+  const textMain = isLight ? "#0f172a" : "#ffffff";
+  const textSub = isLight ? "#475569" : "#ffffff";
   const cardBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
   const cardBg = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)";
   const cardShadow = isLight ? "0 2px 8px rgba(0, 0, 0, 0.06)" : "none";
@@ -93,13 +93,13 @@ export default function SettingsPanel({
     textTransform: "uppercase",
     letterSpacing: "0.5px",
     marginBottom: "12px",
-    color: isLight ? "#2563eb" : "#60a5fa",
+    color: isLight ? "#2563eb" : "#ffffff",
     display: "flex",
     alignItems: "center",
     gap: "6px"
   };
 
-  const renderGroupHeader = (icon, title, color = isLight ? "#2563eb" : "#60a5fa", isFirst = false) => (
+  const renderGroupHeader = (icon, title, color = isLight ? "#2563eb" : "#ffffff", isFirst = false) => (
     <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: isFirst ? "0 0 10px 0" : "24px 0 10px 0" }}>
       <div style={{
         fontSize: "11px",

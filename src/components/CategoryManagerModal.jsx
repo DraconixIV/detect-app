@@ -28,8 +28,8 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
 
   const isLight = theme === "light";
   const bgModal = isLight ? "#ffffff" : "#0f172a";
-  const textMain = isLight ? "#0f172a" : "#f8fafc";
-  const textSub = isLight ? "#64748b" : "#94a3b8";
+  const textMain = isLight ? "#0f172a" : "#ffffff";
+  const textSub = isLight ? "#64748b" : "#ffffff";
   const cardBg = isLight ? "#f8fafc" : "#1e293b";
   const cardBorder = isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.1)";
   const inputBg = isLight ? "#ffffff" : "#0b1329";

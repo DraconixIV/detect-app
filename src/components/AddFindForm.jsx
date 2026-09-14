@@ -191,7 +191,7 @@ export default function AddFindForm({
 
       {/* TITRE (SANS EXEMPLE) */}
       <div>
-        <label style={{ fontSize: "11px", fontWeight: "600", color: "#9ca3af", marginBottom: "4px", display: "block" }}>
+        <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
           Titre de l'objet *
         </label>
         <input
@@ -206,7 +206,7 @@ export default function AddFindForm({
       {/* CATEGORIE & SOUS-CATEGORIE */}
       <div style={{ display: "grid", gridTemplateColumns: availableSubCats.length > 0 ? "1fr 1fr" : "1fr", gap: "8px" }}>
         <div>
-          <label style={{ fontSize: "11px", fontWeight: "600", color: "#9ca3af", marginBottom: "4px", display: "block" }}>
+          <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
             Catégorie
           </label>
           <select
@@ -228,7 +228,7 @@ export default function AddFindForm({
 
         {availableSubCats.length > 0 && (
           <div>
-            <label style={{ fontSize: "11px", fontWeight: "600", color: "#9ca3af", marginBottom: "4px", display: "block" }}>
+            <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
               Sous-catégorie
             </label>
             <select
@@ -236,7 +236,7 @@ export default function AddFindForm({
               onChange={(e) => setNewSubCategory(e.target.value)}
               style={inputStyle}
             >
-              <option value="" style={{ background: "#1f2937", color: "#9ca3af" }}>
+              <option value="" style={{ background: "#1f2937", color: "#ffffff" }}>
                 -- Sélectionner --
               </option>
               {availableSubCats.map((subCat) => (
@@ -251,7 +251,7 @@ export default function AddFindForm({
 
       {/* MATIERE (VIRE LE MOT METAL DANS LE LABEL, "Métal non spécifié" DANS LE SELECT) */}
       <div>
-        <label style={{ fontSize: "11px", fontWeight: "600", color: "#9ca3af", marginBottom: "4px", display: "block" }}>
+        <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
           Matière
         </label>
         <select
@@ -259,7 +259,7 @@ export default function AddFindForm({
           onChange={(e) => setNewDescription(e.target.value)}
           style={inputStyle}
         >
-          <option value="" style={{ background: "#1f2937", color: "#9ca3af" }}>
+          <option value="" style={{ background: "#1f2937", color: "#ffffff" }}>
             Métal non spécifié
           </option>
           {materials.map((mat) => (
@@ -284,7 +284,7 @@ export default function AddFindForm({
           }}
         >
           <div>
-            <label style={{ fontSize: "11px", fontWeight: "600", color: "#93c5fd", marginBottom: "4px", display: "block" }}>
+            <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
               📅 Date de découverte
             </label>
             <input
@@ -297,7 +297,7 @@ export default function AddFindForm({
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
             <div>
-              <label style={{ fontSize: "11px", fontWeight: "600", color: "#93c5fd", marginBottom: "4px", display: "block" }}>
+              <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
                 🌐 Latitude
               </label>
               <input
@@ -310,7 +310,7 @@ export default function AddFindForm({
               />
             </div>
             <div>
-              <label style={{ fontSize: "11px", fontWeight: "600", color: "#93c5fd", marginBottom: "4px", display: "block" }}>
+              <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
                 🌐 Longitude
               </label>
               <input

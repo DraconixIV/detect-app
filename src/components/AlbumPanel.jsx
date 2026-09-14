@@ -33,6 +33,7 @@ function LazyImage({ src, alt }) {
 export default function AlbumPanel({
   finds = [],
   allPhotos = [],
+  loadPhotosForAlbum,
   onClose,
   onOpenFindDetails,
   isTab = false,
@@ -40,6 +41,12 @@ export default function AlbumPanel({
   onOpenCategoryManager
 }) {
   const [categoriesData, setCategoriesData] = useState(() => loadCategoriesData());
+
+  useEffect(() => {
+    if (loadPhotosForAlbum) {
+      loadPhotosForAlbum();
+    }
+  }, [loadPhotosForAlbum]);
 
   useEffect(() => {
     const handleCategoriesUpdate = () => {
@@ -60,11 +67,24 @@ export default function AlbumPanel({
 
   const isLight = theme === "light";
   const bgPanel = isLight ? "#f8fafc" : "rgba(17, 24, 39, 0.95)";
-  const textMain = isLight ? "#0f172a" : "#f8fafc";
-  const textSub = isLight ? "#475569" : "#94a3b8";
+  const textMain = isLight ? "#0f172a" : "#ffffff";
+  const textSub = isLight ? "#475569" : "#ffffff";
   const cardBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
   const inputBg = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)";
   const inputBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.16)";
+
+  const getFindPhotoUrl = (f) => {
+    if (!f) return null;
+    if (f.isOfflinePending && f.offlinePhoto) return f.offlinePhoto;
+    if (f.offlinePhoto) return f.offlinePhoto;
+    if (f.image_url) return f.image_url;
+    if (f.photo_url) return f.photo_url;
+    if (f.photo && typeof f.photo === "string") return f.photo;
+    const match = allPhotos.find(
+      (p) => String(p.find_id) === String(f.id) || p.find_id === f.id
+    );
+    return match?.image_url || null;
+  };
 
   const albumFilteredFinds = useMemo(() => {
     // 1. Filter by category & check that photo exists with a valid URL
@@ -75,10 +95,7 @@ export default function AlbumPanel({
       if (!catMatch) return false;
 
       // Photo match
-      const photoUrl = f.isOfflinePending
-        ? f.offlinePhoto
-        : allPhotos.find((p) => p.find_id === f.id)?.image_url;
-
+      const photoUrl = getFindPhotoUrl(f);
       return !!photoUrl;
     });
 
@@ -358,9 +375,7 @@ export default function AlbumPanel({
         ) : (
           <div style={{ flex: 1, overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", paddingRight: "4px" }}>
             {albumFilteredFinds.map((find) => {
-              const photoUrl = (find.isOfflinePending
-                ? find.offlinePhoto
-                : allPhotos.find((p) => p.find_id === find.id)?.image_url) || "";
+              const photoUrl = getFindPhotoUrl(find) || "";
 
               return (
                 <div
@@ -386,11 +401,11 @@ export default function AlbumPanel({
 
                   {/* Hover Details Overlay */}
                   <div className="album-grid-overlay">
-                    <div style={{ fontSize: "10px", fontWeight: "800", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                    <div style={{ fontSize: "10px", fontWeight: "800", color: "#ffffff", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
                       {find.title || "Sans titre"}
                     </div>
                     {find.date && (
-                      <div style={{ fontSize: "8px", color: "#d1d5db" }}>
+                      <div style={{ fontSize: "8px", color: "#ffffff" }}>
                         {find.date.split(",")[0]}
                       </div>
                     )}
@@ -411,9 +426,7 @@ export default function AlbumPanel({
 
           const navigatePhoto = (targetFind) => {
             if (!targetFind) return;
-            const photoUrl = targetFind.isOfflinePending
-              ? targetFind.offlinePhoto
-              : allPhotos.find((p) => p.find_id === targetFind.id)?.image_url;
+            const photoUrl = getFindPhotoUrl(targetFind) || "";
             setSelectedAlbumPhoto({ find: targetFind, photoUrl });
             setLightboxCoinFlipped(false);
           };

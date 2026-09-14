@@ -33,15 +33,14 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
     const currentWs = workspaceRef.current || { mode: "personal", targetCode: null };
     const myCode = getMyUserCode();
     
+    // Always fetch photos in parallel to populate album
+    loadPhotosForAlbum();
+
     const data = await fetchFinds({
       mode: currentWs.mode,
       targetCode: currentWs.targetCode,
       myUserCode: myCode
     });
-
-    if (allPhotos.length > 0) {
-      await loadPhotosForAlbum();
-    }
 
     try {
       // In personal mode, also display offline pending finds
@@ -191,12 +190,22 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
           });
         }
       )
+    const photosChannel = supabase
+      .channel("realtime-photos-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "find_photos" },
+        () => {
+          loadPhotosForAlbum();
+        }
+      )
       .subscribe();
 
     const handleOnline = async () => {
       setIsOnline(true);
       await syncOfflineFinds();
       await loadFinds();
+      await loadPhotosForAlbum();
     };
     const handleOffline = () => {
       setIsOnline(false);
@@ -211,6 +220,7 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
 
     return () => {
       supabase.removeChannel(channel);
+      supabase.removeChannel(photosChannel);
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };

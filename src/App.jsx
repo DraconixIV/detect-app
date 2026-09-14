@@ -296,10 +296,10 @@ function App() {
   }, [followGps, isRecordingSortie]);
 
   useEffect(() => {
-    if (showAlbum) {
+    if (activeTab === "gallery" || showAlbum) {
       loadPhotosForAlbum();
     }
-  }, [showAlbum]);
+  }, [activeTab, showAlbum]);
 
   const isRecordingRef = useRef(isRecordingSortie);
   const positionsRef = useRef(sortiePositions);
@@ -849,6 +849,7 @@ return (
         <AlbumPanel
           finds={finds}
           allPhotos={allPhotos}
+          loadPhotosForAlbum={loadPhotosForAlbum}
           isTab={true}
           onClose={() => setActiveTab("map")}
           theme={theme}

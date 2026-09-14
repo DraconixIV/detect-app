@@ -81,7 +81,8 @@ export default function BottomNav({
                 fontSize: "11px",
                 fontWeight: isActive ? "800" : "600",
                 letterSpacing: "0.2px",
-                color: isActive ? "#ffffff" : "#94a3b8"
+                color: "#ffffff",
+                opacity: isActive ? 1 : 0.8
               }}
             >
               {tab.label}

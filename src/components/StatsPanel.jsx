@@ -45,8 +45,8 @@ export default function StatsPanel({
 
   const isLight = theme === "light";
   const bgPanel = isFullTab ? "transparent" : (isLight ? "#ffffff" : "rgba(15, 23, 42, 0.95)");
-  const textMain = isLight ? "#0f172a" : "#f8fafc";
-  const textSub = isLight ? "#475569" : "#94a3b8";
+  const textMain = isLight ? "#0f172a" : "#ffffff";
+  const textSub = isLight ? "#475569" : "#ffffff";
   const cardBg = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.05)";
   const cardBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
   const cardShadow = isLight ? "0 2px 8px rgba(0, 0, 0, 0.06)" : "none";

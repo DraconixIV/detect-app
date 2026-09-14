@@ -125,7 +125,7 @@ export default function TeamSessionModal({
           border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
           boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.75)",
           padding: "22px 20px",
-          color: isLight ? "#0f172a" : "#f8fafc",
+          color: isLight ? "#0f172a" : "#ffffff",
           boxSizing: "border-box"
         }}
         onClick={(e) => e.stopPropagation()}
@@ -133,10 +133,10 @@ export default function TeamSessionModal({
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
           <div>
-            <h2 style={{ margin: "0 0 2px 0", fontSize: "18px", fontWeight: "800", letterSpacing: "-0.3px" }}>
+            <h2 style={{ margin: "0 0 2px 0", fontSize: "18px", fontWeight: "800", letterSpacing: "-0.3px", color: isLight ? "#0f172a" : "#ffffff" }}>
               Partage & Sessions d'Équipe
             </h2>
-            <p style={{ margin: 0, fontSize: "12px", color: "#64748b" }}>
+            <p style={{ margin: 0, fontSize: "12px", color: isLight ? "#64748b" : "#ffffff" }}>
               Collaboration et consultation multi-détecteurs
             </p>
           </div>
