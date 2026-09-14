@@ -3,6 +3,7 @@ import { supabase } from "../supabase";
 const USER_CODE_STORAGE_KEY = "rdl_user_code_v1";
 const USER_DISPLAY_NAME_KEY = "rdl_user_display_name_v1";
 const ACTIVE_SESSION_STORAGE_KEY = "rdl_active_session_v1";
+const JOINED_SESSIONS_HISTORY_KEY = "rdl_joined_sessions_history_v1";
 
 /**
  * Generate a random, readable 6-character alphanumeric code (e.g. "RDL-7K3P")
@@ -61,6 +62,47 @@ export function setMyDisplayName(name) {
 }
 
 /**
+ * Get the list of all team sessions the user has ever participated in
+ */
+export function getMyJoinedSessions() {
+  try {
+    const raw = localStorage.getItem(JOINED_SESSIONS_HISTORY_KEY);
+    if (raw) {
+      const list = JSON.parse(raw);
+      if (Array.isArray(list)) return list;
+    }
+  } catch (e) {
+    console.warn("Error reading joined sessions history:", e);
+  }
+  return [];
+}
+
+/**
+ * Add or update a session in the user's permanent sessions history
+ */
+export function recordJoinedSession(code, name = "") {
+  try {
+    const cleanCode = (code || "").trim().toUpperCase();
+    if (!cleanCode) return;
+
+    const existing = getMyJoinedSessions();
+    const filtered = existing.filter((s) => s.code !== cleanCode);
+    const updated = [
+      {
+        code: cleanCode,
+        name: name.trim() || `Session ${cleanCode}`,
+        lastActive: new Date().toISOString()
+      },
+      ...filtered
+    ];
+    localStorage.setItem(JOINED_SESSIONS_HISTORY_KEY, JSON.stringify(updated));
+    return updated;
+  } catch (e) {
+    console.warn("Error recording joined session:", e);
+  }
+}
+
+/**
  * Get active team session from storage (if any)
  */
 export function getActiveSession() {
@@ -82,6 +124,7 @@ export function setActiveSession(session) {
   try {
     if (session) {
       localStorage.setItem(ACTIVE_SESSION_STORAGE_KEY, JSON.stringify(session));
+      recordJoinedSession(session.code, session.name);
     } else {
       localStorage.removeItem(ACTIVE_SESSION_STORAGE_KEY);
     }

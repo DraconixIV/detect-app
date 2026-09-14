@@ -1,7 +1,7 @@
 import imageCompression from "browser-image-compression";
 
 import { supabase } from "../supabase";
-import { getMyUserCode, getMyDisplayName, getActiveSession } from "./sessionService";
+import { getMyUserCode, getMyDisplayName, getActiveSession, getMyJoinedSessions } from "./sessionService";
 
 export function normalizeCategoryAndSub(find) {
   if (!find) return find;
@@ -49,14 +49,24 @@ export async function loadFinds(options = {}) {
         ascending: false
       });
 
-    const { mode, targetCode, myUserCode } = options;
+    const { mode, targetCode } = options;
+    const myCode = options.myUserCode || getMyUserCode();
 
     if (mode === "consultation" && targetCode) {
-      // Mode lecture seule pour un utilisateur donné
+      // Mode lecture seule pour un utilisateur spécifique
       query = query.eq("user_code", targetCode);
     } else if (mode === "session" && targetCode) {
-      // Mode session partagée en direct
+      // Mode session live ciblée
       query = query.eq("session_code", targetCode);
+    } else {
+      // Mode Personnel : Affiche mes trouvailles + toutes les trouvailles des sessions vécues en équipe
+      const joinedSessions = getMyJoinedSessions().map((s) => s.code).filter(Boolean);
+      if (joinedSessions.length > 0) {
+        const joinedList = joinedSessions.map((c) => `"${c}"`).join(",");
+        query = query.or(`user_code.eq.${myCode},user_code.is.null,session_code.in.(${joinedList})`);
+      } else {
+        query = query.or(`user_code.eq.${myCode},user_code.is.null`);
+      }
     }
 
     const { data, error } = await query;

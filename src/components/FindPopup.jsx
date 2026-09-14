@@ -418,6 +418,13 @@ export default function FindPopup({
           </div>
         )}
 
+        {find.session_code && (
+          <div style={{ fontSize: "9px", background: "rgba(16, 185, 129, 0.12)", color: "#059669", padding: "2px 6px", borderRadius: "5px", fontWeight: "700", display: "inline-flex", alignItems: "center", gap: "4px", width: "fit-content" }}>
+            <span>👥</span>
+            <span>Session Équipe ({find.session_code})</span>
+          </div>
+        )}
+
         <div style={{ fontSize: "11px", color: "#6b7280", fontWeight: "700" }}>
           {categoryEmojis[category]} {category} {subCategory ? `• ${subCategory}` : ""}
           {material && material !== "Indéterminé" ? ` • ${materialEmojis[material]} ${material}` : ""}
@@ -557,6 +564,11 @@ export default function FindPopup({
             {finderText && (
               <span style={{ fontSize: "10px", background: "rgba(37, 99, 235, 0.2)", color: "#60a5fa", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>
                 👤 {finderText}
+              </span>
+            )}
+            {find.session_code && (
+              <span style={{ fontSize: "10px", background: "rgba(16, 185, 129, 0.2)", color: "#10b981", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>
+                👥 Session {find.session_code}
               </span>
             )}
           </div>

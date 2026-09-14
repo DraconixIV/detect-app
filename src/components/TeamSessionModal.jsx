@@ -6,7 +6,8 @@ import {
   createTeamSession,
   joinTeamSession,
   leaveTeamSession,
-  getActiveSession
+  getActiveSession,
+  getMyJoinedSessions
 } from "../services/sessionService";
 
 export default function TeamSessionModal({
@@ -614,6 +615,79 @@ export default function TeamSessionModal({
                 </form>
               </div>
             )}
+
+            {/* List of past joined sessions */}
+            {getMyJoinedSessions().length > 0 && (
+              <div
+                style={{
+                  background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.02)",
+                  border: isLight ? "1px solid #e2e8f0" : "1px solid rgba(255, 255, 255, 0.06)",
+                  borderRadius: "14px",
+                  padding: "12px 14px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px"
+                }}
+              >
+                <div style={{ fontSize: "11px", fontWeight: "700", color: "#94a3b8", textTransform: "uppercase" }}>
+                  📜 Vos sessions d'équipe passées :
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  {getMyJoinedSessions().slice(0, 5).map((sess) => (
+                    <div
+                      key={sess.code}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "8px 10px",
+                        borderRadius: "8px",
+                        background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)",
+                        border: isLight ? "1px solid #e2e8f0" : "1px solid rgba(255, 255, 255, 0.06)"
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontSize: "12px", fontWeight: "700", color: isLight ? "#0f172a" : "#ffffff" }}>
+                          {sess.name}
+                        </div>
+                        <div style={{ fontSize: "10px", color: "#64748b", fontFamily: "ui-monospace, monospace" }}>
+                          {sess.code}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const joined = joinTeamSession(sess.code, sess.name);
+                          setActiveSessionState(joined);
+                          setWorkspace({
+                            mode: "session",
+                            targetCode: joined.code,
+                            sessionName: joined.name
+                          });
+                          onClose();
+                        }}
+                        style={{
+                          padding: "5px 10px",
+                          borderRadius: "6px",
+                          border: "none",
+                          background: "#3b82f6",
+                          color: "#ffffff",
+                          fontSize: "11px",
+                          fontWeight: "700",
+                          cursor: "pointer"
+                        }}
+                      >
+                        Rejoindre
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div style={{ fontSize: "11px", color: "#64748b", lineHeight: "1.4" }}>
+              💡 <strong>Carte Unique</strong> : Toutes les trouvailles découvertes lors de vos sessions d'équipe restent automatiquement affichées sur votre carte personnelle avec le badge du découvreur (ex: <em>« Trouvé par Marc »</em>).
+            </div>
           </div>
         )}
       </div>
