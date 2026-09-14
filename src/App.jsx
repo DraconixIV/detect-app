@@ -19,7 +19,6 @@ import TacticalTopHUD from "./components/TacticalTopHUD";
 import TacticalBottomHUD from "./components/TacticalBottomHUD";
 import ThemePickerModal from "./components/ThemePickerModal";
 import CategoryManagerModal from "./components/CategoryManagerModal";
-import WelcomeGate from "./components/WelcomeGate";
 import TeamSessionModal from "./components/TeamSessionModal";
 import MapLayersModal from "./components/MapLayersModal";
 import { THEMES } from "./styles/themes";
@@ -176,28 +175,14 @@ function App() {
     loadTracksList
   } = useSortieRecorder();
 
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    return localStorage.getItem("rdl_onboarding_completed_v2") !== "true";
+  });
   const [activeTab, setActiveTab] = useState("map");
   const [theme, setTheme] = useState(() => localStorage.getItem("app_theme") || "dark");
   const [designTheme, setDesignTheme] = useState(() => localStorage.getItem("app_design_theme") || "tactical");
   const [showThemePicker, setShowThemePicker] = useState(false);
   const [showCategoryManagerModal, setShowCategoryManagerModal] = useState(false);
-  const [showWelcomeGate, setShowWelcomeGate] = useState(true);
-
-  const handleEnterApp = () => {
-    setShowWelcomeGate(false);
-    const hasCompletedLegal = localStorage.getItem("rdl_onboarding_completed_v2") === "true";
-    if (!hasCompletedLegal) {
-      setShowOnboarding(true);
-    }
-  };
-
-  const handleDevSkipAll = () => {
-    setShowWelcomeGate(false);
-    setShowOnboarding(false);
-    localStorage.setItem("rdl_onboarding_completed_v2", "true");
-    localStorage.setItem("rdl_cgu_accepted", "true");
-  };
 
   useEffect(() => {
     localStorage.setItem("app_design_theme", designTheme);
@@ -1583,20 +1568,6 @@ return (
           if (newGpsStyle) setGpsStyle(newGpsStyle);
         }}
       />
-
-      {/* Welcome & Data Loading Gate (Shown on session opening to allow data to preload, with Dev Skip) */}
-      {!showOnboarding && showWelcomeGate && (
-        <WelcomeGate
-          isOpen={showWelcomeGate}
-          onEnter={handleEnterApp}
-          onDevSkip={handleDevSkipAll}
-          findsCount={finds.length}
-          tracksCount={savedTracks.length}
-          isOnline={isOnline}
-          currentThemeKey={designTheme}
-          theme={theme}
-        />
-      )}
     </div>
   );
 }
