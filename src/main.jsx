@@ -5,7 +5,7 @@ import App from './App.jsx'
 import { registerSW } from 'virtual:pwa-register'
 
 // Cache buster propre sans interruption de rendu React
-const CACHE_VERSION = "v35_splash_and_onboarding_v3";
+const CACHE_VERSION = "v37_white_theme_and_clean_splash_icons";
 try {
   if (localStorage.getItem("RDL_CACHE_VERSION") !== CACHE_VERSION) {
     localStorage.setItem("RDL_CACHE_VERSION", CACHE_VERSION);

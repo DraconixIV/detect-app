@@ -70,9 +70,9 @@ export default defineConfig({
         description:
           "Le Royaume de Lespignan - Application premium de détection de métaux",
 
-        theme_color: "#1f2937",
+        theme_color: "#ffffff",
 
-        background_color: "#111827",
+        background_color: "#ffffff",
 
         display: "standalone",
 
