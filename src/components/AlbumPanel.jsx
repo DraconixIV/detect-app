@@ -654,6 +654,7 @@ export default function AlbumPanel({
           <div style={{ flex: 1, overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", paddingRight: "4px" }}>
             {albumFilteredFinds.map((find) => {
               const photoUrl = getFindPhotoUrl(find) || "";
+              const thumbUrl = find.thumbnail_url || photoUrl;
               const hasFlipCoin = !!getFlipCoin(find.id);
 
               return (
@@ -666,7 +667,7 @@ export default function AlbumPanel({
                     setForcePhotoView(false);
                   }}
                 >
-                  <LazyImage src={photoUrl} alt={find.title} />
+                  <LazyImage src={thumbUrl} alt={find.title} />
                   
                   {/* Category Badge */}
                   <div style={{ position: "absolute", top: "6px", left: "6px", background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center" }}>

@@ -86,18 +86,42 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
     }
   };
 
+  const [googleLoading, setGoogleLoading] = useState(false);
+
   const handleGoogleLogin = async () => {
     setErrorMsg("");
+    setGoogleLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      // Determine accurate redirect URL based on environment (PWA / Web / Local)
+      const currentRedirectUrl = window.location.origin + window.location.pathname;
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: window.location.origin
+          redirectTo: currentRedirectUrl,
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent"
+          }
         }
       });
-      if (error) throw error;
+
+      if (error) {
+        if (
+          error.message?.includes("not enabled") ||
+          error.message?.includes("Unsupported provider") ||
+          error.message?.includes("provider is not enabled")
+        ) {
+          throw new Error(
+            "Le fournisseur Google n'est pas encore activé sur votre console Supabase (Authentication > Providers > Google)."
+          );
+        }
+        throw error;
+      }
     } catch (err) {
-      setErrorMsg("Erreur d'authentification Google : " + (err.message || err));
+      console.error("Google Auth Error:", err);
+      setErrorMsg(err.message || "Erreur lors de l'authentification Google.");
+      setGoogleLoading(false);
     }
   };
 
@@ -168,6 +192,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
         <div>
           <button
             type="button"
+            disabled={googleLoading}
             onClick={handleGoogleLogin}
             style={{
               width: "100%",
@@ -178,7 +203,8 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
               color: isLight ? "#0f172a" : "#f8fafc",
               fontSize: "13px",
               fontWeight: "600",
-              cursor: "pointer",
+              cursor: googleLoading ? "wait" : "pointer",
+              opacity: googleLoading ? 0.7 : 1,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -188,12 +214,16 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
               boxShadow: isLight ? "0 1px 3px rgba(0,0,0,0.06)" : "none"
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.08)";
-              e.currentTarget.style.borderColor = isLight ? "#94a3b8" : "rgba(255, 255, 255, 0.2)";
+              if (!googleLoading) {
+                e.currentTarget.style.background = isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.08)";
+                e.currentTarget.style.borderColor = isLight ? "#94a3b8" : "rgba(255, 255, 255, 0.2)";
+              }
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)";
-              e.currentTarget.style.borderColor = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
+              if (!googleLoading) {
+                e.currentTarget.style.background = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)";
+                e.currentTarget.style.borderColor = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
+              }
             }}
           >
             {/* Official Google Vector Icon */}
@@ -215,7 +245,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
                 d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
               />
             </svg>
-            <span>Continuer avec Google</span>
+            <span>{googleLoading ? "Redirection vers Google..." : "Continuer avec Google"}</span>
           </button>
 
           <div

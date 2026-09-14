@@ -3,11 +3,12 @@ import imageCompression from "browser-image-compression";
 import { supabase } from "../supabase.js";
 import { getMyUserCode, getMyDisplayName, getActiveSession, getMyJoinedSessions } from "./sessionService.js";
 
-export function encodeMetadata(description, userCode, finderName, sessionCode) {
+export function encodeMetadata(description, userCode, finderName, sessionCode, thumbnailUrl = null) {
   const meta = {};
   if (userCode) meta.u = userCode;
   if (finderName) meta.f = finderName;
   if (sessionCode) meta.s = sessionCode;
+  if (thumbnailUrl) meta.t = thumbnailUrl;
   if (Object.keys(meta).length === 0) return description || "";
   const metaTag = `\n<!--GP_META:${JSON.stringify(meta)}-->`;
   return ((description || "").replace(/<!--GP_META:.*?-->/g, "").trim() + metaTag);
@@ -18,6 +19,7 @@ export function decodeMetadata(find) {
   let user_code = find.user_code || null;
   let finder_name = find.finder_name || null;
   let session_code = find.session_code || null;
+  let thumbnail_url = find.thumbnail_url || null;
   let cleanDesc = find.description || "";
 
   const match = cleanDesc.match(/<!--GP_META:(.*?)-->/);
@@ -27,6 +29,7 @@ export function decodeMetadata(find) {
       if (meta.u && !user_code) user_code = meta.u;
       if (meta.f && !finder_name) finder_name = meta.f;
       if (meta.s && !session_code) session_code = meta.s;
+      if (meta.t && !thumbnail_url) thumbnail_url = meta.t;
       cleanDesc = cleanDesc.replace(/<!--GP_META:.*?-->/g, "").trim();
     } catch {
       // Ignore
@@ -38,7 +41,8 @@ export function decodeMetadata(find) {
     description: cleanDesc,
     user_code,
     finder_name,
-    session_code
+    session_code,
+    thumbnail_url: thumbnail_url || find.image_url
   };
 }
 
@@ -226,6 +230,42 @@ export async function addFind({
         .from("find-photos")
         .getPublicUrl(fileName);
 
+      // Lightweight Thumbnail Generation (~20KB, 220px) for ultra-fast album loading
+      let thumbnailUrl = publicUrl;
+      try {
+        const thumbFile = await imageCompression(newPhoto, {
+          maxSizeMB: 0.03,
+          maxWidthOrHeight: 220,
+          useWebWorker: true
+        });
+        const thumbName = `thumb-${fileName}`;
+        const { error: thumbErr } = await supabase.storage
+          .from("find-photos")
+          .upload(thumbName, thumbFile);
+
+        if (!thumbErr) {
+          const { data: { publicUrl: thumbUrl } } = supabase.storage
+            .from("find-photos")
+            .getPublicUrl(thumbName);
+          thumbnailUrl = thumbUrl;
+        }
+      } catch (thumbErr) {
+        console.warn("Thumbnail generation non-blocking fallback:", thumbErr);
+      }
+
+      // Update Find description with thumbnail metadata
+      const finalEncodedDesc = encodeMetadata(
+        newDescription,
+        finalUserCode,
+        finalFinderName,
+        finalSessionCode,
+        thumbnailUrl
+      );
+      await supabase
+        .from("finds")
+        .update({ description: finalEncodedDesc, image_url: publicUrl })
+        .eq("id", insertedFind.id);
+
       const {
         error: photoError
       } = await supabase
@@ -238,7 +278,16 @@ export async function addFind({
               publicUrl,
             type:
               "discovery"
-          }
+          },
+          ...(thumbnailUrl && thumbnailUrl !== publicUrl
+            ? [
+                {
+                  find_id: insertedFind.id,
+                  image_url: thumbnailUrl,
+                  type: "thumbnail"
+                }
+              ]
+            : [])
         ]);
 
       if (photoError) {
@@ -246,7 +295,6 @@ export async function addFind({
           "Erreur photo DB:",
           photoError
         );
-
         throw photoError;
       }
     }

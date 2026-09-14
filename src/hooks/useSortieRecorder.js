@@ -46,12 +46,18 @@ export default function useSortieRecorder() {
   // Keep screen awake using W3C Wake Lock API when recording is active
   useEffect(() => {
     let wakeLock = null;
+    let heartbeatInterval = null;
 
     const requestWakeLock = async () => {
       if (isRecordingSortie && "wakeLock" in navigator) {
         try {
           wakeLock = await navigator.wakeLock.request("screen");
-          console.log("Wake Lock acquired successfully");
+          wakeLock.addEventListener("release", () => {
+            // Auto-reacquire if still recording and page is visible
+            if (isRecordingSortie && document.visibilityState === "visible") {
+              requestWakeLock();
+            }
+          });
         } catch (err) {
           console.warn("Wake Lock request failed:", err);
         }
@@ -59,7 +65,7 @@ export default function useSortieRecorder() {
     };
 
     const handleVisibilityChange = () => {
-      if (wakeLock !== null && document.visibilityState === "visible") {
+      if (isRecordingSortie && document.visibilityState === "visible") {
         requestWakeLock();
       }
     };
@@ -67,13 +73,20 @@ export default function useSortieRecorder() {
     if (isRecordingSortie) {
       requestWakeLock();
       document.addEventListener("visibilitychange", handleVisibilityChange);
+
+      // Lightweight background heartbeat keeping the event loop alive
+      heartbeatInterval = setInterval(() => {
+        // Timestamp touch to prevent aggressive mobile task freezing
+        localStorage.setItem("sortieHeartbeat", Date.now().toString());
+      }, 5000);
     }
 
     return () => {
+      if (heartbeatInterval) clearInterval(heartbeatInterval);
       if (wakeLock) {
         wakeLock.release().then(() => {
           wakeLock = null;
-        }).catch(err => console.error("Wake Lock release err:", err));
+        }).catch(() => {});
       }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
