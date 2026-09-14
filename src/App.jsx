@@ -166,7 +166,7 @@ function App() {
 
   const handleEnterApp = () => {
     setShowWelcomeGate(false);
-    const hasCompletedLegal = localStorage.getItem("rdl_legal_onboarding_v1") === "true";
+    const hasCompletedLegal = localStorage.getItem("rdl_onboarding_completed_v2") === "true";
     if (!hasCompletedLegal) {
       setShowOnboarding(true);
     }
@@ -175,7 +175,7 @@ function App() {
   const handleDevSkipAll = () => {
     setShowWelcomeGate(false);
     setShowOnboarding(false);
-    localStorage.setItem("rdl_legal_onboarding_v1", "true");
+    localStorage.setItem("rdl_onboarding_completed_v2", "true");
     localStorage.setItem("rdl_cgu_accepted", "true");
   };
 

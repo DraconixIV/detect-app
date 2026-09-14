@@ -37,7 +37,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
   const allLegalChecked = checkOwner && checkHeritage && checkDeclaration && checkNature && checkCgu;
 
   const handleDevSkip = () => {
-    localStorage.setItem("rdl_legal_onboarding_v1", "true");
+    localStorage.setItem("rdl_onboarding_completed_v2", "true");
     localStorage.setItem("rdl_cgu_accepted", "true");
     if (onComplete) {
       onComplete({
@@ -50,7 +50,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
   };
 
   const handleFinish = () => {
-    localStorage.setItem("rdl_legal_onboarding_v1", "true");
+    localStorage.setItem("rdl_onboarding_completed_v2", "true");
     localStorage.setItem("rdl_cgu_accepted", "true");
     localStorage.setItem("mapStyle", selectedMapStyle);
     localStorage.setItem("app_design_theme", selectedDesignTheme);
