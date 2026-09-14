@@ -5,10 +5,13 @@ import App from './App.jsx'
 import { registerSW } from 'virtual:pwa-register'
 
 // Cache buster propre sans interruption de rendu React
-const CACHE_VERSION = "v32_fix_black_screen_and_onboarding";
+const CACHE_VERSION = "v35_splash_and_onboarding_v3";
 try {
   if (localStorage.getItem("RDL_CACHE_VERSION") !== CACHE_VERSION) {
     localStorage.setItem("RDL_CACHE_VERSION", CACHE_VERSION);
+    // Supprimer les anciens flags pour forcer l'onboarding au rechargement de la nouvelle version
+    localStorage.removeItem("rdl_onboarding_completed_v2");
+    localStorage.removeItem("rdl_onboarding_completed_v3");
     if ('caches' in window) {
       caches.keys().then((names) => {
         for (let name of names) {

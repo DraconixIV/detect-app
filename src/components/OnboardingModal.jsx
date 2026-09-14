@@ -4,9 +4,9 @@ import { THEMES } from "../styles/themes";
 import AuthForm from "./AuthForm";
 
 export default function OnboardingModal({ isOpen, onComplete }) {
-  // Step 1: Présentation & Découverte
+  // Step 1: Découverte & Fonctionnalités clés
   // Step 2: Cadre Légal & Charte Éthique
-  // Step 3: Authentification & Espace Compte
+  // Step 3: Espace Prospecteur (Authentification)
   // Step 4: Configuration Initiale
   const [step, setStep] = useState(1);
   const [user, setUser] = useState(null);
@@ -161,7 +161,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
           <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
             <div>
               <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "20px", background: "rgba(59, 130, 246, 0.15)", border: "1px solid rgba(59, 130, 246, 0.3)", color: "#93c5fd", fontSize: "11px", fontWeight: "700", marginBottom: "8px" }}>
-                ✨ 100% Gratuit & Sans Abonnement
+                ✨ 100% Gratuit & Libre
               </div>
               <h2 style={{ margin: "0 0 6px 0", fontSize: "21px", fontWeight: "800", color: "#f8fafc", letterSpacing: "-0.4px" }}>
                 Bienvenue sur Détect'App 🧭
@@ -321,7 +321,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                 Cadre Légal & Charte Éthique ⚖️
               </h2>
               <p style={{ margin: 0, fontSize: "13px", color: "#94a3b8", lineHeight: "1.45" }}>
-                La détection de métaux en France est soumise à des règles strictes pour préserver le patrimoine et respecter la propriété privée.
+                La détection de métaux en France est encadrée pour protéger le patrimoine et respecter la propriété privée.
               </p>
             </div>
 
@@ -382,7 +382,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                   onChange={(e) => setCheckOwner(e.target.checked)}
                   style={{ width: "16px", height: "16px", marginTop: "2px", accentColor: "#2563eb", cursor: "pointer" }}
                 />
-                <span>J'obtiens systématiquement l'<strong>accord préalable du propriétaire</strong> de la parcelle (Code civil).</span>
+                <span>J'obtiens systématiquement l'<strong>accord préalable du propriétaire</strong> du terrain (Code civil).</span>
               </label>
 
               <label
