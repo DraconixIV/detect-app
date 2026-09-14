@@ -1,9 +1,9 @@
 import { supabase } from "../supabase";
 
-const USER_CODE_STORAGE_KEY = "rdl_user_code_v1";
-const USER_DISPLAY_NAME_KEY = "rdl_user_display_name_v1";
-const ACTIVE_SESSION_STORAGE_KEY = "rdl_active_session_v1";
-const JOINED_SESSIONS_HISTORY_KEY = "rdl_joined_sessions_history_v1";
+const USER_CODE_STORAGE_KEY = "geoprospect_user_code_v1";
+const USER_DISPLAY_NAME_KEY = "geoprospect_user_display_name_v1";
+const ACTIVE_SESSION_STORAGE_KEY = "geoprospect_active_session_v1";
+const JOINED_SESSIONS_HISTORY_KEY = "geoprospect_joined_sessions_history_v1";
 
 /**
  * Generate a random, readable 6-character alphanumeric code (e.g. "GEO-7K3P")
@@ -18,15 +18,25 @@ export function generateRandomCode(prefix = "GEO") {
 }
 
 /**
- * Get or generate the current user's personal detector code
+ * Get or generate the current user's personal detector code (always prefixed with "GEO-")
  */
 export function getMyUserCode() {
   try {
     let code = localStorage.getItem(USER_CODE_STORAGE_KEY);
     if (!code) {
-      code = generateRandomCode("GEO");
-      localStorage.setItem(USER_CODE_STORAGE_KEY, code);
+      const legacy = localStorage.getItem("rdl_user_code_v1");
+      if (legacy) {
+        code = legacy.replace(/^RDL-/i, "GEO-");
+        localStorage.removeItem("rdl_user_code_v1");
+      }
     }
+    if (code && code.toUpperCase().startsWith("RDL-")) {
+      code = code.replace(/^RDL-/i, "GEO-");
+    }
+    if (!code) {
+      code = generateRandomCode("GEO");
+    }
+    localStorage.setItem(USER_CODE_STORAGE_KEY, code);
     return code;
   } catch (e) {
     console.warn("Storage error in getMyUserCode:", e);

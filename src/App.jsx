@@ -178,7 +178,7 @@ function App() {
 
   const [showSplash, setShowSplash] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(() => {
-    return localStorage.getItem("rdl_onboarding_completed_v3") !== "true";
+    return localStorage.getItem("geoprospect_onboarding_completed_v3") !== "true" && localStorage.getItem("rdl_onboarding_completed_v3") !== "true";
   });
   const [activeTab, setActiveTab] = useState("map");
   const [theme, setTheme] = useState(() => localStorage.getItem("app_theme") || "dark");

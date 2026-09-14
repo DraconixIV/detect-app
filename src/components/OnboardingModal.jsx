@@ -41,8 +41,8 @@ export default function OnboardingModal({ isOpen, onComplete }) {
   const allLegalChecked = checkOwner && checkHeritage && checkDeclaration && checkNature && checkCgu;
 
   const handleDevSkip = () => {
-    localStorage.setItem("rdl_onboarding_completed_v3", "true");
-    localStorage.setItem("rdl_cgu_accepted", "true");
+    localStorage.setItem("geoprospect_onboarding_completed_v3", "true");
+    localStorage.setItem("geoprospect_cgu_accepted", "true");
     if (onComplete) {
       onComplete({
         defaultMapStyle: selectedMapStyle,
@@ -54,8 +54,8 @@ export default function OnboardingModal({ isOpen, onComplete }) {
   };
 
   const handleFinish = () => {
-    localStorage.setItem("rdl_onboarding_completed_v3", "true");
-    localStorage.setItem("rdl_cgu_accepted", "true");
+    localStorage.setItem("geoprospect_onboarding_completed_v3", "true");
+    localStorage.setItem("geoprospect_cgu_accepted", "true");
     localStorage.setItem("mapStyle", selectedMapStyle);
     localStorage.setItem("app_design_theme", selectedDesignTheme);
     localStorage.setItem("app_theme", selectedAppTheme);

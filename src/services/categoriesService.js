@@ -1,12 +1,12 @@
 import { categoryEmojis as defaultEmojis, categoriesWithSub as defaultCategories } from "../subCategories";
 
-const STORAGE_CATEGORIES_KEY = "rdl_custom_categories";
-const STORAGE_EMOJIS_KEY = "rdl_custom_emojis";
+const STORAGE_CATEGORIES_KEY = "geoprospect_custom_categories";
+const STORAGE_EMOJIS_KEY = "geoprospect_custom_emojis";
 
 export function loadCategoriesData() {
   try {
-    const storedCats = localStorage.getItem(STORAGE_CATEGORIES_KEY);
-    const storedEmojis = localStorage.getItem(STORAGE_EMOJIS_KEY);
+    const storedCats = localStorage.getItem(STORAGE_CATEGORIES_KEY) || localStorage.getItem("rdl_custom_categories");
+    const storedEmojis = localStorage.getItem(STORAGE_EMOJIS_KEY) || localStorage.getItem("rdl_custom_emojis");
 
     const categories = storedCats ? JSON.parse(storedCats) : { ...defaultCategories };
     const emojis = storedEmojis ? JSON.parse(storedEmojis) : { ...defaultEmojis };

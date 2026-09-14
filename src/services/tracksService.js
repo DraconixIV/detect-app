@@ -1,10 +1,10 @@
 import { supabase } from "../supabase";
 
-const LOCAL_TRACKS_KEY = "rdl_saved_tracks_v2";
+const LOCAL_TRACKS_KEY = "geoprospect_saved_tracks_v2";
 
 export function getLocalTracks() {
   try {
-    const raw = localStorage.getItem(LOCAL_TRACKS_KEY);
+    const raw = localStorage.getItem(LOCAL_TRACKS_KEY) || localStorage.getItem("rdl_saved_tracks_v2");
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) return parsed;
