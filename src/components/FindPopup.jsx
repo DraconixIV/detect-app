@@ -389,6 +389,7 @@ export default function FindPopup({
 
     return (
       <div
+        onClick={(e) => e.stopPropagation()}
         style={{
           width: "215px",
           display: "flex",
@@ -466,7 +467,10 @@ export default function FindPopup({
         <div style={{ display: "flex", gap: "6px", marginTop: "2px" }}>
           {/* Favorite Toggle */}
           <button
-            onClick={() => onFavorite(find)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onFavorite(find);
+            }}
             style={{
               flex: "0 0 36px",
               height: "36px",
@@ -486,7 +490,10 @@ export default function FindPopup({
 
           {/* Details / Edit triggers Portal Modal */}
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsModalOpen(true);
+            }}
             style={{
               flex: 1,
               height: "36px",

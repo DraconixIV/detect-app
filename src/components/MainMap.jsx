@@ -475,10 +475,23 @@ export default function MainMap({
                 key={find.id}
                 position={find.finalPosition}
                 icon={icons[find.category] || icons.autre}
-                eventHandlers={{
-                  click: () => setOpenPopupFind(find)
-                }}
-              />
+              >
+                <Popup
+                  className="custom-find-leaflet-popup"
+                  autoPan={true}
+                  autoPanPadding={[25, 25]}
+                  closeButton={true}
+                >
+                  <FindPopup
+                    find={find}
+                    onClose={() => setOpenPopupFind(null)}
+                    onDelete={deleteFind}
+                    onFavorite={handleFavorite}
+                    onUpdate={loadFinds}
+                    workspace={workspace}
+                  />
+                </Popup>
+              </Marker>
             ))}
           </MarkerClusterGroup>
         ) : (
@@ -487,10 +500,23 @@ export default function MainMap({
               key={find.id}
               position={find.finalPosition}
               icon={icons[find.category] || icons.autre}
-              eventHandlers={{
-                click: () => setOpenPopupFind(find)
-              }}
-            />
+            >
+              <Popup
+                className="custom-find-leaflet-popup"
+                autoPan={true}
+                autoPanPadding={[25, 25]}
+                closeButton={true}
+              >
+                <FindPopup
+                  find={find}
+                  onClose={() => setOpenPopupFind(null)}
+                  onDelete={deleteFind}
+                  onFavorite={handleFavorite}
+                  onUpdate={loadFinds}
+                  workspace={workspace}
+                />
+              </Popup>
+            </Marker>
           ))
         )
       )}
