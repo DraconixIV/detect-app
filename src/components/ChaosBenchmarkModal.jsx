@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { PRESET_CATEGORY_COLORS, materials, materialEmojis } from "../subCategories";
 import { addPendingFind, getPendingFinds, deletePendingFind } from "../services/offlineStore";
 import { loadCategoriesData, addCategory } from "../services/categoriesService";
@@ -71,28 +71,28 @@ export default function ChaosBenchmarkModal({
 
   if (!isOpen) return null;
 
-  // 2. Action: Spawn 15 Virtual Bots in App
-  const handleStart15Bots = () => {
+  // 2. Action: Spawn Virtual Bots in App (15, 50, 500)
+  const handleStartBots = (count = 15) => {
     if (isSimulating) {
       clearInterval(botsIntervalRef.current);
       setIsSimulating(false);
       setActiveBotsCount(0);
-      addLog("🛑 Arrêt de la simulation des 15 bots.");
+      addLog("🛑 Arrêt de la simulation des bots.");
       return;
     }
 
     setIsSimulating(true);
-    setActiveBotsCount(15);
-    addLog("🚀 Démarrage de 15 prospecteurs virtuels sur la carte !");
+    setActiveBotsCount(count);
+    addLog(`🚀 Démarrage de ${count} prospecteurs virtuels simultanés sur la carte !`);
 
     const centerLat = currentPosition?.[0] || 48.8566;
     const centerLng = currentPosition?.[1] || 2.3522;
 
-    const bots = Array.from({ length: 15 }).map((_, i) => ({
+    const bots = Array.from({ length: count }).map((_, i) => ({
       id: `bot-${i + 1}`,
       name: `Prospecteur Bot #${i + 1}`,
-      lat: centerLat + (Math.random() - 0.5) * 0.006,
-      lng: centerLng + (Math.random() - 0.5) * 0.006,
+      lat: centerLat + (Math.random() - 0.5) * (count > 50 ? 0.05 : 0.008),
+      lng: centerLng + (Math.random() - 0.5) * (count > 50 ? 0.05 : 0.008),
       color: PRESET_CATEGORY_COLORS[i % PRESET_CATEGORY_COLORS.length]
     }));
 
@@ -323,7 +323,7 @@ export default function ChaosBenchmarkModal({
             </div>
           </div>
 
-          {/* Action 1 : 15 Bots Simulation */}
+          {/* Action 1 : Bots Simulation */}
           <div
             style={{
               padding: "14px",
@@ -331,33 +331,90 @@ export default function ChaosBenchmarkModal({
               borderRadius: "16px",
               border: `1px solid ${cardBorder}`,
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center"
+              flexDirection: "column",
+              gap: "8px"
             }}
           >
-            <div>
-              <div style={{ fontSize: "13px", fontWeight: "800", color: textMain }}>
-                🤖 15 Bots Prospecteurs en Direct
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ fontSize: "13px", fontWeight: "800", color: textMain }}>
+                  🤖 Simulation de Prospecteurs ({activeBotsCount} actifs)
+                </div>
+                <div style={{ fontSize: "11px", color: textSub }}>
+                  Déplacements GPS en direct à 1 Hz
+                </div>
               </div>
-              <div style={{ fontSize: "11px", color: textSub }}>
-                Simule 15 prospecteurs marchant autour de vous à 1 Hz
-              </div>
+              {isSimulating && (
+                <button
+                  onClick={() => handleStartBots(0)}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "8px",
+                    border: "none",
+                    background: "#ef4444",
+                    color: "#ffffff",
+                    fontSize: "11px",
+                    fontWeight: "700",
+                    cursor: "pointer"
+                  }}
+                >
+                  Arrêter 🛑
+                </button>
+              )}
             </div>
-            <button
-              onClick={handleStart15Bots}
-              style={{
-                padding: "8px 14px",
-                borderRadius: "10px",
-                border: "none",
-                background: isSimulating ? "#ef4444" : "linear-gradient(135deg, #2563eb, #1d4ed8)",
-                color: "#ffffff",
-                fontSize: "12px",
-                fontWeight: "700",
-                cursor: "pointer"
-              }}
-            >
-              {isSimulating ? "Arrêter les Bots 🛑" : "Lancer 15 Bots 🚀"}
-            </button>
+
+            {!isSimulating && (
+              <div style={{ display: "flex", gap: "6px" }}>
+                <button
+                  onClick={() => handleStartBots(15)}
+                  style={{
+                    flex: 1,
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border: `1px solid ${cardBorder}`,
+                    background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                    color: "#ffffff",
+                    fontSize: "11px",
+                    fontWeight: "700",
+                    cursor: "pointer"
+                  }}
+                >
+                  15 Bots
+                </button>
+                <button
+                  onClick={() => handleStartBots(50)}
+                  style={{
+                    flex: 1,
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border: `1px solid ${cardBorder}`,
+                    background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+                    color: "#ffffff",
+                    fontSize: "11px",
+                    fontWeight: "700",
+                    cursor: "pointer"
+                  }}
+                >
+                  50 Bots
+                </button>
+                <button
+                  onClick={() => handleStartBots(500)}
+                  style={{
+                    flex: 1,
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border: `1px solid ${cardBorder}`,
+                    background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                    color: "#ffffff",
+                    fontSize: "11px",
+                    fontWeight: "800",
+                    cursor: "pointer"
+                  }}
+                >
+                  500 Bots 🔥
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Action 2 : Bulk Injection */}
@@ -398,7 +455,7 @@ export default function ChaosBenchmarkModal({
                   cursor: "pointer"
                 }}
               >
-                +50 Repères
+                +50
               </button>
               <button
                 onClick={() => handleInjectFinds(150)}
@@ -414,10 +471,10 @@ export default function ChaosBenchmarkModal({
                   cursor: "pointer"
                 }}
               >
-                +150 Repères
+                +150
               </button>
               <button
-                onClick={() => handleInjectFinds(300)}
+                onClick={() => handleInjectFinds(500)}
                 style={{
                   flex: 1,
                   padding: "8px",
@@ -426,11 +483,11 @@ export default function ChaosBenchmarkModal({
                   background: isLight ? "#ffffff" : "rgba(255,255,255,0.06)",
                   color: textMain,
                   fontSize: "11px",
-                  fontWeight: "700",
+                  fontWeight: "800",
                   cursor: "pointer"
                 }}
               >
-                +300 Repères 🔥
+                +500 Repères 🔥
               </button>
             </div>
           </div>
