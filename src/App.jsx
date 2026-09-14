@@ -8,15 +8,15 @@ import ToastNotification from "./components/ToastNotification";
 import ConfirmModal from "./components/ConfirmModal";
 import AlbumPanel from "./components/AlbumPanel";
 import MainMap from "./components/MainMap";
-import SidebarMenu from "./components/SidebarMenu";
+import MapTopBar from "./components/MapTopBar";
+import MapFloatingControls from "./components/MapFloatingControls";
+import SortieLiveWidget from "./components/SortieLiveWidget";
+import AddFindModal from "./components/AddFindModal";
 import OutingWidget from "./components/OutingWidget";
 import BottomNav from "./components/BottomNav";
 import OnboardingModal from "./components/OnboardingModal";
 import ReportsPanel from "./components/ReportsPanel";
-import ShortcutsPanel from "./components/ShortcutsPanel";
 import SettingsPanel from "./components/SettingsPanel";
-import TacticalTopHUD from "./components/TacticalTopHUD";
-import TacticalBottomHUD from "./components/TacticalBottomHUD";
 import ThemePickerModal from "./components/ThemePickerModal";
 import CategoryManagerModal from "./components/CategoryManagerModal";
 import TeamSessionModal from "./components/TeamSessionModal";
@@ -238,6 +238,8 @@ function App() {
   const [subCategorySelectCat, setSubCategorySelectCat] = useState(null);
   const [subCatModalStep, setSubCatModalStep] = useState(1);
   const [gpsStyle, setGpsStyle] = useState(() => localStorage.getItem("gpsStyle") || "blue-dot");
+  const [zenMode, setZenMode] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   const gpsWatchIdRef = useRef(null);
 
@@ -824,92 +826,28 @@ return (
         </div>
       )}
 
-      {/* TACTICAL TOP HUD (GO TERRAIN STYLE) */}
+      {/* MAP TOP BAR (GLASSMORPHISM & TELEMETRY) */}
       {activeTab === "map" && (
-        <TacticalTopHUD
+        <MapTopBar
           currentThemeKey={designTheme}
-          onOpenMenu={() => setShowMenu(!showMenu)}
-          onOpenThemePicker={() => setShowThemePicker(true)}
-          onOpenTeamSession={() => setShowTeamSessionModal(true)}
           workspace={workspace}
           gpsAccuracy={gpsAccuracy}
           isOnline={isOnline}
           isRecordingSortie={isRecordingSortie}
           onToggleRecording={() => isRecordingSortie ? stopSortie() : startSortie(position)}
+          onOpenTeamSession={() => setShowTeamSessionModal(true)}
+          onOpenThemePicker={() => setShowThemePicker(true)}
+          onToggleSearch={() => setShowSearch(!showSearch)}
+          showSearch={showSearch}
+          search={search}
+          setSearch={setSearch}
+          filters={filters}
+          toggleFilter={toggleFilter}
+          zenMode={zenMode}
         />
       )}
 
-      {/* SIDEBAR MENU */}
-      <SidebarMenu
-        showMenu={showMenu}
-        setShowMenu={setShowMenu}
-        showForm={showForm}
-        setShowForm={setShowForm}
-        baseMap={baseMap}
-        setBaseMap={setBaseMap}
-        showCadastre={showCadastre}
-        setShowCadastre={setShowCadastre}
-        cadastreOpacity={cadastreOpacity}
-        setCadastreOpacity={setCadastreOpacity}
-        showCassini={showCassini}
-        setShowCassini={setShowCassini}
-        cassiniOpacity={cassiniOpacity}
-        setCassiniOpacity={setCassiniOpacity}
-        showEtatMajor={showEtatMajor}
-        setShowEtatMajor={setShowEtatMajor}
-        etatMajorOpacity={etatMajorOpacity}
-        setEtatMajorOpacity={setEtatMajorOpacity}
-        onOpenMapLayers={() => setShowMapLayersModal(true)}
-        mapStyle={mapStyle}
-        setMapStyle={setMapStyle}
-        followGps={followGps}
-        setFollowGps={setFollowGps}
-        showHistoricalMap={showHistoricalMap}
-        setShowHistoricalMap={setShowHistoricalMap}
-        historicalMapOpacity={historicalMapOpacity}
-        setHistoricalMapOpacity={setHistoricalMapOpacity}
-        useClustering={useClustering}
-        setUseClustering={setUseClustering}
-        gpsStyle={gpsStyle}
-        setGpsStyle={setGpsStyle}
-        isRecordingSortie={isRecordingSortie}
-        sortieDistance={sortieDistance}
-        startSortie={startSortie}
-        stopSortie={stopSortie}
-        favoritesOnly={favoritesOnly}
-        setFavoritesOnly={setFavoritesOnly}
-        hideAllFinds={hideAllFinds}
-        setHideAllFinds={setHideAllFinds}
-        search={search}
-        setSearch={setSearch}
-        filters={filters}
-        toggleFilter={toggleFilter}
-        
-        // AddFindForm Props
-        newTitle={newTitle}
-        setNewTitle={setNewTitle}
-        newDescription={newDescription}
-        setNewDescription={setNewDescription}
-        newCategory={newCategory}
-        setNewCategory={setNewCategory}
-        newSubCategory={newSubCategory}
-        setNewSubCategory={setNewSubCategory}
-        icons={icons}
-        addFind={addFind}
-        newPhoto={newPhoto}
-        setNewPhoto={setNewPhoto}
-        addingFind={addingFind}
-        customDate={customDate}
-        setCustomDate={setCustomDate}
-        customLat={customLat}
-        setCustomLat={setCustomLat}
-        customLng={customLng}
-        setCustomLng={setCustomLng}
-        activeSubCategory={activeSubCategory}
-        setActiveSubCategory={setActiveSubCategory}
-      />
-
-      {/* TAB: GALERIE */}
+      {/* TAB: TROUVAILLES (GALERIE & ALBUM) */}
       {activeTab === "gallery" && (
         <AlbumPanel
           finds={finds}
@@ -926,7 +864,7 @@ return (
         />
       )}
 
-      {/* TAB: RAPPORTS */}
+      {/* TAB: JOURNAL & RAPPORTS */}
       {activeTab === "reports" && (
         <ReportsPanel
           finds={finds}
@@ -944,49 +882,7 @@ return (
         />
       )}
 
-      {/* TAB: RACCOURCIS */}
-      {activeTab === "shortcuts" && (
-        <ShortcutsPanel
-          baseMap={baseMap}
-          setBaseMap={setBaseMap}
-          showCadastre={showCadastre}
-          setShowCadastre={setShowCadastre}
-          cadastreOpacity={cadastreOpacity}
-          setCadastreOpacity={setCadastreOpacity}
-          showCassini={showCassini}
-          setShowCassini={setShowCassini}
-          cassiniOpacity={cassiniOpacity}
-          setCassiniOpacity={setCassiniOpacity}
-          showEtatMajor={showEtatMajor}
-          setShowEtatMajor={setShowEtatMajor}
-          etatMajorOpacity={etatMajorOpacity}
-          setEtatMajorOpacity={setEtatMajorOpacity}
-          showHistoricalMap={showHistoricalMap}
-          setShowHistoricalMap={setShowHistoricalMap}
-          historicalMapOpacity={historicalMapOpacity}
-          setHistoricalMapOpacity={setHistoricalMapOpacity}
-          onOpenMapLayers={() => setShowMapLayersModal(true)}
-          useClustering={useClustering}
-          setUseClustering={setUseClustering}
-          hideAllFinds={hideAllFinds}
-          setHideAllFinds={setHideAllFinds}
-          followGps={followGps}
-          setFollowGps={setFollowGps}
-          gpsStyle={gpsStyle}
-          setGpsStyle={setGpsStyle}
-          isRecordingSortie={isRecordingSortie}
-          sortieDistance={sortieDistance}
-          startSortie={startSortie}
-          stopSortie={stopSortie}
-          favoritesOnly={favoritesOnly}
-          setFavoritesOnly={setFavoritesOnly}
-          theme={theme}
-          onOpenCategoryManager={() => setShowCategoryManagerModal(true)}
-          onOpenMap={() => setActiveTab("map")}
-        />
-      )}
-
-      {/* TAB: PARAMETRES */}
+      {/* TAB: PARAMÈTRES & ÉQUIPE */}
       {activeTab === "settings" && (
         <SettingsPanel
           theme={theme}
@@ -1009,7 +905,7 @@ return (
         />
       )}
 
-      {/* MAIN MAP */}
+      {/* MAIN MAP (100% IMMERSIVE VIEWPORT) */}
       <MainMap
         position={position}
         followGps={followGps}
@@ -1047,23 +943,9 @@ return (
         savedTracks={savedTracks}
       />
 
-      {/* TACTICAL BOTTOM HUD (TELEMETRY & ACTIONS - MAP ONLY) */}
+      {/* FLOATING RIGHT-SIDE CONTROLS (GPS RECENTER, LAYERS & ZEN MODE) */}
       {activeTab === "map" && (
-        <TacticalBottomHUD
-          currentThemeKey={designTheme}
-          isRecordingSortie={isRecordingSortie}
-          sortieDistance={sortieDistance}
-          todayFindsCount={todayFindsCount}
-          onStartSortie={() => startSortie(position)}
-          onStopSortie={stopSortie}
-          onAddFindClick={() => {
-            setShowForm(true);
-            setShowMenu(true);
-          }}
-          onOpenMapLayers={() => setShowMapLayersModal(true)}
-          activeLayersCount={(showCadastre ? 1 : 0) + ((showCassini || showHistoricalMap) ? 1 : 0) + (showEtatMajor ? 1 : 0)}
-          onToggleCassini={() => setShowHistoricalMap(!showHistoricalMap)}
-          showCassini={showHistoricalMap || showCassini}
+        <MapFloatingControls
           onRecenterGps={() => {
             setFollowGps(true);
             setZoomTarget({ position: position, zoom: 17 });
@@ -1073,8 +955,49 @@ return (
             });
           }}
           followGps={followGps}
+          onOpenMapLayers={() => setShowMapLayersModal(true)}
+          activeLayersCount={(showCadastre ? 1 : 0) + ((showCassini || showHistoricalMap) ? 1 : 0) + (showEtatMajor ? 1 : 0)}
+          zenMode={zenMode}
+          setZenMode={setZenMode}
+          onAddFindClick={() => setShowForm(true)}
         />
       )}
+
+      {/* FLOATING SORTIE TELEMETRY WIDGET */}
+      {activeTab === "map" && (
+        <SortieLiveWidget
+          isRecordingSortie={isRecordingSortie}
+          sortieDistance={sortieDistance}
+          todayFindsCount={todayFindsCount}
+          onStopSortie={stopSortie}
+          zenMode={zenMode}
+        />
+      )}
+
+      {/* ADD FIND BOTTOM SHEET MODAL */}
+      <AddFindModal
+        isOpen={showForm}
+        onClose={() => setShowForm(false)}
+        newTitle={newTitle}
+        setNewTitle={setNewTitle}
+        newDescription={newDescription}
+        setNewDescription={setNewDescription}
+        newCategory={newCategory}
+        setNewCategory={setNewCategory}
+        newSubCategory={newSubCategory}
+        setNewSubCategory={setNewSubCategory}
+        icons={icons}
+        addFind={addFind}
+        newPhoto={newPhoto}
+        setNewPhoto={setNewPhoto}
+        addingFind={addingFind}
+        customDate={customDate}
+        setCustomDate={setCustomDate}
+        customLat={customLat}
+        setCustomLat={setCustomLat}
+        customLng={customLng}
+        setCustomLng={setCustomLng}
+      />
 
       {/* Hidden input for quick add */}
       <input
@@ -1557,7 +1480,7 @@ return (
       )}
 
       {/* Bottom Navigation Bar */}
-      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} currentThemeKey={designTheme} />
+      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} currentThemeKey={designTheme} zenMode={zenMode} />
 
       {/* Startup Onboarding Wizard (First Launch: Feature Discovery -> Official Legal & Ethical Charter -> Auth -> Pre-Customization) */}
       <OnboardingModal

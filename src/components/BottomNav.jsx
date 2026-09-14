@@ -1,15 +1,21 @@
 import React from "react";
 import { THEMES } from "../styles/themes";
 
-export default function BottomNav({ activeTab, setActiveTab, currentThemeKey = "tactical" }) {
+export default function BottomNav({
+  activeTab,
+  setActiveTab,
+  currentThemeKey = "tactical",
+  zenMode = false
+}) {
   const theme = THEMES[currentThemeKey] || THEMES.tactical;
   const c = theme.colors;
 
+  if (zenMode) return null;
+
   const tabs = [
     { id: "map", label: "Carte", icon: "🗺️" },
-    { id: "gallery", label: "Galerie", icon: "🖼️" },
-    { id: "reports", label: "Rapports", icon: "📊" },
-    { id: "shortcuts", label: "Raccourcis", icon: "⚡" },
+    { id: "gallery", label: "Trouvailles", icon: "🪙" },
+    { id: "reports", label: "Journal", icon: "📊" },
     { id: "settings", label: "Paramètres", icon: "⚙️" }
   ];
 
@@ -21,14 +27,15 @@ export default function BottomNav({ activeTab, setActiveTab, currentThemeKey = "
         left: 0,
         right: 0,
         zIndex: 6500,
-        background: c.hudBg,
-        backdropFilter: "blur(16px)",
-        borderTop: `1px solid ${c.border}`,
+        background: "rgba(11, 19, 41, 0.88)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderTop: "1px solid rgba(255, 255, 255, 0.12)",
         display: "flex",
         justifyContent: "space-around",
         alignItems: "center",
-        padding: "6px 8px env(safe-area-inset-bottom, 8px) 8px",
-        boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.5)",
+        padding: "6px 12px env(safe-area-inset-bottom, 8px) 12px",
+        boxShadow: "0 -4px 24px rgba(0, 0, 0, 0.5)",
         userSelect: "none"
       }}
     >
@@ -50,20 +57,20 @@ export default function BottomNav({ activeTab, setActiveTab, currentThemeKey = "
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              gap: "3px",
+              gap: "2px",
               padding: "6px 2px",
               border: "none",
-              background: isActive ? `${c.accent}20` : "transparent",
-              borderRadius: "12px",
+              background: isActive ? "rgba(56, 189, 248, 0.14)" : "transparent",
+              borderRadius: "14px",
               cursor: "pointer",
-              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-              color: isActive ? c.accent : c.textSecondary
+              transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+              color: isActive ? "#38bdf8" : "#94a3b8"
             }}
           >
             <span
               style={{
-                fontSize: "18px",
-                transform: isActive ? "scale(1.15)" : "scale(1)",
+                fontSize: "19px",
+                transform: isActive ? "scale(1.12)" : "scale(1)",
                 transition: "transform 0.2s ease"
               }}
             >
@@ -71,9 +78,10 @@ export default function BottomNav({ activeTab, setActiveTab, currentThemeKey = "
             </span>
             <span
               style={{
-                fontSize: "10px",
+                fontSize: "11px",
                 fontWeight: isActive ? "800" : "600",
-                letterSpacing: "0.2px"
+                letterSpacing: "0.2px",
+                color: isActive ? "#ffffff" : "#94a3b8"
               }}
             >
               {tab.label}
