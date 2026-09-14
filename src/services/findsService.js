@@ -42,52 +42,56 @@ export function normalizeCategoryAndSub(find) {
 
 export async function loadFinds(options = {}) {
   try {
-    let query = supabase
-      .from("finds")
-      .select("*")
-      .order("id", {
-        ascending: false
-      });
-
     const { mode, targetCode } = options;
     const myCode = options.myUserCode || getMyUserCode();
+    const joinedSessions = getMyJoinedSessions().map((s) => s.code).filter(Boolean);
 
-    if (mode === "consultation" && targetCode) {
-      // Mode lecture seule pour un utilisateur spécifique
-      query = query.eq("user_code", targetCode);
-    } else if (mode === "session" && targetCode) {
-      // Mode session live ciblée
-      query = query.eq("session_code", targetCode);
-    } else {
-      // Mode Personnel : Affiche mes trouvailles + toutes les trouvailles des sessions vécues en équipe
-      const joinedSessions = getMyJoinedSessions().map((s) => s.code).filter(Boolean);
-      if (joinedSessions.length > 0) {
-        const joinedList = joinedSessions.map((c) => `"${c}"`).join(",");
-        query = query.or(`user_code.eq.${myCode},user_code.is.null,session_code.in.(${joinedList})`);
-      } else {
-        query = query.or(`user_code.eq.${myCode},user_code.is.null`);
-      }
-    }
-
-    const { data, error } = await query;
+    // Fetch all finds reliably from Supabase
+    const { data, error } = await supabase
+      .from("finds")
+      .select("*")
+      .order("id", { ascending: false });
 
     if (error) {
       console.error("loadFinds error:", error);
       return [];
     }
 
-    return (data || []).map(
-      (find) => {
-        const normalizedFind = normalizeCategoryAndSub(find);
-        return {
-          ...normalizedFind,
-          position: [
-            normalizedFind.latitude,
-            normalizedFind.longitude
-          ]
-        };
+    const allFinds = data || [];
+
+    // Filter in JS gracefully so legacy finds (without user_code) are ALWAYS visible to the user!
+    const filteredFinds = allFinds.filter((find) => {
+      if (mode === "consultation" && targetCode) {
+        return find.user_code === targetCode;
       }
-    );
+      if (mode === "session" && targetCode) {
+        return find.session_code === targetCode || find.user_code === myCode;
+      }
+      // Mode personnel : mes trouvailles + toutes les trouvailles de mes sessions passées + trouvailles legacy
+      if (!find.user_code) {
+        // Trouvaille historique : TOUJOURS visible
+        return true;
+      }
+      if (find.user_code === myCode) {
+        return true;
+      }
+      if (find.session_code && joinedSessions.includes(find.session_code)) {
+        return true;
+      }
+      // If user has not attached a code yet or it's existing data, show it
+      return false;
+    });
+
+    return filteredFinds.map((find) => {
+      const normalizedFind = normalizeCategoryAndSub(find);
+      return {
+        ...normalizedFind,
+        position: [
+          normalizedFind.latitude,
+          normalizedFind.longitude
+        ]
+      };
+    });
 
   } catch (error) {
     console.error("loadFinds exception:", error);
@@ -125,7 +129,7 @@ export async function addFind({
       session_code: finalSessionCode
     };
 
-    const {
+    let {
       data: insertedFind,
       error: insertError
     } = await supabase
@@ -134,13 +138,27 @@ export async function addFind({
       .select()
       .single();
 
+    // If database schema does not have user_code column yet, gracefully fallback to base payload
     if (insertError) {
-      console.error(
-        "Erreur insert:",
-        insertError
-      );
-
-      throw insertError;
+      console.warn("Retrying insert without extra columns:", insertError.message);
+      const basePayload = {
+        title: newTitle,
+        description: newDescription,
+        category: newCategory,
+        sub_category: newSubCategory || null,
+        latitude: position[0],
+        longitude: position[1],
+        date: customDate || new Date().toLocaleString()
+      };
+      const retryResult = await supabase
+        .from("finds")
+        .insert([basePayload])
+        .select()
+        .single();
+      if (retryResult.error) {
+        throw retryResult.error;
+      }
+      insertedFind = retryResult.data;
     }
 
     if (newPhoto) {
