@@ -161,8 +161,8 @@ export default function SplashScreen({ onFinish, duration = 2200 }) {
             width: "92px",
             height: "92px",
             borderRadius: "24px",
-            background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 60%, #1e40af 100%)",
-            boxShadow: "0 20px 40px -10px rgba(37, 99, 235, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.6) inset",
+            background: "#ebe3d3",
+            boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.25), 0 0 0 1.5px rgba(245, 158, 11, 0.3) inset",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -180,34 +180,22 @@ export default function SplashScreen({ onFinish, duration = 2200 }) {
               height: "100%",
               background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)",
               animation: "shineSweep 2.2s infinite ease-in-out",
-              pointerEvents: "none"
+              pointerEvents: "none",
+              zIndex: 2
             }}
           />
 
-          {/* Metal Detector Stylized Vector Icon */}
-          <svg
-            width="52"
-            height="52"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            {/* Search Coil (Ellipse) */}
-            <ellipse cx="8" cy="18" rx="5" ry="3" stroke="#93c5fd" strokeWidth="2.2" />
-            {/* Coil Center Pinpoint */}
-            <circle cx="8" cy="18" r="1" fill="#60a5fa" />
-            {/* Shaft / Stem */}
-            <path d="M8 18 L15 8 L17 4" stroke="white" strokeWidth="2.2" />
-            {/* Ergonomic Handle & Control Box */}
-            <path d="M15 8 L18 8.5" stroke="#fde047" strokeWidth="2.5" />
-            <rect x="13.5" y="6" width="3.5" height="3" rx="0.8" fill="#fde047" stroke="#ca8a04" strokeWidth="0.8" />
-            {/* Signal waves from target */}
-            <path d="M16 14 C 18 15, 18 17, 16 18" stroke="#fde047" strokeWidth="1.8" strokeLinecap="round" />
-            <path d="M18.5 12 C 21.5 14, 21.5 18, 18.5 20" stroke="#fde047" strokeWidth="1.8" strokeLinecap="round" opacity="0.6" />
-          </svg>
+          {/* Official GeoProspect Icon */}
+          <img
+            src="/icon-192.png"
+            alt="GeoProspect Emblem"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              borderRadius: "24px"
+            }}
+          />
         </div>
       </div>
 

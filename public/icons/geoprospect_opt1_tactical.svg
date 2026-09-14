@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+    <linearGradient id="blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+    <radialGradient id="radar-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2563eb" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#2563eb" stop-opacity="0" />
+    </radialGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Squircle / App Icon Base -->
+  <rect width="512" height="512" rx="115" fill="url(#bg-grad)" />
+  <rect width="512" height="512" rx="115" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="3" />
+
+  <!-- Background Radar / Topography -->
+  <circle cx="256" cy="256" r="210" fill="url(#radar-glow)" />
+  <circle cx="256" cy="256" r="190" stroke="rgba(255,255,255,0.06)" stroke-width="2" fill="none" stroke-dasharray="8 8" />
+  <circle cx="256" cy="256" r="130" stroke="rgba(255,255,255,0.04)" stroke-width="2" fill="none" />
+
+  <!-- Terrain Lines -->
+  <path d="M 60 375 Q 160 360 256 370 T 450 365" stroke="rgba(255,255,255,0.14)" stroke-width="4" fill="none" />
+  <path d="M 60 410 Q 180 395 300 410 T 450 400" stroke="rgba(255,255,255,0.07)" stroke-width="3" fill="none" />
+
+  <!-- Sonar Pulse Arcs from Coil -->
+  <path d="M 310 380 A 55 20 0 0 1 400 380" stroke="url(#blue-grad)" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.9" />
+  <path d="M 298 400 A 75 27 0 0 1 412 400" stroke="url(#blue-grad)" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="0.6" />
+  <path d="M 286 420 A 95 34 0 0 1 424 420" stroke="url(#blue-grad)" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0.3" />
+
+  <!-- Hidden Target Coin (Gold) -->
+  <circle cx="355" cy="410" r="12" fill="url(#gold-grad)" filter="url(#glow)" />
+  <circle cx="355" cy="410" r="20" stroke="url(#gold-grad)" stroke-width="2.5" fill="none" opacity="0.6" />
+
+  <!-- Explorer Silhouette in profile -->
+  <!-- Cap & Head -->
+  <path d="M 160 178 C 160 162 173 152 191 152 C 209 152 222 162 222 178 C 222 191 214 198 202 203 L 227 203 C 232 203 234 206 229 211 L 202 213 C 192 223 176 223 166 213 Z" fill="#ffffff" />
+  <!-- Explorer Torso / Vest -->
+  <path d="M 168 218 C 150 234 145 260 142 295 L 175 310 L 185 275 L 195 290 L 192 360 L 172 360 L 172 370 L 202 370 L 210 295 C 218 270 215 240 198 218 Z" fill="#e2e8f0" />
+  <!-- Arm extending to detector handle -->
+  <path d="M 193 234 L 244 270 L 261 262 L 213 226 Z" fill="#ffffff" />
+
+  <!-- Metal Detector Shaft & Control Unit -->
+  <rect x="241" y="252" width="26" height="18" rx="4" fill="url(#blue-grad)" transform="rotate(-30 241 252)" />
+  <line x1="248" y1="265" x2="355" y2="365" stroke="#94a3b8" stroke-width="8" stroke-linecap="round" />
+  <path d="M 226 242 C 228 230 241 228 248 233" stroke="#94a3b8" stroke-width="6" fill="none" stroke-linecap="round" />
+
+  <!-- Search Coil (Disque Double-D Elliptique) -->
+  <g transform="rotate(-8 355 365)">
+    <ellipse cx="355" cy="365" rx="42" ry="16" fill="#0f172a" stroke="url(#blue-grad)" stroke-width="7" />
+    <ellipse cx="355" cy="365" rx="16" ry="6.5" fill="#2563eb" />
+    <line x1="355" y1="349" x2="355" y2="381" stroke="url(#blue-grad)" stroke-width="5" />
+  </g>
+
+  <!-- Brand Typography "GP" & "GeoProspect" -->
+  <text x="80" y="125" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="52" fill="#ffffff" letter-spacing="2">GP</text>
+  <circle cx="152" cy="110" r="7" fill="#38bdf8" />
+  <text x="80" y="470" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="24" fill="#64748b" letter-spacing="5">GEOPROSPECT</text>
+</svg>

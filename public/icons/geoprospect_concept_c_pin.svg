@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg-grad-c" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#050b18" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+    <linearGradient id="pin-grad-c" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="50%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+    <linearGradient id="gold-grad-c" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+    <filter id="shadow-c" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect width="512" height="512" rx="115" fill="url(#bg-grad-c)" />
+  <rect width="512" height="512" rx="115" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3" />
+
+  <!-- Radar / Topo background -->
+  <circle cx="256" cy="256" r="200" stroke="rgba(255,255,255,0.06)" stroke-width="3" fill="none" />
+  <circle cx="256" cy="256" r="130" stroke="rgba(56,189,248,0.1)" stroke-width="3" fill="none" stroke-dasharray="8 8" />
+
+  <!-- Search Coil Disc at the ground target (Base) -->
+  <g transform="translate(256, 365)" filter="url(#shadow-c)">
+    <!-- Double-D Disc -->
+    <ellipse cx="0" cy="0" rx="125" ry="46" fill="#0f172a" stroke="url(#pin-grad-c)" stroke-width="13" />
+    <ellipse cx="0" cy="0" rx="46" ry="18" fill="none" stroke="url(#pin-grad-c)" stroke-width="8" />
+    <line x1="-125" y1="0" x2="125" y2="0" stroke="url(#pin-grad-c)" stroke-width="8" />
+    <!-- Radiating Gold Ring -->
+    <ellipse cx="0" cy="0" rx="88" ry="32" stroke="url(#gold-grad-c)" stroke-width="4" fill="none" stroke-dasharray="8 8" />
+  </g>
+
+  <!-- Majestic Geolocation Pin & Prospector Target -->
+  <g transform="translate(256, 218)" filter="url(#shadow-c)">
+    <!-- Pin Shape -->
+    <path d="M 0 -135 C -72 -135 -118 -78 -118 -5 C -118 72 0 142 0 142 C 0 142 118 72 118 -5 C 118 -78 72 -135 0 -135 Z" fill="url(#pin-grad-c)" />
+    <!-- Inner White Lens -->
+    <circle cx="0" cy="-15" r="56" fill="#ffffff" />
+    
+    <!-- Monogram GP inside Pin -->
+    <text x="0" y="2" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="48" fill="#0f172a">GP</text>
+  </g>
+</svg>

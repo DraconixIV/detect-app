@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="opt4-blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+    <linearGradient id="opt4-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle Base Pure White -->
+  <rect width="512" height="512" rx="115" fill="#ffffff" stroke="#e2e8f0" stroke-width="4" />
+
+  <!-- Clean Radar Circles -->
+  <circle cx="256" cy="256" r="210" fill="#f8fafc" stroke="#e2e8f0" stroke-width="3" />
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#e2e8f0" stroke-width="2.5" stroke-dasharray="8 8" />
+  <circle cx="256" cy="256" r="95" fill="none" stroke="#dbeafe" stroke-width="2.5" />
+
+  <!-- Clean Terrain Baseline -->
+  <line x1="80" y1="370" x2="432" y2="370" stroke="#cbd5e1" stroke-width="6" stroke-linecap="round" />
+
+  <!-- Sonar Pulse below soil -->
+  <path d="M 310 388 A 50 18 0 0 1 400 388" stroke="#3b82f6" stroke-width="6" fill="none" stroke-linecap="round" />
+  <path d="M 295 408 A 70 25 0 0 1 415 408" stroke="#3b82f6" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.6" />
+  
+  <!-- Gold Target Coin -->
+  <circle cx="355" cy="420" r="13" fill="url(#opt4-gold)" />
+
+  <!-- Explorer Silhouette in Midnight Slate (#0f172a) -->
+  <!-- Cap & Head -->
+  <path d="M 165 174 C 165 158 178 148 196 148 C 214 148 227 158 227 174 C 227 187 219 194 207 199 L 232 199 C 237 199 239 202 234 207 L 207 209 C 197 219 181 219 171 209 Z" fill="#0f172a" />
+  <!-- Body -->
+  <path d="M 173 214 C 155 230 150 256 147 291 L 180 306 L 190 271 L 200 286 L 197 362 L 177 362 L 177 370 L 207 370 L 215 291 C 223 266 220 236 203 214 Z" fill="#1e293b" />
+  <!-- Arm holding detector -->
+  <path d="M 198 230 L 249 266 L 266 258 L 218 222 Z" fill="#0f172a" />
+
+  <!-- Detector Rod & Double-D Coil in Electric Royal Blue -->
+  <line x1="253" y1="260" x2="355" y2="352" stroke="#3b82f6" stroke-width="8" stroke-linecap="round" />
+  <ellipse cx="355" cy="352" rx="44" ry="17" fill="#eff6ff" stroke="url(#opt4-blue)" stroke-width="7" transform="rotate(-6 355 352)" />
+  <ellipse cx="355" cy="352" rx="17" ry="6.5" fill="#2563eb" transform="rotate(-6 355 352)" />
+
+  <!-- Brand Typography "GP" & "GeoProspect" -->
+  <text x="90" y="125" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="52" fill="#0f172a" letter-spacing="2">GP</text>
+  <circle cx="166" cy="110" r="7" fill="#2563eb" />
+  <text x="90" y="470" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="24" fill="#0f172a" letter-spacing="5">GEO<tspan fill="#2563eb">PROSPECT</tspan></text>
+</svg>

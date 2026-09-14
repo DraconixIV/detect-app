@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="opt2-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="opt2-primary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+    <linearGradient id="opt2-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047" />
+      <stop offset="100%" stop-color="#eab308" />
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect width="512" height="512" rx="115" fill="url(#opt2-bg)" />
+  <rect width="512" height="512" rx="115" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3" />
+
+  <!-- Background Radar / Target Grid -->
+  <circle cx="256" cy="256" r="200" stroke="rgba(56, 189, 248, 0.15)" stroke-width="2.5" fill="none" />
+  <circle cx="256" cy="256" r="140" stroke="rgba(56, 189, 248, 0.08)" stroke-width="2" fill="none" stroke-dasharray="6 6" />
+  <line x1="256" y1="50" x2="256" y2="460" stroke="rgba(255, 255, 255, 0.05)" stroke-width="2" />
+  <line x1="50" y1="256" x2="460" y2="256" stroke="rgba(255, 255, 255, 0.05)" stroke-width="2" />
+
+  <!-- Large Stylized "G" Letter in Vector Blue -->
+  <path d="M 230 160 C 165 160 115 198 115 256 C 115 314 165 352 230 352 C 265 352 298 338 312 316 L 312 270 L 230 270 L 230 234 L 350 234 L 350 325 C 322 364 280 385 225 385 C 138 385 75 328 75 256 C 75 182 140 128 228 128 C 274 128 315 146 342 174 L 310 206 C 290 184 262 160 230 160 Z" fill="url(#opt2-primary)" opacity="0.95" />
+
+  <!-- Metal Detector Search Coil acting as the central target loop / P Integration -->
+  <g transform="translate(335, 295)">
+    <ellipse cx="0" cy="0" rx="88" ry="46" fill="#0f172a" stroke="#ffffff" stroke-width="8" />
+    <ellipse cx="0" cy="0" rx="88" ry="46" fill="none" stroke="url(#opt2-primary)" stroke-width="6" />
+    <ellipse cx="0" cy="0" rx="36" ry="18" fill="none" stroke="url(#opt2-primary)" stroke-width="5" />
+    <line x1="-88" y1="0" x2="88" y2="0" stroke="url(#opt2-primary)" stroke-width="5" />
+    <line x1="0" y1="-46" x2="0" y2="46" stroke="url(#opt2-primary)" stroke-width="5" />
+    <circle cx="0" cy="0" r="11" fill="url(#opt2-gold)" />
+  </g>
+
+  <!-- Explorer Silhouette standing near the detector coil -->
+  <g transform="translate(315, 105)">
+    <!-- Bush Hat -->
+    <ellipse cx="0" cy="0" rx="18" ry="7" fill="#ffffff" />
+    <circle cx="0" cy="-10" r="12" fill="#ffffff" />
+    <!-- Torso & Backpack -->
+    <path d="M -10 4 L 10 4 L 15 55 L -15 55 Z" fill="#e2e8f0" />
+    <!-- Arm holding detector rod down to the coil -->
+    <path d="M 5 20 L 30 70 L 18 150" stroke="#ffffff" stroke-width="6" stroke-linecap="round" fill="none" />
+  </g>
+
+  <!-- GeoProspect text badge -->
+  <text x="256" y="460" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="28" fill="#94a3b8" letter-spacing="6">GEOPROSPECT</text>
+</svg>
