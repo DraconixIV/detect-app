@@ -1,47 +1,24 @@
-import {
-  categoryEmojis as defaultEmojis,
-  categoriesWithSub as defaultCategories,
-  defaultCategoryColors
-} from "../subCategories";
-
 const STORAGE_CATEGORIES_KEY = "geoprospect_custom_categories";
 const STORAGE_EMOJIS_KEY = "geoprospect_custom_emojis";
 const STORAGE_COLORS_KEY = "geoprospect_custom_colors";
 
 export function loadCategoriesData() {
   try {
-    const storedCats = localStorage.getItem(STORAGE_CATEGORIES_KEY) || localStorage.getItem("rdl_custom_categories");
-    const storedEmojis = localStorage.getItem(STORAGE_EMOJIS_KEY) || localStorage.getItem("rdl_custom_emojis");
-    const storedColors = localStorage.getItem(STORAGE_COLORS_KEY) || localStorage.getItem("rdl_custom_colors");
+    const storedCats = localStorage.getItem(STORAGE_CATEGORIES_KEY);
+    const storedEmojis = localStorage.getItem(STORAGE_EMOJIS_KEY);
+    const storedColors = localStorage.getItem(STORAGE_COLORS_KEY);
 
-    const categories = storedCats ? JSON.parse(storedCats) : { ...defaultCategories };
-    const emojis = storedEmojis ? JSON.parse(storedEmojis) : { ...defaultEmojis };
-    const colors = storedColors ? JSON.parse(storedColors) : { ...defaultCategoryColors };
-
-    // Ensure all default categories exist if not present
-    Object.keys(defaultCategories).forEach(cat => {
-      if (!categories[cat]) {
-        categories[cat] = [...defaultCategories[cat]];
-      }
-    });
-    Object.keys(defaultEmojis).forEach(cat => {
-      if (!emojis[cat]) {
-        emojis[cat] = defaultEmojis[cat];
-      }
-    });
-    Object.keys(defaultCategoryColors).forEach(cat => {
-      if (!colors[cat]) {
-        colors[cat] = defaultCategoryColors[cat];
-      }
-    });
+    const categories = storedCats ? JSON.parse(storedCats) : {};
+    const emojis = storedEmojis ? JSON.parse(storedEmojis) : {};
+    const colors = storedColors ? JSON.parse(storedColors) : {};
 
     return { categories, emojis, colors };
   } catch (err) {
     console.error("Failed to load custom categories:", err);
     return {
-      categories: { ...defaultCategories },
-      emojis: { ...defaultEmojis },
-      colors: { ...defaultCategoryColors }
+      categories: {},
+      emojis: {},
+      colors: {}
     };
   }
 }
@@ -122,12 +99,4 @@ export function removeSubCategory(categoryName, subCategoryName) {
     saveCategoriesData(categories, emojis, colors);
   }
   return true;
-}
-
-export function resetCategories() {
-  saveCategoriesData(
-    { ...defaultCategories },
-    { ...defaultEmojis },
-    { ...defaultCategoryColors }
-  );
 }

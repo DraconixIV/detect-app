@@ -121,7 +121,7 @@ function App() {
   const [
     newCategory,
     setNewCategory
-  ] = useState("Monnaie");
+  ] = useState(() => Object.keys(loadCategoriesData().categories || {})[0] || "");
 
   const [
     newSubCategory,
@@ -521,13 +521,14 @@ function App() {
         });
       }
 
+      const firstAvailableCat = Object.keys(loadCategoriesData().categories || {})[0] || "";
       setCustomDate("");
       setCustomLat("");
       setCustomLng("");
       setShowForm(false);
       setNewTitle("");
       setNewDescription("");
-      setNewCategory("Monnaie");
+      setNewCategory(firstAvailableCat);
       setNewSubCategory("");
       setNewPhoto(null);
 
@@ -549,13 +550,14 @@ function App() {
 
         alert("⚠️ Erreur de réseau ou connexion instable. Votre trouvaille a été sauvegardée localement (Hors-ligne) par précaution ! Elle sera synchronisée dès le retour d'internet. 💾");
 
+        const firstAvailableCat = Object.keys(loadCategoriesData().categories || {})[0] || "";
         setCustomDate("");
         setCustomLat("");
         setCustomLng("");
         setShowForm(false);
         setNewTitle("");
         setNewDescription("");
-        setNewCategory("Monnaie");
+        setNewCategory(firstAvailableCat);
         setNewSubCategory("");
         setNewPhoto(null);
 

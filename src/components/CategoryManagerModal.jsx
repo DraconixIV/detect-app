@@ -5,7 +5,6 @@ import {
   removeCategory,
   addSubCategory,
   removeSubCategory,
-  resetCategories,
   updateCategoryColor
 } from "../services/categoriesService";
 import { PRESET_CATEGORY_COLORS, defaultCategoryColors } from "../subCategories";
@@ -243,25 +242,29 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
               <span style={{ fontSize: "12px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Catégories Existantes ({Object.keys(categoriesData.categories || {}).length})
               </span>
-              <button
-                onClick={() => {
-                  if (window.confirm("Réinitialiser toutes les catégories, couleurs et sous-catégories par défaut ?")) {
-                    resetCategories();
-                  }
-                }}
+            </div>
+
+            {Object.keys(categoriesData.categories || {}).length === 0 && (
+              <div
                 style={{
-                  background: "transparent",
-                  border: "none",
-                  color: "#ef4444",
-                  fontSize: "11px",
-                  cursor: "pointer",
-                  fontWeight: "600",
-                  textDecoration: "underline"
+                  padding: "24px 16px",
+                  borderRadius: "14px",
+                  background: cardBg,
+                  border: `1px dashed ${cardBorder}`,
+                  textAlign: "center",
+                  color: textSub,
+                  fontSize: "13px"
                 }}
               >
-                Réinitialiser par défaut
-              </button>
-            </div>
+                <div style={{ fontSize: "28px", marginBottom: "6px" }}>🏷️</div>
+                <div style={{ fontWeight: "700", color: textMain, marginBottom: "4px" }}>
+                  Aucune catégorie pour l'instant
+                </div>
+                <div style={{ fontSize: "11px", color: textSub }}>
+                  Utilisez le formulaire ci-dessus pour ajouter votre première catégorie personnalisée.
+                </div>
+              </div>
+            )}
 
             {Object.entries(categoriesData.categories || {}).map(([catName, subCats]) => {
               const emoji = categoriesData.emojis?.[catName] || "🏷️";

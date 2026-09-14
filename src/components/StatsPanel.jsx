@@ -660,7 +660,7 @@ export default function StatsPanel({
                 .filter((f) => f.category === category && f.sub_category)
                 .reduce((acc, f) => {
                   const matchingSubCat =
-                    (categoriesWithSub[category] || []).find(
+                    ((customCategories && customCategories[category]) || []).find(
                       (sub) => sub.toLowerCase() === f.sub_category.toLowerCase()
                     ) || f.sub_category;
                   acc[matchingSubCat] = (acc[matchingSubCat] || 0) + 1;

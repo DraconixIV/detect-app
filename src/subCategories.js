@@ -1,28 +1,6 @@
-export const categoryEmojis = {
-  "Monnaie": "🪙",
-  "Bijou": "💍",
-  "Boucle": "🥨",
-  "Bouton": "🔘",
-  "Médaille": "🎖️",
-  "Munition": "💣",
-  "Outil": "🛠️",
-  "Plomb": "⚓",
-  "Religieux": "✝️",
-  "Autre": "📦"
-};
+export const categoryEmojis = {};
 
-export const defaultCategoryColors = {
-  "Monnaie": "#facc15",   // Jaune or vif
-  "Bijou": "#ec4899",     // Rose magenta élégant
-  "Boucle": "#8b5cf6",    // Violet
-  "Bouton": "#10b981",    // Vert émeraude
-  "Médaille": "#3b82f6",  // Bleu royal
-  "Munition": "#ef4444",  // Rouge corail
-  "Outil": "#f97316",     // Orange ambre
-  "Plomb": "#6b7280",     // Gris acier
-  "Religieux": "#d97706", // Brun doré / Cuivré
-  "Autre": "#334155"      // Ardoise sombre
-};
+export const defaultCategoryColors = {};
 
 export const PRESET_CATEGORY_COLORS = [
   "#facc15", // Jaune or
@@ -43,93 +21,115 @@ export const PRESET_CATEGORY_COLORS = [
   "#334155"  // Ardoise sombre
 ];
 
-export const categoriesWithSub = {
-  "Monnaie": [
-    "Gauloise",
-    "Grecque",
-    "Romaine",
-    "Byzantine",
-    "Mérovingienne",
-    "Carolingienne",
-    "Féodale",
-    "Royale",
-    "Révolution",
-    "Empire",
-    "République française",
-    "Coloniale",
-    "Étrangère",
-    "Jeton",
-    "Indéterminée",
-    "Savo"
-  ],
-  "Bijou": [
-    "Bague / Anneau",
-    "Broche / Fibule",
-    "Pendentif",
-    "Boucle d'oreille",
-    "Bracelet",
-    "Indéterminé"
-  ],
-  "Boucle": [
-    "Romaine / Médiévale",
-    "Double fenêtre (XVIe-XVIIe)",
-    "Chaussure (XVIIIe)",
-    "Ceinture",
-    "Harnais / Bourrellerie",
-    "Militaire",
-    "Indéterminée"
-  ],
-  "Bouton": [
-    "Civil plat (XVIIIe-XIXe)",
-    "Civil décoré",
-    "Militaire",
-    "Double face",
-    "Attache",
-    "Indéterminé"
-  ],
-  "Médaille": [
-    "Religieuse",
-    "Militaire / Commémorative",
-    "Civile",
-    "Indéterminée"
-  ],
-  "Munition": [
-    "Balle de plomb",
-    "Cartouche / Douille",
-    "Balle moderne",
-    "Obus / Shrapnel",
-    "Boulet",
-    "Indéterminée"
-  ],
-  "Outil": [
-    "Dé à coudre",
-    "Poids monétaire / de balance",
-    "Clé / Serrure",
-    "Faucille / Outil agricole",
-    "Clou / Charnière",
-    "Indéterminé"
-  ],
-  "Plomb": [
-    "Plomb de sac / Scellé",
-    "Lest de filet / Poids",
-    "Indéterminé"
-  ],
-  "Religieux": [
-    "Croix / Crucifix",
-    "Médaille de pèlerin",
-    "Statuelle / Objet de culte",
-    "Indéterminé"
-  ],
-  "Autre": [
-    "Déchet / Reste de fonderie",
-    "Objet utilitaire",
-    "Plaque d'identité",
-    "Indéterminé"
-  ]
+export const SUGGESTED_STARTER_CATEGORIES = {
+  "Monnaie": {
+    emoji: "🪙",
+    color: "#facc15",
+    subCategories: [
+      "Gauloise",
+      "Romaine",
+      "Royale",
+      "Révolution",
+      "Empire",
+      "Moderne",
+      "Jeton",
+      "Savo",
+      "Indéterminée"
+    ]
+  },
+  "Bijou": {
+    emoji: "💍",
+    color: "#ec4899",
+    subCategories: [
+      "Bague / Anneau",
+      "Broche / Fibule",
+      "Pendentif",
+      "Boucle d'oreille",
+      "Bracelet",
+      "Indéterminé"
+    ]
+  },
+  "Boucle": {
+    emoji: "🥨",
+    color: "#8b5cf6",
+    subCategories: [
+      "Romaine / Médiévale",
+      "Double fenêtre (XVIe-XVIIe)",
+      "Chaussure (XVIIIe)",
+      "Ceinture",
+      "Militaire",
+      "Indéterminée"
+    ]
+  },
+  "Bouton": {
+    emoji: "🔘",
+    color: "#10b981",
+    subCategories: [
+      "Civil plat (XVIIIe-XIXe)",
+      "Civil décoré",
+      "Militaire",
+      "Double face",
+      "Indéterminé"
+    ]
+  },
+  "Militaria": {
+    emoji: "🎖️",
+    color: "#ef4444",
+    subCategories: [
+      "Insigne / Médaille",
+      "Cartouche / Douille",
+      "Balle de plomb",
+      "Bouton d'uniforme",
+      "Boucle militaire",
+      "Indéterminée"
+    ]
+  },
+  "Outil": {
+    emoji: "🛠️",
+    color: "#f97316",
+    subCategories: [
+      "Dé à coudre",
+      "Poids monétaire / balance",
+      "Clé / Serrure",
+      "Outil agricole",
+      "Indéterminé"
+    ]
+  },
+  "Religieux": {
+    emoji: "✝️",
+    color: "#d97706",
+    subCategories: [
+      "Croix / Crucifix",
+      "Médaille de pèlerin",
+      "Statuelle / Objet de culte",
+      "Indéterminé"
+    ]
+  },
+  "Plomb": {
+    emoji: "⚓",
+    color: "#6b7280",
+    subCategories: [
+      "Plomb de sac / Scellé",
+      "Lest de filet / Poids",
+      "Indéterminé"
+    ]
+  },
+  "Autre": {
+    emoji: "📦",
+    color: "#334155",
+    subCategories: [
+      "Objet utilitaire",
+      "Plaque d'identité",
+      "Déchet / Reste de fonderie",
+      "Indéterminé"
+    ]
+  }
 };
 
+export const categoriesWithSub = {};
+
 // Retro-compatibility
-export const monnaieSubCategories = categoriesWithSub["Monnaie"];
+export const monnaieSubCategories = [];
 
 export const materials = [
   "Indéterminé",

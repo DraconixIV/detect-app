@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { materials, materialEmojis } from "../subCategories";
-import { loadCategoriesData } from "../services/categoriesService";
+import { materials, materialEmojis, PRESET_CATEGORY_COLORS } from "../subCategories";
+import { loadCategoriesData, addCategory } from "../services/categoriesService";
 
 export default function AddFindForm({
   showForm,
@@ -26,17 +26,26 @@ export default function AddFindForm({
 }) {
   const [isManualMode, setIsManualMode] = useState(false);
   const [categoryData, setCategoryData] = useState(() => loadCategoriesData());
+  const [showQuickCatBox, setShowQuickCatBox] = useState(false);
+  const [quickCatName, setQuickCatName] = useState("");
+  const [quickCatEmoji, setQuickCatEmoji] = useState("🪙");
+  const [quickCatColor, setQuickCatColor] = useState("#facc15");
 
   const cameraInputRef = useRef(null);
   const galleryInputRef = useRef(null);
 
   useEffect(() => {
     const handleCategoriesUpdate = () => {
-      setCategoryData(loadCategoriesData());
+      const data = loadCategoriesData();
+      setCategoryData(data);
+      const keys = Object.keys(data.categories || {});
+      if (keys.length > 0 && (!newCategory || !data.categories[newCategory])) {
+        setNewCategory(keys[0]);
+      }
     };
     window.addEventListener("categories-updated", handleCategoriesUpdate);
     return () => window.removeEventListener("categories-updated", handleCategoriesUpdate);
-  }, []);
+  }, [newCategory, setNewCategory]);
 
   if (!showForm) return null;
 
@@ -204,50 +213,206 @@ export default function AddFindForm({
       </div>
 
       {/* CATEGORIE & SOUS-CATEGORIE */}
-      <div style={{ display: "grid", gridTemplateColumns: availableSubCats.length > 0 ? "1fr 1fr" : "1fr", gap: "8px" }}>
-        <div>
-          <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
-            Catégorie
-          </label>
-          <select
-            value={newCategory}
-            onChange={(e) => {
-              const cat = e.target.value;
-              setNewCategory(cat);
-              setNewSubCategory("");
-            }}
-            style={inputStyle}
-          >
-            {categoryKeys.map((cat) => (
-              <option key={cat} value={cat} style={{ background: "#1f2937", color: "#ffffff" }}>
-                {emojis[cat] || "🏷️"} {cat}
-              </option>
-            ))}
-          </select>
-        </div>
+      {categoryKeys.length === 0 ? (
+        <div
+          style={{
+            padding: "14px",
+            borderRadius: "14px",
+            background: "rgba(59, 130, 246, 0.15)",
+            border: "1px dashed rgba(96, 165, 250, 0.5)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            textAlign: "center"
+          }}
+        >
+          <div style={{ fontSize: "12px", fontWeight: "700", color: "#ffffff" }}>
+            🏷️ Aucune catégorie configurée
+          </div>
+          <div style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.75)" }}>
+            Créez rapidement une catégorie pour classer votre trouvaille.
+          </div>
 
-        {availableSubCats.length > 0 && (
+          {!showQuickCatBox ? (
+            <button
+              type="button"
+              onClick={() => setShowQuickCatBox(true)}
+              style={{
+                alignSelf: "center",
+                padding: "8px 16px",
+                borderRadius: "10px",
+                border: "none",
+                background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                color: "#ffffff",
+                fontSize: "12px",
+                fontWeight: "700",
+                cursor: "pointer",
+                boxShadow: "0 2px 8px rgba(37, 99, 235, 0.3)"
+              }}
+            >
+              + Créer une catégorie
+            </button>
+          ) : (
+            <div
+              style={{
+                background: "rgba(15, 23, 42, 0.9)",
+                padding: "12px",
+                borderRadius: "12px",
+                border: "1px solid rgba(255,255,255,0.15)",
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px",
+                textAlign: "left"
+              }}
+            >
+              <div style={{ display: "flex", gap: "6px" }}>
+                <select
+                  value={quickCatEmoji}
+                  onChange={(e) => setQuickCatEmoji(e.target.value)}
+                  style={{
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    background: "rgba(255,255,255,0.08)",
+                    color: "#ffffff",
+                    fontSize: "16px",
+                    cursor: "pointer"
+                  }}
+                >
+                  {["🪙", "💍", "👑", "🛡️", "⚔️", "🏺", "🗝️", "🎖️", "💣", "🔨", "🪓", "🔔", "⚓", "📦", "📜", "✝️", "🏷️", "💎"].map((em) => (
+                    <option key={em} value={em} style={{ background: "#1e293b", color: "#ffffff" }}>
+                      {em}
+                    </option>
+                  ))}
+                </select>
+
+                <input
+                  type="text"
+                  placeholder="Nom de la catégorie..."
+                  value={quickCatName}
+                  onChange={(e) => setQuickCatName(e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: "8px 10px",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    background: "rgba(255,255,255,0.08)",
+                    color: "#ffffff",
+                    fontSize: "12px",
+                    outline: "none"
+                  }}
+                />
+              </div>
+
+              {/* Color swatches */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+                {PRESET_CATEGORY_COLORS.map((col) => (
+                  <button
+                    key={col}
+                    type="button"
+                    onClick={() => setQuickCatColor(col)}
+                    style={{
+                      width: "18px",
+                      height: "18px",
+                      borderRadius: "50%",
+                      background: col,
+                      border: quickCatColor === col ? "2px solid #ffffff" : "1px solid rgba(255,255,255,0.2)",
+                      cursor: "pointer",
+                      padding: 0
+                    }}
+                  />
+                ))}
+              </div>
+
+              <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowQuickCatBox(false)}
+                  style={{
+                    padding: "6px 10px",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    background: "transparent",
+                    color: "#cbd5e1",
+                    fontSize: "11px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Annuler
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const trimmed = quickCatName.trim();
+                    if (!trimmed) return;
+                    addCategory(trimmed, quickCatEmoji, ["Indéterminé"], quickCatColor);
+                    setNewCategory(trimmed);
+                    setQuickCatName("");
+                    setShowQuickCatBox(false);
+                  }}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "8px",
+                    border: "none",
+                    background: "#10b981",
+                    color: "#ffffff",
+                    fontSize: "11px",
+                    fontWeight: "bold",
+                    cursor: "pointer"
+                  }}
+                >
+                  Enregistrer
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: availableSubCats.length > 0 ? "1fr 1fr" : "1fr", gap: "8px" }}>
           <div>
             <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
-              Sous-catégorie
+              Catégorie
             </label>
             <select
-              value={newSubCategory}
-              onChange={(e) => setNewSubCategory(e.target.value)}
+              value={newCategory}
+              onChange={(e) => {
+                const cat = e.target.value;
+                setNewCategory(cat);
+                setNewSubCategory("");
+              }}
               style={inputStyle}
             >
-              <option value="" style={{ background: "#1f2937", color: "#ffffff" }}>
-                -- Sélectionner --
-              </option>
-              {availableSubCats.map((subCat) => (
-                <option key={subCat} value={subCat} style={{ background: "#1f2937", color: "#ffffff" }}>
-                  {subCat}
+              {categoryKeys.map((cat) => (
+                <option key={cat} value={cat} style={{ background: "#1f2937", color: "#ffffff" }}>
+                  {emojis[cat] || "🏷️"} {cat}
                 </option>
               ))}
             </select>
           </div>
-        )}
-      </div>
+
+          {availableSubCats.length > 0 && (
+            <div>
+              <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
+                Sous-catégorie
+              </label>
+              <select
+                value={newSubCategory}
+                onChange={(e) => setNewSubCategory(e.target.value)}
+                style={inputStyle}
+              >
+                <option value="" style={{ background: "#1f2937", color: "#ffffff" }}>
+                  -- Sélectionner --
+                </option>
+                {availableSubCats.map((subCat) => (
+                  <option key={subCat} value={subCat} style={{ background: "#1f2937", color: "#ffffff" }}>
+                    {subCat}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* MATIERE (VIRE LE MOT METAL DANS LE LABEL, "Métal non spécifié" DANS LE SELECT) */}
       <div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabase";
-import { loadCategoriesData, addCategory, removeCategory, addSubCategory, removeSubCategory, resetCategories } from "../services/categoriesService";
+import { loadCategoriesData, addCategory, removeCategory, addSubCategory, removeSubCategory } from "../services/categoriesService";
 import { defaultCategoryColors } from "../subCategories";
 import { getMyUserCode, getMyDisplayName } from "../services/sessionService";
 import AuthForm from "./AuthForm";
@@ -383,6 +383,11 @@ export default function SettingsPanel({
 
               {/* Categories list */}
               <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "250px", overflowY: "auto", paddingRight: "4px" }}>
+                {Object.keys(categoriesData.categories).length === 0 && (
+                  <div style={{ textAlign: "center", padding: "16px 10px", color: textSub, fontSize: "11px", fontStyle: "italic" }}>
+                    Aucune catégorie personnalisée configurée.
+                  </div>
+                )}
                 {Object.keys(categoriesData.categories).map((cat) => (
                   <div
                     key={cat}
@@ -480,17 +485,6 @@ export default function SettingsPanel({
                   </div>
                 ))}
               </div>
-
-              <button
-                onClick={() => {
-                  if (window.confirm("Réinitialiser toutes les catégories par défaut ?")) {
-                    resetCategories();
-                  }
-                }}
-                style={{ padding: "8px", borderRadius: "10px", border: "none", background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.05)", color: textSub, fontSize: "10px", cursor: "pointer" }}
-              >
-                🔄 Réinitialiser les catégories par défaut
-              </button>
             </div>
           )}
         </div>

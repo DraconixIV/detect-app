@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { THEMES } from "../styles/themes";
+import { loadCategoriesData } from "../services/categoriesService";
 
 export default function MapTopBar({
   currentThemeKey = "tactical",
@@ -17,6 +18,14 @@ export default function MapTopBar({
   toggleFilter,
   zenMode = false
 }) {
+  const [categoriesData, setCategoriesData] = useState(() => loadCategoriesData());
+
+  useEffect(() => {
+    const handleUpdate = () => setCategoriesData(loadCategoriesData());
+    window.addEventListener("categories-updated", handleUpdate);
+    return () => window.removeEventListener("categories-updated", handleUpdate);
+  }, []);
+
   const theme = THEMES[currentThemeKey] || THEMES.tactical;
   const c = theme.colors;
 
@@ -294,8 +303,9 @@ export default function MapTopBar({
               scrollbarWidth: "none"
             }}
           >
-            {["Monnaie", "Bijou", "Boucle", "Bouton", "Médaille", "Munition", "Outil", "Plomb", "Religieux", "Autre"].map((cat) => {
+            {Object.keys(categoriesData.categories || {}).map((cat) => {
               const active = filters.includes(cat);
+              const emoji = categoriesData.emojis?.[cat] || "";
               return (
                 <button
                   key={cat}
@@ -313,7 +323,7 @@ export default function MapTopBar({
                     transition: "all 0.15s ease"
                   }}
                 >
-                  {cat}
+                  {emoji} {cat}
                 </button>
               );
             })}
