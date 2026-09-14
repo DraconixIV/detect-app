@@ -1,13 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabase";
 import { loadFinds as fetchFinds, addFind as createFind, normalizeCategoryAndSub } from "../services/findsService";
 import { getPendingFinds, deletePendingFind } from "../services/offlineStore";
+import { getMyUserCode } from "../services/sessionService";
 
-export default function useSupabaseSync(setToast) {
+export default function useSupabaseSync(setToast, workspace = { mode: "personal", targetCode: null }) {
   const [finds, setFinds] = useState([]);
   const [allPhotos, setAllPhotos] = useState([]);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [syncing, setSyncing] = useState(false);
+
+  const workspaceRef = useRef(workspace);
+  useEffect(() => {
+    workspaceRef.current = workspace;
+  }, [workspace]);
 
   const loadPhotosForAlbum = async () => {
     try {
@@ -24,30 +30,43 @@ export default function useSupabaseSync(setToast) {
   };
 
   const loadFinds = async () => {
-    const data = await fetchFinds();
+    const currentWs = workspaceRef.current || { mode: "personal", targetCode: null };
+    const myCode = getMyUserCode();
+    
+    const data = await fetchFinds({
+      mode: currentWs.mode,
+      targetCode: currentWs.targetCode,
+      myUserCode: myCode
+    });
 
     if (allPhotos.length > 0) {
       await loadPhotosForAlbum();
     }
 
     try {
-      const offlineFinds = await getPendingFinds();
-      const formattedOffline = offlineFinds.map((f) => ({
-        id: `offline-${f.id}`,
-        title: f.newTitle,
-        description: f.newDescription,
-        category: f.newCategory,
-        sub_category: f.newSubCategory,
-        latitude: f.position[0],
-        longitude: f.position[1],
-        position: f.position,
-        date: f.customDate || f.createdAt,
-        isOfflinePending: true,
-        offlinePhoto: f.photo ? URL.createObjectURL(f.photo) : null
-      }));
-      setFinds([...formattedOffline, ...(data || [])]);
+      // In personal mode, also display offline pending finds
+      if (currentWs.mode === "personal") {
+        const offlineFinds = await getPendingFinds();
+        const formattedOffline = offlineFinds.map((f) => ({
+          id: `offline-${f.id}`,
+          title: f.newTitle,
+          description: f.newDescription,
+          category: f.newCategory,
+          sub_category: f.newSubCategory,
+          latitude: f.position[0],
+          longitude: f.position[1],
+          position: f.position,
+          date: f.customDate || f.createdAt,
+          isOfflinePending: true,
+          offlinePhoto: f.photo ? URL.createObjectURL(f.photo) : null,
+          finder_name: f.finderName || "Moi (Hors-ligne)"
+        }));
+        setFinds([...formattedOffline, ...(data || [])]);
+      } else {
+        setFinds(data || []);
+      }
     } catch (e) {
-      console.error(e);
+      console.error("Error merging offline finds:", e);
       setFinds(data || []);
     }
   };
@@ -70,7 +89,10 @@ export default function useSupabaseSync(setToast) {
             newCategory: f.newCategory,
             newSubCategory: f.newSubCategory,
             newPhoto: f.photo,
-            customDate: f.customDate
+            customDate: f.customDate,
+            userCode: f.userCode,
+            finderName: f.finderName,
+            sessionCode: f.sessionCode
           });
           await deletePendingFind(f.id);
           syncedCount++;
@@ -103,9 +125,12 @@ export default function useSupabaseSync(setToast) {
     }
   };
 
+  // Reload when workspace mode or target changes
   useEffect(() => {
     loadFinds();
+  }, [workspace.mode, workspace.targetCode]);
 
+  useEffect(() => {
     const channel = supabase
       .channel("realtime-finds-changes")
       .on(
@@ -114,6 +139,17 @@ export default function useSupabaseSync(setToast) {
         (payload) => {
           console.log("Realtime change received:", payload);
           const { eventType, new: newRow, old: oldRow } = payload;
+          const currentWs = workspaceRef.current || { mode: "personal" };
+
+          // Filter check for current workspace
+          if (eventType === "INSERT" || eventType === "UPDATE") {
+            if (currentWs.mode === "consultation" && newRow.user_code !== currentWs.targetCode) {
+              return;
+            }
+            if (currentWs.mode === "session" && newRow.session_code !== currentWs.targetCode) {
+              return;
+            }
+          }
 
           setFinds((currentFinds) => {
             if (eventType === "INSERT") {
@@ -125,6 +161,14 @@ export default function useSupabaseSync(setToast) {
               if (currentFinds.some((f) => f.id === formatted.id)) {
                 return currentFinds;
               }
+
+              if (currentWs.mode === "session" && newRow.finder_name && setToast) {
+                setToast({
+                  message: `✨ ${newRow.finder_name} vient d'ajouter une trouvaille (${newRow.title || newRow.category}) !`,
+                  type: "success"
+                });
+              }
+
               const offlinePendings = currentFinds.filter((f) => f.isOfflinePending);
               const restFinds = currentFinds.filter((f) => !f.isOfflinePending);
               return [...offlinePendings, formatted, ...restFinds];
@@ -182,3 +226,4 @@ export default function useSupabaseSync(setToast) {
     loadPhotosForAlbum
   };
 }
+

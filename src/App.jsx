@@ -20,6 +20,7 @@ import TacticalBottomHUD from "./components/TacticalBottomHUD";
 import ThemePickerModal from "./components/ThemePickerModal";
 import CategoryManagerModal from "./components/CategoryManagerModal";
 import WelcomeGate from "./components/WelcomeGate";
+import TeamSessionModal from "./components/TeamSessionModal";
 import { THEMES } from "./styles/themes";
 
 import { icons } from "./icons";
@@ -30,6 +31,7 @@ import useSortieRecorder from "./hooks/useSortieRecorder";
 import { addPendingFind, deletePendingFind } from "./services/offlineStore";
 import { importData, exportData } from "./services/backupService";
 import { addFind as createFind, toggleFavorite } from "./services/findsService";
+import { getActiveSession, leaveTeamSession } from "./services/sessionService";
 
 function offsetPosition(
   position,
@@ -134,6 +136,23 @@ function App() {
 
   const [toast, setToast] = useState(null);
 
+  const [workspace, setWorkspace] = useState(() => {
+    const activeSess = getActiveSession();
+    if (activeSess) {
+      return {
+        mode: "session",
+        targetCode: activeSess.code,
+        sessionName: activeSess.name
+      };
+    }
+    return {
+      mode: "personal",
+      targetCode: null,
+      sessionName: null
+    };
+  });
+  const [showTeamSessionModal, setShowTeamSessionModal] = useState(false);
+
   const {
     finds,
     allPhotos,
@@ -142,7 +161,7 @@ function App() {
     loadFinds,
     syncOfflineFinds,
     loadPhotosForAlbum
-  } = useSupabaseSync(setToast);
+  } = useSupabaseSync(setToast, workspace);
 
   const {
     isRecordingSortie,
@@ -801,6 +820,8 @@ return (
           currentThemeKey={designTheme}
           onOpenMenu={() => setShowMenu(!showMenu)}
           onOpenThemePicker={() => setShowThemePicker(true)}
+          onOpenTeamSession={() => setShowTeamSessionModal(true)}
+          workspace={workspace}
           gpsAccuracy={gpsAccuracy}
           isOnline={isOnline}
           isRecordingSortie={isRecordingSortie}
@@ -939,6 +960,9 @@ return (
           onOpenThemePicker={() => setShowThemePicker(true)}
           onOpenCategoryManager={() => setShowCategoryManagerModal(true)}
           onRestartOnboarding={() => setShowOnboarding(true)}
+          workspace={workspace}
+          setWorkspace={setWorkspace}
+          onOpenTeamSession={() => setShowTeamSessionModal(true)}
         />
       )}
 
@@ -964,6 +988,9 @@ return (
         deleteFind={deleteFind}
         handleFavorite={handleFavorite}
         loadFinds={loadFinds}
+        workspace={workspace}
+        setWorkspace={setWorkspace}
+        onOpenTeamSession={() => setShowTeamSessionModal(true)}
       />
 
       {/* TACTICAL BOTTOM HUD (TELEMETRY & ACTIONS - MAP ONLY) */}
@@ -1021,6 +1048,15 @@ return (
       <CategoryManagerModal
         isOpen={showCategoryManagerModal}
         onClose={() => setShowCategoryManagerModal(false)}
+        theme={theme}
+      />
+
+      {/* Team Session & Detector Code Modal */}
+      <TeamSessionModal
+        isOpen={showTeamSessionModal}
+        onClose={() => setShowTeamSessionModal(false)}
+        workspace={workspace}
+        setWorkspace={setWorkspace}
         theme={theme}
       />
       {/* QUICK ADD CUSTOM TITLE PROMPT MODAL */}

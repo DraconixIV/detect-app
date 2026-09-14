@@ -118,6 +118,8 @@ function ZoomEventsHandler({ onZoomStart, onZoomEnd }) {
   return null;
 }
 
+import { leaveTeamSession } from "../services/sessionService";
+
 export default function MainMap({
   position,
   followGps,
@@ -138,53 +140,168 @@ export default function MainMap({
   handleMapLongPress,
   deleteFind,
   handleFavorite,
-  loadFinds
+  loadFinds,
+  workspace = { mode: "personal" },
+  setWorkspace,
+  onOpenTeamSession
 }) {
   const [isZooming, setIsZooming] = useState(false);
 
-  return (
-    <MapContainer
-      center={position}
-      zoom={20}
-      preferCanvas={true}
-      style={{
-        height: "100%",
-        width: "100%"
-      }}
-    >
-      <ZoomEventsHandler 
-        onZoomStart={() => setIsZooming(true)} 
-        onZoomEnd={() => setIsZooming(false)} 
-      />
-      <MapEventsHandler 
-        onLongPress={handleMapLongPress} 
-        onMapDrag={() => setFollowGps(false)} 
-      />
-      <GpsFollower position={position} followGps={followGps} />
-      {zoomTarget && (
-        <RecenterMap
-          target={zoomTarget}
-          onRecentered={() => setZoomTarget(null)}
-        />
-      )}
+  const handleExitConsultation = () => {
+    if (setWorkspace) {
+      setWorkspace({ mode: "personal", targetCode: null, sessionName: null });
+    }
+  };
 
-      {openPopupFind && (
-        <Popup
-          position={openPopupFind.finalPosition || openPopupFind.position}
-          onClose={() => setOpenPopupFind(null)}
-          eventHandlers={{
-            remove: () => setOpenPopupFind(null)
+  const handleLeaveSession = () => {
+    leaveTeamSession();
+    if (setWorkspace) {
+      setWorkspace({ mode: "personal", targetCode: null, sessionName: null });
+    }
+  };
+
+  return (
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      {/* FLOATING WORKSPACE / COLLABORATION BANNER */}
+      {workspace && workspace.mode !== "personal" && (
+        <div
+          style={{
+            position: "absolute",
+            top: "66px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 1000,
+            width: "calc(100% - 24px)",
+            maxWidth: "480px",
+            background: workspace.mode === "session" ? "rgba(6, 44, 34, 0.94)" : "rgba(15, 23, 42, 0.94)",
+            border: workspace.mode === "session" ? "1.5px solid #10b981" : "1.5px solid #3b82f6",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            borderRadius: "14px",
+            padding: "10px 14px",
+            boxShadow: "0 10px 25px rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "10px",
+            color: "#ffffff",
+            fontFamily: "system-ui, -apple-system, sans-serif"
           }}
         >
-          <FindPopup
-            find={openPopupFind}
-            onClose={() => setOpenPopupFind(null)}
-            onDelete={deleteFind}
-            onFavorite={handleFavorite}
-            onUpdate={loadFinds}
-          />
-        </Popup>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+            <div
+              style={{
+                width: "32px",
+                height: "32px",
+                borderRadius: "10px",
+                background: workspace.mode === "session" ? "rgba(16, 185, 129, 0.2)" : "rgba(59, 130, 246, 0.2)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "16px",
+                flexShrink: 0
+              }}
+            >
+              {workspace.mode === "session" ? "🟢" : "👁️"}
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: "12px", fontWeight: "800", letterSpacing: "0.2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {workspace.mode === "session"
+                  ? (workspace.sessionName || "Session d'Équipe Live")
+                  : `Consultation : ${workspace.targetCode}`}
+              </div>
+              <div style={{ fontSize: "10px", color: workspace.mode === "session" ? "#6ee7b7" : "#93c5fd", fontWeight: "600" }}>
+                {workspace.mode === "session"
+                  ? `Code : ${workspace.targetCode} • Partage en direct`
+                  : "Mode lecture seule"}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+            {workspace.mode === "session" && onOpenTeamSession && (
+              <button
+                type="button"
+                onClick={onOpenTeamSession}
+                style={{
+                  background: "rgba(255, 255, 255, 0.12)",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  color: "#ffffff",
+                  borderRadius: "8px",
+                  padding: "6px 10px",
+                  fontSize: "11px",
+                  fontWeight: "700",
+                  cursor: "pointer"
+                }}
+              >
+                👥 Équipe
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={workspace.mode === "session" ? handleLeaveSession : handleExitConsultation}
+              style={{
+                background: "#ef4444",
+                border: "none",
+                color: "#ffffff",
+                borderRadius: "8px",
+                padding: "6px 10px",
+                fontSize: "11px",
+                fontWeight: "700",
+                cursor: "pointer",
+                boxShadow: "0 2px 6px rgba(239, 68, 68, 0.4)"
+              }}
+            >
+              {workspace.mode === "session" ? "Quitter" : "✕ Fermer"}
+            </button>
+          </div>
+        </div>
       )}
+
+      <MapContainer
+        center={position}
+        zoom={20}
+        preferCanvas={true}
+        style={{
+          height: "100%",
+          width: "100%"
+        }}
+      >
+        <ZoomEventsHandler 
+          onZoomStart={() => setIsZooming(true)} 
+          onZoomEnd={() => setIsZooming(false)} 
+        />
+        <MapEventsHandler 
+          onLongPress={handleMapLongPress} 
+          onMapDrag={() => setFollowGps(false)} 
+        />
+        <GpsFollower position={position} followGps={followGps} />
+        {zoomTarget && (
+          <RecenterMap
+            target={zoomTarget}
+            onRecentered={() => setZoomTarget(null)}
+          />
+        )}
+
+        {openPopupFind && (
+          <Popup
+            position={openPopupFind.finalPosition || openPopupFind.position}
+            onClose={() => setOpenPopupFind(null)}
+            eventHandlers={{
+              remove: () => setOpenPopupFind(null)
+            }}
+          >
+            <FindPopup
+              find={openPopupFind}
+              onClose={() => setOpenPopupFind(null)}
+              onDelete={deleteFind}
+              onFavorite={handleFavorite}
+              onUpdate={loadFinds}
+              workspace={workspace}
+            />
+          </Popup>
+        )}
 
       <MapLayers
         mapStyle={mapStyle}
@@ -244,5 +361,6 @@ export default function MainMap({
         )
       )}
     </MapContainer>
+    </div>
   );
 }

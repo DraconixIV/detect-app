@@ -1,6 +1,7 @@
 import imageCompression from "browser-image-compression";
 
 import { supabase } from "../supabase";
+import { getMyUserCode, getMyDisplayName, getActiveSession } from "./sessionService";
 
 export function normalizeCategoryAndSub(find) {
   if (!find) return find;
@@ -39,18 +40,29 @@ export function normalizeCategoryAndSub(find) {
   };
 }
 
-export async function loadFinds() {
+export async function loadFinds(options = {}) {
   try {
-    const { data, error } =
-      await supabase
-        .from("finds")
-        .select("*")
-        .order("id", {
-          ascending: false
-        });
+    let query = supabase
+      .from("finds")
+      .select("*")
+      .order("id", {
+        ascending: false
+      });
+
+    const { mode, targetCode, myUserCode } = options;
+
+    if (mode === "consultation" && targetCode) {
+      // Mode lecture seule pour un utilisateur donné
+      query = query.eq("user_code", targetCode);
+    } else if (mode === "session" && targetCode) {
+      // Mode session partagée en direct
+      query = query.eq("session_code", targetCode);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
-      console.error(error);
+      console.error("loadFinds error:", error);
       return [];
     }
 
@@ -68,7 +80,7 @@ export async function loadFinds() {
     );
 
   } catch (error) {
-    console.error(error);
+    console.error("loadFinds exception:", error);
     return [];
   }
 }
@@ -81,34 +93,34 @@ export async function addFind({
   newSubCategory,
   newPhoto,
   customDate = null,
-
-
+  userCode = null,
+  finderName = null,
+  sessionCode = null
 }) {
   try {
+    const finalUserCode = userCode || getMyUserCode();
+    const finalFinderName = finderName || getMyDisplayName();
+    const finalSessionCode = sessionCode !== undefined ? sessionCode : (getActiveSession()?.code || null);
+
+    const payload = {
+      title: newTitle,
+      description: newDescription,
+      category: newCategory,
+      sub_category: newSubCategory || null,
+      latitude: position[0],
+      longitude: position[1],
+      date: customDate || new Date().toLocaleString(),
+      user_code: finalUserCode,
+      finder_name: finalFinderName,
+      session_code: finalSessionCode
+    };
+
     const {
       data: insertedFind,
       error: insertError
     } = await supabase
       .from("finds")
-      .insert([
-        {
-          title: newTitle,
-          description:
-            newDescription,
-          category:
-            newCategory,
-          sub_category:
-            newSubCategory || null,
-          latitude:
-            position[0],
-          longitude:
-            position[1],
-          date:
-            customDate ||
-            new Date().toLocaleString(),
-          
-        }
-      ])
+      .insert([payload])
       .select()
       .single();
 

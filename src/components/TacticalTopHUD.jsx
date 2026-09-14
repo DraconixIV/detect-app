@@ -5,6 +5,8 @@ export default function TacticalTopHUD({
   currentThemeKey = "tactical",
   onOpenMenu,
   onOpenThemePicker,
+  onOpenTeamSession,
+  workspace = { mode: "personal" },
   gpsAccuracy,
   isOnline,
   isRecordingSortie,
@@ -85,7 +87,7 @@ export default function TacticalTopHUD({
         </div>
       </div>
 
-      {/* CENTER: Precision GPS Metric (Digital HUD) */}
+      {/* CENTER: Precision GPS Metric or Live Session Badge */}
       <div
         style={{
           display: "flex",
@@ -93,10 +95,10 @@ export default function TacticalTopHUD({
           alignItems: "center",
           justifyContent: "center",
           background: c.telemetryBg,
-          padding: "4px 12px",
+          padding: "4px 10px",
           borderRadius: "10px",
-          border: `1px solid ${c.border}`,
-          maxWidth: "140px",
+          border: `1px solid ${workspace.mode === "session" ? "#10b981" : (workspace.mode === "consultation" ? "#3b82f6" : c.border)}`,
+          maxWidth: "160px",
           margin: "0 auto",
           width: "100%",
           boxSizing: "border-box"
@@ -108,11 +110,13 @@ export default function TacticalTopHUD({
             fontWeight: "800",
             textTransform: "uppercase",
             letterSpacing: "0.6px",
-            color: c.textSecondary,
+            color: workspace.mode === "session" ? "#10b981" : (workspace.mode === "consultation" ? "#60a5fa" : c.textSecondary),
             lineHeight: "1"
           }}
         >
-          PRÉCISION GPS
+          {workspace.mode === "session"
+            ? "SESSION ÉQUIPE"
+            : (workspace.mode === "consultation" ? "CONSULTATION" : "PRÉCISION GPS")}
         </span>
         <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "2px" }}>
           <span
@@ -120,26 +124,52 @@ export default function TacticalTopHUD({
               width: "7px",
               height: "7px",
               borderRadius: "50%",
-              background: getGpsStatusColor(),
-              boxShadow: `0 0 8px ${getGpsStatusColor()}`
+              background: workspace.mode === "session" ? "#10b981" : (workspace.mode === "consultation" ? "#3b82f6" : getGpsStatusColor()),
+              boxShadow: `0 0 8px ${workspace.mode === "session" ? "#10b981" : (workspace.mode === "consultation" ? "#3b82f6" : getGpsStatusColor())}`
             }}
           />
           <span
             style={{
-              fontSize: "14px",
+              fontSize: "13px",
               fontWeight: "900",
               fontFamily: "monospace",
               color: c.telemetryText,
               letterSpacing: "0.5px"
             }}
           >
-            {gpsAccuracy === null ? "..." : `± ${gpsAccuracy.toFixed(0)}m`}
+            {workspace.mode === "session"
+              ? (workspace.targetCode || "LIVE")
+              : (workspace.mode === "consultation" ? (workspace.targetCode || "LECTURE") : (gpsAccuracy === null ? "..." : `± ${gpsAccuracy.toFixed(0)}m`))}
           </span>
         </div>
       </div>
 
-      {/* RIGHT: Live Palette Tester & Outing / Online Status */}
+      {/* RIGHT: Team / Share Button, Live Palette Tester & Outing / Online Status */}
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        {/* Team / Share Button */}
+        {onOpenTeamSession && (
+          <button
+            onClick={onOpenTeamSession}
+            style={{
+              padding: "6px 8px",
+              borderRadius: "10px",
+              border: `1px solid ${workspace.mode === "session" ? "#10b981" : (workspace.mode === "consultation" ? "#3b82f6" : c.border)}`,
+              background: workspace.mode === "session" ? "rgba(16, 185, 129, 0.2)" : (workspace.mode === "consultation" ? "rgba(59, 130, 246, 0.2)" : c.buttonBg),
+              color: workspace.mode === "session" ? "#10b981" : (workspace.mode === "consultation" ? "#60a5fa" : c.textPrimary),
+              fontSize: "12px",
+              fontWeight: "700",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.3)"
+            }}
+            title="Équipe & Partage"
+          >
+            <span>👥</span>
+          </button>
+        )}
+
         {/* Quick Palette Picker Button */}
         <button
           onClick={onOpenThemePicker}
@@ -160,7 +190,6 @@ export default function TacticalTopHUD({
           title="Changer de Palette en direct"
         >
           <span>🎨</span>
-          <span style={{ fontSize: "10px", display: "none" }}>Thème</span>
         </button>
 
         {/* Status indicator (Recording or Online) */}

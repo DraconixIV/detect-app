@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../supabase";
 import { loadCategoriesData, addCategory, removeCategory, addSubCategory, removeSubCategory, resetCategories } from "../services/categoriesService";
 import { THEMES } from "../styles/themes";
+import { getMyUserCode, getMyDisplayName } from "../services/sessionService";
 import AuthForm from "./AuthForm";
 
 export default function SettingsPanel({
@@ -15,7 +16,10 @@ export default function SettingsPanel({
   setDesignTheme,
   onOpenThemePicker,
   onOpenCategoryManager,
-  onRestartOnboarding
+  onRestartOnboarding,
+  workspace = { mode: "personal" },
+  setWorkspace,
+  onOpenTeamSession
 }) {
   const [categoriesData, setCategoriesData] = useState(loadCategoriesData());
   const [user, setUser] = useState(null);
@@ -26,6 +30,9 @@ export default function SettingsPanel({
   const [newSubName, setNewSubName] = useState("");
   const [showCatManager, setShowCatManager] = useState(false);
   const [showLegal, setShowLegal] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
+  const myCode = getMyUserCode();
+  const myName = getMyDisplayName();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -123,6 +130,109 @@ export default function SettingsPanel({
               Personnalisez votre carnet de détection
             </p>
           </div>
+        </div>
+
+        {/* 0. Code Détecteur & Partage d'Équipe */}
+        <div
+          style={{
+            ...cardStyle,
+            background: isLight ? "#eff6ff" : "linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(15, 23, 42, 0.6))",
+            border: isLight ? "1px solid #bfdbfe" : "1px solid rgba(59, 130, 246, 0.4)"
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+            <div style={sectionTitleStyle}>
+              <span>👥</span> Code Détecteur & Partage d'Équipe
+            </div>
+            {workspace.mode !== "personal" && (
+              <span
+                style={{
+                  fontSize: "10px",
+                  fontWeight: "800",
+                  padding: "3px 8px",
+                  borderRadius: "6px",
+                  background: workspace.mode === "session" ? "#10b981" : "#3b82f6",
+                  color: "#ffffff"
+                }}
+              >
+                {workspace.mode === "session" ? "SESSION LIVE" : "CONSULTATION"}
+              </span>
+            )}
+          </div>
+
+          <p style={{ margin: "0 0 12px 0", fontSize: "12px", color: textSub, lineHeight: "1.4" }}>
+            Votre code unique identifie vos trouvailles. Partagez-le pour permettre à vos amis de consulter votre carte, ou rejoignez une session en direct à plusieurs !
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              background: isLight ? "#ffffff" : "rgba(0, 0, 0, 0.35)",
+              border: `1px solid ${inputBorder}`,
+              borderRadius: "14px",
+              padding: "10px 14px",
+              marginBottom: "12px"
+            }}
+          >
+            <div>
+              <div style={{ fontSize: "10px", color: textSub, fontWeight: "700", textTransform: "uppercase" }}>
+                Mon Code Unique
+              </div>
+              <div style={{ fontSize: "18px", fontWeight: "900", letterSpacing: "1.5px", color: isLight ? "#1d4ed8" : "#60a5fa" }}>
+                {myCode}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(myCode);
+                setCopiedCode(true);
+                setTimeout(() => setCopiedCode(false), 2000);
+              }}
+              style={{
+                background: copiedCode ? "#10b981" : (isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.1)"),
+                color: copiedCode ? "#ffffff" : textMain,
+                border: "none",
+                borderRadius: "10px",
+                padding: "8px 12px",
+                fontSize: "11px",
+                fontWeight: "700",
+                cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+            >
+              {copiedCode ? "Copié ✅" : "Copier"}
+            </button>
+          </div>
+
+          {onOpenTeamSession && (
+            <button
+              type="button"
+              onClick={onOpenTeamSession}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "12px",
+                border: "none",
+                background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                color: "#ffffff",
+                fontSize: "13px",
+                fontWeight: "800",
+                cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px"
+              }}
+            >
+              <span>👥</span>
+              <span>Rejoindre une session ou consulter une carte</span>
+            </button>
+          )}
         </div>
 
         {/* 1. Direction Artistique & Cockpit */}

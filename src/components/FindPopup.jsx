@@ -11,7 +11,8 @@ export default function FindPopup({
   find,
   onDelete,
   onFavorite,
-  onUpdate
+  onUpdate,
+  workspace = { mode: "personal" }
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("discovery");
@@ -383,10 +384,13 @@ export default function FindPopup({
   // 1. COMPACT READ-ONLY VIEW (Inside Leaflet map popup bubble)
   if (!isModalOpen) {
     const coverPhoto = photos.length > 0 ? photos[0].image_url : null;
+    const isReadOnly = workspace?.mode === "consultation";
+    const finderText = find.finder_name || find.user_code;
+
     return (
       <div
         style={{
-          width: "210px",
+          width: "215px",
           display: "flex",
           flexDirection: "column",
           gap: "8px",
@@ -394,9 +398,25 @@ export default function FindPopup({
           fontFamily: "system-ui, sans-serif"
         }}
       >
-        <h4 style={{ margin: 0, fontSize: "14px", fontWeight: "800", color: "#1f2937", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {title || "Sans titre"}
-        </h4>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "6px" }}>
+          <h4 style={{ margin: 0, fontSize: "14px", fontWeight: "800", color: "#1f2937", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
+            {title || "Sans titre"}
+          </h4>
+          {isReadOnly && (
+            <span style={{ fontSize: "10px", background: "#fef3c7", color: "#b45309", padding: "1px 6px", borderRadius: "6px", fontWeight: "700", whiteSpace: "nowrap" }}>
+              🔒 Lecture
+            </span>
+          )}
+        </div>
+
+        {finderText && (
+          <div style={{ fontSize: "10px", color: "#2563eb", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px" }}>
+            <span>👤</span>
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              Trouvé par : {finderText}
+            </span>
+          </div>
+        )}
 
         <div style={{ fontSize: "11px", color: "#6b7280", fontWeight: "700" }}>
           {categoryEmojis[category]} {category} {subCategory ? `• ${subCategory}` : ""}
@@ -452,11 +472,12 @@ export default function FindPopup({
               alignItems: "center",
               justifyContent: "center"
             }}
+            title="Ajouter / Retirer des favoris"
           >
             {find.favorite ? "⭐" : "☆"}
           </button>
 
-          {/* Edit / Details triggers Portal Modal */}
+          {/* Details / Edit triggers Portal Modal */}
           <button
             onClick={() => setIsModalOpen(true)}
             style={{
@@ -471,12 +492,15 @@ export default function FindPopup({
               cursor: "pointer"
             }}
           >
-            ✏️ Détails & Éditer
+            {isReadOnly ? "👁️ Voir les détails" : "✏️ Détails & Éditer"}
           </button>
         </div>
       </div>
     );
   }
+
+  const isReadOnly = workspace?.mode === "consultation";
+  const finderText = find.finder_name || find.user_code;
 
   // 2. PREMIUM PORTAL MODAL VIEW (Rich fullscreen sheet editor)
   return createPortal(
@@ -520,10 +544,22 @@ export default function FindPopup({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "12px" }}>
-          <h3 style={{ margin: 0, fontSize: "17px", fontWeight: "800", letterSpacing: "-0.5px" }}>
-            🔍 Détails & Édition
-          </h3>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "12px", gap: "8px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", letterSpacing: "-0.5px" }}>
+              {isReadOnly ? "🔍 Fiche Trouvaille" : "🔍 Détails & Édition"}
+            </h3>
+            {isReadOnly && (
+              <span style={{ fontSize: "10px", background: "rgba(234, 179, 8, 0.2)", color: "#facc15", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>
+                🔒 Lecture
+              </span>
+            )}
+            {finderText && (
+              <span style={{ fontSize: "10px", background: "rgba(37, 99, 235, 0.2)", color: "#60a5fa", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>
+                👤 {finderText}
+              </span>
+            )}
+          </div>
           <button
             onClick={() => setIsModalOpen(false)}
             style={{
@@ -914,35 +950,46 @@ export default function FindPopup({
 
         {/* Footer Actions */}
         <div style={{ display: "flex", gap: "10px", marginTop: "8px", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "14px" }}>
-          {activeTab !== "compare" && (
+          {isReadOnly ? (
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setConfirmConfig({
-                  message: "Supprimer définitivement cette trouvaille ?",
-                  onConfirm: () => {
-                    onDelete(find.id);
-                    setIsModalOpen(false);
-                  }
-                });
-              }}
-              style={{ ...buttonStyle, background: "#ef4444", flex: 1, padding: "10px" }}
+              onClick={() => setIsModalOpen(false)}
+              style={{ ...buttonStyle, background: "#2563eb", flex: 1, padding: "12px", fontSize: "14px" }}
             >
-              🗑️ Supprimer
+              Fermer la fiche
             </button>
-          )}
+          ) : (
+            <>
+              {activeTab !== "compare" && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setConfirmConfig({
+                      message: "Supprimer définitivement cette trouvaille ?",
+                      onConfirm: () => {
+                        onDelete(find.id);
+                        setIsModalOpen(false);
+                      }
+                    });
+                  }}
+                  style={{ ...buttonStyle, background: "#ef4444", flex: 1, padding: "10px" }}
+                >
+                  🗑️ Supprimer
+                </button>
+              )}
 
-          <button
-            onClick={async (e) => {
-              e.stopPropagation();
-              await saveChanges();
-              setIsModalOpen(false);
-            }}
-            disabled={saving}
-            style={{ ...buttonStyle, background: "#22c55e", flex: 1.5, padding: "10px" }}
-          >
-            {saving ? "Sauvegarde..." : "Enregistrer ✅"}
-          </button>
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  await saveChanges();
+                  setIsModalOpen(false);
+                }}
+                disabled={saving}
+                style={{ ...buttonStyle, background: "#22c55e", flex: 1.5, padding: "10px" }}
+              >
+                {saving ? "Sauvegarde..." : "Enregistrer ✅"}
+              </button>
+            </>
+          )}
         </div>
       </div>
 
