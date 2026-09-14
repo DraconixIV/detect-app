@@ -1,6 +1,8 @@
-import { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { loadCategoriesData } from "../services/categoriesService";
+import { getFlipCoins, getFlipCoin, saveFlipCoin, removeFlipCoin } from "../services/flipCoinService";
+import FlipCoinModal from "./FlipCoinModal";
 
 function LazyImage({ src, alt }) {
   const [loaded, setLoaded] = useState(false);
@@ -30,6 +32,272 @@ function LazyImage({ src, alt }) {
   );
 }
 
+function ZoomableImage({ src, alt, onReset }) {
+  const [scale, setScale] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const containerRef = useRef(null);
+  const lastTouchDistRef = useRef(null);
+
+  // Reset zoom when image source changes
+  useEffect(() => {
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+  }, [src]);
+
+  const handleZoomIn = (e) => {
+    e?.stopPropagation();
+    setScale((prev) => Math.min(prev + 0.5, 4));
+  };
+
+  const handleZoomOut = (e) => {
+    e?.stopPropagation();
+    setScale((prev) => {
+      const next = Math.max(prev - 0.5, 1);
+      if (next === 1) setPosition({ x: 0, y: 0 });
+      return next;
+    });
+  };
+
+  const handleReset = (e) => {
+    e?.stopPropagation();
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+    if (onReset) onReset();
+  };
+
+  const handleDoubleClick = (e) => {
+    e.stopPropagation();
+    if (scale > 1) {
+      setScale(1);
+      setPosition({ x: 0, y: 0 });
+    } else {
+      setScale(2.5);
+    }
+  };
+
+  const handleWheel = (e) => {
+    e.stopPropagation();
+    if (e.deltaY < 0) {
+      setScale((prev) => Math.min(prev + 0.25, 4));
+    } else {
+      setScale((prev) => {
+        const next = Math.max(prev - 0.25, 1);
+        if (next === 1) setPosition({ x: 0, y: 0 });
+        return next;
+      });
+    }
+  };
+
+  // Mouse drag handlers
+  const handleMouseDown = (e) => {
+    if (scale <= 1) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging || scale <= 1) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setPosition({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Touch pinch & pan handlers
+  const handleTouchStart = (e) => {
+    if (e.touches.length === 2) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      lastTouchDistRef.current = dist;
+    } else if (e.touches.length === 1 && scale > 1) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.touches[0].clientX - position.x,
+        y: e.touches[0].clientY - position.y
+      });
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (e.touches.length === 2 && lastTouchDistRef.current) {
+      e.preventDefault();
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const delta = dist - lastTouchDistRef.current;
+      setScale((prev) => Math.min(Math.max(prev + delta * 0.01, 1), 4));
+      lastTouchDistRef.current = dist;
+    } else if (e.touches.length === 1 && isDragging && scale > 1) {
+      e.preventDefault();
+      setPosition({
+        x: e.touches[0].clientX - dragStart.x,
+        y: e.touches[0].clientY - dragStart.y
+      });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    lastTouchDistRef.current = null;
+    if (scale <= 1) {
+      setPosition({ x: 0, y: 0 });
+    }
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        width: "100%",
+        height: "100%",
+        maxHeight: "65vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+        overflow: "hidden",
+        touchAction: scale > 1 ? "none" : "auto"
+      }}
+      onWheel={handleWheel}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onDoubleClick={handleDoubleClick}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <img
+        src={src}
+        alt={alt}
+        draggable={false}
+        style={{
+          maxWidth: "100%",
+          maxHeight: "60vh",
+          objectFit: "contain",
+          borderRadius: "16px",
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.6)",
+          border: "1px solid rgba(255, 255, 255, 0.12)",
+          transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+          transformOrigin: "center center",
+          transition: isDragging ? "none" : "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+          cursor: scale > 1 ? (isDragging ? "grabbing" : "grab") : "zoom-in",
+          userSelect: "none",
+          WebkitUserSelect: "none"
+        }}
+      />
+
+      {/* Floating Zoom Controls Toolbar */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "8px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          display: "flex",
+          alignItems: "center",
+          gap: "6px",
+          background: "rgba(15, 23, 42, 0.88)",
+          backdropFilter: "blur(12px)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          padding: "4px 10px",
+          borderRadius: "999px",
+          zIndex: 20,
+          boxShadow: "0 4px 14px rgba(0,0,0,0.5)"
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={handleZoomOut}
+          disabled={scale <= 1}
+          style={{
+            background: "rgba(255, 255, 255, 0.1)",
+            border: "none",
+            borderRadius: "50%",
+            width: "28px",
+            height: "28px",
+            color: scale <= 1 ? "rgba(255,255,255,0.3)" : "#ffffff",
+            fontSize: "14px",
+            fontWeight: "bold",
+            cursor: scale <= 1 ? "not-allowed" : "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+          title="Zoom arrière (-)"
+        >
+          −
+        </button>
+
+        <span style={{ fontSize: "11px", fontWeight: "800", color: "#ffffff", minWidth: "42px", textAlign: "center" }}>
+          {Math.round(scale * 100)}%
+        </span>
+
+        <button
+          type="button"
+          onClick={handleZoomIn}
+          disabled={scale >= 4}
+          style={{
+            background: "rgba(255, 255, 255, 0.1)",
+            border: "none",
+            borderRadius: "50%",
+            width: "28px",
+            height: "28px",
+            color: scale >= 4 ? "rgba(255,255,255,0.3)" : "#ffffff",
+            fontSize: "14px",
+            fontWeight: "bold",
+            cursor: scale >= 4 ? "not-allowed" : "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+          title="Zoom avant (+)"
+        >
+          +
+        </button>
+
+        {scale > 1 && (
+          <button
+            type="button"
+            onClick={handleReset}
+            style={{
+              background: "rgba(59, 130, 246, 0.35)",
+              border: "1px solid rgba(59, 130, 246, 0.5)",
+              borderRadius: "10px",
+              padding: "2px 8px",
+              color: "#ffffff",
+              fontSize: "11px",
+              fontWeight: "700",
+              cursor: "pointer",
+              marginLeft: "4px"
+            }}
+            title="Réinitialiser zoom"
+          >
+            ↺ 1x
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function AlbumPanel({
   finds = [],
   allPhotos = [],
@@ -41,6 +309,9 @@ export default function AlbumPanel({
   onOpenCategoryManager
 }) {
   const [categoriesData, setCategoriesData] = useState(() => loadCategoriesData());
+  const [flipCoins, setFlipCoins] = useState(() => getFlipCoins());
+  const [editingFlipCoinFind, setEditingFlipCoinFind] = useState(null);
+  const [forcePhotoView, setForcePhotoView] = useState(false);
 
   useEffect(() => {
     if (loadPhotosForAlbum) {
@@ -52,8 +323,15 @@ export default function AlbumPanel({
     const handleCategoriesUpdate = () => {
       setCategoriesData(loadCategoriesData());
     };
+    const handleFlipCoinsUpdate = () => {
+      setFlipCoins(getFlipCoins());
+    };
     window.addEventListener("categories-updated", handleCategoriesUpdate);
-    return () => window.removeEventListener("categories-updated", handleCategoriesUpdate);
+    window.addEventListener("flipcoins-updated", handleFlipCoinsUpdate);
+    return () => {
+      window.removeEventListener("categories-updated", handleCategoriesUpdate);
+      window.removeEventListener("flipcoins-updated", handleFlipCoinsUpdate);
+    };
   }, []);
 
   const categoryEmojis = categoriesData.emojis || {};
@@ -230,7 +508,7 @@ export default function AlbumPanel({
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: textMain }}>
+            <h2 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: "#ffffff" }}>
               🖼️ Album de Collection
             </h2>
             <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
@@ -247,7 +525,7 @@ export default function AlbumPanel({
                   border: `1px solid ${cardBorder}`,
                   borderRadius: "10px",
                   padding: "6px 10px",
-                  color: isLight ? "#2563eb" : "#60a5fa",
+                  color: "#ffffff",
                   cursor: "pointer",
                   fontSize: "11px",
                   fontWeight: "bold",
@@ -269,7 +547,7 @@ export default function AlbumPanel({
                   borderRadius: "50%",
                   width: "30px",
                   height: "30px",
-                  color: textMain,
+                  color: "#ffffff",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
@@ -287,7 +565,7 @@ export default function AlbumPanel({
         <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
           <input
             type="text"
-            placeholder="🔍 Rechercher titre, époque..."
+            placeholder="🔍 Rechercher titre, matière, lieu..."
             value={albumSearch}
             onChange={(e) => setAlbumSearch(e.target.value)}
             style={{
@@ -296,7 +574,7 @@ export default function AlbumPanel({
               borderRadius: "12px",
               border: `1px solid ${inputBorder}`,
               background: inputBg,
-              color: textMain,
+              color: "#ffffff",
               fontSize: "12px",
               outline: "none"
             }}
@@ -309,7 +587,7 @@ export default function AlbumPanel({
               borderRadius: "12px",
               border: `1px solid ${inputBorder}`,
               background: inputBg,
-              color: textMain,
+              color: "#ffffff",
               fontSize: "12px",
               fontWeight: "bold",
               outline: "none",
@@ -332,7 +610,7 @@ export default function AlbumPanel({
                 onClick={() => setAlbumFilter(cat)}
                 style={{
                   background: isSel ? "#2563eb" : (isLight ? "#ffffff" : "rgba(255,255,255,0.08)"),
-                  color: isSel ? "#ffffff" : textMain,
+                  color: "#ffffff",
                   border: isSel ? "none" : `1px solid ${cardBorder}`,
                   padding: "6px 12px",
                   borderRadius: "12px",
@@ -365,10 +643,10 @@ export default function AlbumPanel({
             }}
           >
             <span style={{ fontSize: "40px", marginBottom: "10px" }}>📷</span>
-            <div style={{ fontWeight: "700", fontSize: "14px", color: textMain, marginBottom: "4px" }}>
-              Aucune trouvaille trouvée
+            <div style={{ fontWeight: "700", fontSize: "14px", color: "#ffffff", marginBottom: "4px" }}>
+              Aucune trouvaille photographiée
             </div>
-            <div style={{ fontSize: "12px" }}>
+            <div style={{ fontSize: "12px", color: "#ffffff", opacity: 0.85 }}>
               Ajoutez des photos à vos trouvailles pour les voir apparaître dans votre album de collection.
             </div>
           </div>
@@ -376,6 +654,7 @@ export default function AlbumPanel({
           <div style={{ flex: 1, overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", paddingRight: "4px" }}>
             {albumFilteredFinds.map((find) => {
               const photoUrl = getFindPhotoUrl(find) || "";
+              const hasFlipCoin = !!getFlipCoin(find.id);
 
               return (
                 <div
@@ -383,6 +662,8 @@ export default function AlbumPanel({
                   className="album-grid-card"
                   onClick={() => {
                     setSelectedAlbumPhoto({ find, photoUrl });
+                    setLightboxCoinFlipped(false);
+                    setForcePhotoView(false);
                   }}
                 >
                   <LazyImage src={photoUrl} alt={find.title} />
@@ -391,6 +672,13 @@ export default function AlbumPanel({
                   <div style={{ position: "absolute", top: "6px", left: "6px", background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {categoryEmojis[find.category] || categoryEmojis[find.category?.trim().charAt(0).toUpperCase() + find.category?.trim().slice(1).toLowerCase()] || "📍"}
                   </div>
+
+                  {/* 3D Coin Badge if configured */}
+                  {hasFlipCoin && (
+                    <div style={{ position: "absolute", bottom: "6px", right: "6px", background: "rgba(245, 158, 11, 0.85)", padding: "2px 5px", borderRadius: "5px", fontSize: "8px", fontWeight: "900", color: "#000000", display: "flex", alignItems: "center", gap: "2px" }}>
+                      🪙 3D
+                    </div>
+                  )}
 
                   {/* Favorite Badge */}
                   {find.favorite && (
@@ -417,7 +705,7 @@ export default function AlbumPanel({
         )}
       </div>
 
-      {/* FULLSCREEN ALBUM PHOTO LIGHTBOX */}
+      {/* FULLSCREEN ALBUM PHOTO LIGHTBOX WITH ZOOM & MANUAL FLIP COIN */}
       {selectedAlbumPhoto && createPortal(
         (() => {
           const currentIndex = albumFilteredFinds.findIndex((f) => f.id === selectedAlbumPhoto.find.id);
@@ -429,16 +717,11 @@ export default function AlbumPanel({
             const photoUrl = getFindPhotoUrl(targetFind) || "";
             setSelectedAlbumPhoto({ find: targetFind, photoUrl });
             setLightboxCoinFlipped(false);
+            setForcePhotoView(false);
           };
 
-          const isCoin = selectedAlbumPhoto.find.category === "Monnaie";
-          let avers = null;
-          let revers = null;
-          if (isCoin) {
-            const coinPhotos = allPhotos.filter((p) => p.find_id === selectedAlbumPhoto.find.id);
-            avers = coinPhotos.find((p) => p.type === "avers") || coinPhotos[0];
-            revers = coinPhotos.find((p) => p.type === "revers") || (coinPhotos.length > 1 ? coinPhotos.find((p) => p.id !== avers?.id) : null);
-          }
+          const configuredFlipCoin = getFlipCoin(selectedAlbumPhoto.find.id);
+          const show3DCoin = !!configuredFlipCoin && !forcePhotoView;
 
           return (
             <div
@@ -450,34 +733,70 @@ export default function AlbumPanel({
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "center",
+                justifyContent: "space-between",
+                padding: "20px 16px 24px 16px",
+                boxSizing: "border-box",
                 fontFamily: "system-ui, sans-serif"
               }}
               onClick={() => setSelectedAlbumPhoto(null)}
             >
-              {/* Close Button */}
-              <button
-                onClick={() => setSelectedAlbumPhoto(null)}
+              {/* Top Navigation & Close Bar */}
+              <div
                 style={{
-                  position: "absolute",
-                  top: "20px",
-                  right: "20px",
-                  background: "rgba(255, 255, 255, 0.2)",
-                  border: "none",
-                  borderRadius: "50%",
-                  width: "44px",
-                  height: "44px",
-                  color: "white",
-                  fontSize: "20px",
-                  cursor: "pointer",
+                  width: "100%",
+                  maxWidth: "600px",
                   display: "flex",
+                  justifyContent: "space-between",
                   alignItems: "center",
-                  justifyContent: "center",
                   zIndex: 10
                 }}
+                onClick={(e) => e.stopPropagation()}
               >
-                ✕
-              </button>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  {configuredFlipCoin && (
+                    <button
+                      type="button"
+                      onClick={() => setForcePhotoView(!forcePhotoView)}
+                      style={{
+                        background: forcePhotoView ? "rgba(245, 158, 11, 0.25)" : "rgba(59, 130, 246, 0.25)",
+                        border: `1px solid ${forcePhotoView ? "#facc15" : "#3b82f6"}`,
+                        borderRadius: "12px",
+                        padding: "6px 12px",
+                        color: "#ffffff",
+                        fontSize: "11px",
+                        fontWeight: "800",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px"
+                      }}
+                    >
+                      <span>{forcePhotoView ? "🪙 Voir Flip Coin 3D" : "🔍 Voir Photo & Zoom"}</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Close Button */}
+                <button
+                  onClick={() => setSelectedAlbumPhoto(null)}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.2)",
+                    border: "none",
+                    borderRadius: "50%",
+                    width: "40px",
+                    height: "40px",
+                    color: "white",
+                    fontSize: "18px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                  title="Fermer (Échap)"
+                >
+                  ✕
+                </button>
+              </div>
 
               {/* Navigation Left Arrow */}
               {prevFind && (
@@ -488,23 +807,25 @@ export default function AlbumPanel({
                   }}
                   style={{
                     position: "absolute",
-                    left: "20px",
-                    background: "rgba(255, 255, 255, 0.15)",
+                    left: "14px",
+                    top: "45%",
+                    transform: "translateY(-50%)",
+                    background: "rgba(255, 255, 255, 0.18)",
+                    backdropFilter: "blur(8px)",
                     border: "none",
                     borderRadius: "50%",
-                    width: "50px",
-                    height: "50px",
+                    width: "46px",
+                    height: "46px",
                     color: "white",
                     fontSize: "24px",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    transition: "background 0.2s",
-                    zIndex: 10
+                    transition: "all 0.2s",
+                    zIndex: 25
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)"}
-                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)"}
+                  title="Photo précédente"
                 >
                   ‹
                 </button>
@@ -519,49 +840,51 @@ export default function AlbumPanel({
                   }}
                   style={{
                     position: "absolute",
-                    right: "20px",
-                    background: "rgba(255, 255, 255, 0.15)",
+                    right: "14px",
+                    top: "45%",
+                    transform: "translateY(-50%)",
+                    background: "rgba(255, 255, 255, 0.18)",
+                    backdropFilter: "blur(8px)",
                     border: "none",
                     borderRadius: "50%",
-                    width: "50px",
-                    height: "50px",
+                    width: "46px",
+                    height: "46px",
                     color: "white",
                     fontSize: "24px",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    transition: "background 0.2s",
-                    zIndex: 10
+                    transition: "all 0.2s",
+                    zIndex: 25
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)"}
-                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)"}
+                  title="Photo suivante"
                 >
                   ›
                 </button>
               )}
 
-              {/* Content Panel (image or 3D coin) */}
+              {/* Content Panel (3D Flip Coin or Interactive Zoomable Image) */}
               <div 
                 style={{
                   width: "100%",
-                  maxHeight: "70%",
+                  flex: 1,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  padding: "0 80px",
+                  position: "relative",
                   boxSizing: "border-box"
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
-                {isCoin ? (
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+                {show3DCoin ? (
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
                     <style>{`
                       .coin-lightbox-3d {
-                        perspective: 1000px;
-                        width: 240px;
-                        height: 240px;
+                        perspective: 1200px;
+                        width: 260px;
+                        height: 260px;
                         cursor: pointer;
                         margin: 10px auto;
                       }
@@ -569,7 +892,7 @@ export default function AlbumPanel({
                         position: relative;
                         width: 100%;
                         height: 100%;
-                        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+                        transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
                         transform-style: preserve-3d;
                       }
                       .coin-lightbox-3d.flipped .coin-lightbox-inner {
@@ -583,8 +906,8 @@ export default function AlbumPanel({
                         backface-visibility: hidden;
                         border-radius: 50%;
                         overflow: hidden;
-                        border: 3px solid rgba(255, 255, 255, 0.25);
-                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+                        border: 3.5px solid #facc15;
+                        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.75);
                       }
                       .coin-lightbox-back {
                         transform: rotateY(180deg);
@@ -594,24 +917,6 @@ export default function AlbumPanel({
                         height: 100%;
                         object-fit: cover;
                       }
-                      .coin-lightbox-revers-placeholder {
-                        width: 100%;
-                        height: 100%;
-                        background: linear-gradient(135deg, #1e293b, #0f172a);
-                        display: flex;
-                        flex-direction: column;
-                        alignItems: center;
-                        justifyContent: center;
-                        color: #fbbf24;
-                        font-size: 11px;
-                        font-weight: bold;
-                        text-transform: uppercase;
-                        border-radius: 50%;
-                        border: 3px dashed rgba(251, 191, 36, 0.4);
-                        box-sizing: border-box;
-                        padding: 15px;
-                        text-align: center;
-                      }
                     `}</style>
                     <div
                       className={`coin-lightbox-3d ${lightboxCoinFlipped ? "flipped" : ""}`}
@@ -619,96 +924,126 @@ export default function AlbumPanel({
                     >
                       <div className="coin-lightbox-inner">
                         <div className="coin-lightbox-front">
-                          {avers ? (
-                            <img src={avers.image_url} alt="Avers" />
-                          ) : (
-                            <div className="coin-lightbox-revers-placeholder">Avers</div>
-                          )}
+                          <img src={configuredFlipCoin.aversUrl} alt="Avers" />
                         </div>
                         <div className="coin-lightbox-back">
-                          {revers ? (
-                            <img src={revers.image_url} alt="Revers" />
-                          ) : (
-                            <div className="coin-lightbox-revers-placeholder">
-                              <span style={{ fontSize: "36px", marginBottom: "6px", display: "block" }}>🪙</span>
-                              <span>Revers non</span>
-                              <span>photographié</span>
-                            </div>
-                          )}
+                          <img src={configuredFlipCoin.reversUrl} alt="Revers" />
                         </div>
                       </div>
                     </div>
-                    <span style={{ fontSize: "12px", color: "#d1d5db", marginTop: "5px" }}>
-                      👆 Tapez sur la pièce pour la retourner (3D)
-                    </span>
+                    <div style={{ fontSize: "12px", color: "#facc15", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px" }}>
+                      <span>👆</span>
+                      <span>Tapez sur la pièce pour voir l'autre face ({lightboxCoinFlipped ? "Revers" : "Avers"})</span>
+                    </div>
                   </div>
                 ) : (
-                  <img
+                  <ZoomableImage
                     src={selectedAlbumPhoto.photoUrl}
                     alt={selectedAlbumPhoto.find.title}
-                    style={{
-                      maxWidth: "100%",
-                      maxHeight: "65vh",
-                      objectFit: "contain",
-                      borderRadius: "16px",
-                      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.6)",
-                      border: "1px solid rgba(255, 255, 255, 0.1)"
-                    }}
                   />
                 )}
               </div>
 
-              {/* Details / Action Button */}
+              {/* Details & Action Buttons Panel */}
               <div
                 style={{
-                  marginTop: "20px",
+                  width: "100%",
+                  maxWidth: "420px",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  gap: "10px",
-                  color: "white",
+                  gap: "8px",
+                  color: "#ffffff",
                   textAlign: "center",
-                  width: "90%",
-                  maxWidth: "400px"
+                  zIndex: 10
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "bold", color: "#ffffff" }}>
+                <h3 style={{ margin: 0, fontSize: "17px", fontWeight: "800", color: "#ffffff" }}>
                   {selectedAlbumPhoto.find.title || "Sans titre"}
                 </h3>
-                <p style={{ margin: 0, opacity: 0.85, fontSize: "14px", color: "#f3f4f6" }}>
-                  {categoryEmojis[selectedAlbumPhoto.find.category] || categoryEmojis[selectedAlbumPhoto.find.category?.trim().charAt(0).toUpperCase() + selectedAlbumPhoto.find.category?.trim().slice(1).toLowerCase()] || "📍"} {selectedAlbumPhoto.find.category}
+                <p style={{ margin: 0, fontSize: "13px", color: "#ffffff", opacity: 0.9 }}>
+                  {categoryEmojis[selectedAlbumPhoto.find.category] || "📍"} {selectedAlbumPhoto.find.category}
                   {selectedAlbumPhoto.find.sub_category ? ` • ${selectedAlbumPhoto.find.sub_category}` : ""}
                   {selectedAlbumPhoto.find.date ? ` • 📅 ${selectedAlbumPhoto.find.date.split(",")[0]}` : ""}
                 </p>
 
+                {/* Primary Button: Voir sur la carte */}
                 <button
+                  type="button"
                   onClick={() => {
                     onOpenFindDetails(selectedAlbumPhoto.find);
                     setSelectedAlbumPhoto(null);
                   }}
                   style={{
+                    width: "100%",
                     border: "none",
                     borderRadius: "14px",
-                    padding: "12px 24px",
+                    padding: "11px 20px",
                     background: "#2563eb",
-                    color: "white",
-                    fontWeight: "bold",
-                    fontSize: "14px",
+                    color: "#ffffff",
+                    fontWeight: "800",
+                    fontSize: "13px",
                     cursor: "pointer",
-                    boxShadow: "0 4px 15px rgba(37, 99, 235, 0.4)",
-                    transition: "transform 0.15s, background-color 0.2s"
+                    boxShadow: "0 4px 14px rgba(37, 99, 235, 0.4)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "6px"
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.03)"}
-                  onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
                 >
-                  🔗 Voir la trouvaille sur la carte
+                  <span>🔗</span>
+                  <span>Voir la trouvaille sur la carte</span>
+                </button>
+
+                {/* Secondary Button: Ajouter un Flip Coin / Modifier le Flip Coin */}
+                <button
+                  type="button"
+                  onClick={() => setEditingFlipCoinFind(selectedAlbumPhoto.find)}
+                  style={{
+                    width: "100%",
+                    border: "1px solid rgba(250, 204, 21, 0.4)",
+                    borderRadius: "14px",
+                    padding: "10px 16px",
+                    background: "rgba(250, 204, 21, 0.15)",
+                    color: "#facc15",
+                    fontWeight: "800",
+                    fontSize: "13px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "6px"
+                  }}
+                >
+                  <span>🪙</span>
+                  <span>{configuredFlipCoin ? "Modifier le Flip Coin 3D" : "Ajouter un flip coin"}</span>
                 </button>
               </div>
             </div>
           );
         })(),
         document.body
+      )}
+
+      {/* FLIP COIN CREATOR / EDITOR MODAL */}
+      {editingFlipCoinFind && (
+        <FlipCoinModal
+          isOpen={!!editingFlipCoinFind}
+          onClose={() => setEditingFlipCoinFind(null)}
+          find={editingFlipCoinFind}
+          existingPhotos={allPhotos.filter((p) => String(p.find_id) === String(editingFlipCoinFind.id) || p.find_id === editingFlipCoinFind.id)}
+          currentFlipCoin={getFlipCoin(editingFlipCoinFind.id)}
+          onSaveFlipCoin={(findId, aversUrl, reversUrl) => {
+            saveFlipCoin(findId, aversUrl, reversUrl);
+            setLightboxCoinFlipped(false);
+            setForcePhotoView(false);
+          }}
+          onDeleteFlipCoin={(findId) => {
+            removeFlipCoin(findId);
+          }}
+          theme={theme}
+        />
       )}
     </>
   );
