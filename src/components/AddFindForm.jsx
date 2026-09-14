@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { materials, materialEmojis } from "../subCategories";
 import { loadCategoriesData } from "../services/categoriesService";
 
@@ -26,6 +26,9 @@ export default function AddFindForm({
 }) {
   const [isManualMode, setIsManualMode] = useState(false);
   const [categoryData, setCategoryData] = useState(() => loadCategoriesData());
+
+  const cameraInputRef = useRef(null);
+  const galleryInputRef = useRef(null);
 
   useEffect(() => {
     const handleCategoriesUpdate = () => {
@@ -71,7 +74,7 @@ export default function AddFindForm({
         display: "flex",
         flexDirection: "column",
         gap: "12px",
-        marginTop: "12px",
+        marginTop: "6px",
         padding: "16px",
         borderRadius: "20px",
         background: "linear-gradient(180deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98))",
@@ -82,6 +85,29 @@ export default function AddFindForm({
         zIndex: 10
       }}
     >
+      {/* Hidden file inputs for Camera and Gallery */}
+      <input
+        type="file"
+        accept="image/*"
+        capture="environment"
+        ref={cameraInputRef}
+        style={{ display: "none" }}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) setNewPhoto(file);
+        }}
+      />
+      <input
+        type="file"
+        accept="image/*"
+        ref={galleryInputRef}
+        style={{ display: "none" }}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) setNewPhoto(file);
+        }}
+      />
+
       {/* MODE SELECTOR TOGGLE (DIRECT LIVE VS MANUEL DIFFERÉ) */}
       <div
         style={{
@@ -158,19 +184,19 @@ export default function AddFindForm({
         <span>{isManualMode ? "ℹ️" : "📍"}</span>
         <span>
           {isManualMode
-            ? "Mode différé : vous pouvez spécifier la date et les coordonnées GPS manuellement."
-            : "Mode direct : position GPS actuelle et date instantanée enregistrées automatiquement."}
+            ? "Mode différé : saisissez la date, coordonnées et choisissez une photo depuis votre galerie."
+            : "Mode direct : position GPS actuelle et date enregistrées automatiquement."}
         </span>
       </div>
 
-      {/* TITRE */}
+      {/* TITRE (SANS EXEMPLE) */}
       <div>
         <label style={{ fontSize: "11px", fontWeight: "600", color: "#9ca3af", marginBottom: "4px", display: "block" }}>
           Titre de l'objet *
         </label>
         <input
           type="text"
-          placeholder="Ex: Denier tournois, Double Tournois, Boucle médiévale..."
+          placeholder="Titre de l'objet"
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           style={inputStyle}
@@ -223,17 +249,19 @@ export default function AddFindForm({
         )}
       </div>
 
-      {/* MATIERE */}
+      {/* MATIERE (VIRE LE MOT METAL DANS LE LABEL, "Métal non spécifié" DANS LE SELECT) */}
       <div>
         <label style={{ fontSize: "11px", fontWeight: "600", color: "#9ca3af", marginBottom: "4px", display: "block" }}>
-          Matière / Métal
+          Matière
         </label>
         <select
           value={newDescription}
           onChange={(e) => setNewDescription(e.target.value)}
           style={inputStyle}
         >
-          <option value="" style={{ background: "#1f2937", color: "#9ca3af" }}>Matière non spécifiée</option>
+          <option value="" style={{ background: "#1f2937", color: "#9ca3af" }}>
+            Métal non spécifié
+          </option>
           {materials.map((mat) => (
             <option key={mat} value={mat} style={{ background: "#1f2937", color: "#ffffff" }}>
               {materialEmojis[mat] || ""} {mat}
@@ -298,39 +326,56 @@ export default function AddFindForm({
         </div>
       )}
 
-      {/* BOUTON PHOTO */}
-      <label
-        style={{
-          background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
-          color: "white",
-          padding: "12px",
-          borderRadius: "14px",
-          textAlign: "center",
-          cursor: "pointer",
-          fontSize: "13px",
-          fontWeight: "700",
-          boxShadow: "0 4px 12px rgba(37,99,235,0.3)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "8px"
-        }}
-      >
-        <span>📷</span>
-        <span>{newPhoto ? "Changer la photo" : "Ajouter une photo"}</span>
-
-        <input
-          type="file"
-          accept="image/*"
-          capture="environment"
-          style={{ display: "none" }}
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-            setNewPhoto(file);
+      {/* BOUTONS PHOTO (APPAREIL PHOTO & GALERIE DU TÉLÉPHONE) */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+        <button
+          type="button"
+          onClick={() => cameraInputRef.current?.click()}
+          style={{
+            background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
+            color: "white",
+            padding: "11px 8px",
+            borderRadius: "12px",
+            border: "none",
+            textAlign: "center",
+            cursor: "pointer",
+            fontSize: "12px",
+            fontWeight: "700",
+            boxShadow: "0 4px 12px rgba(37,99,235,0.25)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "6px"
           }}
-        />
-      </label>
+        >
+          <span>📷</span>
+          <span>{newPhoto ? "Reprendre photo" : "Appareil photo"}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => galleryInputRef.current?.click()}
+          style={{
+            background: "linear-gradient(135deg, #0284c7, #0369a1)",
+            color: "white",
+            padding: "11px 8px",
+            borderRadius: "12px",
+            border: "none",
+            textAlign: "center",
+            cursor: "pointer",
+            fontSize: "12px",
+            fontWeight: "700",
+            boxShadow: "0 4px 12px rgba(2,132,199,0.25)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "6px"
+          }}
+        >
+          <span>🖼️</span>
+          <span>Galerie photo</span>
+        </button>
+      </div>
 
       {/* PREVIEW PHOTO */}
       {newPhoto && (
@@ -406,7 +451,8 @@ export default function AddFindForm({
           fontWeight: "700",
           cursor: addingFind || !newTitle.trim() ? "not-allowed" : "pointer",
           transition: "all 0.2s ease",
-          boxShadow: addingFind || !newTitle.trim() ? "none" : "0 4px 14px rgba(16,185,129,0.35)"
+          boxShadow: addingFind || !newTitle.trim() ? "none" : "0 4px 14px rgba(16,185,129,0.35)",
+          marginTop: "4px"
         }}
       >
         {addingFind ? "Enregistrement en cours..." : "✅ Enregistrer la trouvaille"}

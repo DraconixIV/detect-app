@@ -9,7 +9,6 @@ export default function MapTopBar({
   isRecordingSortie,
   onToggleRecording,
   onOpenTeamSession,
-  onOpenThemePicker,
   onToggleSearch,
   showSearch,
   search,

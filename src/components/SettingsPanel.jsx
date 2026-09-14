@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabase";
 import { loadCategoriesData, addCategory, removeCategory, addSubCategory, removeSubCategory, resetCategories } from "../services/categoriesService";
-import { THEMES } from "../styles/themes";
 import { getMyUserCode, getMyDisplayName } from "../services/sessionService";
 import AuthForm from "./AuthForm";
 
@@ -15,9 +14,6 @@ export default function SettingsPanel({
   onOpenMapLayers,
   onExportBackup,
   onImportBackup,
-  currentThemeKey = "tactical",
-  setDesignTheme,
-  onOpenThemePicker,
   onOpenCategoryManager,
   onRestartOnboarding,
   workspace = { mode: "personal" },
@@ -238,67 +234,7 @@ export default function SettingsPanel({
           )}
         </div>
 
-        {/* 1. Direction Artistique & Cockpit */}
-        <div style={cardStyle}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-            <div style={sectionTitleStyle}>
-              <span>🎛️</span> Direction Artistique (Cockpit)
-            </div>
-            {onOpenThemePicker && (
-              <button
-                onClick={onOpenThemePicker}
-                style={{
-                  padding: "6px 12px",
-                  borderRadius: "10px",
-                  border: "none",
-                  background: "linear-gradient(135deg, #3b82f6, #2563eb)",
-                  color: "white",
-                  fontSize: "11px",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  boxShadow: "0 2px 8px rgba(37, 99, 235, 0.3)"
-                }}
-              >
-                🎨 Tester en direct
-              </button>
-            )}
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "8px" }}>
-            {Object.values(THEMES).map((th) => {
-              const isSelected = currentThemeKey === th.id;
-              const c = th.colors;
-              return (
-                <div
-                  key={th.id}
-                  onClick={() => setDesignTheme && setDesignTheme(th.id)}
-                  style={{
-                    padding: "10px",
-                    borderRadius: "12px",
-                    border: isSelected ? `2px solid ${c.accent}` : `1px solid ${cardBorder}`,
-                    background: isSelected ? (isLight ? `${c.accent}15` : `${c.accent}20`) : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
-                    cursor: "pointer",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                    transition: "all 0.2s"
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "18px" }}>{th.icon}</span>
-                    <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: c.accent }} />
-                  </div>
-                  <div style={{ fontSize: "11px", fontWeight: "800", color: isSelected ? c.accent : textMain }}>
-                    {th.name}
-                  </div>
-                  <div style={{ fontSize: "9px", color: textSub }}>{th.badge}</div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 2. Apparence & Thème Clair/Sombre */}
+        {/* Apparence & Thème Clair/Sombre */}
         <div style={cardStyle}>
           <div style={sectionTitleStyle}>
             <span>🌓</span> Mode Nuit / Jour

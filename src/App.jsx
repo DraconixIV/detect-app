@@ -17,7 +17,6 @@ import BottomNav from "./components/BottomNav";
 import OnboardingModal from "./components/OnboardingModal";
 import ReportsPanel from "./components/ReportsPanel";
 import SettingsPanel from "./components/SettingsPanel";
-import ThemePickerModal from "./components/ThemePickerModal";
 import CategoryManagerModal from "./components/CategoryManagerModal";
 import TeamSessionModal from "./components/TeamSessionModal";
 import MapLayersModal from "./components/MapLayersModal";
@@ -183,7 +182,6 @@ function App() {
   const [activeTab, setActiveTab] = useState("map");
   const [theme, setTheme] = useState(() => localStorage.getItem("app_theme") || "dark");
   const [designTheme, setDesignTheme] = useState(() => localStorage.getItem("app_design_theme") || "tactical");
-  const [showThemePicker, setShowThemePicker] = useState(false);
   const [showCategoryManagerModal, setShowCategoryManagerModal] = useState(false);
 
   useEffect(() => {
@@ -836,7 +834,6 @@ return (
           isRecordingSortie={isRecordingSortie}
           onToggleRecording={() => isRecordingSortie ? stopSortie() : startSortie(position)}
           onOpenTeamSession={() => setShowTeamSessionModal(true)}
-          onOpenThemePicker={() => setShowThemePicker(true)}
           onToggleSearch={() => setShowSearch(!showSearch)}
           showSearch={showSearch}
           search={search}
@@ -894,9 +891,6 @@ return (
           onOpenMapLayers={() => setShowMapLayersModal(true)}
           onExportBackup={handleExport}
           onImportBackup={handleImport}
-          currentThemeKey={designTheme}
-          setDesignTheme={setDesignTheme}
-          onOpenThemePicker={() => setShowThemePicker(true)}
           onOpenCategoryManager={() => setShowCategoryManagerModal(true)}
           onRestartOnboarding={() => setShowOnboarding(true)}
           workspace={workspace}
@@ -1007,20 +1001,6 @@ return (
         ref={quickAddInputRef}
         style={{ display: "none" }}
         onChange={handleQuickAdd}
-      />
-
-      {/* Theme Picker Modal */}
-      <ThemePickerModal
-        isOpen={showThemePicker}
-        onClose={() => setShowThemePicker(false)}
-        currentThemeKey={designTheme}
-        onSelectTheme={(newTh) => {
-          setDesignTheme(newTh);
-          setToast({
-            message: `🎨 Palette "${THEMES[newTh]?.name || newTh}" activée !`,
-            type: "success"
-          });
-        }}
       />
 
       {/* Map Layers & IGN Overlays Modal */}

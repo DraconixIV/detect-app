@@ -8,7 +8,7 @@ export const BASE_MAPS = {
   satellite: {
     id: "satellite",
     name: "Satellite HD (Esri)",
-    icon: "🛰️",
+    icon: "",
     desc: "Vue satellite mondiale haute définition",
     url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     attribution: "&copy; Esri, Maxar, Earthstar Geographics",
@@ -18,7 +18,7 @@ export const BASE_MAPS = {
   ign_ortho: {
     id: "ign_ortho",
     name: "Photos Aériennes IGN (France)",
-    icon: "🇫🇷",
+    icon: "",
     desc: "Orthophotos nationales IGN très haute précision",
     url: "https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
     attribution: "&copy; IGN - Orthophotos",
@@ -28,7 +28,7 @@ export const BASE_MAPS = {
   ign_plan: {
     id: "ign_plan",
     name: "Plan IGN v2 Topo",
-    icon: "🌲",
+    icon: "",
     desc: "Sentiers forestiers, courbes de niveau et voies",
     url: "https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
     attribution: "&copy; IGN - Plan IGN v2",
@@ -38,7 +38,7 @@ export const BASE_MAPS = {
   osm: {
     id: "osm",
     name: "OpenStreetMap Standard",
-    icon: "🧭",
+    icon: "",
     desc: "Plan vectoriel clair et chemins de randonnée",
     url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     attribution: "&copy; OpenStreetMap contributors",
@@ -48,7 +48,7 @@ export const BASE_MAPS = {
   opentopo: {
     id: "opentopo",
     name: "OpenTopoMap Relief",
-    icon: "⛰️",
+    icon: "",
     desc: "Relief ombragé et courbes altimétriques",
     url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
     attribution: "&copy; OpenTopoMap contributors",

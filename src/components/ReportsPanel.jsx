@@ -34,7 +34,7 @@ export default function ReportsPanel({
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
           <div style={{ fontSize: "28px" }}>📊</div>
           <div>
-            <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: isLight ? "#0f172a" : "#facc15" }}>
+            <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: isLight ? "#0f172a" : "#ffffff" }}>
               Rapports & Statistiques
             </h1>
             <p style={{ margin: 0, fontSize: "12px", color: textSub }}>

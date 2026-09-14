@@ -75,7 +75,7 @@ export default function MapFloatingControls({
             }}
             title="Couches Cartographiques & Cadastre"
           >
-            🥞
+            🗺️
             {activeLayersCount > 0 && (
               <span
                 style={{

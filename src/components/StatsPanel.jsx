@@ -196,7 +196,7 @@ export default function StatsPanel({
       {/* Top Title */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
         <div>
-          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "800", color: isLight ? "#0f172a" : "#facc15" }}>
+          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "800", color: isLight ? "#0f172a" : "#ffffff" }}>
             📊 Statistiques
           </h2>
           <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
@@ -629,37 +629,31 @@ export default function StatsPanel({
               Touchez une catégorie pour déplier ou replier ses sous-types
             </p>
           </div>
-          <div style={{ display: "flex", gap: "4px" }}>
-            <button
-              onClick={() => toggleAllCategories(true)}
-              style={{
-                padding: "3px 7px",
-                borderRadius: "6px",
-                border: `1px solid ${cardBorder}`,
-                background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.08)",
-                color: textMain,
-                fontSize: "10px",
-                fontWeight: "700",
-                cursor: "pointer"
-              }}
-            >
-              ▼ Déplier
-            </button>
-            <button
-              onClick={() => toggleAllCategories(false)}
-              style={{
-                padding: "3px 7px",
-                borderRadius: "6px",
-                border: `1px solid ${cardBorder}`,
-                background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.08)",
-                color: textMain,
-                fontSize: "10px",
-                fontWeight: "700",
-                cursor: "pointer"
-              }}
-            >
-              ▲ Replier
-            </button>
+          <div>
+            {(() => {
+              const allExpanded = categoryData.length > 0 && categoryData.every(([cat]) => !!expandedCats[cat]);
+              return (
+                <button
+                  onClick={() => toggleAllCategories(!allExpanded)}
+                  style={{
+                    padding: "4px 10px",
+                    borderRadius: "8px",
+                    border: `1px solid ${cardBorder}`,
+                    background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.08)",
+                    color: textMain,
+                    fontSize: "11px",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    transition: "all 0.15s ease"
+                  }}
+                >
+                  {allExpanded ? "▲ Replier tout" : "▼ Déplier tout"}
+                </button>
+              );
+            })()}
           </div>
         </div>
 

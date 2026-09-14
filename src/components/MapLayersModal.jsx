@@ -27,6 +27,50 @@ export default function MapLayersModal({
   const c = theme.colors;
   const baseMapList = Object.values(BASE_MAPS);
 
+  // Helper for exclusive overlay selection (only one active at a time)
+  const handleSelectOverlay = (overlayKey) => {
+    if (overlayKey === 'cadastre') {
+      const next = !showCadastre;
+      setShowCadastre(next);
+      localStorage.setItem('showCadastre', String(next));
+      if (next) {
+        setShowCassini(false);
+        localStorage.setItem('showCassini', 'false');
+        setShowEtatMajor(false);
+        localStorage.setItem('showEtatMajor', 'false');
+      }
+    } else if (overlayKey === 'cassini') {
+      const next = !showCassini;
+      setShowCassini(next);
+      localStorage.setItem('showCassini', String(next));
+      if (next) {
+        setShowCadastre(false);
+        localStorage.setItem('showCadastre', 'false');
+        setShowEtatMajor(false);
+        localStorage.setItem('showEtatMajor', 'false');
+      }
+    } else if (overlayKey === 'etatmajor') {
+      const next = !showEtatMajor;
+      setShowEtatMajor(next);
+      localStorage.setItem('showEtatMajor', String(next));
+      if (next) {
+        setShowCadastre(false);
+        localStorage.setItem('showCadastre', 'false');
+        setShowCassini(false);
+        localStorage.setItem('showCassini', 'false');
+      }
+    } else if (overlayKey === 'none') {
+      setShowCadastre(false);
+      localStorage.setItem('showCadastre', 'false');
+      setShowCassini(false);
+      localStorage.setItem('showCassini', 'false');
+      setShowEtatMajor(false);
+      localStorage.setItem('showEtatMajor', 'false');
+    }
+  };
+
+  const activeOverlayKey = showCadastre ? 'cadastre' : (showCassini ? 'cassini' : (showEtatMajor ? 'etatmajor' : 'none'));
+
   return (
     <div
       style={{
@@ -84,7 +128,7 @@ export default function MapLayersModal({
                 color: c.textPrimary || '#ffffff'
               }}
             >
-              <span>🥞</span> Cartes & Surcouches IGN
+              <span>🗺️</span> Cartes & Surcouches IGN
             </h3>
             <p
               style={{
@@ -143,7 +187,7 @@ export default function MapLayersModal({
                 gap: '6px'
               }}
             >
-              <span>🗺️</span> Fond de Carte Principal (1 au choix)
+              Fond de Carte Principal (1 au choix)
             </div>
 
             <div
@@ -181,7 +225,7 @@ export default function MapLayersModal({
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '18px' }}>{bm.icon}</span>
+                      <div style={{ fontSize: '12px', fontWeight: '800' }}>{bm.name}</div>
                       {isSelected && (
                         <span
                           style={{
@@ -198,8 +242,7 @@ export default function MapLayersModal({
                         </span>
                       )}
                     </div>
-                    <div style={{ fontSize: '12px', fontWeight: '800', marginTop: '2px' }}>{bm.name}</div>
-                    <div style={{ fontSize: '10px', color: c.textSecondary || '#9ca3af', lineHeight: '1.2' }}>
+                    <div style={{ fontSize: '10px', color: c.textSecondary || '#9ca3af', lineHeight: '1.2', marginTop: '2px' }}>
                       {bm.desc}
                     </div>
                   </button>
@@ -208,7 +251,7 @@ export default function MapLayersModal({
             </div>
           </div>
 
-          {/* SECTION 2: SURCOUCHES OFFICIELLES & HISTORIQUES */}
+          {/* SECTION 2: SURCOUCHES SUPERPOSABLES (EXCLUSIF - 1 AU CHOIX) */}
           <div>
             <div
               style={{
@@ -217,14 +260,17 @@ export default function MapLayersModal({
                 textTransform: 'uppercase',
                 letterSpacing: '0.6px',
                 color: c.accentSecondary || '#f97316',
-                marginBottom: '8px',
+                marginBottom: '4px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px'
               }}
             >
-              <span>📐</span> Surcouches Superposables (Multi-sélection)
+              Surcouche Superposable (1 au choix)
             </div>
+            <p style={{ fontSize: '11px', color: c.textSecondary || '#9ca3af', margin: '0 0 10px 0' }}>
+              Superposez une couche cadastrale ou historique unique sur votre fond de carte.
+            </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {/* 1. Cadastre Officiel IGN */}
@@ -240,23 +286,16 @@ export default function MapLayersModal({
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '20px' }}>📐</span>
-                    <div>
-                      <div style={{ fontSize: '13px', fontWeight: '800', color: showCadastre ? '#34d399' : c.textPrimary }}>
-                        Cadastre Officiel IGN / DGFiP
-                      </div>
-                      <div style={{ fontSize: '10px', color: c.textSecondary, marginTop: '1px' }}>
-                        Limites exactes des parcelles et numéros cadastraux
-                      </div>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: '800', color: showCadastre ? '#34d399' : c.textPrimary }}>
+                      Cadastre Officiel IGN / DGFiP
+                    </div>
+                    <div style={{ fontSize: '10px', color: c.textSecondary, marginTop: '1px' }}>
+                      Limites exactes des parcelles et numéros cadastraux
                     </div>
                   </div>
                   <button
-                    onClick={() => {
-                      const next = !showCadastre;
-                      setShowCadastre(next);
-                      localStorage.setItem('showCadastre', String(next));
-                    }}
+                    onClick={() => handleSelectOverlay('cadastre')}
                     style={{
                       padding: '6px 12px',
                       borderRadius: '10px',
@@ -269,7 +308,7 @@ export default function MapLayersModal({
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    {showCadastre ? 'ON' : 'OFF'}
+                    {showCadastre ? 'Actif' : 'Activer'}
                   </button>
                 </div>
 
@@ -292,9 +331,6 @@ export default function MapLayersModal({
                       }}
                       style={{ width: '100%', accentColor: '#10b981', cursor: 'pointer' }}
                     />
-                    <div style={{ fontSize: '10px', color: '#9ca3af', marginTop: '4px', fontStyle: 'italic' }}>
-                      💡 Essentiel pour vérifier les limites de champs et respecter les autorisations des propriétaires.
-                    </div>
                   </div>
                 )}
               </div>
@@ -312,23 +348,16 @@ export default function MapLayersModal({
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '20px' }}>📜</span>
-                    <div>
-                      <div style={{ fontSize: '13px', fontWeight: '800', color: showCassini ? '#60a5fa' : c.textPrimary }}>
-                        Carte de Cassini (XVIIIe siècle - BnF / IGN)
-                      </div>
-                      <div style={{ fontSize: '10px', color: c.textSecondary, marginTop: '1px' }}>
-                        Première carte générale du Royaume de France (1750-1815)
-                      </div>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: '800', color: showCassini ? '#60a5fa' : c.textPrimary }}>
+                      Carte de Cassini (XVIIIe siècle - BnF / IGN)
+                    </div>
+                    <div style={{ fontSize: '10px', color: c.textSecondary, marginTop: '1px' }}>
+                      Première carte générale du Royaume de France (1750-1815)
                     </div>
                   </div>
                   <button
-                    onClick={() => {
-                      const next = !showCassini;
-                      setShowCassini(next);
-                      localStorage.setItem('showCassini', String(next));
-                    }}
+                    onClick={() => handleSelectOverlay('cassini')}
                     style={{
                       padding: '6px 12px',
                       borderRadius: '10px',
@@ -341,7 +370,7 @@ export default function MapLayersModal({
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    {showCassini ? 'ON' : 'OFF'}
+                    {showCassini ? 'Actif' : 'Activer'}
                   </button>
                 </div>
 
@@ -364,9 +393,6 @@ export default function MapLayersModal({
                       }}
                       style={{ width: '100%', accentColor: '#3b82f6', cursor: 'pointer' }}
                     />
-                    <div style={{ fontSize: '10px', color: '#9ca3af', marginTop: '4px', fontStyle: 'italic' }}>
-                      💡 Permet de repérer les anciens moulins, hameaux disparus et voies d'époque.
-                    </div>
                   </div>
                 )}
               </div>
@@ -384,23 +410,16 @@ export default function MapLayersModal({
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '20px' }}>⚔️</span>
-                    <div>
-                      <div style={{ fontSize: '13px', fontWeight: '800', color: showEtatMajor ? '#fbbf24' : c.textPrimary }}>
-                        Carte d'État-Major (1820-1866 - IGN)
-                      </div>
-                      <div style={{ fontSize: '10px', color: c.textSecondary, marginTop: '1px' }}>
-                        Cartographie militaire du XIXe siècle (1:40 000)
-                      </div>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: '800', color: showEtatMajor ? '#fbbf24' : c.textPrimary }}>
+                      Carte d'État-Major (1820-1866 - IGN)
+                    </div>
+                    <div style={{ fontSize: '10px', color: c.textSecondary, marginTop: '1px' }}>
+                      Cartographie militaire du XIXe siècle (1:40 000)
                     </div>
                   </div>
                   <button
-                    onClick={() => {
-                      const next = !showEtatMajor;
-                      setShowEtatMajor(next);
-                      localStorage.setItem('showEtatMajor', String(next));
-                    }}
+                    onClick={() => handleSelectOverlay('etatmajor')}
                     style={{
                       padding: '6px 12px',
                       borderRadius: '10px',
@@ -413,7 +432,7 @@ export default function MapLayersModal({
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    {showEtatMajor ? 'ON' : 'OFF'}
+                    {showEtatMajor ? 'Actif' : 'Activer'}
                   </button>
                 </div>
 
@@ -436,9 +455,6 @@ export default function MapLayersModal({
                       }}
                       style={{ width: '100%', accentColor: '#d97706', cursor: 'pointer' }}
                     />
-                    <div style={{ fontSize: '10px', color: '#9ca3af', marginTop: '4px', fontStyle: 'italic' }}>
-                      💡 Idéale pour comparer les anciens tracés de chemins vicinaux, parcelles et limites forestières du XIXe siècle.
-                    </div>
                   </div>
                 )}
               </div>
@@ -451,21 +467,18 @@ export default function MapLayersModal({
               background: 'rgba(255, 255, 255, 0.03)',
               border: `1px dashed ${c.border || 'rgba(255,255,255,0.15)'}`,
               borderRadius: '14px',
-              padding: '10px 12px',
+              padding: '12px 14px',
               display: 'flex',
-              alignItems: 'flex-start',
-              gap: '10px'
+              flexDirection: 'column',
+              gap: '4px'
             }}
           >
-            <span style={{ fontSize: '20px' }}>🛡️</span>
-            <div>
-              <div style={{ fontSize: '11px', fontWeight: '800', color: c.textPrimary || '#ffffff', marginBottom: '2px' }}>
-                Charte Éthique & Limite Légale
-              </div>
-              <div style={{ fontSize: '10px', color: c.textSecondary || '#9ca3af', lineHeight: '1.4' }}>
-                Cette application fournit exclusivement des cartes topographiques, historiques et cadastrales publiques.
-                Aucun calque archéologique (DRAC / Patriarche) n'est intégré, pour préserver le patrimoine historique et respecter la législation en vigueur.
-              </div>
+            <div style={{ fontSize: '11px', fontWeight: '800', color: c.textPrimary || '#ffffff' }}>
+              Charte Éthique & Limite Légale
+            </div>
+            <div style={{ fontSize: '10px', color: c.textSecondary || '#9ca3af', lineHeight: '1.4' }}>
+              Cette application fournit exclusivement des cartes topographiques, historiques et cadastrales publiques.
+              Aucun calque archéologique (DRAC / Patriarche) n'est intégré, pour préserver le patrimoine historique et respecter la législation en vigueur.
             </div>
           </div>
         </div>
