@@ -142,6 +142,7 @@ export default function TeamSessionModal({
           </div>
           <button
             type="button"
+            aria-label="Fermer"
             onClick={onClose}
             style={{
               background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",

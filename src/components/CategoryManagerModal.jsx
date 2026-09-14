@@ -107,6 +107,8 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
             </div>
           </div>
           <button
+            type="button"
+            aria-label="Fermer"
             onClick={onClose}
             style={{
               width: "32px",

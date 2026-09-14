@@ -165,6 +165,7 @@ function App() {
 
   const {
     finds,
+    setFinds,
     allPhotos,
     isOnline,
     syncing,

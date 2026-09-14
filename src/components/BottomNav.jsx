@@ -44,6 +44,7 @@ export default function BottomNav({
         return (
           <button
             key={tab.id}
+            data-tab={tab.id}
             onClick={() => {
               if (activeTab === tab.id && tab.id !== "map") {
                 setActiveTab("map");

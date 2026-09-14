@@ -260,6 +260,7 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
 
   return {
     finds,
+    setFinds,
     allPhotos,
     isOnline,
     syncing,

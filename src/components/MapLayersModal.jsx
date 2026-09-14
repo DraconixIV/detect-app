@@ -142,6 +142,8 @@ export default function MapLayersModal({
             </p>
           </div>
           <button
+            type="button"
+            aria-label="Fermer"
             onClick={onClose}
             style={{
               background: 'rgba(255,255,255,0.08)',
