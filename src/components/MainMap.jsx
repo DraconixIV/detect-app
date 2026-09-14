@@ -22,7 +22,7 @@ function RecenterMap({ target, onRecentered }) {
 
   useEffect(() => {
     if (target) {
-      map.setView(target.position, target.zoom || 20);
+      map.setView(target.position, target.zoom || 18);
       if (onRecentered) {
         onRecentered();
       }
@@ -272,7 +272,9 @@ export default function MainMap({
 
       <MapContainer
         center={position}
-        zoom={20}
+        zoom={18}
+        maxZoom={19}
+        minZoom={4}
         preferCanvas={true}
         style={{
           height: "100%",

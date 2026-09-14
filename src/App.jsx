@@ -933,7 +933,7 @@ return (
           onOpenCategoryManager={() => setShowCategoryManagerModal(true)}
           onOpenFindDetails={(find) => {
             setActiveTab("map");
-            setZoomTarget({ position: find.position || [find.latitude, find.longitude], zoom: 20 });
+            setZoomTarget({ position: find.position || [find.latitude, find.longitude], zoom: 18 });
             setOpenPopupFind(find);
           }}
         />
@@ -1079,7 +1079,7 @@ return (
           showCassini={showHistoricalMap || showCassini}
           onRecenterGps={() => {
             setFollowGps(true);
-            setZoomTarget({ position: position, zoom: 20 });
+            setZoomTarget({ position: position, zoom: 18 });
             setToast({
               message: "🎯 Centrage et suivi GPS activés !",
               type: "success"

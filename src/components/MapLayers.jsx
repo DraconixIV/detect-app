@@ -12,7 +12,7 @@ export const BASE_MAPS = {
     desc: "Vue satellite mondiale haute définition",
     url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     attribution: "&copy; Esri, Maxar, Earthstar Geographics",
-    maxZoom: 20,
+    maxZoom: 19,
     maxNativeZoom: 19
   },
   ign_ortho: {
@@ -22,7 +22,7 @@ export const BASE_MAPS = {
     desc: "Orthophotos nationales IGN très haute précision",
     url: "https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
     attribution: "&copy; IGN - Orthophotos",
-    maxZoom: 20,
+    maxZoom: 19,
     maxNativeZoom: 19
   },
   ign_plan: {
@@ -32,7 +32,7 @@ export const BASE_MAPS = {
     desc: "Sentiers forestiers, courbes de niveau et voies",
     url: "https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
     attribution: "&copy; IGN - Plan IGN v2",
-    maxZoom: 20,
+    maxZoom: 19,
     maxNativeZoom: 19
   },
   osm: {
@@ -42,7 +42,7 @@ export const BASE_MAPS = {
     desc: "Plan vectoriel clair et chemins de randonnée",
     url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     attribution: "&copy; OpenStreetMap contributors",
-    maxZoom: 20,
+    maxZoom: 19,
     maxNativeZoom: 19
   },
   opentopo: {
@@ -52,7 +52,7 @@ export const BASE_MAPS = {
     desc: "Relief ombragé et courbes altimétriques",
     url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
     attribution: "&copy; OpenTopoMap contributors",
-    maxZoom: 20,
+    maxZoom: 19,
     maxNativeZoom: 17
   }
 };
@@ -93,7 +93,7 @@ export default function MapLayers({
         key={`base-${currentBase.id}`}
         attribution={currentBase.attribution}
         url={currentBase.url}
-        maxZoom={currentBase.maxZoom || 20}
+        maxZoom={19}
         maxNativeZoom={currentBase.maxNativeZoom || 19}
         minZoom={0}
         crossOrigin="anonymous"
@@ -106,7 +106,7 @@ export default function MapLayers({
           attribution="&copy; IGN, BnF - Cassini"
           url="https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=BNF-IGNF_GEOGRAPHICALGRIDSYSTEMS.CASSINI&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png"
           opacity={currentCassiniOpacity}
-          maxZoom={20}
+          maxZoom={19}
           maxNativeZoom={14}
           minZoom={0}
           updateWhenIdle={true}
@@ -123,7 +123,7 @@ export default function MapLayers({
           attribution="&copy; IGN - État-Major 1820-1866"
           url="https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=GEOGRAPHICALGRIDSYSTEMS.ETATMAJOR40&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg"
           opacity={currentEtatMajorOpacity}
-          maxZoom={20}
+          maxZoom={19}
           maxNativeZoom={15}
           minZoom={0}
           updateWhenIdle={true}
@@ -140,7 +140,7 @@ export default function MapLayers({
           attribution="&copy; IGN / DGFiP - Cadastre"
           url="https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&STYLE=normal&TILEMATRIXSET=PM_0_19&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png"
           opacity={currentCadastreOpacity}
-          maxZoom={22}
+          maxZoom={19}
           maxNativeZoom={19}
           minZoom={0}
           updateWhenIdle={true}
