@@ -32,6 +32,7 @@ import { addPendingFind, deletePendingFind } from "./services/offlineStore";
 import { importData, exportData } from "./services/backupService";
 import { addFind as createFind, toggleFavorite } from "./services/findsService";
 import { getActiveSession, leaveTeamSession } from "./services/sessionService";
+import { loadCategoriesData } from "./services/categoriesService";
 
 function offsetPosition(
   position,
@@ -87,19 +88,27 @@ function App() {
     localStorage.setItem("hideAllFinds", hideAllFinds);
   }, [hideAllFinds]);
 
-  const [filters, setFilters] =
-    useState([
-      "Monnaie",
-      "Bijou",
-      "Boucle",
-      "Bouton",
-      "Médaille",
-      "Munition",
-      "Outil",
-      "Plomb",
-      "Religieux",
-      "Autre"
-    ]);
+  const [categoriesData, setCategoriesData] = useState(() => loadCategoriesData());
+
+  useEffect(() => {
+    const handleCategoriesUpdate = () => {
+      setCategoriesData(loadCategoriesData());
+    };
+    window.addEventListener("categories-updated", handleCategoriesUpdate);
+    return () => window.removeEventListener("categories-updated", handleCategoriesUpdate);
+  }, []);
+
+  const [filters, setFilters] = useState(() => {
+    try {
+      const data = loadCategoriesData();
+      return Object.keys(data.categories || {});
+    } catch {
+      return [
+        "Monnaie", "Bijou", "Boucle", "Bouton", "Médaille",
+        "Munition", "Outil", "Plomb", "Religieux", "Autre"
+      ];
+    }
+  });
 
   const [newTitle, setNewTitle] =
     useState("");
@@ -419,7 +428,7 @@ function App() {
   const toggleFilter = (category) => {
     // Si la catégorie cliquée est déjà la seule active, on réactive tout
     if (filters.length === 1 && filters[0] === category) {
-      setFilters(Object.keys(icons));
+      setFilters(Object.keys(categoriesData.categories || icons));
       setActiveSubCategory(null);
     } else {
       // Extraire les sous-catégories uniques pour cette catégorie dans la base de données

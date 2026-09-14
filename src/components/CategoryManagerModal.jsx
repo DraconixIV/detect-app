@@ -5,8 +5,10 @@ import {
   removeCategory,
   addSubCategory,
   removeSubCategory,
-  resetCategories
+  resetCategories,
+  updateCategoryColor
 } from "../services/categoriesService";
+import { PRESET_CATEGORY_COLORS, defaultCategoryColors } from "../subCategories";
 
 const COMMON_EMOJIS = ["🪙", "💍", "👑", "🛡️", "⚔️", "🏺", "🗝️", "🎖️", "💣", "🔨", "🪓", "🔔", "⚓", "📦", "📜", "✝️", "🏷️", "💎"];
 
@@ -14,6 +16,8 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
   const [categoriesData, setCategoriesData] = useState(() => loadCategoriesData());
   const [newCatName, setNewCatName] = useState("");
   const [newCatEmoji, setNewCatEmoji] = useState("🪙");
+  const [newCatColor, setNewCatColor] = useState("#3b82f6");
+  const [colorPickerCat, setColorPickerCat] = useState(null);
   const [selectedCatForSub, setSelectedCatForSub] = useState("");
   const [newSubName, setNewSubName] = useState("");
   const [expandedCat, setExpandedCat] = useState(null);
@@ -38,8 +42,9 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
   const handleAddCategory = (e) => {
     e?.preventDefault();
     if (!newCatName.trim()) return;
-    addCategory(newCatName, newCatEmoji);
+    addCategory(newCatName, newCatEmoji, ["Indéterminé"], newCatColor);
     setNewCatName("");
+    setNewCatColor("#3b82f6");
   };
 
   const handleAddSub = (catName, e) => {
@@ -98,7 +103,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                 Gestion des Catégories
               </h2>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
-                Personnalisez vos familles et sous-types d'objets
+                Personnalisez vos familles, couleurs de repères et sous-types
               </p>
             </div>
           </div>
@@ -139,7 +144,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
             <div style={{ fontSize: "12px", fontWeight: "800", marginBottom: "8px", color: isLight ? "#2563eb" : "#ffffff" }}>
               ➕ Nouvelle Catégorie
             </div>
-            <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
+            <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
               <select
                 value={newCatEmoji}
                 onChange={(e) => setNewCatEmoji(e.target.value)}
@@ -162,7 +167,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
 
               <input
                 type="text"
-                placeholder="Nom (ex: Poterie, Arme...)"
+                placeholder="Nom (ex: Poterie, Arme, Fossile...)"
                 value={newCatName}
                 onChange={(e) => setNewCatName(e.target.value)}
                 style={{
@@ -193,6 +198,43 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                 Créer
               </button>
             </div>
+
+            {/* Color Swatch Picker for New Category */}
+            <div>
+              <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
+                🎨 Couleur du marqueur sur la carte :
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
+                {PRESET_CATEGORY_COLORS.map((colorHex) => {
+                  const isSelected = newCatColor === colorHex;
+                  return (
+                    <button
+                      key={colorHex}
+                      type="button"
+                      onClick={() => setNewCatColor(colorHex)}
+                      style={{
+                        width: "22px",
+                        height: "22px",
+                        borderRadius: "50%",
+                        background: colorHex,
+                        border: isSelected ? "2.5px solid #ffffff" : "1.5px solid rgba(255,255,255,0.25)",
+                        boxShadow: isSelected ? `0 0 8px ${colorHex}` : "none",
+                        cursor: "pointer",
+                        padding: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        transform: isSelected ? "scale(1.2)" : "scale(1)",
+                        transition: "all 0.15s ease"
+                      }}
+                      title={colorHex}
+                    >
+                      {isSelected && <span style={{ color: "#ffffff", fontSize: "10px", fontWeight: "900" }}>✓</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </form>
 
           {/* List of Categories */}
@@ -203,7 +245,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
               </span>
               <button
                 onClick={() => {
-                  if (window.confirm("Réinitialiser toutes les catégories et sous-catégories par défaut ?")) {
+                  if (window.confirm("Réinitialiser toutes les catégories, couleurs et sous-catégories par défaut ?")) {
                     resetCategories();
                   }
                 }}
@@ -222,8 +264,10 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
             </div>
 
             {Object.entries(categoriesData.categories || {}).map(([catName, subCats]) => {
-              const emoji = categoriesData.emojis[catName] || "🏷️";
+              const emoji = categoriesData.emojis?.[catName] || "🏷️";
+              const catColor = categoriesData.colors?.[catName] || defaultCategoryColors[catName] || "#3b82f6";
               const isExpanded = expandedCat === catName;
+              const isColorPicking = colorPickerCat === catName;
 
               return (
                 <div
@@ -248,6 +292,25 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                     }}
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      {/* Interactive Color Badge */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setColorPickerCat(isColorPicking ? null : catName);
+                        }}
+                        style={{
+                          width: "16px",
+                          height: "16px",
+                          borderRadius: "50%",
+                          background: catColor,
+                          border: "1.5px solid rgba(255,255,255,0.6)",
+                          boxShadow: `0 0 6px ${catColor}88`,
+                          cursor: "pointer",
+                          padding: 0
+                        }}
+                        title="Changer la couleur du repère"
+                      />
                       <span style={{ fontSize: "18px" }}>{emoji}</span>
                       <span style={{ fontWeight: "700", fontSize: "14px", color: textMain }}>
                         {catName}
@@ -291,6 +354,65 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                       </span>
                     </div>
                   </div>
+
+                  {/* Inline Color Picker Popover */}
+                  {isColorPicking && (
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      style={{
+                        padding: "10px 14px",
+                        background: isLight ? "#f1f5f9" : "rgba(0,0,0,0.35)",
+                        borderTop: `1px solid ${cardBorder}`,
+                        borderBottom: isExpanded ? `1px solid ${cardBorder}` : "none",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "6px"
+                      }}
+                    >
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ fontSize: "11px", fontWeight: "700", color: textSub }}>
+                          Modifier la couleur de {catName} :
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setColorPickerCat(null)}
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            color: textSub,
+                            fontSize: "10px",
+                            cursor: "pointer",
+                            fontWeight: "bold"
+                          }}
+                        >
+                          ✕ Fermer
+                        </button>
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                        {PRESET_CATEGORY_COLORS.map((colorHex) => (
+                          <button
+                            key={colorHex}
+                            type="button"
+                            onClick={() => {
+                              updateCategoryColor(catName, colorHex);
+                              setColorPickerCat(null);
+                            }}
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              borderRadius: "50%",
+                              background: colorHex,
+                              border: catColor === colorHex ? "2px solid #ffffff" : "1px solid rgba(255,255,255,0.2)",
+                              boxShadow: catColor === colorHex ? `0 0 6px ${colorHex}` : "none",
+                              cursor: "pointer",
+                              padding: 0
+                            }}
+                            title={colorHex}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Sub-categories expanded section */}
                   {isExpanded && (

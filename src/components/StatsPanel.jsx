@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { categoriesWithSub } from "../subCategories";
+import { categoriesWithSub, defaultCategoryColors, PRESET_CATEGORY_COLORS } from "../subCategories";
 import { loadCategoriesData } from "../services/categoriesService";
 
 function getDistance(p1, p2) {
@@ -39,7 +39,7 @@ export default function StatsPanel({
   theme = "dark",
   onOpenCategoryManager
 }) {
-  const { emojis: categoryEmojis, categories: customCategories } = loadCategoriesData();
+  const { emojis: categoryEmojis, categories: customCategories, colors: categoryColors = {} } = loadCategoriesData();
   const [chartType, setChartType] = useState("donut"); // 'donut' | 'bar' | 'treemap' | 'radar' | 'pyramid'
   const [expandedCats, setExpandedCats] = useState({});
 
@@ -93,22 +93,13 @@ export default function StatsPanel({
   const maxCount = categoryData.length > 0 ? Math.max(...categoryData.map((d) => d[1])) : 1;
 
   const getCategoryColor = (cat, idx) => {
-    const palette = [
-      "#facc15", "#3b82f6", "#10b981", "#ec4899", "#8b5cf6",
-      "#f97316", "#06b6d4", "#eab308", "#14b8a6", "#ef4444"
-    ];
-    switch (cat) {
-      case "Monnaie": return "#facc15";
-      case "Bijou": return "#ec4899";
-      case "Boucle": return "#8b5cf6";
-      case "Bouton": return "#10b981";
-      case "Médaille": return "#3b82f6";
-      case "Munition": return "#ef4444";
-      case "Outil": return "#f97316";
-      case "Plomb": return "#64748b";
-      case "Religieux": return "#d97706";
-      default: return palette[idx % palette.length];
+    if (categoryColors && categoryColors[cat]) {
+      return categoryColors[cat];
     }
+    if (defaultCategoryColors && defaultCategoryColors[cat]) {
+      return defaultCategoryColors[cat];
+    }
+    return PRESET_CATEGORY_COLORS[idx % PRESET_CATEGORY_COLORS.length] || "#3b82f6";
   };
 
   const toggleCategory = (cat) => {

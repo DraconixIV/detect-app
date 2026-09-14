@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabase";
 import { loadCategoriesData, addCategory, removeCategory, addSubCategory, removeSubCategory, resetCategories } from "../services/categoriesService";
+import { defaultCategoryColors } from "../subCategories";
 import { getMyUserCode, getMyDisplayName } from "../services/sessionService";
 import AuthForm from "./AuthForm";
 
@@ -396,9 +397,21 @@ export default function SettingsPanel({
                     }}
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: "13px", fontWeight: "bold", color: textMain }}>
-                        {categoriesData.emojis[cat] || "📦"} {cat}
-                      </span>
+                      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                        <span
+                          style={{
+                            width: "12px",
+                            height: "12px",
+                            borderRadius: "50%",
+                            background: categoriesData.colors?.[cat] || defaultCategoryColors[cat] || "#3b82f6",
+                            display: "inline-block",
+                            boxShadow: `0 0 4px ${categoriesData.colors?.[cat] || defaultCategoryColors[cat] || "#3b82f6"}88`
+                          }}
+                        />
+                        <span style={{ fontSize: "13px", fontWeight: "bold", color: textMain }}>
+                          {categoriesData.emojis[cat] || "📦"} {cat}
+                        </span>
+                      </div>
                       <div style={{ display: "flex", gap: "6px" }}>
                         <button
                           onClick={() => setSelectedCatForSub(selectedCatForSub === cat ? "" : cat)}
