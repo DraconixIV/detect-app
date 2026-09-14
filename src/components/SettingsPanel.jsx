@@ -14,7 +14,8 @@ export default function SettingsPanel({
   onRestartOnboarding,
   workspace = { mode: "personal" },
   setWorkspace,
-  onOpenTeamSession
+  onOpenTeamSession,
+  onOpenChaosBenchmark
 }) {
   const [categoriesData, setCategoriesData] = useState(loadCategoriesData());
   const [user, setUser] = useState(null);
@@ -488,6 +489,38 @@ export default function SettingsPanel({
             </div>
           )}
         </div>
+
+        {/* Banc d'Essai & Chaos Mode */}
+        {onOpenChaosBenchmark && (
+          <div style={cardStyle}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ ...sectionTitleStyle, color: isLight ? "#d97706" : "#ffffff", marginBottom: "4px" }}>
+                  <span>⚡</span> Banc d'Essai & Benchmark
+                </div>
+                <div style={{ fontSize: "11px", color: textSub }}>
+                  Simulateur 15 bots, test de charge Leaflet & monitoring FPS
+                </div>
+              </div>
+              <button
+                onClick={onOpenChaosBenchmark}
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: "10px",
+                  border: "none",
+                  background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                  color: "#ffffff",
+                  fontSize: "11px",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 8px rgba(245, 158, 11, 0.3)"
+                }}
+              >
+                Tester ⚡
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* ============================================================ */}
         {/* GROUPE 3 : COMPTE & SYNCHRONISATION (DONNÉES)                */}

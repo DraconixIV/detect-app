@@ -157,6 +157,15 @@ export default function MainMap({
   savedTracks = []
 }) {
   const [isZooming, setIsZooming] = useState(false);
+  const [simulatedBots, setSimulatedBots] = useState(() => window.simulatedBots || []);
+
+  useEffect(() => {
+    const handleBots = (e) => {
+      setSimulatedBots(e.detail || []);
+    };
+    window.addEventListener("simulated-bots-updated", handleBots);
+    return () => window.removeEventListener("simulated-bots-updated", handleBots);
+  }, []);
 
   const handleExitConsultation = () => {
     if (setWorkspace) {
@@ -408,6 +417,50 @@ export default function MainMap({
         position={position}
         gpsStyle={gpsStyle}
       />
+
+      {/* SIMULATED BENCHMARK / CHAOS BOTS */}
+      {!isZooming && simulatedBots.map((bot) => (
+        <Marker
+          key={bot.id}
+          position={[bot.lat, bot.lng]}
+          icon={L.divIcon({
+            html: `
+              <div style="
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+              ">
+                <div style="
+                  background: ${bot.color || "#3b82f6"};
+                  color: #ffffff;
+                  font-size: 10px;
+                  font-weight: 800;
+                  padding: 2px 6px;
+                  border-radius: 6px;
+                  white-space: nowrap;
+                  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+                  border: 1px solid #ffffff;
+                  margin-bottom: 2px;
+                ">
+                  🤖 ${bot.name}
+                </div>
+                <div style="
+                  width: 14px;
+                  height: 14px;
+                  border-radius: 50%;
+                  background: ${bot.color || "#3b82f6"};
+                  border: 2px solid #ffffff;
+                  box-shadow: 0 0 10px ${bot.color || "#3b82f6"};
+                "></div>
+              </div>
+            `,
+            className: "simulated-bot-marker",
+            iconSize: [100, 36],
+            iconAnchor: [50, 36]
+          })}
+        />
+      ))}
 
       {!isZooming && (
         useClustering ? (

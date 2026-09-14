@@ -1,4 +1,4 @@
-import { supabase } from "../supabase";
+import { supabase } from "../supabase.js";
 
 const USER_CODE_STORAGE_KEY = "geoprospect_user_code_v1";
 const USER_DISPLAY_NAME_KEY = "geoprospect_user_display_name_v1";

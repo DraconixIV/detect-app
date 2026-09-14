@@ -20,6 +20,7 @@ import SettingsPanel from "./components/SettingsPanel";
 import CategoryManagerModal from "./components/CategoryManagerModal";
 import TeamSessionModal from "./components/TeamSessionModal";
 import MapLayersModal from "./components/MapLayersModal";
+import ChaosBenchmarkModal from "./components/ChaosBenchmarkModal";
 import SplashScreen from "./components/SplashScreen";
 import { THEMES } from "./styles/themes";
 
@@ -194,6 +195,7 @@ function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem("app_theme") || "dark");
   const [designTheme, setDesignTheme] = useState(() => localStorage.getItem("app_design_theme") || "tactical");
   const [showCategoryManagerModal, setShowCategoryManagerModal] = useState(false);
+  const [showChaosModal, setShowChaosModal] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("app_design_theme", designTheme);
@@ -902,6 +904,7 @@ return (
           onImportBackup={handleImport}
           onOpenCategoryManager={() => setShowCategoryManagerModal(true)}
           onRestartOnboarding={() => setShowOnboarding(true)}
+          onOpenChaosBenchmark={() => setShowChaosModal(true)}
           workspace={workspace}
           setWorkspace={setWorkspace}
           onOpenTeamSession={() => setShowTeamSessionModal(true)}
@@ -1046,6 +1049,16 @@ return (
         onClose={() => setShowTeamSessionModal(false)}
         workspace={workspace}
         setWorkspace={setWorkspace}
+        theme={theme}
+      />
+
+      {/* In-App Chaos & Performance Benchmark Simulator */}
+      <ChaosBenchmarkModal
+        isOpen={showChaosModal}
+        onClose={() => setShowChaosModal(false)}
+        currentPosition={position}
+        finds={finds}
+        setFinds={setFinds}
         theme={theme}
       />
       {/* QUICK ADD CUSTOM TITLE PROMPT MODAL */}

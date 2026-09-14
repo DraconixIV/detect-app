@@ -1,13 +1,53 @@
 import imageCompression from "browser-image-compression";
 
-import { supabase } from "../supabase";
-import { getMyUserCode, getMyDisplayName, getActiveSession, getMyJoinedSessions } from "./sessionService";
+import { supabase } from "../supabase.js";
+import { getMyUserCode, getMyDisplayName, getActiveSession, getMyJoinedSessions } from "./sessionService.js";
+
+export function encodeMetadata(description, userCode, finderName, sessionCode) {
+  const meta = {};
+  if (userCode) meta.u = userCode;
+  if (finderName) meta.f = finderName;
+  if (sessionCode) meta.s = sessionCode;
+  if (Object.keys(meta).length === 0) return description || "";
+  const metaTag = `\n<!--GP_META:${JSON.stringify(meta)}-->`;
+  return ((description || "").replace(/<!--GP_META:.*?-->/g, "").trim() + metaTag);
+}
+
+export function decodeMetadata(find) {
+  if (!find) return find;
+  let user_code = find.user_code || null;
+  let finder_name = find.finder_name || null;
+  let session_code = find.session_code || null;
+  let cleanDesc = find.description || "";
+
+  const match = cleanDesc.match(/<!--GP_META:(.*?)-->/);
+  if (match) {
+    try {
+      const meta = JSON.parse(match[1]);
+      if (meta.u && !user_code) user_code = meta.u;
+      if (meta.f && !finder_name) finder_name = meta.f;
+      if (meta.s && !session_code) session_code = meta.s;
+      cleanDesc = cleanDesc.replace(/<!--GP_META:.*?-->/g, "").trim();
+    } catch {
+      // Ignore
+    }
+  }
+
+  return {
+    ...find,
+    description: cleanDesc,
+    user_code,
+    finder_name,
+    session_code
+  };
+}
 
 export function normalizeCategoryAndSub(find) {
   if (!find) return find;
 
-  let category = find.category || "Autre";
-  let subCategory = find.sub_category || "";
+  const withMeta = decodeMetadata(find);
+  let category = withMeta.category || "Autre";
+  let subCategory = withMeta.sub_category || "";
 
   // Normalize casing and structural migrations
   let normalized = category.trim().toLowerCase();
@@ -34,7 +74,7 @@ export function normalizeCategoryAndSub(find) {
   }
 
   return {
-    ...find,
+    ...withMeta,
     category,
     sub_category: subCategory
   };
@@ -115,18 +155,16 @@ export async function addFind({
     const finalUserCode = userCode || getMyUserCode();
     const finalFinderName = finderName || getMyDisplayName();
     const finalSessionCode = sessionCode !== undefined ? sessionCode : (getActiveSession()?.code || null);
+    const encodedDesc = encodeMetadata(newDescription, finalUserCode, finalFinderName, finalSessionCode);
 
     const payload = {
       title: newTitle,
-      description: newDescription,
+      description: encodedDesc,
       category: newCategory,
       sub_category: newSubCategory || null,
       latitude: position[0],
       longitude: position[1],
-      date: customDate || new Date().toLocaleString(),
-      user_code: finalUserCode,
-      finder_name: finalFinderName,
-      session_code: finalSessionCode
+      date: customDate || new Date().toLocaleString()
     };
 
     let {
@@ -138,27 +176,9 @@ export async function addFind({
       .select()
       .single();
 
-    // If database schema does not have user_code column yet, gracefully fallback to base payload
     if (insertError) {
-      console.warn("Retrying insert without extra columns:", insertError.message);
-      const basePayload = {
-        title: newTitle,
-        description: newDescription,
-        category: newCategory,
-        sub_category: newSubCategory || null,
-        latitude: position[0],
-        longitude: position[1],
-        date: customDate || new Date().toLocaleString()
-      };
-      const retryResult = await supabase
-        .from("finds")
-        .insert([basePayload])
-        .select()
-        .single();
-      if (retryResult.error) {
-        throw retryResult.error;
-      }
-      insertedFind = retryResult.data;
+      console.error("Insert find error:", insertError.message);
+      throw insertError;
     }
 
     if (newPhoto) {
