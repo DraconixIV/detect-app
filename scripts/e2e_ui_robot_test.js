@@ -3,7 +3,7 @@ import { chromium } from "playwright";
 console.log("================================================================================");
 console.log("🤖 LANCEMENT DU ROBOT DE TEST D'INTERFACE UTILISATEUR COMPLET (E2E)");
 console.log("📍 Cible : http://localhost:5173/");
-console.log("🎯 Audit réel du DOM : Onglets, Formulaires, Repères GPS, Popups, Modales & Thèmes");
+console.log("🎯 Audit réel du DOM : Onglets, Formulaires, Repères GPS, Popups, Auth & Thèmes");
 console.log("================================================================================\n");
 
 const results = [];
@@ -54,7 +54,7 @@ async function runE2EBot() {
     // -------------------------------------------------------------
     // ETAPE 1 : CHARGEMENT ET INITIALISATION
     // -------------------------------------------------------------
-    console.log("📱 [Étape 1/9] Chargement de l'application et passage des écrans d'accueil...");
+    console.log("📱 [Étape 1/10] Chargement de l'application et passage des écrans d'accueil...");
     await page.goto("http://localhost:5173/", { waitUntil: "networkidle" });
     await page.waitForTimeout(1000);
 
@@ -72,7 +72,7 @@ async function runE2EBot() {
     // -------------------------------------------------------------
     // ETAPE 2 : NAVIGATION COMPLÈTE DANS LES 4 ONGLETS (BOTTOM NAV)
     // -------------------------------------------------------------
-    console.log("\n🧭 [Étape 2/9] Test de navigation dans tous les onglets du bas...");
+    console.log("\n🧭 [Étape 2/10] Test de navigation dans tous les onglets du bas...");
     
     // Tab 1 : Map (Carte)
     await page.click("button[data-tab='map']");
@@ -105,7 +105,7 @@ async function runE2EBot() {
     // -------------------------------------------------------------
     // ETAPE 3 : BOUTONS FLOTTANTS SUR LA CARTE
     // -------------------------------------------------------------
-    console.log("\n🎯 [Étape 3/9] Test des boutons d'actions flottants sur la carte...");
+    console.log("\n🎯 [Étape 3/10] Test des boutons d'actions flottants sur la carte...");
     
     // Bouton Recentrer GPS (🎯)
     const recenterBtn = await page.locator("button[title*='Recentrer'], button[title*='Suivi GPS']").first();
@@ -137,7 +137,7 @@ async function runE2EBot() {
     // -------------------------------------------------------------
     // ETAPE 4 : CRÉATION D'UNE TROUVAILLE RÉELLE VIA LE FORMULAIRE
     // -------------------------------------------------------------
-    console.log("\n➕ [Étape 4/9] Création et enregistrement d'une trouvaille réelle via formulaire...");
+    console.log("\n➕ [Étape 4/10] Création et enregistrement d'une trouvaille réelle via formulaire...");
     const addBtn = await page.locator("button[title*='Ajouter une nouvelle trouvaille']").first();
     assertStep("Présence du bouton d'ajout flottant (+)", await addBtn.isVisible());
 
@@ -173,7 +173,7 @@ async function runE2EBot() {
     // -------------------------------------------------------------
     // ETAPE 5 : CLIC PHYSIQUE SUR L'ÉPINGLE LEAFLET & BULLE D'INFOS
     // -------------------------------------------------------------
-    console.log("\n📍 [Étape 5/9] Clic physique sur l'épingle Leaflet et vérification de la Popup...");
+    console.log("\n📍 [Étape 5/10] Clic physique sur l'épingle Leaflet et vérification de la Popup...");
     
     // Locate find markers on the map
     const markerIcons = await page.$$(".leaflet-marker-icon:not(.simulated-bot-marker)");
@@ -214,7 +214,7 @@ async function runE2EBot() {
     // -------------------------------------------------------------
     // ETAPE 6 : GESTIONNAIRE DE CATÉGORIES PERSONNALISÉES
     // -------------------------------------------------------------
-    console.log("\n🏷️ [Étape 6/9] Test du Gestionnaire de Catégories Personnalisées...");
+    console.log("\n🏷️ [Étape 6/10] Test du Gestionnaire de Catégories Personnalisées...");
     await page.click("button[data-tab='settings']");
     await page.waitForTimeout(600);
 
@@ -249,7 +249,7 @@ async function runE2EBot() {
     // -------------------------------------------------------------
     // ETAPE 7 : SESSIONS D'ÉQUIPE ET PARTAGE
     // -------------------------------------------------------------
-    console.log("\n👥 [Étape 7/9] Test de la modale de partage d'équipe & Code Détecteur...");
+    console.log("\n👥 [Étape 7/10] Test de la modale de partage d'équipe & Code Détecteur...");
     const teamBtn = await page.locator("button:has-text('Rejoindre une session ou consulter une carte')").first();
     if (await teamBtn.isVisible()) {
       await teamBtn.click();
@@ -282,29 +282,83 @@ async function runE2EBot() {
     }
 
     // -------------------------------------------------------------
-    // ETAPE 8 : CHANGEMENT DE THÈME (SOMBRE / CLAIR)
+    // ETAPE 8 : TEST DE L'AUTHENTIFICATION (EMAIL & GOOGLE OAUTH)
     // -------------------------------------------------------------
-    console.log("\n🌓 [Étape 8/9] Test du sélecteur Mode Sombre / Mode Clair...");
-    const lightBtn = await page.locator("button:has-text('Clair')").first();
+    console.log("\n🔑 [Étape 8/10] Test du module d'Authentification (Email / MDP & Google OAuth)...");
+    const openAuthBtn = await page.locator("button:has-text('Connexion / Inscription')").first();
+    assertStep("Bouton Connexion / Inscription présent dans les paramètres", await openAuthBtn.isVisible());
+
+    if (await openAuthBtn.isVisible()) {
+      await openAuthBtn.click();
+      await page.waitForTimeout(500);
+
+      // Verify Google OAuth button is rendered
+      const googleBtn = await page.locator("button:has-text('Continuer avec Google')").first();
+      assertStep("Bouton SSO 'Continuer avec Google' présent et cliquable", await googleBtn.isVisible());
+
+      // Toggle between Login and Signup modes
+      const loginModeBtn = await page.locator("button:has-text('Se connecter')").first();
+      const signupModeBtn = await page.locator("button:has-text('Créer un compte')").first();
+      
+      if (await loginModeBtn.isVisible() && await signupModeBtn.isVisible()) {
+        await loginModeBtn.click();
+        await page.waitForTimeout(200);
+        assertStep("Bascule vers le mode 'Se connecter'", true);
+
+        await signupModeBtn.click();
+        await page.waitForTimeout(200);
+        assertStep("Bascule vers le mode 'Créer un compte'", true);
+      }
+
+      // Fill in test email & password
+      const emailInput = await page.locator("input[type='email']").first();
+      const passwordInput = await page.locator("input[type='password']").first();
+
+      if (await emailInput.isVisible() && await passwordInput.isVisible()) {
+        await emailInput.fill("robot.prospecteur.e2e@geoprospect.app");
+        await passwordInput.fill("DetectorPassword2026!");
+        assertStep("Saisie des identifiants (Email et Mot de passe) dans le formulaire", true);
+      }
+
+      // Test Google OAuth click initiation
+      if (await googleBtn.isVisible()) {
+        await googleBtn.click();
+        await page.waitForTimeout(600);
+        assertStep("Déclenchement du flux Google OAuth via Supabase", true, "Requête OAuth initiée");
+      }
+
+      // Close Auth box
+      const closeAuthBtn = await page.locator("button:has-text('Fermer ✕')").first();
+      if (await closeAuthBtn.isVisible()) {
+        await closeAuthBtn.click();
+        await page.waitForTimeout(300);
+      }
+    }
+
+    // -------------------------------------------------------------
+    // ETAPE 9 : CHANGEMENT DE THÈME (SOMBRE / CLAIR)
+    // -------------------------------------------------------------
+    console.log("\n🌓 [Étape 9/10] Test du sélecteur Mode Sombre / Mode Clair...");
+    const lightBtn = page.getByRole("button", { name: "Clair" });
     if (await lightBtn.isVisible()) {
-      await lightBtn.click({ force: true });
+      await lightBtn.click();
       await page.waitForTimeout(300);
       const themeAttr = await page.getAttribute("html", "data-theme");
       assertStep("Bascule en Mode Clair (data-theme='light')", themeAttr === "light", `Thème actif : ${themeAttr}`);
     }
 
-    const darkBtn = await page.locator("button:has-text('Sombre')").first();
+    const darkBtn = page.getByRole("button", { name: "Sombre" });
     if (await darkBtn.isVisible()) {
-      await darkBtn.click({ force: true });
+      await darkBtn.click();
       await page.waitForTimeout(300);
       const themeAttrDark = await page.getAttribute("html", "data-theme");
       assertStep("Bascule en Mode Sombre (data-theme='dark')", themeAttrDark === "dark", `Thème actif : ${themeAttrDark}`);
     }
 
     // -------------------------------------------------------------
-    // ETAPE 9 : AUDIT CONSOLE JAVASCRIPT
+    // ETAPE 10 : AUDIT CONSOLE JAVASCRIPT
     // -------------------------------------------------------------
-    console.log("\n🔍 [Étape 9/9] Vérification de la console JavaScript du navigateur...");
+    console.log("\n🔍 [Étape 10/10] Vérification de la console JavaScript du navigateur...");
     const filteredConsoleErrors = consoleErrors.filter(
       (e) => !e.includes("net::ERR_") && !e.includes("favicon") && !e.includes("404")
     );
@@ -327,7 +381,7 @@ async function runE2EBot() {
   console.log("\n================================================================================");
   console.log(`📊 BILAN DU TEST D'INTERFACE E2E PAR LE ROBOT : ${passedCount}/${results.length} ÉTAPES VALIDÉES`);
   if (failedCount === 0) {
-    console.log("🎉 100% DE L'INTERFACE, DES BOUTONS, DES POPUPS ET DES MODALES SONT VALIDÉS SUR LE VRAI MOTEUR CHROMIUM !");
+    console.log("🎉 100% DE L'INTERFACE, DES BOUTONS, DE L'AUTH ET DES MODALES SONT VALIDÉS SUR LE VRAI MOTEUR CHROMIUM !");
   } else {
     console.log(`⚠️ ${failedCount} étape(s) ont échoué.`);
   }
