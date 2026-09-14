@@ -8,8 +8,11 @@ import AuthForm from "./AuthForm";
 export default function SettingsPanel({
   theme,
   setTheme,
+  baseMap = "satellite",
+  setBaseMap,
   mapStyle,
   setMapStyle,
+  onOpenMapLayers,
   onExportBackup,
   onImportBackup,
   currentThemeKey = "tactical",
@@ -349,55 +352,65 @@ export default function SettingsPanel({
 
         {/* 3. Fond de Carte par Défaut */}
         <div style={cardStyle}>
-          <div style={sectionTitleStyle}>
-            <span>🗺️</span> Fond de Carte
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+            <div style={sectionTitleStyle}>
+              <span>🗺️</span> Fonds de Carte & Surcouches IGN
+            </div>
+            {onOpenMapLayers && (
+              <button
+                onClick={onOpenMapLayers}
+                style={{
+                  padding: "4px 10px",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: isLight ? "#2563eb" : "#3b82f6",
+                  color: "#ffffff",
+                  fontSize: "11px",
+                  fontWeight: "bold",
+                  cursor: "pointer"
+                }}
+              >
+                Gérer les calques ↗
+              </button>
+            )}
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-            <button
-              onClick={() => {
-                setMapStyle("satellite");
-                localStorage.setItem("mapStyle", "satellite");
-              }}
-              style={{
-                padding: "12px",
-                borderRadius: "14px",
-                border: mapStyle === "satellite" ? "2px solid #3b82f6" : `1px solid ${cardBorder}`,
-                background: mapStyle === "satellite" ? (isLight ? "rgba(59, 130, 246, 0.12)" : "rgba(59, 130, 246, 0.18)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
-                color: textMain,
-                fontWeight: "bold",
-                cursor: "pointer",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "4px"
-              }}
-            >
-              <span style={{ fontSize: "20px" }}>🛰️</span>
-              <span style={{ fontSize: "12px" }}>Satellite & Rues</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setMapStyle("streets");
-                localStorage.setItem("mapStyle", "streets");
-              }}
-              style={{
-                padding: "12px",
-                borderRadius: "14px",
-                border: mapStyle === "streets" ? "2px solid #3b82f6" : `1px solid ${cardBorder}`,
-                background: mapStyle === "streets" ? (isLight ? "rgba(59, 130, 246, 0.12)" : "rgba(59, 130, 246, 0.18)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
-                color: textMain,
-                fontWeight: "bold",
-                cursor: "pointer",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "4px"
-              }}
-            >
-              <span style={{ fontSize: "20px" }}>🏞️</span>
-              <span style={{ fontSize: "12px" }}>Paysage / Relief</span>
-            </button>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "8px" }}>
+            {[
+              { id: "satellite", name: "Satellite HD (Esri)", icon: "🛰️" },
+              { id: "ign_ortho", name: "Ortho IGN France", icon: "🇫🇷" },
+              { id: "ign_plan", name: "Plan IGN v2 Topo", icon: "🌲" },
+              { id: "osm", name: "OpenStreetMap", icon: "🧭" },
+              { id: "opentopo", name: "OpenTopoMap", icon: "⛰️" }
+            ].map((bm) => {
+              const isSelected = (baseMap === bm.id) || (!baseMap && bm.id === "satellite");
+              return (
+                <button
+                  key={bm.id}
+                  onClick={() => {
+                    if (setBaseMap) setBaseMap(bm.id);
+                    localStorage.setItem("baseMap", bm.id);
+                    if (setMapStyle) setMapStyle(bm.id === "satellite" ? "satellite" : "plan");
+                  }}
+                  style={{
+                    padding: "10px 8px",
+                    borderRadius: "12px",
+                    border: isSelected ? "2px solid #3b82f6" : `1px solid ${cardBorder}`,
+                    background: isSelected ? (isLight ? "rgba(59, 130, 246, 0.12)" : "rgba(59, 130, 246, 0.18)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
+                    color: textMain,
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "4px",
+                    textAlign: "center"
+                  }}
+                >
+                  <span style={{ fontSize: "18px" }}>{bm.icon}</span>
+                  <span style={{ fontSize: "11px" }}>{bm.name}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 

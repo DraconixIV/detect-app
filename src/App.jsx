@@ -21,6 +21,7 @@ import ThemePickerModal from "./components/ThemePickerModal";
 import CategoryManagerModal from "./components/CategoryManagerModal";
 import WelcomeGate from "./components/WelcomeGate";
 import TeamSessionModal from "./components/TeamSessionModal";
+import MapLayersModal from "./components/MapLayersModal";
 import { THEMES } from "./styles/themes";
 
 import { icons } from "./icons";
@@ -226,6 +227,23 @@ function App() {
   const [openPopupFind, setOpenPopupFind] = useState(null);
   const [activePopupId, setActivePopupId] = useState(null);
   const [gpsAccuracy, setGpsAccuracy] = useState(null);
+  const [baseMap, setBaseMap] = useState(() => localStorage.getItem("baseMap") || "satellite");
+  const [showCadastre, setShowCadastre] = useState(() => localStorage.getItem("showCadastre") === "true");
+  const [cadastreOpacity, setCadastreOpacity] = useState(() => {
+    const val = localStorage.getItem("cadastreOpacity");
+    return val ? parseFloat(val) : 0.85;
+  });
+  const [showCassini, setShowCassini] = useState(() => localStorage.getItem("showCassini") === "true" || localStorage.getItem("showHistoricalMap") === "true");
+  const [cassiniOpacity, setCassiniOpacity] = useState(() => {
+    const val = localStorage.getItem("cassiniOpacity") || localStorage.getItem("historicalMapOpacity");
+    return val ? parseFloat(val) : 0.6;
+  });
+  const [showEtatMajor, setShowEtatMajor] = useState(() => localStorage.getItem("showEtatMajor") === "true");
+  const [etatMajorOpacity, setEtatMajorOpacity] = useState(() => {
+    const val = localStorage.getItem("etatMajorOpacity");
+    return val ? parseFloat(val) : 0.6;
+  });
+  const [showMapLayersModal, setShowMapLayersModal] = useState(false);
   const [showHistoricalMap, setShowHistoricalMap] = useState(false);
   const [historicalMapOpacity, setHistoricalMapOpacity] = useState(0.5);
   const [useClustering, setUseClustering] = useState(false);
@@ -840,6 +858,21 @@ return (
         setShowMenu={setShowMenu}
         showForm={showForm}
         setShowForm={setShowForm}
+        baseMap={baseMap}
+        setBaseMap={setBaseMap}
+        showCadastre={showCadastre}
+        setShowCadastre={setShowCadastre}
+        cadastreOpacity={cadastreOpacity}
+        setCadastreOpacity={setCadastreOpacity}
+        showCassini={showCassini}
+        setShowCassini={setShowCassini}
+        cassiniOpacity={cassiniOpacity}
+        setCassiniOpacity={setCassiniOpacity}
+        showEtatMajor={showEtatMajor}
+        setShowEtatMajor={setShowEtatMajor}
+        etatMajorOpacity={etatMajorOpacity}
+        setEtatMajorOpacity={setEtatMajorOpacity}
+        onOpenMapLayers={() => setShowMapLayersModal(true)}
         mapStyle={mapStyle}
         setMapStyle={setMapStyle}
         followGps={followGps}
@@ -927,10 +960,25 @@ return (
       {/* TAB: RACCOURCIS */}
       {activeTab === "shortcuts" && (
         <ShortcutsPanel
+          baseMap={baseMap}
+          setBaseMap={setBaseMap}
+          showCadastre={showCadastre}
+          setShowCadastre={setShowCadastre}
+          cadastreOpacity={cadastreOpacity}
+          setCadastreOpacity={setCadastreOpacity}
+          showCassini={showCassini}
+          setShowCassini={setShowCassini}
+          cassiniOpacity={cassiniOpacity}
+          setCassiniOpacity={setCassiniOpacity}
+          showEtatMajor={showEtatMajor}
+          setShowEtatMajor={setShowEtatMajor}
+          etatMajorOpacity={etatMajorOpacity}
+          setEtatMajorOpacity={setEtatMajorOpacity}
           showHistoricalMap={showHistoricalMap}
           setShowHistoricalMap={setShowHistoricalMap}
           historicalMapOpacity={historicalMapOpacity}
           setHistoricalMapOpacity={setHistoricalMapOpacity}
+          onOpenMapLayers={() => setShowMapLayersModal(true)}
           useClustering={useClustering}
           setUseClustering={setUseClustering}
           hideAllFinds={hideAllFinds}
@@ -956,8 +1004,11 @@ return (
         <SettingsPanel
           theme={theme}
           setTheme={setTheme}
+          baseMap={baseMap}
+          setBaseMap={setBaseMap}
           mapStyle={mapStyle}
           setMapStyle={setMapStyle}
+          onOpenMapLayers={() => setShowMapLayersModal(true)}
           onExportBackup={handleExport}
           onImportBackup={handleImport}
           currentThemeKey={designTheme}
@@ -984,9 +1035,17 @@ return (
         setActivePopupId={setActivePopupId}
         gpsStyle={gpsStyle}
         useClustering={useClustering}
+        baseMap={baseMap}
         mapStyle={mapStyle}
+        showCadastre={showCadastre}
+        cadastreOpacity={cadastreOpacity}
+        showCassini={showCassini}
         showHistoricalMap={showHistoricalMap}
+        cassiniOpacity={cassiniOpacity}
         historicalMapOpacity={historicalMapOpacity}
+        showEtatMajor={showEtatMajor}
+        etatMajorOpacity={etatMajorOpacity}
+        onOpenMapLayers={() => setShowMapLayersModal(true)}
         positionedFinds={positionedFinds}
         selectedDateTracks={selectedDateTracks}
         handleMapLongPress={handleMapLongPress}
@@ -1014,8 +1073,10 @@ return (
             setShowForm(true);
             setShowMenu(true);
           }}
+          onOpenMapLayers={() => setShowMapLayersModal(true)}
+          activeLayersCount={(showCadastre ? 1 : 0) + ((showCassini || showHistoricalMap) ? 1 : 0) + (showEtatMajor ? 1 : 0)}
           onToggleCassini={() => setShowHistoricalMap(!showHistoricalMap)}
-          showCassini={showHistoricalMap}
+          showCassini={showHistoricalMap || showCassini}
           onRecenterGps={() => {
             setFollowGps(true);
             setZoomTarget({ position: position, zoom: 20 });
@@ -1050,6 +1111,27 @@ return (
             type: "success"
           });
         }}
+      />
+
+      {/* Map Layers & IGN Overlays Modal */}
+      <MapLayersModal
+        isOpen={showMapLayersModal}
+        onClose={() => setShowMapLayersModal(false)}
+        currentThemeKey={designTheme}
+        baseMap={baseMap}
+        setBaseMap={setBaseMap}
+        showCadastre={showCadastre}
+        setShowCadastre={setShowCadastre}
+        cadastreOpacity={cadastreOpacity}
+        setCadastreOpacity={setCadastreOpacity}
+        showCassini={showCassini}
+        setShowCassini={setShowCassini}
+        cassiniOpacity={cassiniOpacity}
+        setCassiniOpacity={setCassiniOpacity}
+        showEtatMajor={showEtatMajor}
+        setShowEtatMajor={setShowEtatMajor}
+        etatMajorOpacity={etatMajorOpacity}
+        setEtatMajorOpacity={setEtatMajorOpacity}
       />
 
       {/* Category Manager Modal */}

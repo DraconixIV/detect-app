@@ -1,41 +1,146 @@
+import React from "react";
 import { TileLayer } from "react-leaflet";
 
-export default function MapLayers({
-  mapStyle,
-  showHistoricalMap,
-  historicalMapOpacity
-}) {
-  let baseLayerUrl = "";
-  let baseLayerAttribution = "";
-
-  if (mapStyle === "plan") {
-    baseLayerUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-    baseLayerAttribution = "&copy; OpenStreetMap contributors";
-  } else {
-    baseLayerUrl = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-    baseLayerAttribution = "&copy; Esri";
+/**
+ * Available Base Maps and Transparent Overlays
+ */
+export const BASE_MAPS = {
+  satellite: {
+    id: "satellite",
+    name: "Satellite HD (Esri)",
+    icon: "🛰️",
+    desc: "Vue satellite mondiale haute définition",
+    url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    attribution: "&copy; Esri, Maxar, Earthstar Geographics",
+    maxZoom: 20,
+    maxNativeZoom: 19
+  },
+  ign_ortho: {
+    id: "ign_ortho",
+    name: "Photos Aériennes IGN (France)",
+    icon: "🇫🇷",
+    desc: "Orthophotos nationales IGN très haute précision",
+    url: "https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+    attribution: "&copy; IGN - Orthophotos",
+    maxZoom: 20,
+    maxNativeZoom: 19
+  },
+  ign_plan: {
+    id: "ign_plan",
+    name: "Plan IGN v2 Topo",
+    icon: "🌲",
+    desc: "Sentiers forestiers, courbes de niveau et voies",
+    url: "https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+    attribution: "&copy; IGN - Plan IGN v2",
+    maxZoom: 20,
+    maxNativeZoom: 19
+  },
+  osm: {
+    id: "osm",
+    name: "OpenStreetMap Standard",
+    icon: "🧭",
+    desc: "Plan vectoriel clair et chemins de randonnée",
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    attribution: "&copy; OpenStreetMap contributors",
+    maxZoom: 20,
+    maxNativeZoom: 19
+  },
+  opentopo: {
+    id: "opentopo",
+    name: "OpenTopoMap Relief",
+    icon: "⛰️",
+    desc: "Relief ombragé et courbes altimétriques",
+    url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+    attribution: "&copy; OpenTopoMap contributors",
+    maxZoom: 20,
+    maxNativeZoom: 17
   }
+};
+
+export default function MapLayers({
+  baseMap = "satellite",
+  mapStyle, // backwards compatibility
+  showCadastre = false,
+  cadastreOpacity = 0.85,
+  showCassini = false,
+  showHistoricalMap, // backwards compatibility
+  cassiniOpacity = 0.6,
+  historicalMapOpacity, // backwards compatibility
+  showEtatMajor = false,
+  etatMajorOpacity = 0.6
+}) {
+  // Normalize base map
+  let effectiveBaseKey = baseMap;
+  if (mapStyle === "plan" || mapStyle === "streets") effectiveBaseKey = "osm";
+  if (mapStyle === "satellite") effectiveBaseKey = "satellite";
+  if (!BASE_MAPS[effectiveBaseKey]) effectiveBaseKey = "satellite";
+
+  const currentBase = BASE_MAPS[effectiveBaseKey];
+
+  const isCassiniActive = showCassini || showHistoricalMap;
+  const currentCassiniOpacity = cassiniOpacity !== undefined ? cassiniOpacity : (historicalMapOpacity || 0.6);
 
   return (
     <>
+      {/* 1. Fond de Carte de Base */}
       <TileLayer
-        key={baseLayerUrl}
-        attribution={baseLayerAttribution}
-        url={baseLayerUrl}
+        key={`base-${currentBase.id}`}
+        attribution={currentBase.attribution}
+        url={currentBase.url}
+        maxZoom={currentBase.maxZoom || 20}
+        maxNativeZoom={currentBase.maxNativeZoom || 19}
+        minZoom={0}
         crossOrigin="anonymous"
       />
-      {showHistoricalMap && (
+
+      {/* 2. Surcouche Carte de Cassini (18e siècle - BnF / IGN) */}
+      {isCassiniActive && (
         <TileLayer
-          key="cassini-overlay"
-          attribution="&copy; IGN, BnF"
+          key="overlay-cassini"
+          attribution="&copy; IGN, BnF - Cassini"
           url="https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=BNF-IGNF_GEOGRAPHICALGRIDSYSTEMS.CASSINI&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png"
-          opacity={historicalMapOpacity}
+          opacity={currentCassiniOpacity}
           maxZoom={20}
           maxNativeZoom={14}
           minZoom={0}
           updateWhenIdle={true}
-          keepBuffer={1}
+          keepBuffer={2}
           crossOrigin="anonymous"
+          zIndex={350}
+        />
+      )}
+
+      {/* 3. Surcouche Carte d'État-Major 1820-1866 (IGN) */}
+      {showEtatMajor && (
+        <TileLayer
+          key="overlay-etat-major"
+          attribution="&copy; IGN - État-Major 1820-1866"
+          url="https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=GEOGRAPHICALGRIDSYSTEMS.ETATMAJOR40&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg"
+          opacity={etatMajorOpacity}
+          maxZoom={20}
+          maxNativeZoom={15}
+          minZoom={0}
+          updateWhenIdle={true}
+          keepBuffer={2}
+          crossOrigin="anonymous"
+          zIndex={360}
+        />
+      )}
+
+      {/* 4. Surcouche Cadastre Officiel IGN / DGFiP (Parcellaire Express transparent) */}
+      {showCadastre && (
+        <TileLayer
+          key="overlay-cadastre"
+          attribution="&copy; IGN / DGFiP - Cadastre"
+          url="https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&STYLE=normal&TILEMATRIXSET=PM_0_19&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png"
+          opacity={cadastreOpacity}
+          maxZoom={22}
+          maxNativeZoom={19}
+          minZoom={0}
+          updateWhenIdle={true}
+          keepBuffer={2}
+          crossOrigin="anonymous"
+          zIndex={400}
         />
       )}
     </>

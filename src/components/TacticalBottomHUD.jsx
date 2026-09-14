@@ -9,6 +9,8 @@ export default function TacticalBottomHUD({
   onStartSortie,
   onStopSortie,
   onAddFindClick,
+  onOpenMapLayers,
+  activeLayersCount = 0,
   onToggleCassini,
   showCassini,
   onRecenterGps,
@@ -45,6 +47,8 @@ export default function TacticalBottomHUD({
     if (meters < 1000) return `${meters.toFixed(1)} m`;
     return `${(meters / 1000).toFixed(2)} km`;
   };
+
+  const hasActiveLayers = activeLayersCount > 0 || showCassini;
 
   return (
     <div
@@ -190,15 +194,15 @@ export default function TacticalBottomHUD({
           <span>CIBLE</span>
         </button>
 
-        {/* Button 3: Cassini / Couches Toggle */}
+        {/* Button 3: Cartes & Couches IGN / Cadastre / Cassini */}
         <button
-          onClick={onToggleCassini}
+          onClick={onOpenMapLayers || onToggleCassini}
           style={{
             padding: "10px 4px",
             borderRadius: "10px",
-            border: `1px solid ${showCassini ? c.accentSecondary : c.border}`,
-            background: showCassini ? `${c.accentSecondary}25` : c.buttonBg,
-            color: showCassini ? c.accentSecondary : c.textPrimary,
+            border: `1px solid ${hasActiveLayers ? c.accentSecondary : c.border}`,
+            background: hasActiveLayers ? `${c.accentSecondary}25` : c.buttonBg,
+            color: hasActiveLayers ? c.accentSecondary : c.textPrimary,
             fontSize: "11px",
             fontWeight: "800",
             cursor: "pointer",
@@ -211,7 +215,7 @@ export default function TacticalBottomHUD({
           }}
         >
           <span style={{ fontSize: "16px" }}>🥞</span>
-          <span>{showCassini ? "Cassini ON" : "Cassini"}</span>
+          <span>{activeLayersCount > 0 ? `Couches (${activeLayersCount})` : "Couches"}</span>
         </button>
 
         {/* Button 4: Recenter GPS */}

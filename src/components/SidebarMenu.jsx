@@ -6,6 +6,21 @@ export default function SidebarMenu({
   setShowMenu,
   showForm,
   setShowForm,
+  baseMap,
+  setBaseMap,
+  showCadastre,
+  setShowCadastre,
+  cadastreOpacity,
+  setCadastreOpacity,
+  showCassini,
+  setShowCassini,
+  cassiniOpacity,
+  setCassiniOpacity,
+  showEtatMajor,
+  setShowEtatMajor,
+  etatMajorOpacity,
+  setEtatMajorOpacity,
+  onOpenMapLayers,
   mapStyle,
   setMapStyle,
   followGps,
@@ -222,11 +237,37 @@ export default function SidebarMenu({
             🧬 Clusters : {useClustering ? "On" : "Off"}
           </button>
 
+          {/* Cadastre Toggle */}
+          <button
+            onClick={() => {
+              const next = !showCadastre;
+              if (setShowCadastre) setShowCadastre(next);
+              localStorage.setItem("showCadastre", String(next));
+            }}
+            style={{
+              background: showCadastre ? "rgba(16, 185, 129, 0.15)" : "rgba(255, 255, 255, 0.06)",
+              border: "1px solid #10b981",
+              borderRadius: "12px",
+              padding: "8px",
+              color: "#34d399",
+              fontSize: "11px",
+              fontWeight: "bold",
+              cursor: "pointer"
+            }}
+          >
+            📐 Cadastre : {showCadastre ? "On" : "Off"}
+          </button>
+
           {/* Cassini (Historical Map) Toggle */}
           <button
-            onClick={() => setShowHistoricalMap(!showHistoricalMap)}
+            onClick={() => {
+              const next = !(showCassini || showHistoricalMap);
+              if (setShowCassini) setShowCassini(next);
+              if (setShowHistoricalMap) setShowHistoricalMap(next);
+              localStorage.setItem("showCassini", String(next));
+            }}
             style={{
-              background: showHistoricalMap ? "rgba(37, 99, 235, 0.15)" : "rgba(255, 255, 255, 0.06)",
+              background: (showCassini || showHistoricalMap) ? "rgba(37, 99, 235, 0.15)" : "rgba(255, 255, 255, 0.06)",
               border: "1px solid #2563eb",
               borderRadius: "12px",
               padding: "8px",
@@ -236,9 +277,35 @@ export default function SidebarMenu({
               cursor: "pointer"
             }}
           >
-            🗺️ Cassini : {showHistoricalMap ? "On" : "Off"}
+            📜 Cassini : {(showCassini || showHistoricalMap) ? "On" : "Off"}
           </button>
         </div>
+
+        {/* Full Map Layers Modal Button */}
+        {onOpenMapLayers && (
+          <button
+            onClick={onOpenMapLayers}
+            style={{
+              borderRadius: "12px",
+              padding: "9px 12px",
+              border: "1px solid rgba(59, 130, 246, 0.4)",
+              background: "rgba(59, 130, 246, 0.12)",
+              color: "#60a5fa",
+              fontWeight: "bold",
+              fontSize: "11px",
+              cursor: "pointer",
+              width: "100%",
+              marginTop: "2px",
+              marginBottom: "4px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "6px"
+            }}
+          >
+            🥞 Toutes les Cartes & Surcouches IGN ↗
+          </button>
+        )}
 
         {/* Hide All Finds Toggle */}
         <button

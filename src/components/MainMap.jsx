@@ -132,9 +132,17 @@ export default function MainMap({
   setActivePopupId,
   gpsStyle,
   useClustering,
+  baseMap = "satellite",
   mapStyle,
+  showCadastre = false,
+  cadastreOpacity = 0.85,
+  showCassini = false,
   showHistoricalMap,
+  cassiniOpacity = 0.6,
   historicalMapOpacity,
+  showEtatMajor = false,
+  etatMajorOpacity = 0.6,
+  onOpenMapLayers,
   positionedFinds = [],
   selectedDateTracks = [],
   handleMapLongPress,
@@ -307,9 +315,16 @@ export default function MainMap({
         )}
 
       <MapLayers
+        baseMap={baseMap}
         mapStyle={mapStyle}
+        showCadastre={showCadastre}
+        cadastreOpacity={cadastreOpacity}
+        showCassini={showCassini}
         showHistoricalMap={showHistoricalMap}
+        cassiniOpacity={cassiniOpacity}
         historicalMapOpacity={historicalMapOpacity}
+        showEtatMajor={showEtatMajor}
+        etatMajorOpacity={etatMajorOpacity}
       />
 
       {/* HISTORICAL / SELECTED TRACKS */}

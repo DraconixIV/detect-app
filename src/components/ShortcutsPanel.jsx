@@ -1,10 +1,25 @@
 import React from "react";
 
 export default function ShortcutsPanel({
+  baseMap = "satellite",
+  setBaseMap,
+  showCadastre = false,
+  setShowCadastre,
+  cadastreOpacity = 0.85,
+  setCadastreOpacity,
+  showCassini = false,
+  setShowCassini,
+  cassiniOpacity = 0.6,
+  setCassiniOpacity,
+  showEtatMajor = false,
+  setShowEtatMajor,
+  etatMajorOpacity = 0.6,
+  setEtatMajorOpacity,
   showHistoricalMap,
   setShowHistoricalMap,
   historicalMapOpacity,
   setHistoricalMapOpacity,
+  onOpenMapLayers,
   useClustering,
   setUseClustering,
   hideAllFinds,
@@ -154,21 +169,44 @@ export default function ShortcutsPanel({
           </div>
         )}
 
-        {/* 3. Outils d'Affichage Carte */}
+        {/* 3. Outils d'Affichage & Cartographie */}
         <div style={cardStyle}>
-          <div style={sectionTitleStyle}>
-            <span>🗺️</span> Outils d'Affichage & Cartographie
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+            <div style={sectionTitleStyle}>
+              <span>🥞</span> Cartes & Surcouches IGN
+            </div>
+            {onOpenMapLayers && (
+              <button
+                onClick={onOpenMapLayers}
+                style={{
+                  padding: "4px 10px",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: isLight ? "#2563eb" : "#3b82f6",
+                  color: "#ffffff",
+                  fontSize: "11px",
+                  fontWeight: "bold",
+                  cursor: "pointer"
+                }}
+              >
+                Gérer les calques ↗
+              </button>
+            )}
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
-            {/* Cassini Toggle */}
+            {/* Cadastre Toggle */}
             <button
-              onClick={() => setShowHistoricalMap(!showHistoricalMap)}
+              onClick={() => {
+                const next = !showCadastre;
+                if (setShowCadastre) setShowCadastre(next);
+                localStorage.setItem("showCadastre", String(next));
+              }}
               style={{
                 padding: "12px",
                 borderRadius: "14px",
-                border: showHistoricalMap ? "2px solid #3b82f6" : `1px solid ${cardBorder}`,
-                background: showHistoricalMap ? (isLight ? "rgba(59, 130, 246, 0.12)" : "rgba(59, 130, 246, 0.2)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
+                border: showCadastre ? "2px solid #10b981" : `1px solid ${cardBorder}`,
+                background: showCadastre ? (isLight ? "rgba(16, 185, 129, 0.12)" : "rgba(16, 185, 129, 0.2)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
                 color: textMain,
                 fontWeight: "bold",
                 fontSize: "12px",
@@ -176,9 +214,58 @@ export default function ShortcutsPanel({
                 textAlign: "left"
               }}
             >
-              <div style={{ fontSize: "18px", marginBottom: "4px" }}>🗺️</div>
+              <div style={{ fontSize: "18px", marginBottom: "4px" }}>📐</div>
+              <div>Cadastre Officiel</div>
+              <div style={{ fontSize: "10px", color: textSub }}>{showCadastre ? "Actif (Parcelles)" : "Désactivé"}</div>
+            </button>
+
+            {/* Cassini Toggle */}
+            <button
+              onClick={() => {
+                const next = !(showCassini || showHistoricalMap);
+                if (setShowCassini) setShowCassini(next);
+                if (setShowHistoricalMap) setShowHistoricalMap(next);
+                localStorage.setItem("showCassini", String(next));
+              }}
+              style={{
+                padding: "12px",
+                borderRadius: "14px",
+                border: (showCassini || showHistoricalMap) ? "2px solid #3b82f6" : `1px solid ${cardBorder}`,
+                background: (showCassini || showHistoricalMap) ? (isLight ? "rgba(59, 130, 246, 0.12)" : "rgba(59, 130, 246, 0.2)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
+                color: textMain,
+                fontWeight: "bold",
+                fontSize: "12px",
+                cursor: "pointer",
+                textAlign: "left"
+              }}
+            >
+              <div style={{ fontSize: "18px", marginBottom: "4px" }}>📜</div>
               <div>Carte Cassini (18e)</div>
-              <div style={{ fontSize: "10px", color: textSub }}>{showHistoricalMap ? "Activée" : "Désactivée"}</div>
+              <div style={{ fontSize: "10px", color: textSub }}>{(showCassini || showHistoricalMap) ? "Activée" : "Désactivée"}</div>
+            </button>
+
+            {/* État-Major Toggle */}
+            <button
+              onClick={() => {
+                const next = !showEtatMajor;
+                if (setShowEtatMajor) setShowEtatMajor(next);
+                localStorage.setItem("showEtatMajor", String(next));
+              }}
+              style={{
+                padding: "12px",
+                borderRadius: "14px",
+                border: showEtatMajor ? "2px solid #d97706" : `1px solid ${cardBorder}`,
+                background: showEtatMajor ? (isLight ? "rgba(217, 119, 6, 0.12)" : "rgba(217, 119, 6, 0.2)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
+                color: textMain,
+                fontWeight: "bold",
+                fontSize: "12px",
+                cursor: "pointer",
+                textAlign: "left"
+              }}
+            >
+              <div style={{ fontSize: "18px", marginBottom: "4px" }}>⚔️</div>
+              <div>État-Major 1820</div>
+              <div style={{ fontSize: "10px", color: textSub }}>{showEtatMajor ? "Activée" : "Désactivée"}</div>
             </button>
 
             {/* Clustering */}
@@ -187,8 +274,8 @@ export default function ShortcutsPanel({
               style={{
                 padding: "12px",
                 borderRadius: "14px",
-                border: useClustering ? "2px solid #3b82f6" : `1px solid ${cardBorder}`,
-                background: useClustering ? (isLight ? "rgba(59, 130, 246, 0.12)" : "rgba(59, 130, 246, 0.2)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
+                border: useClustering ? "2px solid #8b5cf6" : `1px solid ${cardBorder}`,
+                background: useClustering ? (isLight ? "rgba(139, 92, 246, 0.12)" : "rgba(139, 92, 246, 0.2)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
                 color: textMain,
                 fontWeight: "bold",
                 fontSize: "12px",
@@ -196,7 +283,7 @@ export default function ShortcutsPanel({
                 textAlign: "left"
               }}
             >
-              <div style={{ fontSize: "18px", marginBottom: "4px" }}>🔵</div>
+              <div style={{ fontSize: "18px", marginBottom: "4px" }}>🧬</div>
               <div>Groupement</div>
               <div style={{ fontSize: "10px", color: textSub }}>{useClustering ? "Groupé (Optimisé)" : "Individuel"}</div>
             </button>
@@ -242,21 +329,72 @@ export default function ShortcutsPanel({
             </button>
           </div>
 
-          {/* Cassini Opacity Slider */}
-          {showHistoricalMap && (
-            <div style={{ background: isLight ? "#f1f5f9" : "rgba(0,0,0,0.2)", padding: "12px", borderRadius: "12px", marginTop: "10px", border: `1px solid ${cardBorder}` }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "6px", color: textMain }}>
-                <span>Transparence Cassini</span>
-                <strong>{Math.round(historicalMapOpacity * 100)}%</strong>
+          {/* Cadastre Opacity Slider */}
+          {showCadastre && (
+            <div style={{ background: isLight ? "#f1f5f9" : "rgba(0,0,0,0.2)", padding: "10px 12px", borderRadius: "12px", marginTop: "8px", border: `1px solid ${cardBorder}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "4px", color: textMain }}>
+                <span>Transparence Cadastre</span>
+                <strong style={{ color: "#10b981" }}>{Math.round((cadastreOpacity || 0.85) * 100)}%</strong>
               </div>
               <input
                 type="range"
                 min="0.1"
                 max="1"
                 step="0.05"
-                value={historicalMapOpacity}
-                onChange={(e) => setHistoricalMapOpacity(parseFloat(e.target.value))}
-                style={{ width: "100%", accentColor: "#3b82f6" }}
+                value={cadastreOpacity || 0.85}
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value);
+                  if (setCadastreOpacity) setCadastreOpacity(val);
+                  localStorage.setItem("cadastreOpacity", String(val));
+                }}
+                style={{ width: "100%", accentColor: "#10b981", cursor: "pointer" }}
+              />
+            </div>
+          )}
+
+          {/* Cassini Opacity Slider */}
+          {(showCassini || showHistoricalMap) && (
+            <div style={{ background: isLight ? "#f1f5f9" : "rgba(0,0,0,0.2)", padding: "10px 12px", borderRadius: "12px", marginTop: "8px", border: `1px solid ${cardBorder}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "4px", color: textMain }}>
+                <span>Transparence Cassini</span>
+                <strong style={{ color: "#3b82f6" }}>{Math.round((cassiniOpacity || historicalMapOpacity || 0.6) * 100)}%</strong>
+              </div>
+              <input
+                type="range"
+                min="0.1"
+                max="1"
+                step="0.05"
+                value={cassiniOpacity || historicalMapOpacity || 0.6}
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value);
+                  if (setCassiniOpacity) setCassiniOpacity(val);
+                  if (setHistoricalMapOpacity) setHistoricalMapOpacity(val);
+                  localStorage.setItem("cassiniOpacity", String(val));
+                }}
+                style={{ width: "100%", accentColor: "#3b82f6", cursor: "pointer" }}
+              />
+            </div>
+          )}
+
+          {/* État-Major Opacity Slider */}
+          {showEtatMajor && (
+            <div style={{ background: isLight ? "#f1f5f9" : "rgba(0,0,0,0.2)", padding: "10px 12px", borderRadius: "12px", marginTop: "8px", border: `1px solid ${cardBorder}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "4px", color: textMain }}>
+                <span>Transparence État-Major</span>
+                <strong style={{ color: "#d97706" }}>{Math.round((etatMajorOpacity || 0.6) * 100)}%</strong>
+              </div>
+              <input
+                type="range"
+                min="0.1"
+                max="1"
+                step="0.05"
+                value={etatMajorOpacity || 0.6}
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value);
+                  if (setEtatMajorOpacity) setEtatMajorOpacity(val);
+                  localStorage.setItem("etatMajorOpacity", String(val));
+                }}
+                style={{ width: "100%", accentColor: "#d97706", cursor: "pointer" }}
               />
             </div>
           )}
