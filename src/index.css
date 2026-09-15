@@ -196,6 +196,14 @@ POPUP MOBILE FIX & VISUAL STABILITY
   max-width: 320px !important;
 }
 
+/* Hide zoom controls (+/-) and Leaflet attribution permanently */
+.leaflet-control-zoom,
+.leaflet-control-attribution {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* Hardware acceleration for tile opacity transitions */
 .leaflet-tile {
   transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;

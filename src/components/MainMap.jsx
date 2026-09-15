@@ -260,6 +260,8 @@ export default function MainMap({
         maxZoom={18}
         minZoom={4}
         preferCanvas={true}
+        zoomControl={false}
+        attributionControl={false}
         style={{
           height: "100%",
           width: "100%"
