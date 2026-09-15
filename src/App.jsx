@@ -253,61 +253,143 @@ function App() {
   const [zenMode, setZenMode] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
 
+  const [isLocatingGps, setIsLocatingGps] = useState(false);
+  const hasAutoCenteredRef = useRef(false);
   const gpsWatchIdRef = useRef(null);
 
-  // Silent automatic GPS discovery on startup (without blocking modal)
-  useEffect(() => {
-    if ("geolocation" in navigator) {
+  // Core Geolocation Engine: Force a fresh satellite hardware read & center map
+  const requestFreshGpsFix = (shouldCenter = false, showFeedback = false) => {
+    if (!("geolocation" in navigator)) {
+      if (showFeedback) {
+        setToast({
+          message: "⚠️ Géolocalisation non prise en charge par ce navigateur.",
+          type: "error"
+        });
+      }
+      return;
+    }
+
+    setIsLocatingGps(true);
+
+    const handleSuccess = (pos) => {
+      const freshPos = [pos.coords.latitude, pos.coords.longitude];
+      const accuracy = pos.coords.accuracy;
+
+      setPosition(freshPos);
+      localStorage.setItem("lastKnownPosition", JSON.stringify(freshPos));
+      setGpsAccuracy(accuracy);
+      setIsLocatingGps(false);
+
+      if (shouldCenter || !hasAutoCenteredRef.current) {
+        hasAutoCenteredRef.current = true;
+        setZoomTarget({ position: freshPos, zoom: 17 });
+        setFollowGps(true);
+      }
+
+      if (showFeedback) {
+        const accText = accuracy ? ` (±${Math.round(accuracy)}m)` : "";
+        setToast({
+          message: `🎯 Position GPS actualisée${accText} !`,
+          type: "success"
+        });
+      }
+    };
+
+    const handleHighAccuracyError = (err) => {
+      console.warn("High-accuracy GPS failed, trying standard accuracy fallback:", err.message);
+      // Fallback for indoor / campus locations with low satellite signal
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const currentPos = [pos.coords.latitude, pos.coords.longitude];
-          setPosition(currentPos);
-          localStorage.setItem("lastKnownPosition", JSON.stringify(currentPos));
-          setGpsAccuracy(pos.coords.accuracy);
+        (fallbackPos) => {
+          handleSuccess(fallbackPos);
         },
-        (err) => {
-          console.warn("Silent GPS startup check:", err?.message);
+        (finalErr) => {
+          setIsLocatingGps(false);
+          console.warn("GPS Geolocation Error:", finalErr);
+          if (showFeedback) {
+            if (finalErr.code === 1) {
+              setToast({
+                message: "⚠️ Accès GPS refusé. Veuillez autoriser la localisation dans les paramètres.",
+                type: "error"
+              });
+            } else {
+              setToast({
+                message: "⚠️ Signal GPS indisponible. Vérifiez que la localisation est activée.",
+                type: "error"
+              });
+            }
+          }
         },
-        { enableHighAccuracy: false, timeout: 6000, maximumAge: 60000 }
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 10000 }
       );
-    }
-  }, []);
+    };
 
-  const startGpsTracking = (initialPosition = null) => {
-    if (gpsWatchIdRef.current) return;
+    navigator.geolocation.getCurrentPosition(
+      handleSuccess,
+      handleHighAccuracyError,
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 5000 }
+    );
+  };
 
-    if (initialPosition) {
-      setPosition(initialPosition);
-      localStorage.setItem("lastKnownPosition", JSON.stringify(initialPosition));
-    }
+  // Continuous background GPS satellite watcher
+  const startContinuousGpsWatch = () => {
+    if (!("geolocation" in navigator) || gpsWatchIdRef.current) return;
 
     gpsWatchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
-        const newPosition = [pos.coords.latitude, pos.coords.longitude];
-        setPosition(newPosition);
-        localStorage.setItem("lastKnownPosition", JSON.stringify(newPosition));
+        const livePos = [pos.coords.latitude, pos.coords.longitude];
+        setPosition(livePos);
+        localStorage.setItem("lastKnownPosition", JSON.stringify(livePos));
         setGpsAccuracy(pos.coords.accuracy);
 
+        // Smoothly auto-center map when the first fresh satellite fix arrives on launch
+        if (!hasAutoCenteredRef.current) {
+          hasAutoCenteredRef.current = true;
+          setZoomTarget({ position: livePos, zoom: 17 });
+          setFollowGps(true);
+        }
+
         if (isRecordingRef.current) {
-          recordNewPosition(newPosition, pos.coords.accuracy);
+          recordNewPosition(livePos, pos.coords.accuracy);
         }
       },
       (err) => {
-        console.error("GPS Watch Error:", err);
+        console.warn("GPS Watch Warning:", err.message);
       },
       {
         enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 1000
+        timeout: 20000,
+        maximumAge: 0
       }
     );
   };
 
+  // Initialize GPS immediately on startup and whenever the user returns to the app
   useEffect(() => {
-    if (followGps || isRecordingSortie) {
-      startGpsTracking();
-    }
-  }, [followGps, isRecordingSortie]);
+    // 1. Immediate fresh fix & initial map auto-center
+    requestFreshGpsFix(true, false);
+
+    // 2. Start continuous satellite watch
+    startContinuousGpsWatch();
+
+    // 3. Auto-refresh when app resumes from background or screen unlock
+    const handleAppResume = () => {
+      if (document.visibilityState === "visible") {
+        requestFreshGpsFix(false, false);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleAppResume);
+    window.addEventListener("focus", handleAppResume);
+
+    return () => {
+      if (gpsWatchIdRef.current) {
+        navigator.geolocation.clearWatch(gpsWatchIdRef.current);
+        gpsWatchIdRef.current = null;
+      }
+      document.removeEventListener("visibilitychange", handleAppResume);
+      window.removeEventListener("focus", handleAppResume);
+    };
+  }, []);
 
   useEffect(() => {
     if (activeTab === "gallery" || showAlbum) {
@@ -367,7 +449,8 @@ function App() {
   }, [sortiePositions]);
 
   const startSortie = () => {
-    startGpsTracking(position);
+    requestFreshGpsFix(true, false);
+    startContinuousGpsWatch();
     setFollowGps(true);
     startSortieRaw(position);
     setToast({
@@ -954,14 +1037,11 @@ return (
       {activeTab === "map" && (
         <MapFloatingControls
           onRecenterGps={() => {
-            setFollowGps(true);
-            setZoomTarget({ position: position, zoom: 17 });
-            setToast({
-              message: "🎯 Centrage et suivi GPS activés !",
-              type: "success"
-            });
+            requestFreshGpsFix(true, true);
           }}
           followGps={followGps}
+          isLocatingGps={isLocatingGps}
+          gpsAccuracy={gpsAccuracy}
           onOpenMapLayers={() => setShowMapLayersModal(true)}
           activeLayersCount={(showCadastre ? 1 : 0) + ((showCassini || showHistoricalMap) ? 1 : 0) + (showEtatMajor ? 1 : 0)}
           zenMode={zenMode}

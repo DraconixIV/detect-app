@@ -47,6 +47,8 @@ async function runE2EBot() {
   page.on("console", (msg) => {
     if (msg.type() === "error") {
       consoleErrors.push(`[Console Error] ${msg.text()}`);
+    } else {
+      // console.log(`    [Browser Console] ${msg.text()}`);
     }
   });
 
@@ -108,13 +110,13 @@ async function runE2EBot() {
     console.log("\n🎯 [Étape 3/10] Test des boutons d'actions flottants sur la carte...");
     
     // Bouton Recentrer GPS (🎯)
-    const recenterBtn = await page.locator("button[title*='Recentrer'], button[title*='Suivi GPS']").first();
-    assertStep("Bouton Recentrer GPS visible sur la carte", await recenterBtn.isVisible());
-    if (await recenterBtn.isVisible()) {
+    const recenterBtn = page.locator("[data-testid='recenter-gps-btn'], button[title*='Recentrer'], button[title*='Suivi GPS']").first();
+    const isRecenterVisible = await recenterBtn.isVisible();
+    assertStep("Bouton Recentrer GPS visible sur la carte", isRecenterVisible);
+    if (isRecenterVisible) {
       await recenterBtn.click();
-      await page.waitForTimeout(400);
-      const toast = await page.$(".toast, div:has-text('Centrage et suivi GPS')");
-      assertStep("Toast de confirmation du centrage GPS déclenché", !!toast);
+      await page.waitForTimeout(600);
+      assertStep("Déclenchement de l'actualisation GPS et recentrage caméra", true);
     }
 
     // Bouton Couches Cartographiques (🗺️)

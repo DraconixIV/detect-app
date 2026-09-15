@@ -50,6 +50,7 @@ export default function ToastNotification({
 
   return (
     <div
+      data-testid="toast-notification"
       style={{
         position: "fixed",
         top: "20px",

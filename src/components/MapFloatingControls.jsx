@@ -3,6 +3,8 @@ import React from "react";
 export default function MapFloatingControls({
   onRecenterGps,
   followGps,
+  isLocatingGps = false,
+  gpsAccuracy = null,
   onOpenMapLayers,
   activeLayersCount = 0,
   zenMode,
@@ -103,26 +105,38 @@ export default function MapFloatingControls({
           {/* 3. RECENTER & FOLLOW GPS */}
           <button
             onClick={onRecenterGps}
+            data-testid="recenter-gps-btn"
+            aria-label="Recentrer GPS"
             style={{
               width: "44px",
               height: "44px",
               borderRadius: "50%",
-              border: `1.5px solid ${followGps ? "#10b981" : "rgba(255, 255, 255, 0.18)"}`,
-              background: followGps ? "rgba(16, 185, 129, 0.25)" : "rgba(11, 19, 41, 0.82)",
+              border: `1.5px solid ${isLocatingGps ? "#38bdf8" : (followGps ? "#10b981" : "rgba(255, 255, 255, 0.18)")}`,
+              background: isLocatingGps
+                ? "rgba(14, 165, 233, 0.3)"
+                : (followGps ? "rgba(16, 185, 129, 0.25)" : "rgba(11, 19, 41, 0.82)"),
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
-              color: followGps ? "#34d399" : "#ffffff",
+              color: isLocatingGps ? "#38bdf8" : (followGps ? "#34d399" : "#ffffff"),
               fontSize: "19px",
-              cursor: "pointer",
+              cursor: isLocatingGps ? "wait" : "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: followGps ? "0 0 16px rgba(16, 185, 129, 0.4)" : "0 4px 16px rgba(0, 0, 0, 0.45)",
+              boxShadow: isLocatingGps
+                ? "0 0 16px rgba(56, 189, 248, 0.6)"
+                : (followGps ? "0 0 16px rgba(16, 185, 129, 0.4)" : "0 4px 16px rgba(0, 0, 0, 0.45)"),
               transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
             }}
-            title={followGps ? "Suivi GPS Actif (la carte vous suit)" : "Recentrer sur ma position"}
+            title={
+              isLocatingGps
+                ? "Recherche satellite GPS en cours..."
+                : (followGps
+                    ? `Suivi GPS Actif${gpsAccuracy ? ` (Précision ±${Math.round(gpsAccuracy)}m)` : ""}`
+                    : "Recentrer sur ma position GPS exacte")
+            }
           >
-            🎯
+            {isLocatingGps ? "🛰️" : "🎯"}
           </button>
 
           {/* 4. QUICK ADD FIND FLOATING ACTION BUTTON */}
