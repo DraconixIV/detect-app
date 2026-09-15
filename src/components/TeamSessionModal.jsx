@@ -125,7 +125,7 @@ export default function TeamSessionModal({
           border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
           boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.75)",
           padding: "22px 20px",
-          color: isLight ? "#0f172a" : "#ffffff",
+          color: isLight ? "#000000" : "#ffffff",
           boxSizing: "border-box"
         }}
         onClick={(e) => e.stopPropagation()}
@@ -133,10 +133,10 @@ export default function TeamSessionModal({
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
           <div>
-            <h2 style={{ margin: "0 0 2px 0", fontSize: "18px", fontWeight: "800", letterSpacing: "-0.3px", color: isLight ? "#0f172a" : "#ffffff" }}>
+            <h2 style={{ margin: "0 0 2px 0", fontSize: "18px", fontWeight: "800", letterSpacing: "-0.3px", color: isLight ? "#000000" : "#ffffff" }}>
               Partage & Sessions d'Équipe
             </h2>
-            <p style={{ margin: 0, fontSize: "12px", color: isLight ? "#64748b" : "#ffffff" }}>
+            <p style={{ margin: 0, fontSize: "12px", color: isLight ? "#1e293b" : "#ffffff" }}>
               Collaboration et consultation multi-détecteurs
             </p>
           </div>
@@ -256,7 +256,7 @@ export default function TeamSessionModal({
                 textAlign: "center"
               }}
             >
-              <div style={{ fontSize: "11px", textTransform: "uppercase", fontWeight: "700", color: isLight ? "#64748b" : "#ffffff", letterSpacing: "0.5px" }}>
+              <div style={{ fontSize: "11px", textTransform: "uppercase", fontWeight: "700", color: isLight ? "#1e293b" : "#ffffff", letterSpacing: "0.5px" }}>
                 Votre Code Détecteur Unique
               </div>
               <div
@@ -264,7 +264,7 @@ export default function TeamSessionModal({
                   fontSize: "24px",
                   fontWeight: "900",
                   letterSpacing: "2px",
-                  color: isLight ? "#3b82f6" : "#ffffff",
+                  color: isLight ? "#000000" : "#ffffff",
                   margin: "8px 0 12px 0",
                   fontFamily: "ui-monospace, monospace"
                 }}
@@ -298,7 +298,7 @@ export default function TeamSessionModal({
 
             {/* Pseudonym field */}
             <form onSubmit={handleSaveName} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: "600", color: isLight ? "#475569" : "#ffffff" }}>
+              <label style={{ fontSize: "11px", fontWeight: "600", color: isLight ? "#000000" : "#ffffff" }}>
                 Votre Pseudo / Prénom affiché en session d'équipe :
               </label>
               <div style={{ display: "flex", gap: "8px" }}>
@@ -313,7 +313,7 @@ export default function TeamSessionModal({
                     borderRadius: "10px",
                     border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
                     background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)",
-                    color: isLight ? "#0f172a" : "#ffffff",
+                    color: isLight ? "#000000" : "#ffffff",
                     fontSize: "13px",
                     outline: "none"
                   }}
@@ -336,7 +336,7 @@ export default function TeamSessionModal({
               </div>
             </form>
 
-            <div style={{ fontSize: "11px", color: isLight ? "#64748b" : "#ffffff", opacity: 0.85, lineHeight: "1.4" }}>
+            <div style={{ fontSize: "11px", color: isLight ? "#1e293b" : "#ffffff", opacity: 0.85, lineHeight: "1.4" }}>
               💡 Donnez votre code à un ami pour qu'il puisse charger votre carte en lecture seule, ou utilisez une session live pour détecter à plusieurs en même temps.
             </div>
           </div>
@@ -347,7 +347,7 @@ export default function TeamSessionModal({
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <form onSubmit={handleStartConsultation} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               <div>
-                <label style={{ fontSize: "11px", fontWeight: "600", color: "#94a3b8", display: "block", marginBottom: "6px" }}>
+                <label style={{ fontSize: "11px", fontWeight: "600", color: isLight ? "#000000" : "#ffffff", display: "block", marginBottom: "6px" }}>
                   Saisir le Code Détecteur de votre ami (ex: GEO-XXXX) :
                 </label>
                 <input
@@ -362,7 +362,7 @@ export default function TeamSessionModal({
                     borderRadius: "10px",
                     border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
                     background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)",
-                    color: isLight ? "#0f172a" : "#ffffff",
+                    color: isLight ? "#000000" : "#ffffff",
                     fontSize: "14px",
                     fontWeight: "700",
                     fontFamily: "ui-monospace, monospace",
@@ -525,7 +525,7 @@ export default function TeamSessionModal({
                     gap: "8px"
                   }}
                 >
-                  <div style={{ fontSize: "12px", fontWeight: "700", color: "#3b82f6" }}>
+                  <div style={{ fontSize: "12px", fontWeight: "700", color: isLight ? "#000000" : "#ffffff" }}>
                     ✨ Créer une nouvelle session d'équipe
                   </div>
                   <input
@@ -539,7 +539,7 @@ export default function TeamSessionModal({
                       borderRadius: "8px",
                       border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.1)",
                       background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)",
-                      color: isLight ? "#0f172a" : "#ffffff",
+                      color: isLight ? "#000000" : "#ffffff",
                       fontSize: "12px",
                       outline: "none",
                       boxSizing: "border-box"
@@ -575,7 +575,7 @@ export default function TeamSessionModal({
                     gap: "8px"
                   }}
                 >
-                  <div style={{ fontSize: "12px", fontWeight: "700", color: "#10b981" }}>
+                  <div style={{ fontSize: "12px", fontWeight: "700", color: isLight ? "#000000" : "#ffffff" }}>
                     🔗 Rejoindre une session existante
                   </div>
                   <input
@@ -590,7 +590,7 @@ export default function TeamSessionModal({
                       borderRadius: "8px",
                       border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.1)",
                       background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)",
-                      color: isLight ? "#0f172a" : "#ffffff",
+                      color: isLight ? "#000000" : "#ffffff",
                       fontSize: "13px",
                       fontFamily: "ui-monospace, monospace",
                       letterSpacing: "1px",

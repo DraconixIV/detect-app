@@ -72,8 +72,8 @@ export default function SettingsPanel({
 
   const isLight = theme === "light";
   const bgPanel = isLight ? "#f8fafc" : "#0b1329";
-  const textMain = isLight ? "#0f172a" : "#ffffff";
-  const textSub = isLight ? "#475569" : "#ffffff";
+  const textMain = isLight ? "#000000" : "#ffffff";
+  const textSub = isLight ? "#1e293b" : "#ffffff";
   const cardBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
   const cardBg = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)";
   const cardShadow = isLight ? "0 2px 8px rgba(0, 0, 0, 0.06)" : "none";
@@ -95,13 +95,13 @@ export default function SettingsPanel({
     textTransform: "uppercase",
     letterSpacing: "0.5px",
     marginBottom: "12px",
-    color: isLight ? "#2563eb" : "#ffffff",
+    color: isLight ? "#000000" : "#ffffff",
     display: "flex",
     alignItems: "center",
     gap: "6px"
   };
 
-  const renderGroupHeader = (icon, title, color = isLight ? "#2563eb" : "#ffffff", isFirst = false) => (
+  const renderGroupHeader = (icon, title, color = isLight ? "#000000" : "#ffffff", isFirst = false) => (
     <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: isFirst ? "0 0 10px 0" : "24px 0 10px 0" }}>
       <div style={{
         fontSize: "11px",
@@ -150,7 +150,7 @@ export default function SettingsPanel({
         {/* ============================================================ */}
         {/* GROUPE 1 : RÉSEAU & PARTAGE D'ÉQUIPE (MIS EN AVANT)          */}
         {/* ============================================================ */}
-        {renderGroupHeader("👥", "Partage & Session d'Équipe", isLight ? "#1d4ed8" : "#ffffff", true)}
+        {renderGroupHeader("👥", "Partage & Session d'Équipe", isLight ? "#000000" : "#ffffff", true)}
 
         <div
           style={{
@@ -163,7 +163,7 @@ export default function SettingsPanel({
           }}
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <div style={{ ...sectionTitleStyle, color: isLight ? "#1e40af" : "#ffffff" }}>
+            <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
               <span>👥</span> Code Détecteur & Partage
             </div>
             {workspace.mode !== "personal" && (
@@ -202,7 +202,7 @@ export default function SettingsPanel({
               <div style={{ fontSize: "10px", color: textSub, fontWeight: "700", textTransform: "uppercase" }}>
                 Mon Code Unique
               </div>
-              <div style={{ fontSize: "18px", fontWeight: "900", letterSpacing: "1.5px", color: isLight ? "#1d4ed8" : "#ffffff" }}>
+              <div style={{ fontSize: "18px", fontWeight: "900", letterSpacing: "1.5px", color: isLight ? "#000000" : "#ffffff" }}>
                 {myCode}
               </div>
             </div>
@@ -260,11 +260,11 @@ export default function SettingsPanel({
         {/* ============================================================ */}
         {/* GROUPE 2 : PRÉFÉRENCES & CONFORT VISUEL                      */}
         {/* ============================================================ */}
-        {renderGroupHeader("🎨", "Préférences & Confort Visuel", isLight ? "#7c3aed" : "#ffffff")}
+        {renderGroupHeader("🎨", "Préférences & Confort Visuel", isLight ? "#000000" : "#ffffff")}
 
         {/* Mode Sombre / Clair */}
         <div style={cardStyle}>
-          <div style={{ ...sectionTitleStyle, color: isLight ? "#7c3aed" : "#ffffff" }}>
+          <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
             <span>🌓</span> Mode Sombre / Clair
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
@@ -317,7 +317,7 @@ export default function SettingsPanel({
         {/* Catégories Personnalisées */}
         <div style={cardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <div style={{ ...sectionTitleStyle, color: isLight ? "#7c3aed" : "#ffffff", marginBottom: 0 }}>
+            <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff", marginBottom: 0 }}>
               <span>🏷️</span> Catégories Personnalisées
             </div>
             <div style={{ display: "flex", gap: "6px" }}>
@@ -421,7 +421,7 @@ export default function SettingsPanel({
                       <div style={{ display: "flex", gap: "6px" }}>
                         <button
                           onClick={() => setSelectedCatForSub(selectedCatForSub === cat ? "" : cat)}
-                          style={{ padding: "3px 8px", borderRadius: "8px", border: "none", background: isLight ? "rgba(37, 99, 235, 0.15)" : "rgba(59, 130, 246, 0.2)", color: isLight ? "#1d4ed8" : "#60a5fa", fontSize: "10px", fontWeight: "bold", cursor: "pointer" }}
+                          style={{ padding: "3px 8px", borderRadius: "8px", border: "none", background: isLight ? "rgba(0, 0, 0, 0.08)" : "rgba(255, 255, 255, 0.12)", color: textMain, fontSize: "10px", fontWeight: "bold", cursor: "pointer" }}
                         >
                           + Sous-catégorie
                         </button>
@@ -495,7 +495,7 @@ export default function SettingsPanel({
           <div style={cardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
-                <div style={{ ...sectionTitleStyle, color: isLight ? "#d97706" : "#ffffff", marginBottom: "4px" }}>
+                <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff", marginBottom: "4px" }}>
                   <span>⚡</span> Banc d'Essai & Benchmark
                 </div>
                 <div style={{ fontSize: "11px", color: textSub }}>
@@ -525,10 +525,10 @@ export default function SettingsPanel({
         {/* ============================================================ */}
         {/* GROUPE 3 : COMPTE & SYNCHRONISATION (DONNÉES)                */}
         {/* ============================================================ */}
-        {renderGroupHeader("☁️", "Compte & Sauvegardes", isLight ? "#0284c7" : "#ffffff")}
+        {renderGroupHeader("☁️", "Compte & Sauvegardes", isLight ? "#000000" : "#ffffff")}
 
         <div style={cardStyle}>
-          <div style={{ ...sectionTitleStyle, color: isLight ? "#0284c7" : "#ffffff" }}>
+          <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
             <span>👤</span> Synchronisation & Données
           </div>
 
@@ -602,7 +602,7 @@ export default function SettingsPanel({
         {/* ============================================================ */}
         {/* GROUPE 4 : SOUTIEN AU PROJET (DONS)                          */}
         {/* ============================================================ */}
-        {renderGroupHeader("☕", "Soutien & Communauté", isLight ? "#b45309" : "#ffffff")}
+        {renderGroupHeader("☕", "Soutien & Communauté", isLight ? "#000000" : "#ffffff")}
 
         <div
           style={{
@@ -613,7 +613,7 @@ export default function SettingsPanel({
             border: isLight ? "1.5px solid #facc15" : "1px solid rgba(250, 204, 21, 0.3)"
           }}
         >
-          <div style={{ ...sectionTitleStyle, color: isLight ? "#b45309" : "#ffffff" }}>
+          <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
             <span>☕</span> Soutenir le Projet (Dons)
           </div>
           <p style={{ margin: "0 0 12px 0", fontSize: "12px", color: textMain, opacity: 0.9, lineHeight: "1.5" }}>
@@ -673,11 +673,11 @@ export default function SettingsPanel({
         {/* ============================================================ */}
         {/* GROUPE 5 : CADRE LÉGAL & CONDITIONS                          */}
         {/* ============================================================ */}
-        {renderGroupHeader("⚖️", "Législation & Conditions", isLight ? "#475569" : "#ffffff")}
+        {renderGroupHeader("⚖️", "Législation & Conditions", isLight ? "#000000" : "#ffffff")}
 
         <div style={cardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div style={{ ...sectionTitleStyle, color: isLight ? "#475569" : "#ffffff", marginBottom: 0 }}>
+            <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff", marginBottom: 0 }}>
               <span>⚖️</span> Mentions Légales & CGU
             </div>
             <button

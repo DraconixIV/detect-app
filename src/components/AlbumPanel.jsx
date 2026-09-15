@@ -345,8 +345,8 @@ export default function AlbumPanel({
 
   const isLight = theme === "light";
   const bgPanel = isLight ? "#f8fafc" : "rgba(17, 24, 39, 0.95)";
-  const textMain = isLight ? "#0f172a" : "#ffffff";
-  const textSub = isLight ? "#475569" : "#ffffff";
+  const textMain = isLight ? "#000000" : "#ffffff";
+  const textSub = isLight ? "#1e293b" : "#ffffff";
   const cardBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
   const inputBg = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)";
   const inputBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.16)";
@@ -508,7 +508,7 @@ export default function AlbumPanel({
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: "#ffffff" }}>
+            <h2 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: textMain }}>
               🖼️ Album de Collection
             </h2>
             <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
@@ -525,7 +525,7 @@ export default function AlbumPanel({
                   border: `1px solid ${cardBorder}`,
                   borderRadius: "10px",
                   padding: "6px 10px",
-                  color: "#ffffff",
+                  color: textMain,
                   cursor: "pointer",
                   fontSize: "11px",
                   fontWeight: "bold",

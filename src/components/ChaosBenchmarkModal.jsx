@@ -198,8 +198,8 @@ export default function ChaosBenchmarkModal({
 
   const isLight = theme === "light";
   const bgModal = isLight ? "#ffffff" : "#0f172a";
-  const textMain = isLight ? "#0f172a" : "#ffffff";
-  const textSub = isLight ? "#64748b" : "#ffffff";
+  const textMain = isLight ? "#000000" : "#ffffff";
+  const textSub = isLight ? "#1e293b" : "#ffffff";
   const cardBg = isLight ? "#f8fafc" : "#1e293b";
   const cardBorder = isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.12)";
 

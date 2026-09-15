@@ -13,8 +13,8 @@ export default function ReportsPanel({
 }) {
   const isLight = theme === "light";
   const bgPanel = isLight ? "#f8fafc" : "#0b1329";
-  const textMain = isLight ? "#0f172a" : "#ffffff";
-  const textSub = isLight ? "#475569" : "#ffffff";
+  const textMain = isLight ? "#000000" : "#ffffff";
+  const textSub = isLight ? "#1e293b" : "#ffffff";
 
   return (
     <div
@@ -34,7 +34,7 @@ export default function ReportsPanel({
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
           <div style={{ fontSize: "28px" }}>📊</div>
           <div>
-            <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: isLight ? "#0f172a" : "#ffffff" }}>
+            <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: textMain }}>
               Rapports & Statistiques
             </h1>
             <p style={{ margin: 0, fontSize: "12px", color: textSub }}>

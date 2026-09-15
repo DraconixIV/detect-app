@@ -32,8 +32,8 @@ export default function FlipCoinModal({
 
   const isLight = theme === "light";
   const bgModal = isLight ? "#ffffff" : "#0f172a";
-  const textMain = isLight ? "#0f172a" : "#ffffff";
-  const textSub = isLight ? "#475569" : "#ffffff";
+  const textMain = isLight ? "#000000" : "#ffffff";
+  const textSub = isLight ? "#1e293b" : "#ffffff";
   const cardBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
   const inputBg = isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.05)";
 

@@ -45,8 +45,8 @@ export default function StatsPanel({
 
   const isLight = theme === "light";
   const bgPanel = isFullTab ? "transparent" : (isLight ? "#ffffff" : "rgba(15, 23, 42, 0.95)");
-  const textMain = isLight ? "#0f172a" : "#ffffff";
-  const textSub = isLight ? "#475569" : "#ffffff";
+  const textMain = isLight ? "#000000" : "#ffffff";
+  const textSub = isLight ? "#1e293b" : "#ffffff";
   const cardBg = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.05)";
   const cardBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
   const cardShadow = isLight ? "0 2px 8px rgba(0, 0, 0, 0.06)" : "none";
@@ -187,7 +187,7 @@ export default function StatsPanel({
       {/* Top Title */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
         <div>
-          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "800", color: isLight ? "#0f172a" : "#ffffff" }}>
+          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "800", color: textMain }}>
             📊 Statistiques
           </h2>
           <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
@@ -202,7 +202,7 @@ export default function StatsPanel({
               borderRadius: "10px",
               border: `1px solid ${cardBorder}`,
               background: cardBg,
-              color: isLight ? "#2563eb" : "#60a5fa",
+              color: textMain,
               fontSize: "11px",
               fontWeight: "700",
               cursor: "pointer",
@@ -221,17 +221,17 @@ export default function StatsPanel({
         <div style={{ background: cardBg, border: `1px solid ${cardBorder}`, boxShadow: cardShadow, padding: "10px", borderRadius: "14px", textAlign: "center" }}>
           <div style={{ fontSize: "18px" }}>📍</div>
           <div style={{ fontSize: "9px", color: textSub, marginTop: "2px", fontWeight: "700", textTransform: "uppercase" }}>Trouvailles</div>
-          <div style={{ fontSize: "16px", fontWeight: "800", marginTop: "2px", color: isLight ? "#d97706" : "#facc15" }}>{totalFinds}</div>
+          <div style={{ fontSize: "16px", fontWeight: "800", marginTop: "2px", color: isLight ? "#000000" : "#facc15" }}>{totalFinds}</div>
         </div>
         <div style={{ background: cardBg, border: `1px solid ${cardBorder}`, boxShadow: cardShadow, padding: "10px", borderRadius: "14px", textAlign: "center" }}>
           <div style={{ fontSize: "18px" }}>⭐</div>
           <div style={{ fontSize: "9px", color: textSub, marginTop: "2px", fontWeight: "700", textTransform: "uppercase" }}>Favoris</div>
-          <div style={{ fontSize: "16px", fontWeight: "800", marginTop: "2px", color: "#ec4899" }}>{finds.filter(f => f.favorite).length}</div>
+          <div style={{ fontSize: "16px", fontWeight: "800", marginTop: "2px", color: isLight ? "#000000" : "#ec4899" }}>{finds.filter(f => f.favorite).length}</div>
         </div>
         <div style={{ background: cardBg, border: `1px solid ${cardBorder}`, boxShadow: cardShadow, padding: "10px", borderRadius: "14px", textAlign: "center" }}>
           <div style={{ fontSize: "18px" }}>🚶</div>
           <div style={{ fontSize: "9px", color: textSub, marginTop: "2px", fontWeight: "700", textTransform: "uppercase" }}>Sorties</div>
-          <div style={{ fontSize: "16px", fontWeight: "800", marginTop: "2px", color: "#10b981" }}>{savedTracks.length}</div>
+          <div style={{ fontSize: "16px", fontWeight: "800", marginTop: "2px", color: isLight ? "#000000" : "#10b981" }}>{savedTracks.length}</div>
         </div>
       </div>
 
@@ -247,7 +247,7 @@ export default function StatsPanel({
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-          <span style={{ fontSize: "12px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px", color: isLight ? "#2563eb" : "#60a5fa" }}>
+          <span style={{ fontSize: "12px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px", color: textMain }}>
             🏆 Organigrammes & Répartition
           </span>
         </div>
@@ -842,7 +842,7 @@ export default function StatsPanel({
                 <div style={{ fontWeight: "bold", display: "flex", justifyContent: "space-between", marginBottom: "2px" }}>
                   <span style={{ color: textMain }}>📅 {dateStr}</span>
                   {dayFinds.length > 0 && (
-                    <span style={{ color: isLight ? "#d97706" : "#facc15", fontWeight: "bold" }}>
+                    <span style={{ color: isLight ? "#000000" : "#facc15", fontWeight: "bold" }}>
                       🪙 {dayFinds.length} trouvaille{dayFinds.length > 1 ? "s" : ""}
                     </span>
                   )}
