@@ -690,8 +690,14 @@ function App() {
     e.target.value = "";
   };
 
-  const handleFavorite = async (find) => {
-    const targetVal = find.favorite !== undefined ? !find.favorite : true;
+  const handleFavorite = async (find, explicitTargetVal = null) => {
+    const targetVal = typeof explicitTargetVal === "boolean"
+      ? explicitTargetVal
+      : !find.favorite;
+
+    // Mutate find object reference immediately
+    find.favorite = targetVal;
+
     // Optimistic UI update
     setFinds((prev) =>
       prev.map((f) => (f.id === find.id ? { ...f, favorite: targetVal } : f))

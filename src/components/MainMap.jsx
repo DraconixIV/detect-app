@@ -104,20 +104,6 @@ const createClusterCustomIcon = (cluster) => {
 };
 
 
-// Helper: Listen to zoom events to hide markers during animations
-function ZoomEventsHandler({ onZoomStart, onZoomEnd }) {
-  const map = useMap();
-  useEffect(() => {
-    map.on("zoomstart", onZoomStart);
-    map.on("zoomend", onZoomEnd);
-    return () => {
-      map.off("zoomstart", onZoomStart);
-      map.off("zoomend", onZoomEnd);
-    };
-  }, [map, onZoomStart, onZoomEnd]);
-  return null;
-}
-
 import { leaveTeamSession } from "../services/sessionService";
 
 export default function MainMap({
@@ -156,8 +142,6 @@ export default function MainMap({
   sortiePositions = [],
   savedTracks = []
 }) {
-  const [isZooming, setIsZooming] = useState(false);
-
   const handleExitConsultation = () => {
     if (setWorkspace) {
       setWorkspace({ mode: "personal", targetCode: null, sessionName: null });
@@ -281,10 +265,6 @@ export default function MainMap({
           width: "100%"
         }}
       >
-        <ZoomEventsHandler 
-          onZoomStart={() => setIsZooming(true)} 
-          onZoomEnd={() => setIsZooming(false)} 
-        />
         <MapEventsHandler 
           onLongPress={handleMapLongPress} 
           onMapDrag={() => setFollowGps(false)} 
@@ -330,7 +310,7 @@ export default function MainMap({
       />
 
       {/* HISTORICAL / SELECTED TRACKS */}
-      {!isZooming && selectedDateTracks.map((track, idx) => (
+      {selectedDateTracks.map((track, idx) => (
         <Polyline
           key={track.id || `sel-track-${idx}`}
           positions={track.positions}
@@ -345,7 +325,7 @@ export default function MainMap({
       ))}
 
       {/* LIVE ACTIVE SORTIE TRACK (Electric Cyan with Dark Glow Halo) */}
-      {!isZooming && isRecordingSortie && sortiePositions && sortiePositions.length > 1 && (
+      {isRecordingSortie && sortiePositions && sortiePositions.length > 1 && (
         <>
           {/* Contrast Outer Stroke (visible over bright aerials or dark maps) */}
           <Polyline
@@ -373,7 +353,7 @@ export default function MainMap({
       )}
 
       {/* START SORTIE PIN */}
-      {!isZooming && isRecordingSortie && sortiePositions && sortiePositions.length > 0 && (
+      {isRecordingSortie && sortiePositions && sortiePositions.length > 0 && (
         <Marker
           position={sortiePositions[0]}
           icon={L.divIcon({
@@ -409,40 +389,14 @@ export default function MainMap({
         gpsStyle={gpsStyle}
       />
 
-      {!isZooming && (
-        useClustering ? (
-          <MarkerClusterGroup
-            iconCreateFunction={createClusterCustomIcon}
-            chunkedLoading={true}
-            showCoverageOnHover={false}
-            maxClusterRadius={50}
-          >
-            {positionedFinds.map((find) => (
-              <Marker
-                key={find.id}
-                position={find.finalPosition}
-                icon={icons[find.category] || icons.autre}
-              >
-                <Popup
-                  className="custom-find-leaflet-popup"
-                  autoPan={true}
-                  autoPanPadding={[25, 25]}
-                  closeButton={true}
-                >
-                  <FindPopup
-                    find={find}
-                    onClose={() => setOpenPopupFind(null)}
-                    onDelete={deleteFind}
-                    onFavorite={handleFavorite}
-                    onUpdate={loadFinds}
-                    workspace={workspace}
-                  />
-                </Popup>
-              </Marker>
-            ))}
-          </MarkerClusterGroup>
-        ) : (
-          positionedFinds.map((find) => (
+      {useClustering ? (
+        <MarkerClusterGroup
+          iconCreateFunction={createClusterCustomIcon}
+          chunkedLoading={true}
+          showCoverageOnHover={false}
+          maxClusterRadius={50}
+        >
+          {positionedFinds.map((find) => (
             <Marker
               key={find.id}
               position={find.finalPosition}
@@ -464,8 +418,32 @@ export default function MainMap({
                 />
               </Popup>
             </Marker>
-          ))
-        )
+          ))}
+        </MarkerClusterGroup>
+      ) : (
+        positionedFinds.map((find) => (
+          <Marker
+            key={find.id}
+            position={find.finalPosition}
+            icon={icons[find.category] || icons.autre}
+          >
+            <Popup
+              className="custom-find-leaflet-popup"
+              autoPan={true}
+              autoPanPadding={[25, 25]}
+              closeButton={true}
+            >
+              <FindPopup
+                find={find}
+                onClose={() => setOpenPopupFind(null)}
+                onDelete={deleteFind}
+                onFavorite={handleFavorite}
+                onUpdate={loadFinds}
+                workspace={workspace}
+              />
+            </Popup>
+          </Marker>
+        ))
       )}
     </MapContainer>
     </div>

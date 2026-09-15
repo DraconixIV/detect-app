@@ -1,7 +1,3 @@
-export const categoryEmojis = {};
-
-export const defaultCategoryColors = {};
-
 export const PRESET_CATEGORY_COLORS = [
   "#facc15", // Jaune or
   "#f59e0b", // Ambre
@@ -126,10 +122,20 @@ export const SUGGESTED_STARTER_CATEGORIES = {
   }
 };
 
-export const categoriesWithSub = {};
+export const categoryEmojis = Object.fromEntries(
+  Object.entries(SUGGESTED_STARTER_CATEGORIES).map(([k, v]) => [k, v.emoji])
+);
+
+export const defaultCategoryColors = Object.fromEntries(
+  Object.entries(SUGGESTED_STARTER_CATEGORIES).map(([k, v]) => [k, v.color])
+);
+
+export const categoriesWithSub = Object.fromEntries(
+  Object.entries(SUGGESTED_STARTER_CATEGORIES).map(([k, v]) => [k, v.subCategories])
+);
 
 // Retro-compatibility
-export const monnaieSubCategories = [];
+export const monnaieSubCategories = SUGGESTED_STARTER_CATEGORIES["Monnaie"].subCategories;
 
 export const RECOMMENDED_METALS = [
   { name: "Or", emoji: "🪙" },

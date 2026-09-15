@@ -103,27 +103,16 @@ export async function loadFinds(options = {}) {
 
     const allFinds = data || [];
 
-    // Filter in JS gracefully so legacy finds (without user_code) are ALWAYS visible to the user!
-    const filteredFinds = allFinds.filter((find) => {
+    const filteredFinds = allFinds.filter((rawFind) => {
+      const find = decodeMetadata(rawFind);
       if (mode === "consultation" && targetCode) {
         return find.user_code === targetCode;
       }
       if (mode === "session" && targetCode) {
         return find.session_code === targetCode || find.user_code === myCode;
       }
-      // Mode personnel : mes trouvailles + toutes les trouvailles de mes sessions passées + trouvailles legacy
-      if (!find.user_code) {
-        // Trouvaille historique : TOUJOURS visible
-        return true;
-      }
-      if (find.user_code === myCode) {
-        return true;
-      }
-      if (find.session_code && joinedSessions.includes(find.session_code)) {
-        return true;
-      }
-      // If user has not attached a code yet or it's existing data, show it
-      return false;
+      // Mode personnel: always show all finds in the personal account
+      return true;
     });
 
     return filteredFinds.map((find) => {

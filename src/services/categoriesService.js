@@ -1,4 +1,9 @@
 import { supabase } from "../supabase.js";
+import {
+  categoryEmojis as defaultCategoryEmojis,
+  defaultCategoryColors,
+  categoriesWithSub as defaultCategoriesWithSub
+} from "../subCategories.js";
 
 const STORAGE_CATEGORIES_KEY = "geoprospect_custom_categories";
 const STORAGE_EMOJIS_KEY = "geoprospect_custom_emojis";
@@ -74,17 +79,21 @@ export function loadCategoriesData() {
     const storedEmojis = localStorage.getItem(STORAGE_EMOJIS_KEY);
     const storedColors = localStorage.getItem(STORAGE_COLORS_KEY);
 
-    const categories = storedCats ? JSON.parse(storedCats) : {};
-    const emojis = storedEmojis ? JSON.parse(storedEmojis) : {};
-    const colors = storedColors ? JSON.parse(storedColors) : {};
+    const userCats = storedCats ? JSON.parse(storedCats) : null;
+    const userEmojis = storedEmojis ? JSON.parse(storedEmojis) : null;
+    const userColors = storedColors ? JSON.parse(storedColors) : null;
+
+    const categories = { ...defaultCategoriesWithSub, ...(userCats || {}) };
+    const emojis = { ...defaultCategoryEmojis, ...(userEmojis || {}) };
+    const colors = { ...defaultCategoryColors, ...(userColors || {}) };
 
     return { categories, emojis, colors };
   } catch (err) {
     console.error("Failed to load custom categories:", err);
     return {
-      categories: {},
-      emojis: {},
-      colors: {}
+      categories: { ...defaultCategoriesWithSub },
+      emojis: { ...defaultCategoryEmojis },
+      colors: { ...defaultCategoryColors }
     };
   }
 }

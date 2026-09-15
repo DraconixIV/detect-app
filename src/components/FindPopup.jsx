@@ -505,7 +505,7 @@ export default function FindPopup({
               setIsFav(nextFav);
               find.favorite = nextFav;
               if (onFavorite) {
-                await onFavorite(find);
+                await onFavorite(find, nextFav);
               }
             }}
             style={{
