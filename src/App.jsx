@@ -925,6 +925,7 @@ return (
       {activeTab === "map" && (
         <MapTopBar
           currentThemeKey={designTheme}
+          themeMode={theme}
           workspace={workspace}
           gpsAccuracy={gpsAccuracy}
           isOnline={isOnline}
@@ -937,6 +938,22 @@ return (
           setSearch={setSearch}
           filters={filters}
           toggleFilter={toggleFilter}
+          finds={finds}
+          onSelectFind={(find) => {
+            const lat = find.latitude ?? find.position?.[0];
+            const lng = find.longitude ?? find.position?.[1];
+            if (lat && lng) {
+              setFollowGps(false);
+              setZoomTarget({ position: [Number(lat), Number(lng)], zoom: 18 });
+              setOpenPopupFind(find);
+            }
+          }}
+          onSelectPlace={(place) => {
+            if (place.lat && place.lon) {
+              setFollowGps(false);
+              setZoomTarget({ position: [Number(place.lat), Number(place.lon)], zoom: 15 });
+            }
+          }}
           zenMode={zenMode}
         />
       )}
