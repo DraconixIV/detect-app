@@ -384,24 +384,20 @@ export async function deleteFind(
   }
 }
 
-export async function toggleFavorite(
-  findId,
-  currentValue
-) {
+export async function toggleFavorite(findId, targetOrCurrentValue) {
+  const targetFavorite = typeof targetOrCurrentValue === "boolean"
+    ? targetOrCurrentValue
+    : !targetOrCurrentValue;
 
-  const result =
-    await supabase
-      .from("finds")
-      .update({
-        favorite: !currentValue
-      })
-      .eq("id", findId);
+  const result = await supabase
+    .from("finds")
+    .update({
+      favorite: targetFavorite
+    })
+    .eq("id", findId);
 
   if (result.error) {
-    console.error(
-      "ERREUR SUPABASE",
-      result.error
-    );
+    console.error("ERREUR SUPABASE TOGGLE FAVORITE:", result.error);
     return false;
   }
 

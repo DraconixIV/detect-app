@@ -424,10 +424,10 @@ export default function AddFindForm({
         </div>
       )}
 
-      {/* MATIERE (VIRE LE MOT METAL DANS LE LABEL, "Métal non spécifié" DANS LE SELECT) */}
+      {/* METAL */}
       <div>
         <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
-          Matière
+          Métal
         </label>
         <select
           value={newDescription}

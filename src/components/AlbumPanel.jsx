@@ -565,7 +565,7 @@ export default function AlbumPanel({
         <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
           <input
             type="text"
-            placeholder="🔍 Rechercher titre, matière, lieu..."
+            placeholder="🔍 Rechercher titre, métal, lieu..."
             value={albumSearch}
             onChange={(e) => setAlbumSearch(e.target.value)}
             style={{

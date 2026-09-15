@@ -36,15 +36,37 @@ export default function FindPopup({
   const [croppedBeforeBlob, setCroppedBeforeBlob] = useState(null);
   const [confirmConfig, setConfirmConfig] = useState(null);
   const [materialsData, setMaterialsData] = useState(() => loadMaterialsData());
-  const { categories: categoriesWithSub, emojis: categoryEmojis } = loadCategoriesData();
+  const [categoriesData, setCategoriesData] = useState(() => loadCategoriesData());
+  const [isFav, setIsFav] = useState(!!find.favorite);
 
   useEffect(() => {
+    setIsFav(!!find.favorite);
+  }, [find.favorite, find.id]);
+
+  useEffect(() => {
+    const handleCategoriesUpdate = () => {
+      setCategoriesData(loadCategoriesData());
+    };
     const handleMaterialsUpdate = () => {
       setMaterialsData(loadMaterialsData());
     };
+    window.addEventListener("categories-updated", handleCategoriesUpdate);
     window.addEventListener("materials-updated", handleMaterialsUpdate);
-    return () => window.removeEventListener("materials-updated", handleMaterialsUpdate);
+    return () => {
+      window.removeEventListener("categories-updated", handleCategoriesUpdate);
+      window.removeEventListener("materials-updated", handleMaterialsUpdate);
+    };
   }, []);
+
+  const { categories: categoriesWithSub = {}, emojis: categoryEmojis = {} } = categoriesData || {};
+  const availableCategories = Array.from(new Set([
+    ...Object.keys(categoriesWithSub),
+    ...(category ? [category] : [])
+  ]));
+  const availableSubCats = Array.from(new Set([
+    ...(categoriesWithSub[category] || []),
+    ...(subCategory ? [subCategory] : [])
+  ]));
 
   useEffect(() => {
     loadPhotos();
@@ -477,16 +499,21 @@ export default function FindPopup({
         <div style={{ display: "flex", gap: "6px", marginTop: "2px" }}>
           {/* Favorite Toggle */}
           <button
-            onClick={(e) => {
+            onClick={async (e) => {
               e.stopPropagation();
-              onFavorite(find);
+              const nextFav = !isFav;
+              setIsFav(nextFav);
+              find.favorite = nextFav;
+              if (onFavorite) {
+                await onFavorite(find);
+              }
             }}
             style={{
               flex: "0 0 36px",
               height: "36px",
               border: "1px solid #d1d5db",
               borderRadius: "10px",
-              background: find.favorite ? "#fef08a" : "white",
+              background: isFav ? "#fef08a" : "white",
               cursor: "pointer",
               fontSize: "16px",
               display: "flex",
@@ -495,7 +522,7 @@ export default function FindPopup({
             }}
             title="Ajouter / Retirer des favoris"
           >
-            {find.favorite ? "⭐" : "☆"}
+            {isFav ? "⭐" : "☆"}
           </button>
 
           {/* Details / Edit triggers Portal Modal */}
@@ -661,7 +688,7 @@ export default function FindPopup({
                 cursor: "pointer"
               }}
             >
-              Identification 🔗
+              Identification
             </button>
           </div>
 
@@ -720,32 +747,40 @@ export default function FindPopup({
                   onChange={handleCategoryChange}
                   style={{ ...inputStyle, background: "#1f2937" }}
                 >
-                  {Object.keys(categoriesWithSub).map((cat) => (
+                  {availableCategories.map((cat) => (
                     <option key={cat} value={cat}>
-                      {categoryEmojis[cat] || ""} {cat}
+                      {categoryEmojis[cat] || "🏷️"} {cat}
                     </option>
                   ))}
                 </select>
               </div>
 
-              {categoriesWithSub[category] && (
-                <div>
-                  <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Sous-catégorie</label>
+              <div>
+                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Sous-catégorie</label>
+                {availableSubCats.length > 0 ? (
                   <select
                     value={subCategory}
                     onChange={(e) => setSubCategory(e.target.value)}
                     style={{ ...inputStyle, background: "#1f2937" }}
                   >
-                    <option value="">Sous-catégorie</option>
-                    {categoriesWithSub[category].map((subCat) => (
+                    <option value="">-- Non spécifiée --</option>
+                    {availableSubCats.map((subCat) => (
                       <option key={subCat} value={subCat}>{subCat}</option>
                     ))}
                   </select>
-                </div>
-              )}
+                ) : (
+                  <input
+                    type="text"
+                    value={subCategory}
+                    onChange={(e) => setSubCategory(e.target.value)}
+                    placeholder="Sous-catégorie (ex: Denier, Napoléon...)"
+                    style={inputStyle}
+                  />
+                )}
+              </div>
 
               <div>
-                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Matière</label>
+                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Métal</label>
                 <select
                   value={material}
                   onChange={(e) => setMaterial(e.target.value)}

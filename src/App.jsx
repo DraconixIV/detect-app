@@ -690,15 +690,17 @@ function App() {
     e.target.value = "";
   };
 
-  const handleFavorite =
-  async (find) => {
+  const handleFavorite = async (find) => {
+    const targetVal = find.favorite !== undefined ? !find.favorite : true;
+    // Optimistic UI update
+    setFinds((prev) =>
+      prev.map((f) => (f.id === find.id ? { ...f, favorite: targetVal } : f))
+    );
+    if (openPopupFind && openPopupFind.id === find.id) {
+      setOpenPopupFind((prev) => ({ ...prev, favorite: targetVal }));
+    }
 
-    const success =
-      await toggleFavorite(
-        find.id,
-        find.favorite
-      );
-
+    const success = await toggleFavorite(find.id, targetVal);
     if (success) {
       await loadFinds();
     }
@@ -746,13 +748,21 @@ function App() {
   };
 
   const filteredFinds = useMemo(() => {
+    // Single category filter is only active when user explicitly clicks a category chip (filters.length === 1)
+    const isSingleCatFilter = Array.isArray(filters) && filters.length === 1;
+    const singleCatName = isSingleCatFilter ? filters[0].trim().toLowerCase() : null;
+
     return finds.filter((find) => {
       if (favoritesOnly && !find.favorite) {
         return false;
       }
 
-      const matchesCategory = filters.includes(find.category);
-      const matchesSubCategory = !activeSubCategory || find.sub_category === activeSubCategory;
+      const findCat = (find.category || "Autre").trim().toLowerCase();
+      const matchesCategory = !isSingleCatFilter || findCat === singleCatName;
+
+      const matchesSubCategory =
+        !activeSubCategory ||
+        (find.sub_category || "").trim().toLowerCase() === activeSubCategory.trim().toLowerCase();
 
       const matchesSearch =
         !search ||
@@ -773,8 +783,22 @@ function App() {
   const positionedFinds = useMemo(() => {
     if (hideAllFinds || filteredFinds.length === 0) return [];
     
+    // Ensure all valid finds have a valid numeric [lat, lng]
+    const validFinds = filteredFinds.filter((find) => {
+      const lat = find.latitude ?? (Array.isArray(find.position) ? find.position[0] : null);
+      const lng = find.longitude ?? (Array.isArray(find.position) ? find.position[1] : null);
+      return lat !== null && lng !== null && !isNaN(Number(lat)) && !isNaN(Number(lng));
+    }).map((find) => {
+      const lat = Number(find.latitude ?? find.position[0]);
+      const lng = Number(find.longitude ?? find.position[1]);
+      return {
+        ...find,
+        position: [lat, lng]
+      };
+    });
+
     const groups = [];
-    filteredFinds.forEach((find) => {
+    validFinds.forEach((find) => {
       const group = groups.find((g) => {
         const first = g[0];
         // Fast bounding box check (equivalent to ~3-4 meters)
