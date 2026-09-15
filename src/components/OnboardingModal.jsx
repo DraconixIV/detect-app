@@ -6,14 +6,23 @@ import { PRESET_CATEGORY_COLORS, SUGGESTED_STARTER_CATEGORIES } from "../subCate
 import { loadCategoriesData, saveCategoriesData } from "../services/categoriesService";
 import { RECOMMENDED_METALS, loadMaterialsData, saveMaterialsData } from "../services/materialsService";
 
-const COMMON_EMOJIS = [
-  "🪙", "💍", "👑", "🛡️", "⚔️", "🏺", "🗝️", "🎖️", "💣", "🔨", "🪓", "🔔", "⚓", "📦", "📜", "✝️", "🏷️", "💎", "⚙️", "🏹",
-  "🪞", "📿", "🏅", "🥄", "🍴", "👞", "🔘", "🥫", "🪨", "🧪", "🧲", "🧭", "🔍", "⛏️", "✂️", "🔒", "🏛️"
+const DETECTORIST_EMOJIS = [
+  // Monnaies, Trésors & Précieux
+  "🪙", "💰", "🥇", "🥈", "🥉", "💎", "💍", "👑", "📿", "🏆", "🎖️", "🏅", "⚜️",
+  // Antiquités, Objets Historiques & Archéologie
+  "🏺", "🗿", "🏛️", "📜", "🗝️", "🔑", "🔒", "🪞", "🕯️", "⌛", "⏳", "🧱", "✝️",
+  // Militaria, Armes & Boucles
+  "🛡️", "⚔️", "🗡️", "🏹", "💣", "🪖", "🎯", "🔫", "🪓", "🪚", "⚙️", "🥨",
+  // Quincaillerie, Outils, Fixations & Ferraille
+  "🔔", "⚓", "🧲", "🔨", "⛏️", "🔧", "🔩", "🪛", "🖇️", "📎", "✂️", "🪡", "🧷", "🥄", "🍴", "👞", "👝", "🏷️", "📦", "🔘", "🥫", "🎣", "⛓️", "🪜", "🪤", "🪨",
+  // Métaux, Matières, Éléments & Minéraux
+  "🟫", "💿", "⚖️", "🧪", "🔬", "🪵", "🧭", "🔍", "⚡", "🌟", "✨",
+  // Pastilles de repérage
+  "🟡", "⚪", "🟤", "🔴", "🟢", "🔵", "🟣", "⚫"
 ];
 
-const METAL_EMOJIS = [
-  "🪙", "🥈", "🥉", "🟫", "🔔", "💿", "🔘", "⚖️", "🥫", "📎", "⚓", "⚙️", "⚔️", "🧲", "🔨", "💎", "👑", "📦", "🏺", "🛡️", "🔑", "💍", "🏅", "🧱"
-];
+const COMMON_EMOJIS = DETECTORIST_EMOJIS;
+const METAL_EMOJIS = DETECTORIST_EMOJIS;
 
 export default function OnboardingModal({ isOpen, onComplete }) {
   // Step 1: Découverte & Fonctionnalités clés
@@ -1666,39 +1675,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
               </div>
             </div>
 
-            {/* 2. DA / Palette */}
-            <div>
-              <label style={{ fontSize: "11px", fontWeight: "800", textTransform: "uppercase", color: "#64748b", letterSpacing: "0.5px", marginBottom: "8px", display: "block" }}>
-                Palette Visuelle
-              </label>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
-                {Object.values(THEMES).map((th) => {
-                  const isSel = selectedDesignTheme === th.id;
-                  return (
-                    <div
-                      key={th.id}
-                      onClick={() => setSelectedDesignTheme(th.id)}
-                      style={{
-                        padding: "10px 12px",
-                        borderRadius: "12px",
-                        border: isSel ? `2px solid ${th.colors.accent}` : "1px solid #e2e8f0",
-                        background: isSel ? "#f1f5f9" : "#f8fafc",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        transition: "all 0.2s ease"
-                      }}
-                    >
-                      <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: th.colors.accent }} />
-                      <span style={{ fontSize: "12px", fontWeight: isSel ? "700" : "500", color: isSel ? "#0f172a" : "#475569" }}>
-                        {th.name.split(" (")[0]}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+
 
             {/* 3. Dark / Light Mode */}
             <div>

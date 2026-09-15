@@ -16,13 +16,23 @@ import {
 } from "../services/materialsService";
 import { PRESET_CATEGORY_COLORS, defaultCategoryColors } from "../subCategories";
 
-const COMMON_EMOJIS = [
-  "🪙", "💍", "👑", "🛡️", "⚔️", "🏺", "🗝️", "🎖️", "💣", "🔨", "🪓", "🔔", "⚓", "📦", "📜", "✝️", "🏷️", "💎", "⚙️", "🏹",
-  "🪞", "📿", "🏅", "🥄", "🍴", "👞", "🔘", "🥫", "🪨", "🧪", "🧲", "🧭", "🔍", "⛏️", "✂️", "🔒", "🏛️"
+const DETECTORIST_EMOJIS = [
+  // Monnaies, Trésors & Précieux
+  "🪙", "💰", "🥇", "🥈", "🥉", "💎", "💍", "👑", "📿", "🏆", "🎖️", "🏅", "⚜️",
+  // Antiquités, Objets Historiques & Archéologie
+  "🏺", "🗿", "🏛️", "📜", "🗝️", "🔑", "🔒", "🪞", "🕯️", "⌛", "⏳", "🧱", "✝️",
+  // Militaria, Armes & Boucles
+  "🛡️", "⚔️", "🗡️", "🏹", "💣", "🪖", "🎯", "🔫", "🪓", "🪚", "⚙️", "🥨",
+  // Quincaillerie, Outils, Fixations & Ferraille
+  "🔔", "⚓", "🧲", "🔨", "⛏️", "🔧", "🔩", "🪛", "🖇️", "📎", "✂️", "🪡", "🧷", "🥄", "🍴", "👞", "👝", "🏷️", "📦", "🔘", "🥫", "🎣", "⛓️", "🪜", "🪤", "🪨",
+  // Métaux, Matières, Éléments & Minéraux
+  "🟫", "💿", "⚖️", "🧪", "🔬", "🪵", "🧭", "🔍", "⚡", "🌟", "✨",
+  // Pastilles de repérage
+  "🟡", "⚪", "🟤", "🔴", "🟢", "🔵", "🟣", "⚫"
 ];
-const METAL_EMOJIS = [
-  "🪙", "🥈", "🥉", "🟫", "🔔", "💿", "🔘", "⚖️", "🥫", "📎", "⚓", "⚙️", "⚔️", "🧲", "🔨", "💎", "👑", "📦", "🏺", "🛡️", "🔑", "💍", "🏅", "🧱"
-];
+
+const COMMON_EMOJIS = DETECTORIST_EMOJIS;
+const METAL_EMOJIS = DETECTORIST_EMOJIS;
 
 export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }) {
   const [modalTab, setModalTab] = useState("categories"); // 'categories' | 'metals'
