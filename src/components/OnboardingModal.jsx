@@ -222,21 +222,6 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
     saveMaterialsData(updatedMaterials, updatedEmojis);
   };
 
-  const handleDevSkip = () => {
-    saveCategoriesData(categories, emojis, colors);
-    saveMaterialsData(materials, materialEmojis);
-    localStorage.setItem("geoprospect_onboarding_completed_v3", "true");
-    localStorage.setItem("geoprospect_cgu_accepted", "true");
-    if (onComplete) {
-      onComplete({
-        defaultMapStyle: selectedMapStyle,
-        designTheme: selectedDesignTheme,
-        theme: selectedAppTheme,
-        gpsStyle: selectedGpsStyle
-      });
-    }
-  };
-
   const handleFinish = () => {
     saveCategoriesData(categories, emojis, colors);
     saveMaterialsData(materials, materialEmojis);
@@ -290,8 +275,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
           boxSizing: "border-box"
         }}
       >
-        {/* Header : Progress Stepper & Dev Skip */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        {/* Header : Progress Stepper */}
+        <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
           {/* Step Indicator */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <div style={{ display: "flex", gap: "5px" }}>
@@ -312,33 +297,6 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
               Étape {step} sur 6
             </span>
           </div>
-
-          {/* Dev Skip */}
-          <button
-            onClick={handleDevSkip}
-            style={{
-              padding: "5px 10px",
-              borderRadius: "8px",
-              border: isDark ? "1px solid rgba(255,255,255,0.15)" : "1px solid #e2e8f0",
-              background: isDark ? "#1e293b" : "#f8fafc",
-              color: textSub,
-              fontSize: "11px",
-              fontWeight: "600",
-              cursor: "pointer",
-              transition: "all 0.2s ease"
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = "#0f172a";
-              e.currentTarget.style.background = "#f1f5f9";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "#64748b";
-              e.currentTarget.style.background = "#f8fafc";
-            }}
-            title="Bypass pour le développement"
-          >
-            Dev Skip
-          </button>
         </div>
 
         {/* ========================================================= */}
@@ -1805,21 +1763,21 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
               }}
             >
               <p style={{ margin: 0 }}>
-                Cette application est <strong>100 % gratuite</strong> et toujours en phase de test. Il se peut que vous rencontriez de nombreux bugs et failles de développement à mesure de son utilisation.
+                Cette application est 100 % gratuite et toujours en phase de test. Il se peut que vous rencontriez de nombreux bugs et failles de développement à mesure de son utilisation.
               </p>
               <p style={{ margin: 0 }}>
-                On parle d'un projet développé seul par un <strong>étudiant de 19 ans</strong> qui cherche uniquement à partager cette merveilleuse activité qu'est la détection de métaux. Proposer un outil de poche est ma manière de contribuer à la communauté en offrant la possibilité de gérer son petit carnet de bord.
+                On parle d'un projet développé seul par un étudiant de 19 ans qui cherche uniquement à partager cette merveilleuse activité qu'est la détection de métaux. Proposer un outil de poche est ma manière de contribuer à la communauté en offrant la possibilité de gérer son petit carnet de bord.
               </p>
               <p style={{ margin: 0 }}>
                 Tous vos retours seront votre manière de remercier mon travail, un simple compte-rendu de votre expérience suffira amplement à contribuer à l'amélioration constante de GeoProspect.
               </p>
               <p style={{ margin: 0 }}>
-                Je me suis ainsi permis d'ouvrir un <strong>espace aux dons</strong> pour permettre à tous les utilisateurs étant extrêmement satisfaits de soutenir le projet de manière plus directe. Ce fond pourra servir à investir dans ce dernier à plus long terme en allouant des ressources plus importantes et en continuant l'apport mensuel de nouveautés.
+                Je me suis ainsi permis d'ouvrir un espace aux dons pour permettre à tous les utilisateurs étant extrêmement satisfaits de soutenir le projet de manière plus directe. Ce fond pourra servir à investir dans ce dernier à plus long terme en allouant des ressources plus importantes et en continuant l'apport mensuel de nouveautés.
               </p>
               <p style={{ margin: 0 }}>
-                Enfin, j'aimerais souligner que <strong>notre loisir est encadré par des lois</strong>. À ce titre, il demeure essentiel de se renseigner sur la législation française afin d'éviter de ternir notre réputation et d'amputer la communauté responsable qui ne souhaite que plus de visibilité. <em>Prospecter exige une déontologie.</em>
+                Enfin, j'aimerais souligner que notre loisir est encadré par des lois. À ce titre, il demeure essentiel de se renseigner sur la législation française afin d'éviter de ternir notre réputation et d'amputer la communauté responsable qui ne souhaite que plus de visibilité. <em>Prospecter exige une déontologie.</em>
               </p>
-              <div style={{ marginTop: "4px", padding: "12px 14px", borderRadius: "12px", background: isDark ? "rgba(59, 130, 246, 0.12)" : "#eff6ff", border: isDark ? "1px solid rgba(59, 130, 246, 0.25)" : "1px solid #dbeafe", fontWeight: "700", color: isDark ? "#93c5fd" : "#1e40af", fontSize: "13px", textAlign: "center", lineHeight: "1.5" }}>
+              <div style={{ marginTop: "4px", padding: "12px 14px", borderRadius: "12px", background: isDark ? "rgba(59, 130, 246, 0.12)" : "#eff6ff", border: isDark ? "1px solid rgba(59, 130, 246, 0.25)" : "1px solid #dbeafe", fontWeight: "600", color: isDark ? "#93c5fd" : "#1e40af", fontSize: "13px", textAlign: "center", lineHeight: "1.5" }}>
                 Allez, je vous laisse profiter ! Merci pour votre lecture, bonnes recherches :)
               </div>
             </div>
