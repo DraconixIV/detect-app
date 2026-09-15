@@ -7,11 +7,12 @@ import { loadCategoriesData, saveCategoriesData } from "../services/categoriesSe
 import { RECOMMENDED_METALS, loadMaterialsData, saveMaterialsData } from "../services/materialsService";
 
 const COMMON_EMOJIS = [
-  "🪙", "💍", "👑", "🛡️", "⚔️", "🏺", "🗝️", "🎖️", "💣", "🔨", "🪓", "🔔", "⚓", "📦", "📜", "✝️", "🏷️", "💎", "⚙️", "🏹"
+  "🪙", "💍", "👑", "🛡️", "⚔️", "🏺", "🗝️", "🎖️", "💣", "🔨", "🪓", "🔔", "⚓", "📦", "📜", "✝️", "🏷️", "💎", "⚙️", "🏹",
+  "🪞", "📿", "🏅", "🥄", "🍴", "👞", "🔘", "🥫", "🪨", "🧪", "🧲", "🧭", "🔍", "⛏️", "✂️", "🔒", "🏛️"
 ];
 
 const METAL_EMOJIS = [
-  "🪙", "🥈", "🥉", "🟫", "🔔", "💿", "🔘", "⚖️", "🥫", "📎", "⚓", "⚙️", "⚔️", "🧲", "🔨", "💎", "👑", "📦", "🏺", "🛡️"
+  "🪙", "🥈", "🥉", "🟫", "🔔", "💿", "🔘", "⚖️", "🥫", "📎", "⚓", "⚙️", "⚔️", "🧲", "🔨", "💎", "👑", "📦", "🏺", "🛡️", "🔑", "💍", "🏅", "🧱"
 ];
 
 export default function OnboardingModal({ isOpen, onComplete }) {
@@ -827,10 +828,10 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                 🎨 100% Personnalisable
               </div>
               <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: "#0f172a", letterSpacing: "-0.5px" }}>
-                Vos Catégories & Métaux 🏷️🪙
+                Votre classification :
               </h1>
               <p style={{ margin: 0, fontSize: "13px", color: "#475569", lineHeight: "1.5" }}>
-                Définissez vos familles d'objets, leurs repères carte et choisissez les métaux associés à vos futures trouvailles.
+                Définissez vos catégories d'objets, leurs repères visibles sur la carte et choisissez les métaux associés à vos futures trouvailles.
               </p>
             </div>
 
@@ -862,7 +863,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                   transition: "all 0.15s ease"
                 }}
               >
-                🏷️ Familles d'Objets ({Object.keys(categories).length})
+                Catégories d'objets ({Object.keys(categories).length})
               </button>
               <button
                 type="button"
@@ -881,7 +882,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                   transition: "all 0.15s ease"
                 }}
               >
-                🪙 Métaux & Émojis ({materials.length})
+                Métaux ({materials.length})
               </button>
             </div>
 
@@ -948,7 +949,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                   onSubmit={handleAddCustomCategory}
                   style={{
                     background: "#f8fafc",
-                    border: "1.5px solid #dbeafe",
+                    border: "1px solid #e2e8f0",
                     borderRadius: "16px",
                     padding: "14px",
                     display: "flex",
@@ -956,65 +957,101 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                     gap: "10px"
                   }}
                 >
-                  <div style={{ fontSize: "12px", fontWeight: "800", color: "#2563eb" }}>
-                    ➕ Créer une Catégorie Sur-Mesure
+                  <div style={{ fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                    Créer une catégorie :
                   </div>
 
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    <select
-                      value={newCatEmoji}
-                      onChange={(e) => setNewCatEmoji(e.target.value)}
-                      style={{
-                        padding: "9px",
-                        borderRadius: "10px",
-                        border: "1px solid #cbd5e1",
-                        background: "#ffffff",
-                        color: "#0f172a",
-                        fontSize: "16px",
-                        cursor: "pointer"
-                      }}
-                    >
-                      {COMMON_EMOJIS.map((em) => (
-                        <option key={em} value={em}>
-                          {em}
-                        </option>
-                      ))}
-                    </select>
-
-                    <input
-                      type="text"
-                      placeholder="Nom (ex: Poterie, Fossile, Outil...)"
-                      value={newCatName}
-                      onChange={(e) => setNewCatName(e.target.value)}
-                      style={{
-                        flex: 1,
-                        padding: "9px 12px",
-                        borderRadius: "10px",
-                        border: "1px solid #cbd5e1",
-                        background: "#ffffff",
-                        color: "#0f172a",
-                        fontSize: "13px",
-                        outline: "none"
-                      }}
-                    />
-                  </div>
-
-                  {/* Sub-categories input (comma separated) */}
+                  {/* Nom */}
                   <input
                     type="text"
-                    placeholder="Sous-catégories séparées par virgules (ex: Antique, Médiéval...)"
-                    value={newSubText}
-                    onChange={(e) => setNewSubText(e.target.value)}
+                    placeholder="Nom"
+                    value={newCatName}
+                    onChange={(e) => setNewCatName(e.target.value)}
                     style={{
+                      width: "100%",
                       padding: "9px 12px",
                       borderRadius: "10px",
                       border: "1px solid #cbd5e1",
                       background: "#ffffff",
                       color: "#0f172a",
-                      fontSize: "12px",
-                      outline: "none"
+                      fontSize: "13px",
+                      outline: "none",
+                      boxSizing: "border-box"
                     }}
                   />
+
+                  {/* Grille complète d'émojis */}
+                  <div>
+                    <div style={{ fontSize: "11px", fontWeight: "700", color: "#64748b", marginBottom: "6px" }}>
+                      Émoji associé :
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "6px",
+                        maxHeight: "120px",
+                        overflowY: "auto",
+                        padding: "6px",
+                        background: "#ffffff",
+                        border: "1px solid #cbd5e1",
+                        borderRadius: "10px"
+                      }}
+                    >
+                      {COMMON_EMOJIS.map((em) => {
+                        const isSelected = newCatEmoji === em;
+                        return (
+                          <button
+                            key={em}
+                            type="button"
+                            onClick={() => setNewCatEmoji(em)}
+                            style={{
+                              width: "32px",
+                              height: "32px",
+                              borderRadius: "8px",
+                              border: isSelected ? "2px solid #3b82f6" : "1px solid #e2e8f0",
+                              background: isSelected ? "#eff6ff" : "#f8fafc",
+                              fontSize: "18px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              cursor: "pointer",
+                              padding: 0,
+                              transform: isSelected ? "scale(1.12)" : "scale(1)",
+                              transition: "all 0.12s ease"
+                            }}
+                            title={em}
+                          >
+                            {em}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Sous-catégories avec libellé et placeholder visible */}
+                  <div>
+                    <div style={{ fontSize: "11px", fontWeight: "700", color: "#64748b", marginBottom: "4px" }}>
+                      Sous-catégories (séparées par des virgules) :
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Ex: Antique, Médiéval, Moderne..."
+                      value={newSubText}
+                      onChange={(e) => setNewSubText(e.target.value)}
+                      style={{
+                        width: "100%",
+                        padding: "9px 12px",
+                        borderRadius: "10px",
+                        border: "1px solid #cbd5e1",
+                        background: "#ffffff",
+                        color: "#0f172a",
+                        fontSize: "12px",
+                        outline: "none",
+                        boxSizing: "border-box"
+                      }}
+                    />
+                  </div>
 
                   {/* Color Swatch Picker */}
                   <div>
@@ -1324,7 +1361,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                   onSubmit={handleAddCustomMetal}
                   style={{
                     background: "#f8fafc",
-                    border: "1.5px solid #dbeafe",
+                    border: "1px solid #e2e8f0",
                     borderRadius: "16px",
                     padding: "14px",
                     display: "flex",
@@ -1332,47 +1369,76 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                     gap: "10px"
                   }}
                 >
-                  <div style={{ fontSize: "12px", fontWeight: "800", color: "#2563eb" }}>
-                    ➕ Ajouter un Métal ou Alliage Sur-Mesure
+                  <div style={{ fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                    Ajouter un métal et/ou un alliage :
                   </div>
 
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    <select
-                      value={newMetalEmoji}
-                      onChange={(e) => setNewMetalEmoji(e.target.value)}
+                  {/* Nom du métal */}
+                  <input
+                    type="text"
+                    placeholder="Nom du métal"
+                    value={newMetalName}
+                    onChange={(e) => setNewMetalName(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "9px 12px",
+                      borderRadius: "10px",
+                      border: "1px solid #cbd5e1",
+                      background: "#ffffff",
+                      color: "#0f172a",
+                      fontSize: "13px",
+                      outline: "none",
+                      boxSizing: "border-box"
+                    }}
+                  />
+
+                  {/* Grille complète d'émojis pour les métaux */}
+                  <div>
+                    <div style={{ fontSize: "11px", fontWeight: "700", color: "#64748b", marginBottom: "6px" }}>
+                      Émoji associé :
+                    </div>
+                    <div
                       style={{
-                        padding: "9px",
-                        borderRadius: "10px",
-                        border: "1px solid #cbd5e1",
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "6px",
+                        maxHeight: "120px",
+                        overflowY: "auto",
+                        padding: "6px",
                         background: "#ffffff",
-                        color: "#0f172a",
-                        fontSize: "16px",
-                        cursor: "pointer"
+                        border: "1px solid #cbd5e1",
+                        borderRadius: "10px"
                       }}
                     >
-                      {METAL_EMOJIS.map((em) => (
-                        <option key={em} value={em}>
-                          {em}
-                        </option>
-                      ))}
-                    </select>
-
-                    <input
-                      type="text"
-                      placeholder="Nom du métal (ex: Maillechort, Peltre, Zamac, Or blanc...)"
-                      value={newMetalName}
-                      onChange={(e) => setNewMetalName(e.target.value)}
-                      style={{
-                        flex: 1,
-                        padding: "9px 12px",
-                        borderRadius: "10px",
-                        border: "1px solid #cbd5e1",
-                        background: "#ffffff",
-                        color: "#0f172a",
-                        fontSize: "13px",
-                        outline: "none"
-                      }}
-                    />
+                      {METAL_EMOJIS.map((em) => {
+                        const isSelected = newMetalEmoji === em;
+                        return (
+                          <button
+                            key={em}
+                            type="button"
+                            onClick={() => setNewMetalEmoji(em)}
+                            style={{
+                              width: "32px",
+                              height: "32px",
+                              borderRadius: "8px",
+                              border: isSelected ? "2px solid #3b82f6" : "1px solid #e2e8f0",
+                              background: isSelected ? "#eff6ff" : "#f8fafc",
+                              fontSize: "18px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              cursor: "pointer",
+                              padding: 0,
+                              transform: isSelected ? "scale(1.12)" : "scale(1)",
+                              transition: "all 0.12s ease"
+                            }}
+                            title={em}
+                          >
+                            {em}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
 
                   <button

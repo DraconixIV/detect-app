@@ -16,8 +16,13 @@ import {
 } from "../services/materialsService";
 import { PRESET_CATEGORY_COLORS, defaultCategoryColors } from "../subCategories";
 
-const COMMON_EMOJIS = ["🪙", "💍", "👑", "🛡️", "⚔️", "🏺", "🗝️", "🎖️", "💣", "🔨", "🪓", "🔔", "⚓", "📦", "📜", "✝️", "🏷️", "💎"];
-const METAL_EMOJIS = ["🪙", "🥈", "🥉", "🟫", "🔔", "💿", "🔘", "⚖️", "🥫", "📎", "⚓", "⚙️", "⚔️", "🧲", "🔨", "💎", "👑", "📦", "🏺", "🛡️"];
+const COMMON_EMOJIS = [
+  "🪙", "💍", "👑", "🛡️", "⚔️", "🏺", "🗝️", "🎖️", "💣", "🔨", "🪓", "🔔", "⚓", "📦", "📜", "✝️", "🏷️", "💎", "⚙️", "🏹",
+  "🪞", "📿", "🏅", "🥄", "🍴", "👞", "🔘", "🥫", "🪨", "🧪", "🧲", "🧭", "🔍", "⛏️", "✂️", "🔒", "🏛️"
+];
+const METAL_EMOJIS = [
+  "🪙", "🥈", "🥉", "🟫", "🔔", "💿", "🔘", "⚖️", "🥫", "📎", "⚓", "⚙️", "⚔️", "🧲", "🔨", "💎", "👑", "📦", "🏺", "🛡️", "🔑", "💍", "🏅", "🧱"
+];
 
 export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }) {
   const [modalTab, setModalTab] = useState("categories"); // 'categories' | 'metals'
@@ -146,7 +151,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
               </h2>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
                 {modalTab === "categories"
-                  ? "Personnalisez vos familles d'objets, repères et sous-types"
+                  ? "Personnalisez vos catégories d'objets, repères et sous-types"
                   : "Activez et personnalisez les métaux pour vos trouvailles"}
               </p>
             </div>
@@ -201,7 +206,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
               transition: "all 0.15s ease"
             }}
           >
-            🏷️ Familles ({Object.keys(categoriesData.categories || {}).length})
+            Catégories d'objets ({Object.keys(categoriesData.categories || {}).length})
           </button>
           <button
             type="button"
@@ -220,7 +225,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
               transition: "all 0.15s ease"
             }}
           >
-            🪙 Métaux ({ (materialsData.materials || []).length })
+            Métaux ({ (materialsData.materials || []).length })
           </button>
         </div>
 
@@ -236,53 +241,85 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                   border: `1px solid ${cardBorder}`,
                   borderRadius: "16px",
                   padding: "14px",
-                  marginBottom: "16px"
+                  marginBottom: "16px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px"
                 }}
               >
-                <div style={{ fontSize: "12px", fontWeight: "800", marginBottom: "8px", color: textMain }}>
-                  ➕ Nouvelle Catégorie
+                <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  Créer une catégorie :
                 </div>
-                <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
-                  <select
-                    value={newCatEmoji}
-                    onChange={(e) => setNewCatEmoji(e.target.value)}
+
+                <input
+                  type="text"
+                  placeholder="Nom"
+                  value={newCatName}
+                  onChange={(e) => setNewCatName(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "9px 12px",
+                    borderRadius: "10px",
+                    border: `1px solid ${inputBorder}`,
+                    background: inputBg,
+                    color: textMain,
+                    fontSize: "13px",
+                    outline: "none",
+                    boxSizing: "border-box"
+                  }}
+                />
+
+                {/* Grille complète d'émojis */}
+                <div>
+                  <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
+                    Émoji associé :
+                  </div>
+                  <div
                     style={{
-                      padding: "8px",
-                      borderRadius: "10px",
-                      border: `1px solid ${inputBorder}`,
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "6px",
+                      maxHeight: "120px",
+                      overflowY: "auto",
+                      padding: "6px",
                       background: inputBg,
-                      color: textMain,
-                      fontSize: "16px",
-                      cursor: "pointer"
+                      border: `1px solid ${inputBorder}`,
+                      borderRadius: "10px"
                     }}
                   >
-                    {COMMON_EMOJIS.map((em) => (
-                      <option key={em} value={em}>
-                        {em}
-                      </option>
-                    ))}
-                  </select>
-
-                  <input
-                    type="text"
-                    placeholder="Nom (ex: Poterie, Arme, Fossile...)"
-                    value={newCatName}
-                    onChange={(e) => setNewCatName(e.target.value)}
-                    style={{
-                      flex: 1,
-                      padding: "8px 12px",
-                      borderRadius: "10px",
-                      border: `1px solid ${inputBorder}`,
-                      background: inputBg,
-                      color: textMain,
-                      fontSize: "13px",
-                      outline: "none"
-                    }}
-                  />
+                    {COMMON_EMOJIS.map((em) => {
+                      const isSelected = newCatEmoji === em;
+                      return (
+                        <button
+                          key={em}
+                          type="button"
+                          onClick={() => setNewCatEmoji(em)}
+                          style={{
+                            width: "32px",
+                            height: "32px",
+                            borderRadius: "8px",
+                            border: isSelected ? "2px solid #3b82f6" : `1px solid ${cardBorder}`,
+                            background: isSelected ? (isLight ? "#eff6ff" : "rgba(59, 130, 246, 0.25)") : (isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.05)"),
+                            fontSize: "18px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                            padding: 0,
+                            transform: isSelected ? "scale(1.12)" : "scale(1)",
+                            transition: "all 0.12s ease"
+                          }}
+                          title={em}
+                        >
+                          {em}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Color Swatches */}
-                <div style={{ marginBottom: "12px" }}>
+                <div>
                   <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
                     Couleur du repère carte :
                   </div>
@@ -323,10 +360,10 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                   disabled={!newCatName.trim()}
                   style={{
                     width: "100%",
-                    padding: "9px",
+                    padding: "10px",
                     borderRadius: "10px",
                     border: "none",
-                    background: newCatName.trim() ? "linear-gradient(135deg, #3b82f6, #2563eb)" : "rgba(255,255,255,0.1)",
+                    background: newCatName.trim() ? "linear-gradient(135deg, #3b82f6, #2563eb)" : (isLight ? "#e2e8f0" : "rgba(255,255,255,0.1)"),
                     color: newCatName.trim() ? "#ffffff" : textSub,
                     fontSize: "12px",
                     fontWeight: "700",
@@ -334,7 +371,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                     transition: "all 0.2s ease"
                   }}
                 >
-                  Ajouter cette catégorie
+                  + Ajouter cette catégorie
                 </button>
               </form>
 
@@ -621,57 +658,85 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                   gap: "10px"
                 }}
               >
-                <div style={{ fontSize: "12px", fontWeight: "800", color: textMain }}>
-                  ➕ Ajouter un Métal ou Alliage Sur-Mesure
+                <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  Ajouter un métal et/ou un alliage :
                 </div>
 
-                <div style={{ display: "flex", gap: "8px" }}>
-                  <select
-                    value={newMetalEmoji}
-                    onChange={(e) => setNewMetalEmoji(e.target.value)}
+                <input
+                  type="text"
+                  placeholder="Nom du métal"
+                  value={newMetalName}
+                  onChange={(e) => setNewMetalName(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "9px 12px",
+                    borderRadius: "10px",
+                    border: `1px solid ${inputBorder}`,
+                    background: inputBg,
+                    color: textMain,
+                    fontSize: "13px",
+                    outline: "none",
+                    boxSizing: "border-box"
+                  }}
+                />
+
+                {/* Grille complète d'émojis pour les métaux */}
+                <div>
+                  <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
+                    Émoji associé :
+                  </div>
+                  <div
                     style={{
-                      padding: "8px",
-                      borderRadius: "10px",
-                      border: `1px solid ${inputBorder}`,
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "6px",
+                      maxHeight: "120px",
+                      overflowY: "auto",
+                      padding: "6px",
                       background: inputBg,
-                      color: textMain,
-                      fontSize: "16px",
-                      cursor: "pointer"
+                      border: `1px solid ${inputBorder}`,
+                      borderRadius: "10px"
                     }}
                   >
-                    {METAL_EMOJIS.map((em) => (
-                      <option key={em} value={em}>
-                        {em}
-                      </option>
-                    ))}
-                  </select>
-
-                  <input
-                    type="text"
-                    placeholder="Nom du métal (ex: Maillechort, Peltre, Zamac, Or blanc...)"
-                    value={newMetalName}
-                    onChange={(e) => setNewMetalName(e.target.value)}
-                    style={{
-                      flex: 1,
-                      padding: "8px 12px",
-                      borderRadius: "10px",
-                      border: `1px solid ${inputBorder}`,
-                      background: inputBg,
-                      color: textMain,
-                      fontSize: "13px",
-                      outline: "none"
-                    }}
-                  />
+                    {METAL_EMOJIS.map((em) => {
+                      const isSelected = newMetalEmoji === em;
+                      return (
+                        <button
+                          key={em}
+                          type="button"
+                          onClick={() => setNewMetalEmoji(em)}
+                          style={{
+                            width: "32px",
+                            height: "32px",
+                            borderRadius: "8px",
+                            border: isSelected ? "2px solid #3b82f6" : `1px solid ${cardBorder}`,
+                            background: isSelected ? (isLight ? "#eff6ff" : "rgba(59, 130, 246, 0.25)") : (isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.05)"),
+                            fontSize: "18px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                            padding: 0,
+                            transform: isSelected ? "scale(1.12)" : "scale(1)",
+                            transition: "all 0.12s ease"
+                          }}
+                          title={em}
+                        >
+                          {em}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 <button
                   type="submit"
                   disabled={!newMetalName.trim()}
                   style={{
-                    padding: "9px",
+                    padding: "10px",
                     borderRadius: "10px",
                     border: "none",
-                    background: newMetalName.trim() ? "linear-gradient(135deg, #10b981, #059669)" : "rgba(255,255,255,0.1)",
+                    background: newMetalName.trim() ? "linear-gradient(135deg, #10b981, #059669)" : (isLight ? "#e2e8f0" : "rgba(255,255,255,0.1)"),
                     color: newMetalName.trim() ? "#ffffff" : textSub,
                     fontSize: "12px",
                     fontWeight: "700",
