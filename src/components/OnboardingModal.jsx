@@ -24,12 +24,13 @@ const DETECTORIST_EMOJIS = [
 const COMMON_EMOJIS = DETECTORIST_EMOJIS;
 const METAL_EMOJIS = DETECTORIST_EMOJIS;
 
-export default function OnboardingModal({ isOpen, onComplete }) {
+export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange, currentTheme = "dark" }) {
   // Step 1: Découverte & Fonctionnalités clés
   // Step 2: Cadre Légal & Charte Éthique
   // Step 3: Espace Prospecteur (Authentification)
-  // Step 4: Vos Catégories, Métaux & Couleurs
-  // Step 5: Configuration Initiale (Carte, DA, Thème)
+  // Step 4: Votre Classification (Catégories & Métaux)
+  // Step 5: Configuration Initiale (Carte, Thème)
+  // Step 6: Message Personnel du Créateur
   const [step, setStep] = useState(1);
   const [step4Tab, setStep4Tab] = useState("categories"); // 'categories' | 'metals'
   const [user, setUser] = useState(null);
@@ -77,8 +78,24 @@ export default function OnboardingModal({ isOpen, onComplete }) {
   // Pre-customization choices
   const [selectedMapStyle, setSelectedMapStyle] = useState("satellite");
   const [selectedDesignTheme, setSelectedDesignTheme] = useState("tactical");
-  const [selectedAppTheme, setSelectedAppTheme] = useState("dark");
+  const [selectedAppTheme, setSelectedAppTheme] = useState(() => currentTheme || "dark");
   const [selectedGpsStyle, setSelectedGpsStyle] = useState("blue-dot");
+
+  const handleSelectTheme = (mode) => {
+    setSelectedAppTheme(mode);
+    if (onLiveThemeChange) {
+      onLiveThemeChange(mode);
+    }
+  };
+
+  const isDark = selectedAppTheme === "dark";
+  const bgRoot = isDark ? "#0b1329" : "#ffffff";
+  const textMain = isDark ? "#ffffff" : "#0f172a";
+  const textSub = isDark ? "#94a3b8" : "#475569";
+  const cardBg = isDark ? "#111c44" : "#f8fafc";
+  const cardBorder = isDark ? "rgba(255, 255, 255, 0.12)" : "#e2e8f0";
+  const inputBg = isDark ? "#0b1329" : "#ffffff";
+  const inputBorder = isDark ? "rgba(255, 255, 255, 0.2)" : "#cbd5e1";
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -248,7 +265,8 @@ export default function OnboardingModal({ isOpen, onComplete }) {
         width: "100vw",
         height: "100vh",
         zIndex: 100000,
-        background: "#ffffff",
+        background: bgRoot,
+        color: textMain,
         overflowY: "auto",
         display: "flex",
         flexDirection: "column",
@@ -256,7 +274,8 @@ export default function OnboardingModal({ isOpen, onComplete }) {
         justifyContent: "flex-start",
         padding: "env(safe-area-inset-top, 24px) 16px env(safe-area-inset-bottom, 32px) 16px",
         boxSizing: "border-box",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        transition: "background 0.25s ease, color 0.25s ease"
       }}
     >
       <div
@@ -276,21 +295,21 @@ export default function OnboardingModal({ isOpen, onComplete }) {
           {/* Step Indicator */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <div style={{ display: "flex", gap: "5px" }}>
-              {[1, 2, 3, 4, 5].map((s) => (
+              {[1, 2, 3, 4, 5, 6].map((s) => (
                 <div
                   key={s}
                   style={{
                     width: step === s ? "24px" : "8px",
                     height: "6px",
                     borderRadius: "3px",
-                    background: step === s ? "#2563eb" : (step > s ? "#10b981" : "#e2e8f0"),
+                    background: step === s ? "#2563eb" : (step > s ? "#10b981" : (isDark ? "rgba(255,255,255,0.15)" : "#e2e8f0")),
                     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                   }}
                 />
               ))}
             </div>
-            <span style={{ fontSize: "12px", fontWeight: "700", color: "#64748b", marginLeft: "4px" }}>
-              Étape {step} sur 5
+            <span style={{ fontSize: "12px", fontWeight: "700", color: textSub, marginLeft: "4px" }}>
+              Étape {step} sur 6
             </span>
           </div>
 
@@ -300,9 +319,9 @@ export default function OnboardingModal({ isOpen, onComplete }) {
             style={{
               padding: "5px 10px",
               borderRadius: "8px",
-              border: "1px solid #e2e8f0",
-              background: "#f8fafc",
-              color: "#64748b",
+              border: isDark ? "1px solid rgba(255,255,255,0.15)" : "1px solid #e2e8f0",
+              background: isDark ? "#1e293b" : "#f8fafc",
+              color: textSub,
               fontSize: "11px",
               fontWeight: "600",
               cursor: "pointer",
@@ -833,13 +852,10 @@ export default function OnboardingModal({ isOpen, onComplete }) {
         {step === 4 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "20px", background: "#fdf2f8", border: "1px solid #fbcfe8", color: "#db2777", fontSize: "11px", fontWeight: "700", marginBottom: "8px" }}>
-                🎨 100% Personnalisable
-              </div>
-              <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: "#0f172a", letterSpacing: "-0.5px" }}>
+              <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
                 Votre classification :
               </h1>
-              <p style={{ margin: 0, fontSize: "13px", color: "#475569", lineHeight: "1.5" }}>
+              <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
                 Définissez vos catégories d'objets, leurs repères visibles sur la carte et choisissez les métaux associés à vos futures trouvailles.
               </p>
             </div>
@@ -1616,20 +1632,23 @@ export default function OnboardingModal({ isOpen, onComplete }) {
         {/* ========================================================= */}
         {/* ÉTAPE 5 : PRÉ-PERSONNALISATION & FINALISATION             */}
         {/* ========================================================= */}
+        {/* ========================================================= */}
+        {/* ÉTAPE 5 : PRÉ-PERSONNALISATION (CARTE & THÈME)            */}
+        {/* ========================================================= */}
         {step === 5 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
-              <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: "#0f172a", letterSpacing: "-0.5px" }}>
+              <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
                 Configuration Initiale ⚙️
               </h1>
-              <p style={{ margin: 0, fontSize: "13px", color: "#475569", lineHeight: "1.5" }}>
-                Personnalisez votre affichage cartographique et l'interface de travail.
+              <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
+                Personnalisez votre affichage cartographique et l'interface de travail avec aperçu en direct.
               </p>
             </div>
 
             {/* 1. Map Style */}
             <div>
-              <label style={{ fontSize: "11px", fontWeight: "800", textTransform: "uppercase", color: "#64748b", letterSpacing: "0.5px", marginBottom: "8px", display: "block" }}>
+              <label style={{ fontSize: "11px", fontWeight: "800", textTransform: "uppercase", color: textSub, letterSpacing: "0.5px", marginBottom: "8px", display: "block" }}>
                 Fond de carte par défaut
               </label>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
@@ -1638,17 +1657,17 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                   style={{
                     padding: "14px",
                     borderRadius: "14px",
-                    border: selectedMapStyle === "satellite" ? "2px solid #2563eb" : "1px solid #e2e8f0",
-                    background: selectedMapStyle === "satellite" ? "#eff6ff" : "#f8fafc",
+                    border: selectedMapStyle === "satellite" ? "2px solid #2563eb" : `1px solid ${cardBorder}`,
+                    background: selectedMapStyle === "satellite" ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : cardBg,
                     cursor: "pointer",
                     textAlign: "center",
                     transition: "all 0.2s ease"
                   }}
                 >
-                  <div style={{ fontSize: "14px", fontWeight: "800", color: selectedMapStyle === "satellite" ? "#1e3a8a" : "#0f172a" }}>
+                  <div style={{ fontSize: "14px", fontWeight: "800", color: selectedMapStyle === "satellite" ? (isDark ? "#60a5fa" : "#1e3a8a") : textMain }}>
                     🛰️ Satellite HD
                   </div>
-                  <div style={{ fontSize: "11px", color: "#64748b", marginTop: "2px" }}>
+                  <div style={{ fontSize: "11px", color: textSub, marginTop: "2px" }}>
                     Imagerie aérienne
                   </div>
                 </div>
@@ -1658,62 +1677,62 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                   style={{
                     padding: "14px",
                     borderRadius: "14px",
-                    border: selectedMapStyle === "streets" ? "2px solid #2563eb" : "1px solid #e2e8f0",
-                    background: selectedMapStyle === "streets" ? "#eff6ff" : "#f8fafc",
+                    border: selectedMapStyle === "streets" ? "2px solid #2563eb" : `1px solid ${cardBorder}`,
+                    background: selectedMapStyle === "streets" ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : cardBg,
                     cursor: "pointer",
                     textAlign: "center",
                     transition: "all 0.2s ease"
                   }}
                 >
-                  <div style={{ fontSize: "14px", fontWeight: "800", color: selectedMapStyle === "streets" ? "#1e3a8a" : "#0f172a" }}>
+                  <div style={{ fontSize: "14px", fontWeight: "800", color: selectedMapStyle === "streets" ? (isDark ? "#60a5fa" : "#1e3a8a") : textMain }}>
                     🏔️ Relief & Topo
                   </div>
-                  <div style={{ fontSize: "11px", color: "#64748b", marginTop: "2px" }}>
+                  <div style={{ fontSize: "11px", color: textSub, marginTop: "2px" }}>
                     Courbes de niveau
                   </div>
                 </div>
               </div>
             </div>
 
-
-
-            {/* 3. Dark / Light Mode */}
+            {/* 2. Dark / Light Mode with Live Preview */}
             <div>
-              <label style={{ fontSize: "11px", fontWeight: "800", textTransform: "uppercase", color: "#64748b", letterSpacing: "0.5px", marginBottom: "8px", display: "block" }}>
-                Mode d'Affichage
+              <label style={{ fontSize: "11px", fontWeight: "800", textTransform: "uppercase", color: textSub, letterSpacing: "0.5px", marginBottom: "8px", display: "block" }}>
+                Mode d'Affichage (Aperçu en direct)
               </label>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 <button
                   type="button"
-                  onClick={() => setSelectedAppTheme("dark")}
+                  onClick={() => handleSelectTheme("dark")}
                   style={{
                     padding: "12px",
                     borderRadius: "12px",
-                    border: selectedAppTheme === "dark" ? "2px solid #2563eb" : "1px solid #e2e8f0",
-                    background: selectedAppTheme === "dark" ? "#eff6ff" : "#f8fafc",
-                    color: selectedAppTheme === "dark" ? "#1e3a8a" : "#475569",
+                    border: selectedAppTheme === "dark" ? "2px solid #2563eb" : `1px solid ${cardBorder}`,
+                    background: selectedAppTheme === "dark" ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : cardBg,
+                    color: selectedAppTheme === "dark" ? (isDark ? "#60a5fa" : "#1e3a8a") : textSub,
                     fontSize: "13px",
                     fontWeight: "700",
-                    cursor: "pointer"
+                    cursor: "pointer",
+                    transition: "all 0.2s ease"
                   }}
                 >
-                  🌙 Sombre
+                  🌙 Sombre {selectedAppTheme === "dark" && "✓"}
                 </button>
                 <button
                   type="button"
-                  onClick={() => setSelectedAppTheme("light")}
+                  onClick={() => handleSelectTheme("light")}
                   style={{
                     padding: "12px",
                     borderRadius: "12px",
-                    border: selectedAppTheme === "light" ? "2px solid #2563eb" : "1px solid #e2e8f0",
-                    background: selectedAppTheme === "light" ? "#eff6ff" : "#f8fafc",
-                    color: selectedAppTheme === "light" ? "#1e3a8a" : "#475569",
+                    border: selectedAppTheme === "light" ? "2px solid #2563eb" : `1px solid ${cardBorder}`,
+                    background: selectedAppTheme === "light" ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : cardBg,
+                    color: selectedAppTheme === "light" ? (isDark ? "#60a5fa" : "#1e3a8a") : textSub,
                     fontSize: "13px",
                     fontWeight: "700",
-                    cursor: "pointer"
+                    cursor: "pointer",
+                    transition: "all 0.2s ease"
                   }}
                 >
-                  ☀️ Clair
+                  ☀️ Clair {selectedAppTheme === "light" && "✓"}
                 </button>
               </div>
             </div>
@@ -1726,15 +1745,111 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                 style={{
                   padding: "13px 18px",
                   borderRadius: "12px",
-                  border: "1px solid #cbd5e1",
-                  background: "#ffffff",
-                  color: "#475569",
+                  border: `1px solid ${cardBorder}`,
+                  background: isDark ? "#1e293b" : "#ffffff",
+                  color: textSub,
                   fontSize: "13px",
                   fontWeight: "600",
                   cursor: "pointer"
                 }}
               >
-                Retour
+                ← Retour
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setStep(6)}
+                style={{
+                  flex: 1,
+                  padding: "13px 18px",
+                  borderRadius: "12px",
+                  border: "none",
+                  background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                  color: "#ffffff",
+                  fontSize: "14px",
+                  fontWeight: "700",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 10px rgba(37, 99, 235, 0.25)",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                Continuer vers le mot du créateur →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* ÉTAPE 6 : MESSAGE PERSONNEL DU CRÉATEUR                   */}
+        {/* ========================================================= */}
+        {step === 6 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "20px", background: isDark ? "rgba(59, 130, 246, 0.15)" : "#eff6ff", border: isDark ? "1px solid rgba(59, 130, 246, 0.3)" : "1px solid #bfdbfe", color: isDark ? "#60a5fa" : "#2563eb", fontSize: "11px", fontWeight: "700", marginBottom: "8px" }}>
+                ✍️ Le Mot du Créateur
+              </div>
+              <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
+                Bienvenue dans l'aventure 🧭
+              </h1>
+              <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
+                Ceci est la dernière étape avant de faire vos premiers pas dans GeoProspect.
+              </p>
+            </div>
+
+            {/* Letter / Personal Message Card */}
+            <div
+              style={{
+                background: cardBg,
+                border: `1px solid ${cardBorder}`,
+                borderRadius: "16px",
+                padding: "16px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px",
+                fontSize: "13px",
+                lineHeight: "1.6",
+                color: isDark ? "#e2e8f0" : "#334155",
+                maxHeight: "52vh",
+                overflowY: "auto"
+              }}
+            >
+              <p style={{ margin: 0 }}>
+                Cette application est <strong>100 % gratuite</strong> et toujours en phase de test. Il se peut que vous rencontriez de nombreux bugs et failles de développement à mesure de son utilisation.
+              </p>
+              <p style={{ margin: 0 }}>
+                On parle d'un projet développé seul par un <strong>étudiant de 19 ans</strong> qui cherche uniquement à partager cette merveilleuse activité qu'est la détection de métaux. Proposer un outil de poche est ma manière de contribuer à la communauté en offrant la possibilité de gérer son petit carnet de bord.
+              </p>
+              <p style={{ margin: 0 }}>
+                Tous vos retours seront votre manière de remercier mon travail, un simple compte-rendu de votre expérience suffira amplement à contribuer à l'amélioration constante de GeoProspect.
+              </p>
+              <p style={{ margin: 0 }}>
+                Je me suis ainsi permis d'ouvrir un <strong>espace aux dons</strong> pour permettre à tous les utilisateurs étant extrêmement satisfaits de soutenir le projet de manière plus directe. Ce fond pourra servir à investir dans ce dernier à plus long terme en allouant des ressources plus importantes et en continuant l'apport mensuel de nouveautés.
+              </p>
+              <p style={{ margin: 0 }}>
+                Enfin, j'aimerais souligner que <strong>notre loisir est encadré par des lois</strong>. À ce titre, il demeure essentiel de se renseigner sur la législation française afin d'éviter de ternir notre réputation et d'amputer la communauté responsable qui ne souhaite que plus de visibilité. <em>Prospecter exige une déontologie.</em>
+              </p>
+              <div style={{ marginTop: "4px", padding: "12px 14px", borderRadius: "12px", background: isDark ? "rgba(59, 130, 246, 0.12)" : "#eff6ff", border: isDark ? "1px solid rgba(59, 130, 246, 0.25)" : "1px solid #dbeafe", fontWeight: "700", color: isDark ? "#93c5fd" : "#1e40af", fontSize: "13px", textAlign: "center", lineHeight: "1.5" }}>
+                Allez, je vous laisse profiter ! Merci pour votre lecture, bonnes recherches :)
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: "flex", gap: "10px", marginTop: "6px" }}>
+              <button
+                type="button"
+                onClick={() => setStep(5)}
+                style={{
+                  padding: "13px 18px",
+                  borderRadius: "12px",
+                  border: `1px solid ${cardBorder}`,
+                  background: isDark ? "#1e293b" : "#ffffff",
+                  color: textSub,
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  cursor: "pointer"
+                }}
+              >
+                ← Retour
               </button>
 
               <button

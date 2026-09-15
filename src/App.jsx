@@ -1570,9 +1570,13 @@ return (
       {/* Bottom Navigation Bar */}
       <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} currentThemeKey={designTheme} zenMode={zenMode} />
 
-      {/* Startup Onboarding Wizard (First Launch: Feature Discovery -> Official Legal & Ethical Charter -> Auth -> Pre-Customization) */}
+      {/* Startup Onboarding Wizard (First Launch: Feature Discovery -> Official Legal & Ethical Charter -> Auth -> Pre-Customization -> Creator Note) */}
       <OnboardingModal
         isOpen={showOnboarding}
+        currentTheme={theme}
+        onLiveThemeChange={(newTheme) => {
+          if (newTheme) setTheme(newTheme);
+        }}
         onComplete={({ defaultMapStyle, designTheme: newDesignTheme, theme: newTheme, gpsStyle: newGpsStyle }) => {
           setShowOnboarding(false);
           if (defaultMapStyle) setMapStyle(defaultMapStyle);
