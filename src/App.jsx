@@ -940,19 +940,21 @@ return (
           toggleFilter={toggleFilter}
           finds={finds}
           onSelectFind={(find) => {
-            const lat = find.latitude ?? find.position?.[0];
-            const lng = find.longitude ?? find.position?.[1];
+            const lat = find.latitude ?? (Array.isArray(find.position) ? find.position[0] : find.position?.lat);
+            const lng = find.longitude ?? (Array.isArray(find.position) ? find.position[1] : find.position?.lng);
             if (lat && lng) {
               setFollowGps(false);
               setZoomTarget({ position: [Number(lat), Number(lng)], zoom: 18 });
               setOpenPopupFind(find);
             }
+            setShowSearch(false);
           }}
           onSelectPlace={(place) => {
             if (place.lat && place.lon) {
               setFollowGps(false);
               setZoomTarget({ position: [Number(place.lat), Number(place.lon)], zoom: 15 });
             }
+            setShowSearch(false);
           }}
           zenMode={zenMode}
         />
