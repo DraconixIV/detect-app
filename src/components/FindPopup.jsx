@@ -413,22 +413,25 @@ export default function FindPopup({
     transition: "background 0.2s"
   };
 
-  // 1. COMPACT READ-ONLY VIEW (Inside Leaflet map popup bubble)
-  if (!isModalOpen) {
-    const coverPhoto = photos.length > 0 ? photos[0].image_url : null;
-    const isReadOnly = workspace?.mode === "consultation";
-    const finderText = find.finder_name || find.user_code;
+  const coverPhoto = photos.length > 0 ? photos[0].image_url : null;
+  const isReadOnly = workspace?.mode === "consultation";
+  const finderText = find.finder_name || find.user_code;
 
-    return (
+  return (
+    <>
+      {/* 1. COMPACT READ-ONLY VIEW (Inside Leaflet map popup bubble) */}
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
           width: "215px",
+          minWidth: "215px",
+          maxWidth: "215px",
           display: "flex",
           flexDirection: "column",
           gap: "8px",
           color: "#111827",
-          fontFamily: "system-ui, sans-serif"
+          fontFamily: "system-ui, sans-serif",
+          boxSizing: "border-box"
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "6px" }}>
@@ -459,8 +462,8 @@ export default function FindPopup({
         )}
 
         <div style={{ fontSize: "11px", color: "#6b7280", fontWeight: "700" }}>
-          {categoryEmojis[category]} {category} {subCategory ? `• ${subCategory}` : ""}
-          {material && material !== "Indéterminé" ? ` • ${materialEmojis[material]} ${material}` : ""}
+          {categoryEmojis[category] || "📍"} {category} {subCategory ? `• ${subCategory}` : ""}
+          {material && material !== "Indéterminé" ? ` • ${materialEmojis[material] || "🪙"} ${material}` : ""}
         </div>
 
         {coverPhoto ? (
@@ -547,14 +550,9 @@ export default function FindPopup({
           </button>
         </div>
       </div>
-    );
-  }
 
-  const isReadOnly = workspace?.mode === "consultation";
-  const finderText = find.finder_name || find.user_code;
-
-  // 2. PREMIUM PORTAL MODAL VIEW (Rich fullscreen sheet editor)
-  return createPortal(
+      {/* 2. PREMIUM PORTAL MODAL VIEW (Rich fullscreen sheet editor) */}
+      {isModalOpen && createPortal(
     <div
       style={{
         position: "fixed",
@@ -1146,5 +1144,7 @@ export default function FindPopup({
       )}
     </div>,
     document.body
-  );
+  )}
+</>
+);
 }
