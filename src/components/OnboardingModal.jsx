@@ -347,13 +347,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
         {step === 1 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
             <div>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 12px", borderRadius: "20px", background: "#eff6ff", border: "1px solid #dbeafe", color: "#2563eb", fontSize: "12px", fontWeight: "700", marginBottom: "10px" }}>
-                ✨ 100% Gratuit & Libre
-              </div>
-              <h1 style={{ margin: "0 0 8px 0", fontSize: "24px", fontWeight: "900", color: "#0f172a", letterSpacing: "-0.5px" }}>
+              <h1 style={{ margin: "0 0 8px 0", fontSize: "24px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
                 Bienvenue sur GeoProspect 🧭
               </h1>
-              <p style={{ margin: 0, fontSize: "14px", color: "#475569", lineHeight: "1.5" }}>
+              <p style={{ margin: 0, fontSize: "14px", color: textSub, lineHeight: "1.5" }}>
                 Votre compagnon tout-en-un pour la détection de loisir, le repérage cartographique et l'inventaire de vos trouvailles.
               </p>
             </div>
@@ -366,8 +363,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   display: "flex",
                   gap: "14px",
                   padding: "14px 16px",
-                  background: "#f8fafc",
-                  border: "1px solid #e2e8f0",
+                  background: cardBg,
+                  border: `1px solid ${cardBorder}`,
                   borderRadius: "16px",
                   alignItems: "flex-start"
                 }}
@@ -377,8 +374,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                     width: "40px",
                     height: "40px",
                     borderRadius: "12px",
-                    background: "#eff6ff",
-                    border: "1px solid #bfdbfe",
+                    background: isDark ? "rgba(37, 99, 235, 0.2)" : "#eff6ff",
+                    border: isDark ? "1px solid rgba(37, 99, 235, 0.4)" : "1px solid #bfdbfe",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -389,10 +386,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   🗺️
                 </div>
                 <div>
-                  <div style={{ fontSize: "14px", fontWeight: "800", color: "#0f172a", marginBottom: "3px" }}>
+                  <div style={{ fontSize: "14px", fontWeight: "800", color: textMain, marginBottom: "3px" }}>
                     Cartes IGN & Tracé GPS en Direct
                   </div>
-                  <div style={{ fontSize: "12px", color: "#475569", lineHeight: "1.5" }}>
+                  <div style={{ fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
                     Superposez le <strong>Cadastre officiel IGN</strong>, la carte de <strong>Cassini</strong> et l'<strong>État-Major 1820</strong>. Visualisez votre parcours pour ne jamais repasser au même endroit.
                   </div>
                 </div>
@@ -404,8 +401,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   display: "flex",
                   gap: "14px",
                   padding: "14px 16px",
-                  background: "#f8fafc",
-                  border: "1px solid #e2e8f0",
+                  background: cardBg,
+                  border: `1px solid ${cardBorder}`,
                   borderRadius: "16px",
                   alignItems: "flex-start"
                 }}
@@ -415,8 +412,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                     width: "40px",
                     height: "40px",
                     borderRadius: "12px",
-                    background: "#fef3c7",
-                    border: "1px solid #fde68a",
+                    background: isDark ? "rgba(245, 158, 11, 0.2)" : "#fef3c7",
+                    border: isDark ? "1px solid rgba(245, 158, 11, 0.4)" : "1px solid #fde68a",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -427,10 +424,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   🪙
                 </div>
                 <div>
-                  <div style={{ fontSize: "14px", fontWeight: "800", color: "#0f172a", marginBottom: "3px" }}>
+                  <div style={{ fontSize: "14px", fontWeight: "800", color: textMain, marginBottom: "3px" }}>
                     Journal de Trouvailles & Photos HD
                   </div>
-                  <div style={{ fontSize: "12px", color: "#475569", lineHeight: "1.5" }}>
+                  <div style={{ fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
                     Épinglez chaque découverte avec ses coordonnées exactes, photos macro, catégorie et exportez vos statistiques à tout moment.
                   </div>
                 </div>
@@ -442,8 +439,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   display: "flex",
                   gap: "14px",
                   padding: "14px 16px",
-                  background: "#f8fafc",
-                  border: "1px solid #e2e8f0",
+                  background: cardBg,
+                  border: `1px solid ${cardBorder}`,
                   borderRadius: "16px",
                   alignItems: "flex-start"
                 }}
@@ -453,8 +450,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                     width: "40px",
                     height: "40px",
                     borderRadius: "12px",
-                    background: "#ecfdf5",
-                    border: "1px solid #a7f3d0",
+                    background: isDark ? "rgba(16, 185, 129, 0.2)" : "#ecfdf5",
+                    border: isDark ? "1px solid rgba(16, 185, 129, 0.4)" : "1px solid #a7f3d0",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -465,10 +462,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   👥
                 </div>
                 <div>
-                  <div style={{ fontSize: "14px", fontWeight: "800", color: "#0f172a", marginBottom: "3px" }}>
+                  <div style={{ fontSize: "14px", fontWeight: "800", color: textMain, marginBottom: "3px" }}>
                     Sessions en Équipe & Sauvegarde
                   </div>
-                  <div style={{ fontSize: "12px", color: "#475569", lineHeight: "1.5" }}>
+                  <div style={{ fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
                     Rejoignez une session collective en direct avec vos amis ou prospectez en mode 100% hors-ligne sécurisé.
                   </div>
                 </div>
@@ -495,7 +492,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
               onMouseEnter={(e) => (e.currentTarget.style.background = "#1d4ed8")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "linear-gradient(135deg, #2563eb, #1d4ed8)")}
             >
-              Découvrir le Cadre Légal & Charte ➔
+              Continuer vers l'étape 2 →
             </button>
           </div>
         )}
@@ -506,10 +503,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
         {step === 2 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
-              <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: "#0f172a", letterSpacing: "-0.5px" }}>
+              <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
                 Cadre Légal & Charte Éthique ⚖️
               </h1>
-              <p style={{ margin: 0, fontSize: "13px", color: "#475569", lineHeight: "1.5" }}>
+              <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
                 La détection de métaux en France est encadrée pour protéger le patrimoine et respecter la propriété privée.
               </p>
             </div>
@@ -517,8 +514,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
             {/* Structured Legal Box */}
             <div
               style={{
-                background: "#f8fafc",
-                border: "1px solid #e2e8f0",
+                background: cardBg,
+                border: `1px solid ${cardBorder}`,
                 borderRadius: "14px",
                 padding: "14px",
                 display: "flex",
@@ -526,23 +523,23 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 gap: "10px",
                 fontSize: "12px",
                 lineHeight: "1.45",
-                color: "#334155"
+                color: textMain
               }}
             >
               <div>
-                <div style={{ fontWeight: "800", color: "#0f172a", marginBottom: "3px" }}>
+                <div style={{ fontWeight: "800", color: textMain, marginBottom: "3px" }}>
                   Article L. 542-1 du Code du patrimoine
                 </div>
-                <div style={{ color: "#64748b", fontStyle: "italic", fontSize: "11px" }}>
+                <div style={{ color: textSub, fontStyle: "italic", fontSize: "11px" }}>
                   « Nul ne peut utiliser du matériel permettant la détection d'objets métalliques, à l'effet de recherches de monuments et d'objets pouvant intéresser la préhistoire, l'histoire, l'art ou l'archéologie, sans avoir, au préalable, obtenu une autorisation administrative. »
                 </div>
               </div>
 
-              <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "8px" }}>
-                <div style={{ fontWeight: "800", color: "#0f172a", marginBottom: "3px" }}>
+              <div style={{ borderTop: `1px solid ${cardBorder}`, paddingTop: "8px" }}>
+                <div style={{ fontWeight: "800", color: textMain, marginBottom: "3px" }}>
                   Découvertes fortuites (Art. L. 531-14)
                 </div>
-                <div style={{ color: "#64748b", fontSize: "11px" }}>
+                <div style={{ color: textSub, fontSize: "11px" }}>
                   Toute découverte fortuite d'intérêt historique ou archéologique doit être immédiatement déclarée auprès de la mairie et du Service Régional de l'Archéologie (DRAC).
                 </div>
               </div>
@@ -555,14 +552,14 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   display: "flex",
                   alignItems: "flex-start",
                   gap: "10px",
-                  background: checkOwner ? "#eff6ff" : "#f8fafc",
-                  border: checkOwner ? "1px solid #93c5fd" : "1px solid #e2e8f0",
+                  background: checkOwner ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : cardBg,
+                  border: checkOwner ? "1px solid #3b82f6" : `1px solid ${cardBorder}`,
                   padding: "11px 13px",
                   borderRadius: "12px",
                   cursor: "pointer",
                   fontSize: "12px",
                   lineHeight: "1.4",
-                  color: checkOwner ? "#1e3a8a" : "#334155",
+                  color: checkOwner ? (isDark ? "#93c5fd" : "#1e3a8a") : textMain,
                   transition: "all 0.2s ease"
                 }}
               >
@@ -580,14 +577,14 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   display: "flex",
                   alignItems: "flex-start",
                   gap: "10px",
-                  background: checkHeritage ? "#eff6ff" : "#f8fafc",
-                  border: checkHeritage ? "1px solid #93c5fd" : "1px solid #e2e8f0",
+                  background: checkHeritage ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : cardBg,
+                  border: checkHeritage ? "1px solid #3b82f6" : `1px solid ${cardBorder}`,
                   padding: "11px 13px",
                   borderRadius: "12px",
                   cursor: "pointer",
                   fontSize: "12px",
                   lineHeight: "1.4",
-                  color: checkHeritage ? "#1e3a8a" : "#334155",
+                  color: checkHeritage ? (isDark ? "#93c5fd" : "#1e3a8a") : textMain,
                   transition: "all 0.2s ease"
                 }}
               >
@@ -605,14 +602,14 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   display: "flex",
                   alignItems: "flex-start",
                   gap: "10px",
-                  background: checkDeclaration ? "#eff6ff" : "#f8fafc",
-                  border: checkDeclaration ? "1px solid #93c5fd" : "1px solid #e2e8f0",
+                  background: checkDeclaration ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : cardBg,
+                  border: checkDeclaration ? "1px solid #3b82f6" : `1px solid ${cardBorder}`,
                   padding: "11px 13px",
                   borderRadius: "12px",
                   cursor: "pointer",
                   fontSize: "12px",
                   lineHeight: "1.4",
-                  color: checkDeclaration ? "#1e3a8a" : "#334155",
+                  color: checkDeclaration ? (isDark ? "#93c5fd" : "#1e3a8a") : textMain,
                   transition: "all 0.2s ease"
                 }}
               >
@@ -630,14 +627,14 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   display: "flex",
                   alignItems: "flex-start",
                   gap: "10px",
-                  background: checkNature ? "#eff6ff" : "#f8fafc",
-                  border: checkNature ? "1px solid #93c5fd" : "1px solid #e2e8f0",
+                  background: checkNature ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : cardBg,
+                  border: checkNature ? "1px solid #3b82f6" : `1px solid ${cardBorder}`,
                   padding: "11px 13px",
                   borderRadius: "12px",
                   cursor: "pointer",
                   fontSize: "12px",
                   lineHeight: "1.4",
-                  color: checkNature ? "#1e3a8a" : "#334155",
+                  color: checkNature ? (isDark ? "#93c5fd" : "#1e3a8a") : textMain,
                   transition: "all 0.2s ease"
                 }}
               >
@@ -655,14 +652,14 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   display: "flex",
                   alignItems: "flex-start",
                   gap: "10px",
-                  background: checkCgu ? "#eff6ff" : "#f8fafc",
-                  border: checkCgu ? "1px solid #93c5fd" : "1px solid #e2e8f0",
+                  background: checkCgu ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : cardBg,
+                  border: checkCgu ? "1px solid #3b82f6" : `1px solid ${cardBorder}`,
                   padding: "11px 13px",
                   borderRadius: "12px",
                   cursor: "pointer",
                   fontSize: "12px",
                   lineHeight: "1.4",
-                  color: checkCgu ? "#1e3a8a" : "#334155",
+                  color: checkCgu ? (isDark ? "#93c5fd" : "#1e3a8a") : textMain,
                   transition: "all 0.2s ease"
                 }}
               >
@@ -684,9 +681,9 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 style={{
                   padding: "13px 18px",
                   borderRadius: "12px",
-                  border: "1px solid #cbd5e1",
-                  background: "#ffffff",
-                  color: "#475569",
+                  border: `1px solid ${cardBorder}`,
+                  background: isDark ? "#1e293b" : "#ffffff",
+                  color: textSub,
                   fontSize: "13px",
                   fontWeight: "600",
                   cursor: "pointer"
@@ -704,8 +701,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   padding: "13px 18px",
                   borderRadius: "12px",
                   border: "none",
-                  background: allLegalChecked ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : "#e2e8f0",
-                  color: allLegalChecked ? "#ffffff" : "#94a3b8",
+                  background: allLegalChecked ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : (isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"),
+                  color: allLegalChecked ? "#ffffff" : (isDark ? "rgba(255,255,255,0.3)" : "#94a3b8"),
                   fontSize: "13px",
                   fontWeight: "700",
                   cursor: allLegalChecked ? "pointer" : "not-allowed",
@@ -713,7 +710,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   transition: "all 0.2s ease"
                 }}
               >
-                Valider et continuer ➔
+                Continuer vers l'étape 3 →
               </button>
             </div>
           </div>
@@ -725,10 +722,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
         {step === 3 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
-              <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: "#0f172a", letterSpacing: "-0.5px" }}>
+              <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
                 Votre Espace Prospecteur 👤
               </h1>
-              <p style={{ margin: 0, fontSize: "13px", color: "#475569", lineHeight: "1.5" }}>
+              <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
                 Connectez-vous pour synchroniser vos trouvailles sur tous vos appareils, ou continuez en local.
               </p>
             </div>
@@ -736,8 +733,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
             {user ? (
               <div
                 style={{
-                  background: "#ecfdf5",
-                  border: "1px solid #a7f3d0",
+                  background: isDark ? "rgba(16, 185, 129, 0.15)" : "#ecfdf5",
+                  border: isDark ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid #a7f3d0",
                   borderRadius: "16px",
                   padding: "18px",
                   display: "flex",
@@ -763,10 +760,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                     ✓
                   </div>
                   <div>
-                    <div style={{ fontSize: "14px", fontWeight: "800", color: "#065f46" }}>
+                    <div style={{ fontSize: "14px", fontWeight: "800", color: isDark ? "#34d399" : "#065f46" }}>
                       Connecté avec succès
                     </div>
-                    <div style={{ fontSize: "13px", color: "#047857" }}>
+                    <div style={{ fontSize: "13px", color: isDark ? "#a7f3d0" : "#047857" }}>
                       {user.email}
                     </div>
                   </div>
@@ -787,13 +784,13 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                     boxShadow: "0 2px 10px rgba(37, 99, 235, 0.25)"
                   }}
                 >
-                  Continuer vers vos Catégories ➔
+                  Continuer vers l'étape 4 →
                 </button>
               </div>
             ) : (
               <div>
                 <AuthForm
-                  theme="light"
+                  theme={selectedAppTheme}
                   onAuthSuccess={(u) => {
                     setUser(u);
                     setStep(4);
@@ -808,7 +805,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                     style={{
                       background: "none",
                       border: "none",
-                      color: "#64748b",
+                      color: textSub,
                       fontSize: "13px",
                       fontWeight: "600",
                       cursor: "pointer",
@@ -816,10 +813,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                       textDecoration: "underline",
                       transition: "color 0.2s"
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = "#0f172a")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "#64748b")}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = textMain)}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = textSub)}
                   >
-                    Continuer sans compte (Mode 100% hors-ligne) ➔
+                    Continuer vers l'étape 4 (Mode 100% hors-ligne) →
                   </button>
                 </div>
               </div>
@@ -832,9 +829,9 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 style={{
                   padding: "11px 16px",
                   borderRadius: "10px",
-                  border: "1px solid #cbd5e1",
-                  background: "#ffffff",
-                  color: "#475569",
+                  border: `1px solid ${cardBorder}`,
+                  background: isDark ? "#1e293b" : "#ffffff",
+                  color: textSub,
                   fontSize: "12px",
                   fontWeight: "600",
                   cursor: "pointer"
@@ -864,10 +861,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
             <div
               style={{
                 display: "flex",
-                background: "#f1f5f9",
+                background: isDark ? "#1e293b" : "#f1f5f9",
                 borderRadius: "12px",
                 padding: "4px",
-                border: "1px solid #e2e8f0",
+                border: `1px solid ${cardBorder}`,
                 gap: "4px"
               }}
             >
@@ -879,12 +876,12 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   padding: "9px 12px",
                   borderRadius: "9px",
                   border: "none",
-                  background: step4Tab === "categories" ? "#ffffff" : "transparent",
-                  color: step4Tab === "categories" ? "#0f172a" : "#64748b",
+                  background: step4Tab === "categories" ? (isDark ? "#2563eb" : "#ffffff") : "transparent",
+                  color: step4Tab === "categories" ? "#ffffff" : textSub,
                   fontWeight: step4Tab === "categories" ? "800" : "600",
                   fontSize: "12px",
                   cursor: "pointer",
-                  boxShadow: step4Tab === "categories" ? "0 2px 4px rgba(0,0,0,0.06)" : "none",
+                  boxShadow: step4Tab === "categories" ? "0 2px 4px rgba(0,0,0,0.15)" : "none",
                   transition: "all 0.15s ease"
                 }}
               >
@@ -898,12 +895,12 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   padding: "9px 12px",
                   borderRadius: "9px",
                   border: "none",
-                  background: step4Tab === "metals" ? "#ffffff" : "transparent",
-                  color: step4Tab === "metals" ? "#0f172a" : "#64748b",
+                  background: step4Tab === "metals" ? (isDark ? "#2563eb" : "#ffffff") : "transparent",
+                  color: step4Tab === "metals" ? "#ffffff" : textSub,
                   fontWeight: step4Tab === "metals" ? "800" : "600",
                   fontSize: "12px",
                   cursor: "pointer",
-                  boxShadow: step4Tab === "metals" ? "0 2px 4px rgba(0,0,0,0.06)" : "none",
+                  boxShadow: step4Tab === "metals" ? "0 2px 4px rgba(0,0,0,0.15)" : "none",
                   transition: "all 0.15s ease"
                 }}
               >
@@ -917,13 +914,13 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 {/* Quick 1-click Suggestion Chips */}
                 <div
                   style={{
-                    background: "#f8fafc",
-                    border: "1px solid #e2e8f0",
+                    background: cardBg,
+                    border: `1px solid ${cardBorder}`,
                     borderRadius: "14px",
                     padding: "12px 14px"
                   }}
                 >
-                  <div style={{ fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                  <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
                     💡 Suggestions en 1 clic (optionnel) :
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
@@ -938,9 +935,9 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                           style={{
                             padding: "6px 10px",
                             borderRadius: "10px",
-                            border: isAlreadyAdded ? `1.5px solid ${item.color}` : "1px solid #cbd5e1",
-                            background: isAlreadyAdded ? "#eff6ff" : "#ffffff",
-                            color: isAlreadyAdded ? "#1e3a8a" : "#334155",
+                            border: isAlreadyAdded ? `1.5px solid ${item.color}` : `1px solid ${cardBorder}`,
+                            background: isAlreadyAdded ? (isDark ? "rgba(37,99,235,0.25)" : "#eff6ff") : (isDark ? "#1e293b" : "#ffffff"),
+                            color: isAlreadyAdded ? (isDark ? "#93c5fd" : "#1e3a8a") : textMain,
                             fontSize: "12px",
                             fontWeight: isAlreadyAdded ? "700" : "500",
                             cursor: "pointer",
@@ -973,8 +970,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 <form
                   onSubmit={handleAddCustomCategory}
                   style={{
-                    background: "#f8fafc",
-                    border: "1px solid #e2e8f0",
+                    background: cardBg,
+                    border: `1px solid ${cardBorder}`,
                     borderRadius: "16px",
                     padding: "14px",
                     display: "flex",
@@ -982,7 +979,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                     gap: "10px"
                   }}
                 >
-                  <div style={{ fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                     Créer une catégorie :
                   </div>
 
@@ -996,9 +993,9 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                       width: "100%",
                       padding: "9px 12px",
                       borderRadius: "10px",
-                      border: "1px solid #cbd5e1",
-                      background: "#ffffff",
-                      color: "#0f172a",
+                      border: `1px solid ${inputBorder}`,
+                      background: inputBg,
+                      color: textMain,
                       fontSize: "13px",
                       outline: "none",
                       boxSizing: "border-box"
@@ -1007,7 +1004,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
 
                   {/* Grille complète d'émojis */}
                   <div>
-                    <div style={{ fontSize: "11px", fontWeight: "700", color: "#64748b", marginBottom: "6px" }}>
+                    <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
                       Émoji associé :
                     </div>
                     <div
@@ -1018,8 +1015,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                         maxHeight: "120px",
                         overflowY: "auto",
                         padding: "6px",
-                        background: "#ffffff",
-                        border: "1px solid #cbd5e1",
+                        background: inputBg,
+                        border: `1px solid ${inputBorder}`,
                         borderRadius: "10px"
                       }}
                     >
@@ -1034,8 +1031,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                               width: "32px",
                               height: "32px",
                               borderRadius: "8px",
-                              border: isSelected ? "2px solid #3b82f6" : "1px solid #e2e8f0",
-                              background: isSelected ? "#eff6ff" : "#f8fafc",
+                              border: isSelected ? "2px solid #3b82f6" : `1px solid ${cardBorder}`,
+                              background: isSelected ? (isDark ? "rgba(37,99,235,0.3)" : "#eff6ff") : (isDark ? "#1e293b" : "#f8fafc"),
                               fontSize: "18px",
                               display: "flex",
                               alignItems: "center",
@@ -1056,7 +1053,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
 
                   {/* Sous-catégories avec libellé et placeholder visible */}
                   <div>
-                    <div style={{ fontSize: "11px", fontWeight: "700", color: "#64748b", marginBottom: "4px" }}>
+                    <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "4px" }}>
                       Sous-catégories (séparées par des virgules) :
                     </div>
                     <input
@@ -1068,9 +1065,9 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                         width: "100%",
                         padding: "9px 12px",
                         borderRadius: "10px",
-                        border: "1px solid #cbd5e1",
-                        background: "#ffffff",
-                        color: "#0f172a",
+                        border: `1px solid ${inputBorder}`,
+                        background: inputBg,
+                        color: textMain,
                         fontSize: "12px",
                         outline: "none",
                         boxSizing: "border-box"
@@ -1080,7 +1077,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
 
                   {/* Color Swatch Picker */}
                   <div>
-                    <div style={{ fontSize: "11px", fontWeight: "700", color: "#64748b", marginBottom: "6px" }}>
+                    <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
                       🎨 Couleur du repère carte :
                     </div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
@@ -1096,7 +1093,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                               height: "22px",
                               borderRadius: "50%",
                               background: colorHex,
-                              border: isSelected ? "2.5px solid #0f172a" : "1.5px solid rgba(0,0,0,0.15)",
+                              border: isSelected ? (isDark ? "2.5px solid #ffffff" : "2.5px solid #0f172a") : "1.5px solid rgba(0,0,0,0.15)",
                               boxShadow: isSelected ? `0 0 6px ${colorHex}` : "none",
                               cursor: "pointer",
                               padding: 0,
@@ -1122,8 +1119,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                       padding: "10px",
                       borderRadius: "10px",
                       border: "none",
-                      background: newCatName.trim() ? "linear-gradient(135deg, #10b981, #059669)" : "#e2e8f0",
-                      color: newCatName.trim() ? "#ffffff" : "#94a3b8",
+                      background: newCatName.trim() ? "linear-gradient(135deg, #10b981, #059669)" : (isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"),
+                      color: newCatName.trim() ? "#ffffff" : (isDark ? "rgba(255,255,255,0.3)" : "#94a3b8"),
                       fontSize: "13px",
                       fontWeight: "700",
                       cursor: newCatName.trim() ? "pointer" : "not-allowed",
@@ -1137,7 +1134,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 {/* Configured Categories List */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "12px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                    <span style={{ fontSize: "12px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                       Vos Catégories ({Object.keys(categories).length})
                     </span>
                     {Object.keys(categories).length > 0 && (
@@ -1152,15 +1149,15 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                       style={{
                         padding: "18px 14px",
                         borderRadius: "14px",
-                        background: "#f8fafc",
-                        border: "1px dashed #cbd5e1",
+                        background: cardBg,
+                        border: `1px dashed ${cardBorder}`,
                         textAlign: "center",
-                        color: "#64748b",
+                        color: textSub,
                         fontSize: "12px"
                       }}
                     >
                       <div style={{ fontSize: "24px", marginBottom: "4px" }}>🏷️</div>
-                      <div style={{ fontWeight: "700", color: "#0f172a", marginBottom: "2px" }}>
+                      <div style={{ fontWeight: "700", color: textMain, marginBottom: "2px" }}>
                         0 catégorie pour le moment
                       </div>
                       <div>
@@ -1178,8 +1175,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                           <div
                             key={catName}
                             style={{
-                              background: "#f8fafc",
-                              border: "1px solid #e2e8f0",
+                              background: isDark ? "#1e293b" : "#f8fafc",
+                              border: `1px solid ${cardBorder}`,
                               borderRadius: "12px",
                               overflow: "hidden"
                             }}
@@ -1207,10 +1204,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                                   }}
                                 />
                                 <span style={{ fontSize: "16px" }}>{em}</span>
-                                <span style={{ fontSize: "13px", fontWeight: "700", color: "#0f172a" }}>
+                                <span style={{ fontSize: "13px", fontWeight: "700", color: textMain }}>
                                   {catName}
                                 </span>
-                                <span style={{ fontSize: "10px", fontWeight: "700", padding: "2px 6px", borderRadius: "8px", background: "#e2e8f0", color: "#64748b" }}>
+                                <span style={{ fontSize: "10px", fontWeight: "700", padding: "2px 6px", borderRadius: "8px", background: isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0", color: textSub }}>
                                   {subCats.length} sous-types
                                 </span>
                               </div>
@@ -1234,7 +1231,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                                 >
                                   🗑️
                                 </button>
-                                <span style={{ fontSize: "11px", color: "#64748b", transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
+                                <span style={{ fontSize: "11px", color: textSub, transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
                                   ▼
                                 </span>
                               </div>
@@ -1245,8 +1242,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                               <div
                                 style={{
                                   padding: "8px 12px 12px 12px",
-                                  borderTop: "1px solid #e2e8f0",
-                                  background: "#f1f5f9"
+                                  borderTop: `1px solid ${cardBorder}`,
+                                  background: isDark ? "#0f172a" : "#f1f5f9"
                                 }}
                               >
                                 <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginBottom: "8px" }}>
@@ -1256,10 +1253,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                                       style={{
                                         padding: "3px 8px",
                                         borderRadius: "6px",
-                                        background: "#ffffff",
-                                        border: "1px solid #e2e8f0",
+                                        background: isDark ? "#1e293b" : "#ffffff",
+                                        border: `1px solid ${cardBorder}`,
                                         fontSize: "11px",
-                                        color: "#334155",
+                                        color: textMain,
                                         display: "inline-flex",
                                         alignItems: "center",
                                         gap: "4px"
@@ -1293,9 +1290,9 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                                       flex: 1,
                                       padding: "6px 10px",
                                       borderRadius: "8px",
-                                      border: "1px solid #cbd5e1",
-                                      background: "#ffffff",
-                                      color: "#0f172a",
+                                      border: `1px solid ${inputBorder}`,
+                                      background: inputBg,
+                                      color: textMain,
                                       fontSize: "11px",
                                       outline: "none"
                                     }}
@@ -1334,13 +1331,13 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 {/* Recommandations des 11 métaux */}
                 <div
                   style={{
-                    background: "#f8fafc",
-                    border: "1px solid #e2e8f0",
+                    background: cardBg,
+                    border: `1px solid ${cardBorder}`,
                     borderRadius: "14px",
                     padding: "12px 14px"
                   }}
                 >
-                  <div style={{ fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                  <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
                     💡 Métaux recommandés par GeoProspect (Cliquez pour activer / désactiver) :
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
@@ -1354,9 +1351,9 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                           style={{
                             padding: "6px 10px",
                             borderRadius: "10px",
-                            border: isActif ? "1.5px solid #3b82f6" : "1px solid #cbd5e1",
-                            background: isActif ? "#eff6ff" : "#ffffff",
-                            color: isActif ? "#1e3a8a" : "#475569",
+                            border: isActif ? "1.5px solid #3b82f6" : `1px solid ${cardBorder}`,
+                            background: isActif ? (isDark ? "rgba(37,99,235,0.25)" : "#eff6ff") : (isDark ? "#1e293b" : "#ffffff"),
+                            color: isActif ? (isDark ? "#93c5fd" : "#1e3a8a") : textMain,
                             fontSize: "12px",
                             fontWeight: isActif ? "700" : "500",
                             cursor: "pointer",
@@ -1373,7 +1370,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                           {isActif ? (
                             <span style={{ color: "#10b981", fontWeight: "900", fontSize: "11px" }}>✓</span>
                           ) : (
-                            <span style={{ color: "#94a3b8", fontSize: "10px" }}>+</span>
+                            <span style={{ color: textSub, fontSize: "10px" }}>+</span>
                           )}
                         </button>
                       );
@@ -1385,8 +1382,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 <form
                   onSubmit={handleAddCustomMetal}
                   style={{
-                    background: "#f8fafc",
-                    border: "1px solid #e2e8f0",
+                    background: cardBg,
+                    border: `1px solid ${cardBorder}`,
                     borderRadius: "16px",
                     padding: "14px",
                     display: "flex",
@@ -1394,7 +1391,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                     gap: "10px"
                   }}
                 >
-                  <div style={{ fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                     Ajouter un métal et/ou un alliage :
                   </div>
 
@@ -1408,9 +1405,9 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                       width: "100%",
                       padding: "9px 12px",
                       borderRadius: "10px",
-                      border: "1px solid #cbd5e1",
-                      background: "#ffffff",
-                      color: "#0f172a",
+                      border: `1px solid ${inputBorder}`,
+                      background: inputBg,
+                      color: textMain,
                       fontSize: "13px",
                       outline: "none",
                       boxSizing: "border-box"
@@ -1419,7 +1416,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
 
                   {/* Grille complète d'émojis pour les métaux */}
                   <div>
-                    <div style={{ fontSize: "11px", fontWeight: "700", color: "#64748b", marginBottom: "6px" }}>
+                    <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
                       Émoji associé :
                     </div>
                     <div
@@ -1430,8 +1427,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                         maxHeight: "120px",
                         overflowY: "auto",
                         padding: "6px",
-                        background: "#ffffff",
-                        border: "1px solid #cbd5e1",
+                        background: inputBg,
+                        border: `1px solid ${inputBorder}`,
                         borderRadius: "10px"
                       }}
                     >
@@ -1446,8 +1443,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                               width: "32px",
                               height: "32px",
                               borderRadius: "8px",
-                              border: isSelected ? "2px solid #3b82f6" : "1px solid #e2e8f0",
-                              background: isSelected ? "#eff6ff" : "#f8fafc",
+                              border: isSelected ? "2px solid #3b82f6" : `1px solid ${cardBorder}`,
+                              background: isSelected ? (isDark ? "rgba(37,99,235,0.3)" : "#eff6ff") : (isDark ? "#1e293b" : "#f8fafc"),
                               fontSize: "18px",
                               display: "flex",
                               alignItems: "center",
@@ -1473,8 +1470,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                       padding: "10px",
                       borderRadius: "10px",
                       border: "none",
-                      background: newMetalName.trim() ? "linear-gradient(135deg, #10b981, #059669)" : "#e2e8f0",
-                      color: newMetalName.trim() ? "#ffffff" : "#94a3b8",
+                      background: newMetalName.trim() ? "linear-gradient(135deg, #10b981, #059669)" : (isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"),
+                      color: newMetalName.trim() ? "#ffffff" : (isDark ? "rgba(255,255,255,0.3)" : "#94a3b8"),
                       fontSize: "13px",
                       fontWeight: "700",
                       cursor: newMetalName.trim() ? "pointer" : "not-allowed",
@@ -1488,7 +1485,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 {/* Liste des métaux actifs */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "12px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                    <span style={{ fontSize: "12px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                       Vos Métaux Actifs ({materials.length})
                     </span>
                     {materials.length > 0 && (
@@ -1503,15 +1500,15 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                       style={{
                         padding: "18px 14px",
                         borderRadius: "14px",
-                        background: "#f8fafc",
-                        border: "1px dashed #cbd5e1",
+                        background: cardBg,
+                        border: `1px dashed ${cardBorder}`,
                         textAlign: "center",
-                        color: "#64748b",
+                        color: textSub,
                         fontSize: "12px"
                       }}
                     >
                       <div style={{ fontSize: "24px", marginBottom: "4px" }}>🪙</div>
-                      <div style={{ fontWeight: "700", color: "#0f172a", marginBottom: "2px" }}>
+                      <div style={{ fontWeight: "700", color: textMain, marginBottom: "2px" }}>
                         Aucun métal sélectionné
                       </div>
                       <div>
@@ -1534,8 +1531,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                           <div
                             key={mat}
                             style={{
-                              background: "#f8fafc",
-                              border: "1px solid #e2e8f0",
+                              background: isDark ? "#1e293b" : "#f8fafc",
+                              border: `1px solid ${cardBorder}`,
                               borderRadius: "10px",
                               padding: "8px 10px",
                               display: "flex",
@@ -1550,7 +1547,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                                 style={{
                                   fontSize: "12px",
                                   fontWeight: "700",
-                                  color: "#0f172a",
+                                  color: textMain,
                                   whiteSpace: "nowrap",
                                   overflow: "hidden",
                                   textOverflow: "ellipsis"
@@ -1591,9 +1588,9 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 style={{
                   padding: "13px 18px",
                   borderRadius: "12px",
-                  border: "1px solid #cbd5e1",
-                  background: "#ffffff",
-                  color: "#475569",
+                  border: `1px solid ${cardBorder}`,
+                  background: isDark ? "#1e293b" : "#ffffff",
+                  color: textSub,
                   fontSize: "13px",
                   fontWeight: "600",
                   cursor: "pointer"
@@ -1623,15 +1620,12 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   transition: "all 0.2s ease"
                 }}
               >
-                Continuer vers l'Étape 5 →
+                Continuer vers l'étape 5 →
               </button>
             </div>
           </div>
         )}
 
-        {/* ========================================================= */}
-        {/* ÉTAPE 5 : PRÉ-PERSONNALISATION & FINALISATION             */}
-        {/* ========================================================= */}
         {/* ========================================================= */}
         {/* ÉTAPE 5 : PRÉ-PERSONNALISATION (CARTE & THÈME)            */}
         {/* ========================================================= */}
@@ -1642,7 +1636,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 Configuration Initiale ⚙️
               </h1>
               <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
-                Personnalisez votre affichage cartographique et l'interface de travail avec aperçu en direct.
+                Personnalisez votre affichage cartographique et l'interface de travail.
               </p>
             </div>
 
@@ -1697,7 +1691,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
             {/* 2. Dark / Light Mode with Live Preview */}
             <div>
               <label style={{ fontSize: "11px", fontWeight: "800", textTransform: "uppercase", color: textSub, letterSpacing: "0.5px", marginBottom: "8px", display: "block" }}>
-                Mode d'Affichage (Aperçu en direct)
+                Mode d'Affichage
               </label>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 <button
@@ -1773,7 +1767,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   transition: "all 0.2s ease"
                 }}
               >
-                Continuer vers le mot du créateur →
+                Continuer vers l'étape 6 →
               </button>
             </div>
           </div>
@@ -1785,9 +1779,6 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
         {step === 6 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "20px", background: isDark ? "rgba(59, 130, 246, 0.15)" : "#eff6ff", border: isDark ? "1px solid rgba(59, 130, 246, 0.3)" : "1px solid #bfdbfe", color: isDark ? "#60a5fa" : "#2563eb", fontSize: "11px", fontWeight: "700", marginBottom: "8px" }}>
-                ✍️ Le Mot du Créateur
-              </div>
               <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
                 Bienvenue dans l'aventure 🧭
               </h1>
