@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { materials, materialEmojis, PRESET_CATEGORY_COLORS } from "../subCategories";
+import { PRESET_CATEGORY_COLORS } from "../subCategories";
 import { loadCategoriesData, addCategory } from "../services/categoriesService";
+import { loadMaterialsData } from "../services/materialsService";
 
 export default function AddFindForm({
   showForm,
@@ -26,6 +27,7 @@ export default function AddFindForm({
 }) {
   const [isManualMode, setIsManualMode] = useState(false);
   const [categoryData, setCategoryData] = useState(() => loadCategoriesData());
+  const [materialsData, setMaterialsData] = useState(() => loadMaterialsData());
   const [showQuickCatBox, setShowQuickCatBox] = useState(false);
   const [quickCatName, setQuickCatName] = useState("");
   const [quickCatEmoji, setQuickCatEmoji] = useState("🪙");
@@ -43,8 +45,16 @@ export default function AddFindForm({
         setNewCategory(keys[0]);
       }
     };
+    const handleMaterialsUpdate = () => {
+      setMaterialsData(loadMaterialsData());
+    };
+
     window.addEventListener("categories-updated", handleCategoriesUpdate);
-    return () => window.removeEventListener("categories-updated", handleCategoriesUpdate);
+    window.addEventListener("materials-updated", handleMaterialsUpdate);
+    return () => {
+      window.removeEventListener("categories-updated", handleCategoriesUpdate);
+      window.removeEventListener("materials-updated", handleMaterialsUpdate);
+    };
   }, [newCategory, setNewCategory]);
 
   if (!showForm) return null;
@@ -427,9 +437,9 @@ export default function AddFindForm({
           <option value="" style={{ background: "#1f2937", color: "#ffffff" }}>
             Métal non spécifié
           </option>
-          {materials.map((mat) => (
+          {(materialsData.materials || []).map((mat) => (
             <option key={mat} value={mat} style={{ background: "#1f2937", color: "#ffffff" }}>
-              {materialEmojis[mat] || ""} {mat}
+              {materialsData.emojis?.[mat] || "🪙"} {mat}
             </option>
           ))}
         </select>

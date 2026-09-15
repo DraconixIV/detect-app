@@ -6,6 +6,7 @@ import CropperModal from "./CropperModal";
 import ConfirmModal from "./ConfirmModal";
 import { materials, materialEmojis } from "../subCategories";
 import { loadCategoriesData } from "../services/categoriesService";
+import { loadMaterialsData } from "../services/materialsService";
 
 export default function FindPopup({
   find,
@@ -34,7 +35,16 @@ export default function FindPopup({
   const [croppingStep, setCroppingStep] = useState("none"); // 'none' | 'before' | 'after' | 'saving'
   const [croppedBeforeBlob, setCroppedBeforeBlob] = useState(null);
   const [confirmConfig, setConfirmConfig] = useState(null);
+  const [materialsData, setMaterialsData] = useState(() => loadMaterialsData());
   const { categories: categoriesWithSub, emojis: categoryEmojis } = loadCategoriesData();
+
+  useEffect(() => {
+    const handleMaterialsUpdate = () => {
+      setMaterialsData(loadMaterialsData());
+    };
+    window.addEventListener("materials-updated", handleMaterialsUpdate);
+    return () => window.removeEventListener("materials-updated", handleMaterialsUpdate);
+  }, []);
 
   useEffect(() => {
     loadPhotos();
@@ -741,9 +751,9 @@ export default function FindPopup({
                   onChange={(e) => setMaterial(e.target.value)}
                   style={{ ...inputStyle, background: "#1f2937" }}
                 >
-                  {materials.map((mat) => (
+                  {(materialsData.materials || []).map((mat) => (
                     <option key={mat} value={mat}>
-                      {materialEmojis[mat] || ""} {mat}
+                      {materialsData.emojis?.[mat] || "🪙"} {mat}
                     </option>
                   ))}
                 </select>

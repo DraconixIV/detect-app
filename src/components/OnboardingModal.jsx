@@ -4,18 +4,24 @@ import { THEMES } from "../styles/themes";
 import AuthForm from "./AuthForm";
 import { PRESET_CATEGORY_COLORS, SUGGESTED_STARTER_CATEGORIES } from "../subCategories";
 import { loadCategoriesData, saveCategoriesData } from "../services/categoriesService";
+import { RECOMMENDED_METALS, loadMaterialsData, saveMaterialsData } from "../services/materialsService";
 
 const COMMON_EMOJIS = [
   "🪙", "💍", "👑", "🛡️", "⚔️", "🏺", "🗝️", "🎖️", "💣", "🔨", "🪓", "🔔", "⚓", "📦", "📜", "✝️", "🏷️", "💎", "⚙️", "🏹"
+];
+
+const METAL_EMOJIS = [
+  "🪙", "🥈", "🥉", "🟫", "🔔", "💿", "🔘", "⚖️", "🥫", "📎", "⚓", "⚙️", "⚔️", "🧲", "🔨", "💎", "👑", "📦", "🏺", "🛡️"
 ];
 
 export default function OnboardingModal({ isOpen, onComplete }) {
   // Step 1: Découverte & Fonctionnalités clés
   // Step 2: Cadre Légal & Charte Éthique
   // Step 3: Espace Prospecteur (Authentification)
-  // Step 4: Vos Catégories & Couleurs
+  // Step 4: Vos Catégories, Métaux & Couleurs
   // Step 5: Configuration Initiale (Carte, DA, Thème)
   const [step, setStep] = useState(1);
+  const [step4Tab, setStep4Tab] = useState("categories"); // 'categories' | 'metals'
   const [user, setUser] = useState(null);
 
   // Legal Checkboxes state
@@ -45,6 +51,18 @@ export default function OnboardingModal({ isOpen, onComplete }) {
   const [newSubText, setNewSubText] = useState("");
   const [expandedCat, setExpandedCat] = useState(null);
   const [inlineSubInput, setInlineSubInput] = useState("");
+
+  // Metals / Materials configuration state
+  const [materials, setMaterials] = useState(() => {
+    const loaded = loadMaterialsData();
+    return loaded.materials || [];
+  });
+  const [materialEmojis, setMaterialEmojis] = useState(() => {
+    const loaded = loadMaterialsData();
+    return loaded.emojis || {};
+  });
+  const [newMetalName, setNewMetalName] = useState("");
+  const [newMetalEmoji, setNewMetalEmoji] = useState("🪙");
 
   // Pre-customization choices
   const [selectedMapStyle, setSelectedMapStyle] = useState("satellite");
@@ -140,8 +158,46 @@ export default function OnboardingModal({ isOpen, onComplete }) {
     saveCategoriesData(updatedCats, emojis, colors);
   };
 
+  const handleToggleRecommendedMetal = (metal) => {
+    let updatedMaterials;
+    const updatedEmojis = { ...materialEmojis, [metal.name]: metal.emoji };
+    if (materials.includes(metal.name)) {
+      updatedMaterials = materials.filter((m) => m !== metal.name);
+    } else {
+      updatedMaterials = [...materials, metal.name];
+    }
+    setMaterials(updatedMaterials);
+    setMaterialEmojis(updatedEmojis);
+    saveMaterialsData(updatedMaterials, updatedEmojis);
+  };
+
+  const handleAddCustomMetal = (e) => {
+    e?.preventDefault();
+    const trimmed = newMetalName.trim();
+    if (!trimmed) return;
+    let updatedMaterials = [...materials];
+    if (!updatedMaterials.includes(trimmed)) {
+      updatedMaterials.push(trimmed);
+    }
+    const updatedEmojis = { ...materialEmojis, [trimmed]: newMetalEmoji || "🪙" };
+    setMaterials(updatedMaterials);
+    setMaterialEmojis(updatedEmojis);
+    saveMaterialsData(updatedMaterials, updatedEmojis);
+    setNewMetalName("");
+  };
+
+  const handleRemoveMetal = (metalName) => {
+    const updatedMaterials = materials.filter((m) => m !== metalName);
+    const updatedEmojis = { ...materialEmojis };
+    delete updatedEmojis[metalName];
+    setMaterials(updatedMaterials);
+    setMaterialEmojis(updatedEmojis);
+    saveMaterialsData(updatedMaterials, updatedEmojis);
+  };
+
   const handleDevSkip = () => {
     saveCategoriesData(categories, emojis, colors);
+    saveMaterialsData(materials, materialEmojis);
     localStorage.setItem("geoprospect_onboarding_completed_v3", "true");
     localStorage.setItem("geoprospect_cgu_accepted", "true");
     if (onComplete) {
@@ -156,6 +212,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
 
   const handleFinish = () => {
     saveCategoriesData(categories, emojis, colors);
+    saveMaterialsData(materials, materialEmojis);
     localStorage.setItem("geoprospect_onboarding_completed_v3", "true");
     localStorage.setItem("geoprospect_cgu_accepted", "true");
     localStorage.setItem("mapStyle", selectedMapStyle);
@@ -761,7 +818,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
         )}
 
         {/* ========================================================= */}
-        {/* ÉTAPE 4 : CONFIGURATION DES CATÉGORIES & COULEURS          */}
+        {/* ÉTAPE 4 : CONFIGURATION DES CATÉGORIES & MÉTAUX            */}
         {/* ========================================================= */}
         {step === 4 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -770,389 +827,670 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                 🎨 100% Personnalisable
               </div>
               <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: "#0f172a", letterSpacing: "-0.5px" }}>
-                Vos Catégories & Couleurs 🏷️
+                Vos Catégories & Métaux 🏷️🪙
               </h1>
               <p style={{ margin: 0, fontSize: "13px", color: "#475569", lineHeight: "1.5" }}>
-                Définissez vos familles d'objets, leurs repères cartographiques et leurs sous-types. Aucun profil imposé : c'est votre inventaire !
+                Définissez vos familles d'objets, leurs repères carte et choisissez les métaux associés à vos futures trouvailles.
               </p>
             </div>
 
-            {/* Quick 1-click Suggestion Chips */}
+            {/* Sub-Tabs Switcher */}
             <div
               style={{
-                background: "#f8fafc",
-                border: "1px solid #e2e8f0",
-                borderRadius: "14px",
-                padding: "12px 14px"
-              }}
-            >
-              <div style={{ fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
-                💡 Suggestions en 1 clic (optionnel) :
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                {Object.keys(SUGGESTED_STARTER_CATEGORIES).map((starterName) => {
-                  const item = SUGGESTED_STARTER_CATEGORIES[starterName];
-                  const isAlreadyAdded = !!categories[starterName];
-                  return (
-                    <button
-                      key={starterName}
-                      type="button"
-                      onClick={() => handleAddStarter(starterName)}
-                      style={{
-                        padding: "6px 10px",
-                        borderRadius: "10px",
-                        border: isAlreadyAdded ? `1.5px solid ${item.color}` : "1px solid #cbd5e1",
-                        background: isAlreadyAdded ? "#eff6ff" : "#ffffff",
-                        color: isAlreadyAdded ? "#1e3a8a" : "#334155",
-                        fontSize: "12px",
-                        fontWeight: isAlreadyAdded ? "700" : "500",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "5px",
-                        transition: "all 0.15s ease",
-                        boxShadow: "0 1px 3px rgba(0,0,0,0.04)"
-                      }}
-                      title={isAlreadyAdded ? "Catégorie déjà ajoutée" : `Ajouter la suggestion ${starterName}`}
-                    >
-                      <span
-                        style={{
-                          width: "8px",
-                          height: "8px",
-                          borderRadius: "50%",
-                          background: item.color,
-                          display: "inline-block"
-                        }}
-                      />
-                      <span>{item.emoji} {starterName}</span>
-                      {isAlreadyAdded && <span style={{ color: "#10b981", fontWeight: "900", fontSize: "11px" }}>✓</span>}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Custom Category Creation Form */}
-            <form
-              onSubmit={handleAddCustomCategory}
-              style={{
-                background: "#f8fafc",
-                border: "1.5px solid #dbeafe",
-                borderRadius: "16px",
-                padding: "14px",
                 display: "flex",
-                flexDirection: "column",
-                gap: "10px"
+                background: "#f1f5f9",
+                borderRadius: "12px",
+                padding: "4px",
+                border: "1px solid #e2e8f0",
+                gap: "4px"
               }}
             >
-              <div style={{ fontSize: "12px", fontWeight: "800", color: "#2563eb" }}>
-                ➕ Créer une Catégorie Sur-Mesure
-              </div>
-
-              <div style={{ display: "flex", gap: "8px" }}>
-                <select
-                  value={newCatEmoji}
-                  onChange={(e) => setNewCatEmoji(e.target.value)}
-                  style={{
-                    padding: "9px",
-                    borderRadius: "10px",
-                    border: "1px solid #cbd5e1",
-                    background: "#ffffff",
-                    color: "#0f172a",
-                    fontSize: "16px",
-                    cursor: "pointer"
-                  }}
-                >
-                  {COMMON_EMOJIS.map((em) => (
-                    <option key={em} value={em}>
-                      {em}
-                    </option>
-                  ))}
-                </select>
-
-                <input
-                  type="text"
-                  placeholder="Nom (ex: Poterie, Fossile, Outil...)"
-                  value={newCatName}
-                  onChange={(e) => setNewCatName(e.target.value)}
-                  style={{
-                    flex: 1,
-                    padding: "9px 12px",
-                    borderRadius: "10px",
-                    border: "1px solid #cbd5e1",
-                    background: "#ffffff",
-                    color: "#0f172a",
-                    fontSize: "13px",
-                    outline: "none"
-                  }}
-                />
-              </div>
-
-              {/* Sub-categories input (comma separated) */}
-              <input
-                type="text"
-                placeholder="Sous-catégories séparées par virgules (ex: Antique, Médiéval...)"
-                value={newSubText}
-                onChange={(e) => setNewSubText(e.target.value)}
-                style={{
-                  padding: "9px 12px",
-                  borderRadius: "10px",
-                  border: "1px solid #cbd5e1",
-                  background: "#ffffff",
-                  color: "#0f172a",
-                  fontSize: "12px",
-                  outline: "none"
-                }}
-              />
-
-              {/* Color Swatch Picker */}
-              <div>
-                <div style={{ fontSize: "11px", fontWeight: "700", color: "#64748b", marginBottom: "6px" }}>
-                  🎨 Couleur du repère carte :
-                </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
-                  {PRESET_CATEGORY_COLORS.map((colorHex) => {
-                    const isSelected = newCatColor === colorHex;
-                    return (
-                      <button
-                        key={colorHex}
-                        type="button"
-                        onClick={() => setNewCatColor(colorHex)}
-                        style={{
-                          width: "22px",
-                          height: "22px",
-                          borderRadius: "50%",
-                          background: colorHex,
-                          border: isSelected ? "2.5px solid #0f172a" : "1.5px solid rgba(0,0,0,0.15)",
-                          boxShadow: isSelected ? `0 0 6px ${colorHex}` : "none",
-                          cursor: "pointer",
-                          padding: 0,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          transform: isSelected ? "scale(1.2)" : "scale(1)",
-                          transition: "all 0.15s ease"
-                        }}
-                        title={colorHex}
-                      >
-                        {isSelected && <span style={{ color: "#ffffff", fontSize: "10px", fontWeight: "900" }}>✓</span>}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
               <button
-                type="submit"
-                disabled={!newCatName.trim()}
+                type="button"
+                onClick={() => setStep4Tab("categories")}
                 style={{
-                  padding: "10px",
-                  borderRadius: "10px",
+                  flex: 1,
+                  padding: "9px 12px",
+                  borderRadius: "9px",
                   border: "none",
-                  background: newCatName.trim() ? "linear-gradient(135deg, #10b981, #059669)" : "#e2e8f0",
-                  color: newCatName.trim() ? "#ffffff" : "#94a3b8",
-                  fontSize: "13px",
-                  fontWeight: "700",
-                  cursor: newCatName.trim() ? "pointer" : "not-allowed",
-                  transition: "all 0.2s ease"
+                  background: step4Tab === "categories" ? "#ffffff" : "transparent",
+                  color: step4Tab === "categories" ? "#0f172a" : "#64748b",
+                  fontWeight: step4Tab === "categories" ? "800" : "600",
+                  fontSize: "12px",
+                  cursor: "pointer",
+                  boxShadow: step4Tab === "categories" ? "0 2px 4px rgba(0,0,0,0.06)" : "none",
+                  transition: "all 0.15s ease"
                 }}
               >
-                + Ajouter cette catégorie
+                🏷️ Familles d'Objets ({Object.keys(categories).length})
               </button>
-            </form>
+              <button
+                type="button"
+                onClick={() => setStep4Tab("metals")}
+                style={{
+                  flex: 1,
+                  padding: "9px 12px",
+                  borderRadius: "9px",
+                  border: "none",
+                  background: step4Tab === "metals" ? "#ffffff" : "transparent",
+                  color: step4Tab === "metals" ? "#0f172a" : "#64748b",
+                  fontWeight: step4Tab === "metals" ? "800" : "600",
+                  fontSize: "12px",
+                  cursor: "pointer",
+                  boxShadow: step4Tab === "metals" ? "0 2px 4px rgba(0,0,0,0.06)" : "none",
+                  transition: "all 0.15s ease"
+                }}
+              >
+                🪙 Métaux & Émojis ({materials.length})
+              </button>
+            </div>
 
-            {/* Configured Categories List */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: "12px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                  Vos Catégories ({Object.keys(categories).length})
-                </span>
-                {Object.keys(categories).length > 0 && (
-                  <span style={{ fontSize: "11px", color: "#10b981", fontWeight: "700" }}>
-                    ✓ Prêt pour l'inventaire
-                  </span>
-                )}
-              </div>
-
-              {Object.keys(categories).length === 0 ? (
+            {/* TAB 1: FAMILLES D'OBJETS */}
+            {step4Tab === "categories" && (
+              <>
+                {/* Quick 1-click Suggestion Chips */}
                 <div
                   style={{
-                    padding: "18px 14px",
-                    borderRadius: "14px",
                     background: "#f8fafc",
-                    border: "1px dashed #cbd5e1",
-                    textAlign: "center",
-                    color: "#64748b",
-                    fontSize: "12px"
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "14px",
+                    padding: "12px 14px"
                   }}
                 >
-                  <div style={{ fontSize: "24px", marginBottom: "4px" }}>🏷️</div>
-                  <div style={{ fontWeight: "700", color: "#0f172a", marginBottom: "2px" }}>
-                    0 catégorie pour le moment
+                  <div style={{ fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                    💡 Suggestions en 1 clic (optionnel) :
                   </div>
-                  <div>
-                    Ajoutez vos catégories sur-mesure ci-dessus ou cliquez sur une suggestion rapide.
-                    Vous pourrez également en ajouter ou les modifier à tout moment depuis l'application.
-                  </div>
-                </div>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "240px", overflowY: "auto" }}>
-                  {Object.entries(categories).map(([catName, subCats]) => {
-                    const em = emojis[catName] || "🏷️";
-                    const col = colors[catName] || "#3b82f6";
-                    const isExpanded = expandedCat === catName;
-
-                    return (
-                      <div
-                        key={catName}
-                        style={{
-                          background: "#f8fafc",
-                          border: "1px solid #e2e8f0",
-                          borderRadius: "12px",
-                          overflow: "hidden"
-                        }}
-                      >
-                        <div
-                          onClick={() => setExpandedCat(isExpanded ? null : catName)}
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                    {Object.keys(SUGGESTED_STARTER_CATEGORIES).map((starterName) => {
+                      const item = SUGGESTED_STARTER_CATEGORIES[starterName];
+                      const isAlreadyAdded = !!categories[starterName];
+                      return (
+                        <button
+                          key={starterName}
+                          type="button"
+                          onClick={() => handleAddStarter(starterName)}
                           style={{
-                            padding: "10px 12px",
+                            padding: "6px 10px",
+                            borderRadius: "10px",
+                            border: isAlreadyAdded ? `1.5px solid ${item.color}` : "1px solid #cbd5e1",
+                            background: isAlreadyAdded ? "#eff6ff" : "#ffffff",
+                            color: isAlreadyAdded ? "#1e3a8a" : "#334155",
+                            fontSize: "12px",
+                            fontWeight: isAlreadyAdded ? "700" : "500",
+                            cursor: "pointer",
                             display: "flex",
                             alignItems: "center",
-                            justifyContent: "space-between",
-                            cursor: "pointer",
-                            userSelect: "none"
+                            gap: "5px",
+                            transition: "all 0.15s ease",
+                            boxShadow: "0 1px 3px rgba(0,0,0,0.04)"
                           }}
+                          title={isAlreadyAdded ? "Catégorie déjà ajoutée" : `Ajouter la suggestion ${starterName}`}
                         >
-                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                            <span
-                              style={{
-                                width: "14px",
-                                height: "14px",
-                                borderRadius: "50%",
-                                background: col,
-                                boxShadow: `0 0 4px ${col}88`,
-                                display: "inline-block"
-                              }}
-                            />
-                            <span style={{ fontSize: "16px" }}>{em}</span>
-                            <span style={{ fontSize: "13px", fontWeight: "700", color: "#0f172a" }}>
-                              {catName}
-                            </span>
-                            <span style={{ fontSize: "10px", fontWeight: "700", padding: "2px 6px", borderRadius: "8px", background: "#e2e8f0", color: "#64748b" }}>
-                              {subCats.length} sous-types
-                            </span>
-                          </div>
+                          <span
+                            style={{
+                              width: "8px",
+                              height: "8px",
+                              borderRadius: "50%",
+                              background: item.color,
+                              display: "inline-block"
+                            }}
+                          />
+                          <span>{item.emoji} {starterName}</span>
+                          {isAlreadyAdded && <span style={{ color: "#10b981", fontWeight: "900", fontSize: "11px" }}>✓</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
 
-                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                {/* Custom Category Creation Form */}
+                <form
+                  onSubmit={handleAddCustomCategory}
+                  style={{
+                    background: "#f8fafc",
+                    border: "1.5px solid #dbeafe",
+                    borderRadius: "16px",
+                    padding: "14px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px"
+                  }}
+                >
+                  <div style={{ fontSize: "12px", fontWeight: "800", color: "#2563eb" }}>
+                    ➕ Créer une Catégorie Sur-Mesure
+                  </div>
+
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <select
+                      value={newCatEmoji}
+                      onChange={(e) => setNewCatEmoji(e.target.value)}
+                      style={{
+                        padding: "9px",
+                        borderRadius: "10px",
+                        border: "1px solid #cbd5e1",
+                        background: "#ffffff",
+                        color: "#0f172a",
+                        fontSize: "16px",
+                        cursor: "pointer"
+                      }}
+                    >
+                      {COMMON_EMOJIS.map((em) => (
+                        <option key={em} value={em}>
+                          {em}
+                        </option>
+                      ))}
+                    </select>
+
+                    <input
+                      type="text"
+                      placeholder="Nom (ex: Poterie, Fossile, Outil...)"
+                      value={newCatName}
+                      onChange={(e) => setNewCatName(e.target.value)}
+                      style={{
+                        flex: 1,
+                        padding: "9px 12px",
+                        borderRadius: "10px",
+                        border: "1px solid #cbd5e1",
+                        background: "#ffffff",
+                        color: "#0f172a",
+                        fontSize: "13px",
+                        outline: "none"
+                      }}
+                    />
+                  </div>
+
+                  {/* Sub-categories input (comma separated) */}
+                  <input
+                    type="text"
+                    placeholder="Sous-catégories séparées par virgules (ex: Antique, Médiéval...)"
+                    value={newSubText}
+                    onChange={(e) => setNewSubText(e.target.value)}
+                    style={{
+                      padding: "9px 12px",
+                      borderRadius: "10px",
+                      border: "1px solid #cbd5e1",
+                      background: "#ffffff",
+                      color: "#0f172a",
+                      fontSize: "12px",
+                      outline: "none"
+                    }}
+                  />
+
+                  {/* Color Swatch Picker */}
+                  <div>
+                    <div style={{ fontSize: "11px", fontWeight: "700", color: "#64748b", marginBottom: "6px" }}>
+                      🎨 Couleur du repère carte :
+                    </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
+                      {PRESET_CATEGORY_COLORS.map((colorHex) => {
+                        const isSelected = newCatColor === colorHex;
+                        return (
+                          <button
+                            key={colorHex}
+                            type="button"
+                            onClick={() => setNewCatColor(colorHex)}
+                            style={{
+                              width: "22px",
+                              height: "22px",
+                              borderRadius: "50%",
+                              background: colorHex,
+                              border: isSelected ? "2.5px solid #0f172a" : "1.5px solid rgba(0,0,0,0.15)",
+                              boxShadow: isSelected ? `0 0 6px ${colorHex}` : "none",
+                              cursor: "pointer",
+                              padding: 0,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              transform: isSelected ? "scale(1.2)" : "scale(1)",
+                              transition: "all 0.15s ease"
+                            }}
+                            title={colorHex}
+                          >
+                            {isSelected && <span style={{ color: "#ffffff", fontSize: "10px", fontWeight: "900" }}>✓</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={!newCatName.trim()}
+                    style={{
+                      padding: "10px",
+                      borderRadius: "10px",
+                      border: "none",
+                      background: newCatName.trim() ? "linear-gradient(135deg, #10b981, #059669)" : "#e2e8f0",
+                      color: newCatName.trim() ? "#ffffff" : "#94a3b8",
+                      fontSize: "13px",
+                      fontWeight: "700",
+                      cursor: newCatName.trim() ? "pointer" : "not-allowed",
+                      transition: "all 0.2s ease"
+                    }}
+                  >
+                    + Ajouter cette catégorie
+                  </button>
+                </form>
+
+                {/* Configured Categories List */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "12px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                      Vos Catégories ({Object.keys(categories).length})
+                    </span>
+                    {Object.keys(categories).length > 0 && (
+                      <span style={{ fontSize: "11px", color: "#10b981", fontWeight: "700" }}>
+                        ✓ Prêt pour l'inventaire
+                      </span>
+                    )}
+                  </div>
+
+                  {Object.keys(categories).length === 0 ? (
+                    <div
+                      style={{
+                        padding: "18px 14px",
+                        borderRadius: "14px",
+                        background: "#f8fafc",
+                        border: "1px dashed #cbd5e1",
+                        textAlign: "center",
+                        color: "#64748b",
+                        fontSize: "12px"
+                      }}
+                    >
+                      <div style={{ fontSize: "24px", marginBottom: "4px" }}>🏷️</div>
+                      <div style={{ fontWeight: "700", color: "#0f172a", marginBottom: "2px" }}>
+                        0 catégorie pour le moment
+                      </div>
+                      <div>
+                        Ajoutez vos catégories sur-mesure ci-dessus ou cliquez sur une suggestion rapide.
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "220px", overflowY: "auto" }}>
+                      {Object.entries(categories).map(([catName, subCats]) => {
+                        const em = emojis[catName] || "🏷️";
+                        const col = colors[catName] || "#3b82f6";
+                        const isExpanded = expandedCat === catName;
+
+                        return (
+                          <div
+                            key={catName}
+                            style={{
+                              background: "#f8fafc",
+                              border: "1px solid #e2e8f0",
+                              borderRadius: "12px",
+                              overflow: "hidden"
+                            }}
+                          >
+                            <div
+                              onClick={() => setExpandedCat(isExpanded ? null : catName)}
+                              style={{
+                                padding: "10px 12px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                cursor: "pointer",
+                                userSelect: "none"
+                              }}
+                            >
+                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                <span
+                                  style={{
+                                    width: "14px",
+                                    height: "14px",
+                                    borderRadius: "50%",
+                                    background: col,
+                                    boxShadow: `0 0 4px ${col}88`,
+                                    display: "inline-block"
+                                  }}
+                                />
+                                <span style={{ fontSize: "16px" }}>{em}</span>
+                                <span style={{ fontSize: "13px", fontWeight: "700", color: "#0f172a" }}>
+                                  {catName}
+                                </span>
+                                <span style={{ fontSize: "10px", fontWeight: "700", padding: "2px 6px", borderRadius: "8px", background: "#e2e8f0", color: "#64748b" }}>
+                                  {subCats.length} sous-types
+                                </span>
+                              </div>
+
+                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveCategory(catName);
+                                  }}
+                                  style={{
+                                    background: "transparent",
+                                    border: "none",
+                                    color: "#ef4444",
+                                    fontSize: "13px",
+                                    cursor: "pointer",
+                                    padding: "2px"
+                                  }}
+                                  title="Supprimer la catégorie"
+                                >
+                                  🗑️
+                                </button>
+                                <span style={{ fontSize: "11px", color: "#64748b", transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
+                                  ▼
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Expanded Subcategories view */}
+                            {isExpanded && (
+                              <div
+                                style={{
+                                  padding: "8px 12px 12px 12px",
+                                  borderTop: "1px solid #e2e8f0",
+                                  background: "#f1f5f9"
+                                }}
+                              >
+                                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginBottom: "8px" }}>
+                                  {subCats.map((sub) => (
+                                    <span
+                                      key={sub}
+                                      style={{
+                                        padding: "3px 8px",
+                                        borderRadius: "6px",
+                                        background: "#ffffff",
+                                        border: "1px solid #e2e8f0",
+                                        fontSize: "11px",
+                                        color: "#334155",
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: "4px"
+                                      }}
+                                    >
+                                      {sub}
+                                      <span
+                                        onClick={() => handleRemoveSubInline(catName, sub)}
+                                        style={{ cursor: "pointer", color: "#ef4444", fontWeight: "bold", fontSize: "10px" }}
+                                      >
+                                        ×
+                                      </span>
+                                    </span>
+                                  ))}
+                                </div>
+
+                                {/* Add subcategory input */}
+                                <div style={{ display: "flex", gap: "6px" }}>
+                                  <input
+                                    type="text"
+                                    placeholder={`Ajouter un sous-type à ${catName}...`}
+                                    value={inlineSubInput}
+                                    onChange={(e) => setInlineSubInput(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") {
+                                        e.preventDefault();
+                                        handleAddSubInline(catName);
+                                      }
+                                    }}
+                                    style={{
+                                      flex: 1,
+                                      padding: "6px 10px",
+                                      borderRadius: "8px",
+                                      border: "1px solid #cbd5e1",
+                                      background: "#ffffff",
+                                      color: "#0f172a",
+                                      fontSize: "11px",
+                                      outline: "none"
+                                    }}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => handleAddSubInline(catName)}
+                                    style={{
+                                      padding: "6px 10px",
+                                      borderRadius: "8px",
+                                      border: "none",
+                                      background: "#3b82f6",
+                                      color: "white",
+                                      fontSize: "11px",
+                                      fontWeight: "bold",
+                                      cursor: "pointer"
+                                    }}
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* TAB 2: MÉTAUX & ÉMOJIS */}
+            {step4Tab === "metals" && (
+              <>
+                {/* Recommandations des 11 métaux */}
+                <div
+                  style={{
+                    background: "#f8fafc",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "14px",
+                    padding: "12px 14px"
+                  }}
+                >
+                  <div style={{ fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                    💡 Métaux recommandés par GeoProspect (Cliquez pour activer / désactiver) :
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                    {RECOMMENDED_METALS.map((rec) => {
+                      const isActif = materials.includes(rec.name);
+                      return (
+                        <button
+                          key={rec.name}
+                          type="button"
+                          onClick={() => handleToggleRecommendedMetal(rec)}
+                          style={{
+                            padding: "6px 10px",
+                            borderRadius: "10px",
+                            border: isActif ? "1.5px solid #3b82f6" : "1px solid #cbd5e1",
+                            background: isActif ? "#eff6ff" : "#ffffff",
+                            color: isActif ? "#1e3a8a" : "#475569",
+                            fontSize: "12px",
+                            fontWeight: isActif ? "700" : "500",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "5px",
+                            transition: "all 0.15s ease",
+                            boxShadow: isActif ? "0 1px 3px rgba(37,99,235,0.15)" : "0 1px 2px rgba(0,0,0,0.04)"
+                          }}
+                          title={isActif ? "Métal actif pour vos trouvailles" : `Cliquer pour activer ${rec.name}`}
+                        >
+                          <span style={{ fontSize: "14px" }}>{materialEmojis[rec.name] || rec.emoji}</span>
+                          <span>{rec.name}</span>
+                          {isActif ? (
+                            <span style={{ color: "#10b981", fontWeight: "900", fontSize: "11px" }}>✓</span>
+                          ) : (
+                            <span style={{ color: "#94a3b8", fontSize: "10px" }}>+</span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Formulaire d'ajout de métal sur-mesure */}
+                <form
+                  onSubmit={handleAddCustomMetal}
+                  style={{
+                    background: "#f8fafc",
+                    border: "1.5px solid #dbeafe",
+                    borderRadius: "16px",
+                    padding: "14px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px"
+                  }}
+                >
+                  <div style={{ fontSize: "12px", fontWeight: "800", color: "#2563eb" }}>
+                    ➕ Ajouter un Métal ou Alliage Sur-Mesure
+                  </div>
+
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <select
+                      value={newMetalEmoji}
+                      onChange={(e) => setNewMetalEmoji(e.target.value)}
+                      style={{
+                        padding: "9px",
+                        borderRadius: "10px",
+                        border: "1px solid #cbd5e1",
+                        background: "#ffffff",
+                        color: "#0f172a",
+                        fontSize: "16px",
+                        cursor: "pointer"
+                      }}
+                    >
+                      {METAL_EMOJIS.map((em) => (
+                        <option key={em} value={em}>
+                          {em}
+                        </option>
+                      ))}
+                    </select>
+
+                    <input
+                      type="text"
+                      placeholder="Nom du métal (ex: Maillechort, Peltre, Zamac, Or blanc...)"
+                      value={newMetalName}
+                      onChange={(e) => setNewMetalName(e.target.value)}
+                      style={{
+                        flex: 1,
+                        padding: "9px 12px",
+                        borderRadius: "10px",
+                        border: "1px solid #cbd5e1",
+                        background: "#ffffff",
+                        color: "#0f172a",
+                        fontSize: "13px",
+                        outline: "none"
+                      }}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={!newMetalName.trim()}
+                    style={{
+                      padding: "10px",
+                      borderRadius: "10px",
+                      border: "none",
+                      background: newMetalName.trim() ? "linear-gradient(135deg, #10b981, #059669)" : "#e2e8f0",
+                      color: newMetalName.trim() ? "#ffffff" : "#94a3b8",
+                      fontSize: "13px",
+                      fontWeight: "700",
+                      cursor: newMetalName.trim() ? "pointer" : "not-allowed",
+                      transition: "all 0.2s ease"
+                    }}
+                  >
+                    + Ajouter ce métal à mes trouvailles
+                  </button>
+                </form>
+
+                {/* Liste des métaux actifs */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "12px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                      Vos Métaux Actifs ({materials.length})
+                    </span>
+                    {materials.length > 0 && (
+                      <span style={{ fontSize: "11px", color: "#10b981", fontWeight: "700" }}>
+                        ✓ Enregistrement prêt
+                      </span>
+                    )}
+                  </div>
+
+                  {materials.length === 0 ? (
+                    <div
+                      style={{
+                        padding: "18px 14px",
+                        borderRadius: "14px",
+                        background: "#f8fafc",
+                        border: "1px dashed #cbd5e1",
+                        textAlign: "center",
+                        color: "#64748b",
+                        fontSize: "12px"
+                      }}
+                    >
+                      <div style={{ fontSize: "24px", marginBottom: "4px" }}>🪙</div>
+                      <div style={{ fontWeight: "700", color: "#0f172a", marginBottom: "2px" }}>
+                        Aucun métal sélectionné
+                      </div>
+                      <div>
+                        Activez un des métaux recommandés ci-dessus ou créez vos propres alliages personnalisés.
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))",
+                        gap: "6px",
+                        maxHeight: "220px",
+                        overflowY: "auto"
+                      }}
+                    >
+                      {materials.map((mat) => {
+                        const em = materialEmojis[mat] || "🪙";
+                        return (
+                          <div
+                            key={mat}
+                            style={{
+                              background: "#f8fafc",
+                              border: "1px solid #e2e8f0",
+                              borderRadius: "10px",
+                              padding: "8px 10px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              gap: "6px"
+                            }}
+                          >
+                            <div style={{ display: "flex", alignItems: "center", gap: "6px", overflow: "hidden" }}>
+                              <span style={{ fontSize: "15px" }}>{em}</span>
+                              <span
+                                style={{
+                                  fontSize: "12px",
+                                  fontWeight: "700",
+                                  color: "#0f172a",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis"
+                                }}
+                              >
+                                {mat}
+                              </span>
+                            </div>
                             <button
                               type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleRemoveCategory(catName);
-                              }}
+                              onClick={() => handleRemoveMetal(mat)}
                               style={{
                                 background: "transparent",
                                 border: "none",
                                 color: "#ef4444",
-                                fontSize: "13px",
+                                fontSize: "12px",
                                 cursor: "pointer",
                                 padding: "2px"
                               }}
-                              title="Supprimer la catégorie"
+                              title={`Supprimer ${mat}`}
                             >
                               🗑️
                             </button>
-                            <span style={{ fontSize: "11px", color: "#64748b", transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
-                              ▼
-                            </span>
                           </div>
-                        </div>
-
-                        {/* Expanded Subcategories view */}
-                        {isExpanded && (
-                          <div
-                            style={{
-                              padding: "8px 12px 12px 12px",
-                              borderTop: "1px solid #e2e8f0",
-                              background: "#f1f5f9"
-                            }}
-                          >
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginBottom: "8px" }}>
-                              {subCats.map((sub) => (
-                                <span
-                                  key={sub}
-                                  style={{
-                                    padding: "3px 8px",
-                                    borderRadius: "6px",
-                                    background: "#ffffff",
-                                    border: "1px solid #e2e8f0",
-                                    fontSize: "11px",
-                                    color: "#334155",
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: "4px"
-                                  }}
-                                >
-                                  {sub}
-                                  <span
-                                    onClick={() => handleRemoveSubInline(catName, sub)}
-                                    style={{ cursor: "pointer", color: "#ef4444", fontWeight: "bold", fontSize: "10px" }}
-                                  >
-                                    ×
-                                  </span>
-                                </span>
-                              ))}
-                            </div>
-
-                            {/* Add subcategory input */}
-                            <div style={{ display: "flex", gap: "6px" }}>
-                              <input
-                                type="text"
-                                placeholder={`Ajouter un sous-type à ${catName}...`}
-                                value={inlineSubInput}
-                                onChange={(e) => setInlineSubInput(e.target.value)}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    e.preventDefault();
-                                    handleAddSubInline(catName);
-                                  }
-                                }}
-                                style={{
-                                  flex: 1,
-                                  padding: "6px 10px",
-                                  borderRadius: "8px",
-                                  border: "1px solid #cbd5e1",
-                                  background: "#ffffff",
-                                  color: "#0f172a",
-                                  fontSize: "11px",
-                                  outline: "none"
-                                }}
-                              />
-                              <button
-                                type="button"
-                                onClick={() => handleAddSubInline(catName)}
-                                style={{
-                                  padding: "6px 10px",
-                                  borderRadius: "8px",
-                                  border: "none",
-                                  background: "#3b82f6",
-                                  color: "white",
-                                  fontSize: "11px",
-                                  fontWeight: "bold",
-                                  cursor: "pointer"
-                                }}
-                              >
-                                +
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
 
             {/* Actions Buttons */}
             <div style={{ display: "flex", gap: "10px", marginTop: "6px" }}>
@@ -1177,6 +1515,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                 type="button"
                 onClick={() => {
                   saveCategoriesData(categories, emojis, colors);
+                  saveMaterialsData(materials, materialEmojis);
                   setStep(5);
                 }}
                 style={{
@@ -1193,7 +1532,7 @@ export default function OnboardingModal({ isOpen, onComplete }) {
                   transition: "all 0.2s ease"
                 }}
               >
-                Continuer vers l'Affichage ➔
+                Continuer vers l'Étape 5 →
               </button>
             </div>
           </div>

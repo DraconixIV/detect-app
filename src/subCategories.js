@@ -131,24 +131,38 @@ export const categoriesWithSub = {};
 // Retro-compatibility
 export const monnaieSubCategories = [];
 
+export const RECOMMENDED_METALS = [
+  { name: "Or", emoji: "🪙" },
+  { name: "Argent", emoji: "🥈" },
+  { name: "Bronze", emoji: "🥉" },
+  { name: "Cuivre", emoji: "🟫" },
+  { name: "Laiton", emoji: "🔔" },
+  { name: "Cupronickel", emoji: "💿" },
+  { name: "Billon", emoji: "🔘" },
+  { name: "Étain", emoji: "⚖️" },
+  { name: "Aluminium", emoji: "🥫" },
+  { name: "Plomb", emoji: "⚓" },
+  { name: "Fer", emoji: "⚙️" }
+];
+
 export const materials = [
   "Indéterminé",
   "Or",
   "Argent",
   "Bronze",
   "Cuivre",
-  "Alliage cuivreux",
   "Laiton",
-  "Maillechort",
   "Cupronickel",
-  "Peltre",
-  "Métal blanc",
-  "Zamac",
   "Billon",
   "Étain",
   "Aluminium",
   "Plomb",
   "Fer",
+  "Alliage cuivreux",
+  "Maillechort",
+  "Peltre",
+  "Métal blanc",
+  "Zamac",
   "Autre"
 ];
 
@@ -158,17 +172,17 @@ export const materialEmojis = {
   "Argent": "🥈",
   "Bronze": "🥉",
   "Cuivre": "🟫",
-  "Alliage cuivreux": "🏺",
   "Laiton": "🔔",
-  "Maillechort": "🔱",
   "Cupronickel": "💿",
+  "Billon": "🔘",
+  "Étain": "⚖️",
+  "Aluminium": "🥫",
+  "Plomb": "⚓",
+  "Fer": "⚙️",
+  "Alliage cuivreux": "🏺",
+  "Maillechort": "🔱",
   "Peltre": "🫖",
   "Métal blanc": "⬜",
   "Zamac": "🚗",
-  "Billon": "💿",
-  "Étain": "⚖️",
-  "Aluminium": "📎",
-  "Plomb": "⚓",
-  "Fer": "⚙️",
   "Autre": "📦"
 };
