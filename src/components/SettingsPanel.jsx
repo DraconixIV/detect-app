@@ -6,7 +6,7 @@ import { getMyUserCode, getMyDisplayName } from "../services/sessionService";
 import AuthForm from "./AuthForm";
 
 const DONATION_LINKS = {
-  kofi: "https://ko-fi.com",
+  kofi: "https://ko-fi.com/geoprospect",
   buymeacoffee: "https://buymeacoffee.com",
   paypal: "https://paypal.me"
 };
