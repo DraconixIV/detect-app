@@ -5,6 +5,12 @@ import { defaultCategoryColors } from "../subCategories";
 import { getMyUserCode, getMyDisplayName } from "../services/sessionService";
 import AuthForm from "./AuthForm";
 
+const DONATION_LINKS = {
+  kofi: "https://ko-fi.com",
+  buymeacoffee: "https://buymeacoffee.com",
+  paypal: "https://paypal.me"
+};
+
 export default function SettingsPanel({
   theme,
   setTheme,
@@ -583,57 +589,105 @@ export default function SettingsPanel({
           <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
             <span>☕</span> Soutenir le Projet (Dons)
           </div>
-          <p style={{ margin: "0 0 12px 0", fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
-            Développé avec passion pour offrir un outil 100 % libre, sans publicité et respectueux de vos données. Si l'application vous plaît, un petit don encourage les futures améliorations !
+          <p style={{ margin: "0 0 14px 0", fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
+            Développé avec passion pour offrir un outil 100 % libre, sans publicité et respectueux de vos données. Si l'application vous plaît et vous est utile lors de vos sorties, un petit don encourage les futures améliorations !
           </p>
 
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            {/* Ko-fi */}
             <a
-              href="https://ko-fi.com"
+              href={DONATION_LINKS.kofi}
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                flex: 1,
-                padding: "10px",
+                padding: "10px 14px",
                 borderRadius: "12px",
-                background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
-                border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                color: isLight ? "#0f172a" : "#ffffff",
-                fontWeight: "700",
-                fontSize: "12px",
-                textAlign: "center",
+                background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)",
+                border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
+                color: textMain,
                 textDecoration: "none",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-                gap: "6px"
+                justifyContent: "space-between",
+                transition: "all 0.2s"
               }}
             >
-              <span>☕</span> Offrir un café (Ko-fi)
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <span style={{ fontSize: "18px" }}>☕</span>
+                <div>
+                  <div style={{ fontSize: "12px", fontWeight: "700", color: isLight ? "#0f172a" : "#ffffff" }}>
+                    Ko-fi
+                  </div>
+                  <div style={{ fontSize: "10px", color: textSub }}>
+                    Don libre sans commission (CB, Apple Pay, Google Pay)
+                  </div>
+                </div>
+              </div>
+              <span style={{ fontSize: "13px", color: textSub, fontWeight: "bold" }}>↗</span>
             </a>
 
+            {/* Buy Me a Coffee */}
             <a
-              href="https://paypal.me"
+              href={DONATION_LINKS.buymeacoffee}
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                flex: 1,
-                padding: "10px",
+                padding: "10px 14px",
                 borderRadius: "12px",
-                background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)",
+                background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)",
+                border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
                 color: textMain,
-                fontWeight: "700",
-                fontSize: "12px",
-                textAlign: "center",
                 textDecoration: "none",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-                gap: "6px",
-                border: `1px solid ${cardBorder}`
+                justifyContent: "space-between",
+                transition: "all 0.2s"
               }}
             >
-              <span>💳</span> PayPal
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <span style={{ fontSize: "18px" }}>💛</span>
+                <div>
+                  <div style={{ fontSize: "12px", fontWeight: "700", color: isLight ? "#0f172a" : "#ffffff" }}>
+                    Buy Me a Coffee
+                  </div>
+                  <div style={{ fontSize: "10px", color: textSub }}>
+                    Offrir un café en 1 clic
+                  </div>
+                </div>
+              </div>
+              <span style={{ fontSize: "13px", color: textSub, fontWeight: "bold" }}>↗</span>
+            </a>
+
+            {/* PayPal */}
+            <a
+              href={DONATION_LINKS.paypal}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                padding: "10px 14px",
+                borderRadius: "12px",
+                background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)",
+                border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
+                color: textMain,
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                transition: "all 0.2s"
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <span style={{ fontSize: "18px" }}>💳</span>
+                <div>
+                  <div style={{ fontSize: "12px", fontWeight: "700", color: isLight ? "#0f172a" : "#ffffff" }}>
+                    PayPal.me
+                  </div>
+                  <div style={{ fontSize: "10px", color: textSub }}>
+                    Transfert direct sécurisé avec votre compte PayPal
+                  </div>
+                </div>
+              </div>
+              <span style={{ fontSize: "13px", color: textSub, fontWeight: "bold" }}>↗</span>
             </a>
           </div>
         </div>
