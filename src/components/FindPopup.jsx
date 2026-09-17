@@ -546,7 +546,7 @@ export default function FindPopup({
               cursor: "pointer"
             }}
           >
-            {isReadOnly ? "👁️ Voir les détails" : "✏️ Détails & Éditer"}
+            {isReadOnly ? "👁️ Voir les détails" : "✏️ Détails et Éditer"}
           </button>
         </div>
       </div>
@@ -596,7 +596,7 @@ export default function FindPopup({
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "12px", gap: "8px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
             <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", letterSpacing: "-0.5px" }}>
-              {isReadOnly ? "🔍 Fiche Trouvaille" : "🔍 Détails & Édition"}
+              {isReadOnly ? "🔍 Fiche Trouvaille" : "🔍 Détails et Édition"}
             </h3>
             {isReadOnly && (
               <span style={{ fontSize: "10px", background: "rgba(234, 179, 8, 0.2)", color: "#facc15", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>

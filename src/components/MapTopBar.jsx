@@ -295,7 +295,7 @@ export default function MapTopBar({
                 justifyContent: "center",
                 transition: "all 0.15s ease"
               }}
-              title={workspace.mode === "session" ? "Session d'Équipe en direct" : "Partage & Session d'équipe"}
+              title={workspace.mode === "session" ? "Session d'Équipe en direct" : "Partage et Session d'équipe"}
             >
               👥
             </button>
@@ -505,7 +505,7 @@ export default function MapTopBar({
               {places.length > 0 && (
                 <div style={{ marginTop: matchingFinds.length > 0 ? "6px" : "0" }}>
                   <div style={{ fontSize: "10px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "4px" }}>
-                    📍 Lieux & Villes ({places.length}) :
+                    📍 Lieux et Villes ({places.length}) :
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                     {places.map((p, idx) => (

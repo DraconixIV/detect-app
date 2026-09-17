@@ -25,10 +25,10 @@ const COMMON_EMOJIS = DETECTORIST_EMOJIS;
 const METAL_EMOJIS = DETECTORIST_EMOJIS;
 
 export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange, currentTheme = "dark" }) {
-  // Step 1: Découverte & Fonctionnalités clés
-  // Step 2: Cadre Légal & Charte Éthique
+  // Step 1: Découverte et Fonctionnalités clés
+  // Step 2: Cadre Légal et Charte Éthique
   // Step 3: Espace Prospecteur (Authentification)
-  // Step 4: Votre Classification (Catégories & Métaux)
+  // Step 4: Votre Classification (Catégories et Métaux)
   // Step 5: Configuration Initiale (Carte, Thème)
   // Step 6: Message Personnel du Créateur
   const [step, setStep] = useState(1);
@@ -300,7 +300,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
         </div>
 
         {/* ========================================================= */}
-        {/* ÉTAPE 1 : PRÉSENTATION & FONCTIONNEMENT DE L'APP */}
+        {/* ÉTAPE 1 : PRÉSENTATION ET FONCTIONNEMENT DE L'APP */}
         {/* ========================================================= */}
         {step === 1 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
@@ -345,7 +345,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 </div>
                 <div>
                   <div style={{ fontSize: "14px", fontWeight: "800", color: textMain, marginBottom: "3px" }}>
-                    Cartes IGN & Tracé GPS en Direct
+                    Cartes IGN et Tracé GPS en Direct
                   </div>
                   <div style={{ fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
                     Superposez le <strong>Cadastre officiel IGN</strong>, la carte de <strong>Cassini</strong> et l'<strong>État-Major 1820</strong>. Visualisez votre parcours pour ne jamais repasser au même endroit.
@@ -383,7 +383,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 </div>
                 <div>
                   <div style={{ fontSize: "14px", fontWeight: "800", color: textMain, marginBottom: "3px" }}>
-                    Journal de Trouvailles & Photos HD
+                    Journal de Trouvailles et Photos HD
                   </div>
                   <div style={{ fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
                     Épinglez chaque découverte avec ses coordonnées exactes, photos macro, catégorie et exportez vos statistiques à tout moment.
@@ -421,7 +421,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 </div>
                 <div>
                   <div style={{ fontSize: "14px", fontWeight: "800", color: textMain, marginBottom: "3px" }}>
-                    Sessions en Équipe & Sauvegarde
+                    Sessions en Équipe et Sauvegarde
                   </div>
                   <div style={{ fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
                     Rejoignez une session collective en direct avec vos amis ou prospectez en mode 100% hors-ligne sécurisé.
@@ -456,13 +456,13 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
         )}
 
         {/* ========================================================= */}
-        {/* ÉTAPE 2 : CADRE LÉGAL & CHARTE DÉONTOLOGIQUE */}
+        {/* ÉTAPE 2 : CADRE LÉGAL ET CHARTE DÉONTOLOGIQUE */}
         {/* ========================================================= */}
         {step === 2 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
               <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
-                Cadre Légal & Charte Éthique ⚖️
+                Cadre Légal et Charte Éthique ⚖️
               </h1>
               <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
                 La détection de métaux en France est encadrée pour protéger le patrimoine et respecter la propriété privée.
@@ -485,6 +485,15 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
               }}
             >
               <div>
+                <div style={{ fontWeight: "800", color: textMain, marginBottom: "3px" }}>
+                  Articles 544 et 552 du Code civil
+                </div>
+                <div style={{ color: textSub, fontSize: "11px" }}>
+                  La propriété du sol emporte la propriété du dessus et du dessous. Toute prospection sur un terrain privé nécessite impérativement l'accord écrit ou formel du propriétaire du terrain.
+                </div>
+              </div>
+
+              <div style={{ borderTop: `1px solid ${cardBorder}`, paddingTop: "8px" }}>
                 <div style={{ fontWeight: "800", color: textMain, marginBottom: "3px" }}>
                   Article L. 542-1 du Code du patrimoine
                 </div>
@@ -527,7 +536,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   onChange={(e) => setCheckOwner(e.target.checked)}
                   style={{ width: "16px", height: "16px", marginTop: "2px", accentColor: "#2563eb", cursor: "pointer" }}
                 />
-                <span>J'obtiens systématiquement l'<strong>accord préalable du propriétaire</strong> du terrain (Code civil).</span>
+                <span>J'obtiens systématiquement l'<strong>accord préalable du propriétaire</strong> du terrain (Articles 544 et 552 du Code civil).</span>
               </label>
 
               <label
@@ -1637,7 +1646,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   }}
                 >
                   <div style={{ fontSize: "14px", fontWeight: "800", color: selectedMapStyle === "streets" ? (isDark ? "#60a5fa" : "#1e3a8a") : textMain }}>
-                    🏔️ Relief & Topo
+                    🏔️ Relief et Topo
                   </div>
                   <div style={{ fontSize: "11px", color: textSub, marginTop: "2px" }}>
                     Courbes de niveau

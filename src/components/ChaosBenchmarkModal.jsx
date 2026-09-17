@@ -249,10 +249,10 @@ export default function ChaosBenchmarkModal({
             <span style={{ fontSize: "24px" }}>⚡</span>
             <div>
               <h2 style={{ margin: 0, fontSize: "16px", fontWeight: "900", color: textMain }}>
-                Banc de Test & Chaos Simulator
+                Banc de Test et Chaos Simulator
               </h2>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
-                Stress test 15 bots, charge Leaflet & audit de fluidité
+                Stress test 15 bots, charge Leaflet et audit de fluidité
               </p>
             </div>
           </div>

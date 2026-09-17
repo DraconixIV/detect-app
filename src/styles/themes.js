@@ -28,7 +28,7 @@ export const THEMES = {
     id: "heritage",
     name: "Explorateur Antique",
     icon: "📜",
-    badge: "HISTOIRE & CASSINI",
+    badge: "HISTOIRE ET CASSINI",
     description: "Laiton brossé, cuir vieilli, or patiné et esprit cartographie ancienne.",
     colors: {
       bgPrimary: "#14110e",
@@ -78,7 +78,7 @@ export const THEMES = {
     id: "outdoor",
     name: "Outdoor Pro (Garmin)",
     icon: "🌲",
-    badge: "SPORT & AVENTURE",
+    badge: "SPORT ET AVENTURE",
     description: "Bleu ardoise profond, orange vif et blanc glacier pour une ergonomie outdoor moderne.",
     colors: {
       bgPrimary: "#0b132b",

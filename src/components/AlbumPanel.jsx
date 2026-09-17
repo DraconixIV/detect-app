@@ -772,7 +772,7 @@ export default function AlbumPanel({
                         gap: "6px"
                       }}
                     >
-                      <span>{forcePhotoView ? "🪙 Voir Flip Coin 3D" : "🔍 Voir Photo & Zoom"}</span>
+                      <span>{forcePhotoView ? "🪙 Voir Flip Coin 3D" : "🔍 Voir Photo et Zoom"}</span>
                     </button>
                   )}
                 </div>

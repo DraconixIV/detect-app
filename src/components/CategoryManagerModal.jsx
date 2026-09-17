@@ -157,7 +157,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
             <span style={{ fontSize: "24px" }}>{modalTab === "categories" ? "🏷️" : "🪙"}</span>
             <div>
               <h2 style={{ margin: 0, fontSize: "17px", fontWeight: "800", color: textMain }}>
-                {modalTab === "categories" ? "Gestion des Catégories" : "Gestion des Métaux & Alliages"}
+                {modalTab === "categories" ? "Gestion des Catégories" : "Gestion des Métaux et Alliages"}
               </h2>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
                 {modalTab === "categories"

@@ -75,7 +75,7 @@ export default function MapFloatingControls({
               position: "relative",
               transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
             }}
-            title="Couches Cartographiques & Cadastre"
+            title="Couches Cartographiques et Cadastre"
           >
             🗺️
             {activeLayersCount > 0 && (

@@ -26,8 +26,12 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
     if (mode === "reset") {
       setLoading(true);
       try {
+        const currentRedirectUrl = typeof window !== "undefined"
+          ? window.location.origin.replace(/\/+$/, "")
+          : "https://detect-app-iota.vercel.app";
+
         const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-          redirectTo: window.location.origin
+          redirectTo: currentRedirectUrl
         });
         if (error) throw error;
         setSuccessMsg("Un lien de réinitialisation vous a été envoyé par email.");
@@ -92,8 +96,10 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
     setErrorMsg("");
     setGoogleLoading(true);
     try {
-      // Determine accurate redirect URL based on environment (PWA / Web / Local)
-      const currentRedirectUrl = window.location.origin + window.location.pathname;
+      // Clean origin URL without trailing slashes to match Supabase Redirect URLs whitelist exactly
+      const currentRedirectUrl = typeof window !== "undefined"
+        ? window.location.origin.replace(/\/+$/, "")
+        : "https://detect-app-iota.vercel.app";
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",

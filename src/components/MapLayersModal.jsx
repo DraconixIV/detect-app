@@ -128,7 +128,7 @@ export default function MapLayersModal({
                 color: c.textPrimary || '#ffffff'
               }}
             >
-              <span>🗺️</span> Cartes & Surcouches IGN
+              <span>🗺️</span> Cartes et Surcouches IGN
             </h3>
             <p
               style={{
@@ -476,7 +476,7 @@ export default function MapLayersModal({
             }}
           >
             <div style={{ fontSize: '11px', fontWeight: '800', color: '#ffffff' }}>
-              Charte Éthique & Limite Légale
+              Charte Éthique et Limite Légale
             </div>
             <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, lineHeight: '1.4' }}>
               Cette application fournit exclusivement des cartes topographiques, historiques et cadastrales publiques.
@@ -501,7 +501,7 @@ export default function MapLayersModal({
               boxShadow: `0 4px 12px ${c.accent || '#ef4444'}44`
             }}
           >
-            Appliquer & Fermer
+            Appliquer et Fermer
           </button>
         </div>
       </div>

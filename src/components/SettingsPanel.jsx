@@ -138,7 +138,7 @@ export default function SettingsPanel({
           <div style={{ fontSize: "28px" }}>⚙️</div>
           <div>
             <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: textMain }}>
-              Paramètres & Configuration
+              Paramètres et Configuration
             </h1>
             <p style={{ margin: 0, fontSize: "12px", color: textSub }}>
               Personnalisez votre carnet de détection
@@ -147,9 +147,9 @@ export default function SettingsPanel({
         </div>
 
         {/* ============================================================ */}
-        {/* GROUPE 1 : RÉSEAU & PARTAGE D'ÉQUIPE (MIS EN AVANT)          */}
+        {/* GROUPE 1 : RÉSEAU ET PARTAGE D'ÉQUIPE (MIS EN AVANT)          */}
         {/* ============================================================ */}
-        {renderGroupHeader("👥", "Partage & Session d'Équipe", isLight ? "#000000" : "#ffffff", true)}
+        {renderGroupHeader("👥", "Partage et Session d'Équipe", isLight ? "#000000" : "#ffffff", true)}
 
         <div
           style={{
@@ -163,7 +163,7 @@ export default function SettingsPanel({
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
             <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
-              <span>👥</span> Code Détecteur & Partage
+              <span>👥</span> Code Détecteur et Partage
             </div>
             {workspace.mode !== "personal" && (
               <span
@@ -257,9 +257,9 @@ export default function SettingsPanel({
         </div>
 
         {/* ============================================================ */}
-        {/* GROUPE 2 : PRÉFÉRENCES & CONFORT VISUEL                      */}
+        {/* GROUPE 2 : PRÉFÉRENCES ET CONFORT VISUEL                      */}
         {/* ============================================================ */}
-        {renderGroupHeader("🎨", "Préférences & Confort Visuel", isLight ? "#000000" : "#ffffff")}
+        {renderGroupHeader("🎨", "Préférences et Confort Visuel", isLight ? "#000000" : "#ffffff")}
 
         {/* Mode Sombre / Clair */}
         <div style={cardStyle}>
@@ -490,13 +490,13 @@ export default function SettingsPanel({
         </div>
 
         {/* ============================================================ */}
-        {/* GROUPE 3 : COMPTE & SYNCHRONISATION (DONNÉES)                */}
+        {/* GROUPE 3 : COMPTE ET SYNCHRONISATION (DONNÉES)                */}
         {/* ============================================================ */}
-        {renderGroupHeader("☁️", "Compte & Sauvegardes", isLight ? "#000000" : "#ffffff")}
+        {renderGroupHeader("☁️", "Compte et Sauvegardes", isLight ? "#000000" : "#ffffff")}
 
         <div style={cardStyle}>
           <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
-            <span>👤</span> Synchronisation & Données
+            <span>👤</span> Synchronisation et Données
           </div>
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: showAuthBox ? "14px" : "12px" }}>
@@ -569,7 +569,7 @@ export default function SettingsPanel({
         {/* ============================================================ */}
         {/* GROUPE 4 : SOUTIEN AU PROJET (DONS)                          */}
         {/* ============================================================ */}
-        {renderGroupHeader("☕", "Soutien & Communauté", isLight ? "#000000" : "#ffffff")}
+        {renderGroupHeader("☕", "Soutien et Communauté", isLight ? "#000000" : "#ffffff")}
 
         <div
           style={{
@@ -638,14 +638,14 @@ export default function SettingsPanel({
         </div>
 
         {/* ============================================================ */}
-        {/* GROUPE 5 : CADRE LÉGAL & CONDITIONS                          */}
+        {/* GROUPE 5 : CADRE LÉGAL ET CONDITIONS                          */}
         {/* ============================================================ */}
-        {renderGroupHeader("⚖️", "Législation & Conditions", isLight ? "#000000" : "#ffffff")}
+        {renderGroupHeader("⚖️", "Législation et Conditions", isLight ? "#000000" : "#ffffff")}
 
         <div style={cardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff", marginBottom: 0 }}>
-              <span>⚖️</span> Mentions Légales & CGU
+              <span>⚖️</span> Mentions Légales et CGU
             </div>
             <button
               onClick={() => setShowLegal(!showLegal)}
@@ -679,7 +679,7 @@ export default function SettingsPanel({
                     cursor: "pointer"
                   }}
                 >
-                  🔄 Relancer l'Onboarding & Charte Légale
+                  🔄 Relancer l'Onboarding et Charte Légale
                 </button>
               )}
             </div>

@@ -248,7 +248,7 @@ export default function StatsPanel({
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
           <span style={{ fontSize: "12px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px", color: textMain }}>
-            🏆 Organigrammes & Répartition
+            🏆 Organigrammes et Répartition
           </span>
         </div>
 
@@ -614,7 +614,7 @@ export default function StatsPanel({
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
           <div>
             <h3 style={{ margin: 0, fontSize: "13px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px", color: isLight ? "#0f172a" : "#ffffff" }}>
-              📂 Détail par Familles & Sous-Sections
+              📂 Détail par Familles et Sous-Sections
             </h3>
             <p style={{ margin: "2px 0 0 0", fontSize: "10px", color: textSub }}>
               Touchez une catégorie pour déplier ou replier ses sous-types

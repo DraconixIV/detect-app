@@ -123,7 +123,7 @@ export default function WikiPanel({ finds, photos, onOpenFindDetails, onUpdate }
 *   **Monnaie** : ${selectedCoin.title || "Non renseignée"}
 *   **Émetteur / Autorité** : ${regime}
 *   **Période historique** : ${epoque}
-*   **Métal & Alliage** : ${composition}
+*   **Métal et Alliage** : ${composition}
 *   **Rareté estimée** : ${rarete}
 
 ---
@@ -133,15 +133,15 @@ ${contexte}
 
 ---
 
-#### 🪙 SYMBOLIQUE & ICONOGRAPHIE
+#### 🪙 SYMBOLIQUE ET ICONOGRAPHIE
 *   **Sur l'Avers (Face)**, le graveur a représenté ${aversDesc.charAt(0).toLowerCase() + aversDesc.slice(1)}
 *   **Au Revers (Pile)**, on contemple ${reversDesc.charAt(0).toLowerCase() + reversDesc.slice(1)}
 
 ---
 
 #### 🔍 L'AVIS DU COLLECTIONNEUR
-*   **Conservation & Aspect** : Cet exemplaire présente une usure liée à sa circulation d'époque. Sa patine témoigne de son long séjour en terre, préservant les reliefs essentiels qui racontent son histoire.
-*   **Anecdote & Rôle** : Cette monnaie d'usage quotidien servait aux transactions courantes du peuple de l'époque. Elle constitue un lien direct et palpable avec le quotidien des générations passées.`;
+*   **Conservation et Aspect** : Cet exemplaire présente une usure liée à sa circulation d'époque. Sa patine témoigne de son long séjour en terre, préservant les reliefs essentiels qui racontent son histoire.
+*   **Anecdote et Rôle** : Cette monnaie d'usage quotidien servait aux transactions courantes du peuple de l'époque. Elle constitue un lien direct et palpable avec le quotidien des générations passées.`;
 
     setEditedDescription(generatedMarkdown);
     setIsEditing(true);

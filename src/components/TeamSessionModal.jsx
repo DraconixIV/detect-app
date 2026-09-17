@@ -134,7 +134,7 @@ export default function TeamSessionModal({
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
           <div>
             <h2 style={{ margin: "0 0 2px 0", fontSize: "18px", fontWeight: "800", letterSpacing: "-0.3px", color: isLight ? "#000000" : "#ffffff" }}>
-              Partage & Sessions d'Équipe
+              Partage et Sessions d'Équipe
             </h2>
             <p style={{ margin: 0, fontSize: "12px", color: isLight ? "#1e293b" : "#ffffff" }}>
               Collaboration et consultation multi-détecteurs
