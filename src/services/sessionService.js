@@ -51,9 +51,9 @@ export function getMyDisplayName() {
   try {
     const saved = localStorage.getItem(USER_DISPLAY_NAME_KEY);
     if (saved && saved.trim()) return saved.trim();
-    return "Détectoriste";
+    return "";
   } catch (e) {
-    return "Détectoriste";
+    return "";
   }
 }
 
@@ -62,8 +62,12 @@ export function getMyDisplayName() {
  */
 export function setMyDisplayName(name) {
   try {
-    const clean = (name || "").trim() || "Détectoriste";
-    localStorage.setItem(USER_DISPLAY_NAME_KEY, clean);
+    const clean = (name || "").trim();
+    if (clean) {
+      localStorage.setItem(USER_DISPLAY_NAME_KEY, clean);
+    } else {
+      localStorage.removeItem(USER_DISPLAY_NAME_KEY);
+    }
     return clean;
   } catch (e) {
     console.warn("Storage error in setMyDisplayName:", e);
@@ -147,13 +151,13 @@ export function setActiveSession(session) {
  * Create a new team detection session
  */
 export function createTeamSession(name = "") {
-  const sessionCode = generateRandomCode("TEAM");
+  const sessionCode = generateRandomCode("GEO");
   const session = {
     code: sessionCode,
     name: name.trim() || `Sortie d'équipe ${sessionCode}`,
     createdAt: new Date().toISOString(),
     creatorCode: getMyUserCode(),
-    creatorName: getMyDisplayName()
+    creatorName: getMyDisplayName() || "Anonyme"
   };
   setActiveSession(session);
   return session;
@@ -171,7 +175,7 @@ export function joinTeamSession(code, name = "") {
     name: name.trim() || `Session ${cleanCode}`,
     joinedAt: new Date().toISOString(),
     userCode: getMyUserCode(),
-    userName: getMyDisplayName()
+    userName: getMyDisplayName() || "Anonyme"
   };
   setActiveSession(session);
   return session;

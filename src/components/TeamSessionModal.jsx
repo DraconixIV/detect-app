@@ -22,6 +22,7 @@ export default function TeamSessionModal({
   const [displayName, setDisplayName] = useState(() => getMyDisplayName());
   const [nameSaved, setNameSaved] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
+  const [pseudoRequiredError, setPseudoRequiredError] = useState("");
 
   // Consultation state
   const [consultCodeInput, setConsultCodeInput] = useState("");
@@ -35,7 +36,12 @@ export default function TeamSessionModal({
 
   const handleSaveName = (e) => {
     e.preventDefault();
+    if (!displayName || !displayName.trim()) {
+      setPseudoRequiredError("Veuillez saisir un pseudo valide.");
+      return;
+    }
     setMyDisplayName(displayName);
+    setPseudoRequiredError("");
     setNameSaved(true);
     setTimeout(() => setNameSaved(false), 2000);
   };
@@ -60,6 +66,13 @@ export default function TeamSessionModal({
 
   const handleCreateSession = (e) => {
     e.preventDefault();
+    if (!displayName || !displayName.trim()) {
+      setPseudoRequiredError("Un pseudo est obligatoire pour lancer une session d'équipe en ligne. Veuillez renseigner votre pseudo ci-dessous.");
+      setTab("my-code");
+      return;
+    }
+    setPseudoRequiredError("");
+    setMyDisplayName(displayName);
     const session = createTeamSession(newSessionName);
     setActiveSessionState(session);
     setWorkspace({
@@ -74,6 +87,13 @@ export default function TeamSessionModal({
     e.preventDefault();
     const clean = joinSessionCodeInput.trim().toUpperCase();
     if (!clean) return;
+    if (!displayName || !displayName.trim()) {
+      setPseudoRequiredError("Un pseudo est obligatoire pour rejoindre une session d'équipe en ligne. Veuillez renseigner votre pseudo ci-dessous.");
+      setTab("my-code");
+      return;
+    }
+    setPseudoRequiredError("");
+    setMyDisplayName(displayName);
     const session = joinTeamSession(clean);
     setActiveSessionState(session);
     setWorkspace({
@@ -133,12 +153,9 @@ export default function TeamSessionModal({
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
           <div>
-            <h2 style={{ margin: "0 0 2px 0", fontSize: "18px", fontWeight: "800", letterSpacing: "-0.3px", color: isLight ? "#000000" : "#ffffff" }}>
-              Partage et Sessions d'Équipe
+            <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "800", letterSpacing: "-0.3px", color: isLight ? "#000000" : "#ffffff" }}>
+              Session d'équipe
             </h2>
-            <p style={{ margin: 0, fontSize: "12px", color: isLight ? "#1e293b" : "#ffffff" }}>
-              Collaboration et consultation multi-détecteurs
-            </p>
           </div>
           <button
             type="button"
@@ -296,22 +313,50 @@ export default function TeamSessionModal({
               </button>
             </div>
 
+            {/* Error / Alert banner if pseudo required */}
+            {pseudoRequiredError && (
+              <div
+                style={{
+                  padding: "11px 14px",
+                  borderRadius: "12px",
+                  background: isLight ? "#fef2f2" : "rgba(239, 68, 68, 0.15)",
+                  border: isLight ? "1px solid #fecaca" : "1px solid rgba(239, 68, 68, 0.35)",
+                  color: isLight ? "#b91c1c" : "#fca5a5",
+                  fontSize: "12px",
+                  lineHeight: "1.4",
+                  fontWeight: "600",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px"
+                }}
+              >
+                <span style={{ fontSize: "16px", flexShrink: 0 }}>⚠️</span>
+                <span>{pseudoRequiredError}</span>
+              </div>
+            )}
+
             {/* Pseudonym field */}
             <form onSubmit={handleSaveName} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               <label style={{ fontSize: "11px", fontWeight: "600", color: isLight ? "#000000" : "#ffffff" }}>
-                Votre Pseudo / Prénom affiché en session d'équipe :
+                Votre pseudo affiché en session d'équipe :
               </label>
               <div style={{ display: "flex", gap: "8px" }}>
                 <input
                   type="text"
                   value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Ex: Thomas"
+                  onChange={(e) => {
+                    setDisplayName(e.target.value);
+                    if (pseudoRequiredError) setPseudoRequiredError("");
+                  }}
+                  placeholder="Votre pseudo (ex: Thomas)"
+                  autoFocus={!!pseudoRequiredError}
                   style={{
                     flex: 1,
                     padding: "10px 12px",
                     borderRadius: "10px",
-                    border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
+                    border: pseudoRequiredError
+                      ? "1.5px solid #ef4444"
+                      : (isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)"),
                     background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)",
                     color: isLight ? "#000000" : "#ffffff",
                     fontSize: "13px",
@@ -323,12 +368,13 @@ export default function TeamSessionModal({
                   style={{
                     padding: "10px 14px",
                     borderRadius: "10px",
-                    border: "none",
-                    background: nameSaved ? "#10b981" : "#3b82f6",
+                    border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
+                    background: nameSaved ? "#10b981" : (isLight ? "#0f172a" : "rgba(255, 255, 255, 0.12)"),
                     color: "white",
                     fontSize: "12px",
                     fontWeight: "700",
-                    cursor: "pointer"
+                    cursor: "pointer",
+                    transition: "all 0.2s"
                   }}
                 >
                   {nameSaved ? "✓" : "Enregistrer"}
@@ -582,7 +628,7 @@ export default function TeamSessionModal({
                     type="text"
                     value={joinSessionCodeInput}
                     onChange={(e) => setJoinSessionCodeInput(e.target.value)}
-                    placeholder="TEAM-XXXX"
+                    placeholder="GEO-XXXX"
                     required
                     style={{
                       width: "100%",

@@ -295,7 +295,7 @@ export default function MapTopBar({
                 justifyContent: "center",
                 transition: "all 0.15s ease"
               }}
-              title={workspace.mode === "session" ? "Session d'Équipe en direct" : "Partage et Session d'équipe"}
+              title={workspace.mode === "session" ? "Session d'équipe en direct" : "Session d'équipe"}
             >
               👥
             </button>
