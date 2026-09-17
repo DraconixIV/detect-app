@@ -205,8 +205,8 @@ export default function SettingsPanel({
                 setTimeout(() => setCopiedCode(false), 2000);
               }}
               style={{
-                background: copiedCode ? "#10b981" : (isLight ? "#0f172a" : "rgba(255, 255, 255, 0.12)"),
-                color: "#ffffff",
+                background: copiedCode ? "#10b981" : (isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.12)"),
+                color: copiedCode ? "#ffffff" : (isLight ? "#0f172a" : "#ffffff"),
                 border: `1px solid ${cardBorder}`,
                 borderRadius: "10px",
                 padding: "8px 12px",
@@ -229,12 +229,12 @@ export default function SettingsPanel({
                 padding: "12px",
                 borderRadius: "12px",
                 border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.15)",
-                background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.08)",
-                color: "#ffffff",
+                background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
+                color: isLight ? "#0f172a" : "#ffffff",
                 fontSize: "13px",
                 fontWeight: "800",
                 cursor: "pointer",
-                boxShadow: isLight ? "0 2px 8px rgba(0, 0, 0, 0.08)" : "none",
+                boxShadow: isLight ? "0 2px 8px rgba(0, 0, 0, 0.04)" : "none",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -265,8 +265,8 @@ export default function SettingsPanel({
               style={{
                 padding: "12px",
                 borderRadius: "14px",
-                border: theme === "dark" ? (isLight ? "2px solid #0f172a" : "2px solid #38bdf8") : `1px solid ${cardBorder}`,
-                background: theme === "dark" ? (isLight ? "rgba(15, 23, 42, 0.08)" : "rgba(56, 189, 248, 0.12)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
+                border: theme === "dark" ? (isLight ? "2px solid #3b82f6" : "2px solid #38bdf8") : `1px solid ${cardBorder}`,
+                background: theme === "dark" ? (isLight ? "rgba(59, 130, 246, 0.1)" : "rgba(56, 189, 248, 0.12)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
                 color: textMain,
                 fontWeight: "bold",
                 cursor: "pointer",
@@ -287,8 +287,8 @@ export default function SettingsPanel({
               style={{
                 padding: "12px",
                 borderRadius: "14px",
-                border: theme === "light" ? (isLight ? "2px solid #0f172a" : "2px solid #38bdf8") : `1px solid ${cardBorder}`,
-                background: theme === "light" ? (isLight ? "rgba(15, 23, 42, 0.08)" : "rgba(56, 189, 248, 0.12)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
+                border: theme === "light" ? (isLight ? "2px solid #3b82f6" : "2px solid #38bdf8") : `1px solid ${cardBorder}`,
+                background: theme === "light" ? (isLight ? "rgba(59, 130, 246, 0.1)" : "rgba(56, 189, 248, 0.12)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
                 color: textMain,
                 fontWeight: "bold",
                 cursor: "pointer",
@@ -317,8 +317,8 @@ export default function SettingsPanel({
                     padding: "6px 12px",
                     borderRadius: "10px",
                     border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                    background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.08)",
-                    color: "#ffffff",
+                    background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
+                    color: isLight ? "#0f172a" : "#ffffff",
                     fontSize: "11px",
                     cursor: "pointer",
                     fontWeight: "bold"
@@ -466,7 +466,7 @@ export default function SettingsPanel({
                         />
                         <button
                           onClick={() => handleAddSub(cat)}
-                          style={{ padding: "6px 10px", borderRadius: "8px", border: "none", background: isLight ? "#0f172a" : "rgba(255,255,255,0.15)", color: "white", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}
+                          style={{ padding: "6px 10px", borderRadius: "8px", border: isLight ? "1px solid #cbd5e1" : "none", background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.15)", color: isLight ? "#0f172a" : "white", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}
                         >
                           OK
                         </button>
@@ -513,8 +513,8 @@ export default function SettingsPanel({
                   padding: "8px 14px",
                   borderRadius: "10px",
                   border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                  background: showAuthBox ? (isLight ? "#e2e8f0" : "rgba(255,255,255,0.12)") : (isLight ? "#0f172a" : "rgba(255,255,255,0.08)"),
-                  color: showAuthBox && isLight ? "#0f172a" : "white",
+                  background: showAuthBox ? (isLight ? "#e2e8f0" : "rgba(255,255,255,0.12)") : (isLight ? "#f1f5f9" : "rgba(255,255,255,0.08)"),
+                  color: isLight ? "#0f172a" : "white",
                   fontSize: "11px",
                   fontWeight: "bold",
                   cursor: "pointer"
@@ -547,8 +547,8 @@ export default function SettingsPanel({
                 padding: "10px",
                 borderRadius: "12px",
                 border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.08)",
-                color: "white",
+                background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
+                color: isLight ? "#0f172a" : "white",
                 fontSize: "11px",
                 fontWeight: "bold",
                 cursor: "pointer"
@@ -596,9 +596,9 @@ export default function SettingsPanel({
                 flex: 1,
                 padding: "10px",
                 borderRadius: "12px",
-                background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.08)",
+                background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
                 border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                color: "#ffffff",
+                color: isLight ? "#0f172a" : "#ffffff",
                 fontWeight: "700",
                 fontSize: "12px",
                 textAlign: "center",
@@ -673,8 +673,8 @@ export default function SettingsPanel({
                     padding: "10px 14px",
                     borderRadius: "10px",
                     border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                    background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.08)",
-                    color: "white",
+                    background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
+                    color: isLight ? "#0f172a" : "white",
                     fontSize: "11px",
                     fontWeight: "bold",
                     cursor: "pointer"

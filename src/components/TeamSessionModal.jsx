@@ -348,7 +348,7 @@ export default function TeamSessionModal({
                     setDisplayName(e.target.value);
                     if (pseudoRequiredError) setPseudoRequiredError("");
                   }}
-                  placeholder="Votre pseudo (ex: Thomas)"
+                  placeholder="Votre pseudo"
                   autoFocus={!!pseudoRequiredError}
                   style={{
                     flex: 1,
@@ -369,8 +369,8 @@ export default function TeamSessionModal({
                     padding: "10px 14px",
                     borderRadius: "10px",
                     border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                    background: nameSaved ? "#10b981" : (isLight ? "#0f172a" : "rgba(255, 255, 255, 0.12)"),
-                    color: "white",
+                    background: nameSaved ? "#10b981" : (isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.12)"),
+                    color: nameSaved ? "#ffffff" : (isLight ? "#0f172a" : "#ffffff"),
                     fontSize: "12px",
                     fontWeight: "700",
                     cursor: "pointer",
