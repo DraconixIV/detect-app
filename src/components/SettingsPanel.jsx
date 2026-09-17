@@ -138,7 +138,7 @@ export default function SettingsPanel({
           <div style={{ fontSize: "28px" }}>⚙️</div>
           <div>
             <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: textMain }}>
-              Paramètres et Configuration
+              Paramètres
             </h1>
             <p style={{ margin: 0, fontSize: "12px", color: textSub }}>
               Personnalisez votre carnet de détection
@@ -147,23 +147,14 @@ export default function SettingsPanel({
         </div>
 
         {/* ============================================================ */}
-        {/* GROUPE 1 : RÉSEAU ET PARTAGE D'ÉQUIPE (MIS EN AVANT)          */}
+        {/* GROUPE 1 : SESSIONS D'ÉQUIPE (MIS EN AVANT)                  */}
         {/* ============================================================ */}
-        {renderGroupHeader("👥", "Partage et Session d'Équipe", isLight ? "#000000" : "#ffffff", true)}
+        {renderGroupHeader("👥", "Sessions d'équipe", isLight ? "#000000" : "#ffffff", true)}
 
-        <div
-          style={{
-            ...cardStyle,
-            background: isLight
-              ? "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)"
-              : "linear-gradient(135deg, rgba(30, 58, 138, 0.35) 0%, rgba(15, 23, 42, 0.7) 100%)",
-            border: isLight ? "1.5px solid #93c5fd" : "1.5px solid rgba(96, 165, 250, 0.4)",
-            boxShadow: isLight ? "0 4px 14px rgba(37, 99, 235, 0.08)" : "0 4px 20px rgba(0, 0, 0, 0.3)"
-          }}
-        >
+        <div style={cardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
             <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
-              <span>👥</span> Code Détecteur et Partage
+              <span>👥</span> Code détecteur
             </div>
             {workspace.mode !== "personal" && (
               <span
@@ -190,7 +181,7 @@ export default function SettingsPanel({
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              background: isLight ? "#ffffff" : "rgba(0, 0, 0, 0.35)",
+              background: isLight ? "#f8fafc" : "rgba(0, 0, 0, 0.4)",
               border: `1px solid ${inputBorder}`,
               borderRadius: "14px",
               padding: "10px 14px",
@@ -214,9 +205,9 @@ export default function SettingsPanel({
                 setTimeout(() => setCopiedCode(false), 2000);
               }}
               style={{
-                background: copiedCode ? "#10b981" : (isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.1)"),
-                color: copiedCode ? "#ffffff" : textMain,
-                border: "none",
+                background: copiedCode ? "#10b981" : (isLight ? "#0f172a" : "rgba(255, 255, 255, 0.12)"),
+                color: "#ffffff",
+                border: `1px solid ${cardBorder}`,
                 borderRadius: "10px",
                 padding: "8px 12px",
                 fontSize: "11px",
@@ -237,29 +228,28 @@ export default function SettingsPanel({
                 width: "100%",
                 padding: "12px",
                 borderRadius: "12px",
-                border: "none",
-                background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.15)",
+                background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.08)",
                 color: "#ffffff",
                 fontSize: "13px",
                 fontWeight: "800",
                 cursor: "pointer",
-                boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)",
+                boxShadow: isLight ? "0 2px 8px rgba(0, 0, 0, 0.08)" : "none",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: "8px"
+                transition: "all 0.2s"
               }}
             >
-              <span>👥</span>
               <span>Rejoindre une session ou consulter une carte</span>
             </button>
           )}
         </div>
 
         {/* ============================================================ */}
-        {/* GROUPE 2 : PRÉFÉRENCES ET CONFORT VISUEL                      */}
+        {/* GROUPE 2 : PRÉFÉRENCES                                        */}
         {/* ============================================================ */}
-        {renderGroupHeader("🎨", "Préférences et Confort Visuel", isLight ? "#000000" : "#ffffff")}
+        {renderGroupHeader("🎨", "Préférences", isLight ? "#000000" : "#ffffff")}
 
         {/* Mode Sombre / Clair */}
         <div style={cardStyle}>
@@ -275,8 +265,8 @@ export default function SettingsPanel({
               style={{
                 padding: "12px",
                 borderRadius: "14px",
-                border: theme === "dark" ? "2px solid #facc15" : `1px solid ${cardBorder}`,
-                background: theme === "dark" ? (isLight ? "rgba(250, 204, 21, 0.15)" : "rgba(250, 204, 21, 0.15)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
+                border: theme === "dark" ? (isLight ? "2px solid #0f172a" : "2px solid #38bdf8") : `1px solid ${cardBorder}`,
+                background: theme === "dark" ? (isLight ? "rgba(15, 23, 42, 0.08)" : "rgba(56, 189, 248, 0.12)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
                 color: textMain,
                 fontWeight: "bold",
                 cursor: "pointer",
@@ -297,8 +287,8 @@ export default function SettingsPanel({
               style={{
                 padding: "12px",
                 borderRadius: "14px",
-                border: theme === "light" ? "2px solid #2563eb" : `1px solid ${cardBorder}`,
-                background: theme === "light" ? "rgba(37, 99, 235, 0.12)" : "rgba(255,255,255,0.04)",
+                border: theme === "light" ? (isLight ? "2px solid #0f172a" : "2px solid #38bdf8") : `1px solid ${cardBorder}`,
+                background: theme === "light" ? (isLight ? "rgba(15, 23, 42, 0.08)" : "rgba(56, 189, 248, 0.12)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
                 color: textMain,
                 fontWeight: "bold",
                 cursor: "pointer",
@@ -326,9 +316,9 @@ export default function SettingsPanel({
                   style={{
                     padding: "6px 12px",
                     borderRadius: "10px",
-                    border: "none",
-                    background: "linear-gradient(135deg, #3b82f6, #2563eb)",
-                    color: "white",
+                    border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
+                    background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.08)",
+                    color: "#ffffff",
                     fontSize: "11px",
                     cursor: "pointer",
                     fontWeight: "bold"
@@ -476,7 +466,7 @@ export default function SettingsPanel({
                         />
                         <button
                           onClick={() => handleAddSub(cat)}
-                          style={{ padding: "6px 10px", borderRadius: "8px", border: "none", background: "#3b82f6", color: "white", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}
+                          style={{ padding: "6px 10px", borderRadius: "8px", border: "none", background: isLight ? "#0f172a" : "rgba(255,255,255,0.15)", color: "white", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}
                         >
                           OK
                         </button>
@@ -490,9 +480,9 @@ export default function SettingsPanel({
         </div>
 
         {/* ============================================================ */}
-        {/* GROUPE 3 : COMPTE ET SYNCHRONISATION (DONNÉES)                */}
+        {/* GROUPE 3 : COMPTE                                            */}
         {/* ============================================================ */}
-        {renderGroupHeader("☁️", "Compte et Sauvegardes", isLight ? "#000000" : "#ffffff")}
+        {renderGroupHeader("👤", "Compte", isLight ? "#000000" : "#ffffff")}
 
         <div style={cardStyle}>
           <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
@@ -522,8 +512,8 @@ export default function SettingsPanel({
                 style={{
                   padding: "8px 14px",
                   borderRadius: "10px",
-                  border: "none",
-                  background: showAuthBox ? (isLight ? "#e2e8f0" : "rgba(255,255,255,0.12)") : "linear-gradient(135deg, #3b82f6, #2563eb)",
+                  border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
+                  background: showAuthBox ? (isLight ? "#e2e8f0" : "rgba(255,255,255,0.12)") : (isLight ? "#0f172a" : "rgba(255,255,255,0.08)"),
                   color: showAuthBox && isLight ? "#0f172a" : "white",
                   fontSize: "11px",
                   fontWeight: "bold",
@@ -553,13 +543,31 @@ export default function SettingsPanel({
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", borderTop: `1px solid ${cardBorder}`, paddingTop: "12px" }}>
             <button
               onClick={onExportBackup}
-              style={{ padding: "10px", borderRadius: "12px", border: "none", background: "#3b82f6", color: "white", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}
+              style={{
+                padding: "10px",
+                borderRadius: "12px",
+                border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
+                background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.08)",
+                color: "white",
+                fontSize: "11px",
+                fontWeight: "bold",
+                cursor: "pointer"
+              }}
             >
               📥 Exporter Sauvegarde
             </button>
             <button
               onClick={onImportBackup}
-              style={{ padding: "10px", borderRadius: "12px", border: `1px solid ${cardBorder}`, background: isLight ? "#f8fafc" : "rgba(255,255,255,0.06)", color: textMain, fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}
+              style={{
+                padding: "10px",
+                borderRadius: "12px",
+                border: `1px solid ${cardBorder}`,
+                background: isLight ? "#f8fafc" : "rgba(255,255,255,0.04)",
+                color: textMain,
+                fontSize: "11px",
+                fontWeight: "bold",
+                cursor: "pointer"
+              }}
             >
               📤 Importer Sauvegarde
             </button>
@@ -569,21 +577,13 @@ export default function SettingsPanel({
         {/* ============================================================ */}
         {/* GROUPE 4 : SOUTIEN AU PROJET (DONS)                          */}
         {/* ============================================================ */}
-        {renderGroupHeader("☕", "Soutien et Communauté", isLight ? "#000000" : "#ffffff")}
+        {renderGroupHeader("☕", "Soutien", isLight ? "#000000" : "#ffffff")}
 
-        <div
-          style={{
-            ...cardStyle,
-            background: isLight
-              ? "linear-gradient(135deg, rgba(254, 240, 138, 0.3), rgba(253, 230, 138, 0.15))"
-              : "linear-gradient(135deg, rgba(250, 204, 21, 0.12), rgba(234, 179, 8, 0.05))",
-            border: isLight ? "1.5px solid #facc15" : "1px solid rgba(250, 204, 21, 0.3)"
-          }}
-        >
+        <div style={cardStyle}>
           <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
             <span>☕</span> Soutenir le Projet (Dons)
           </div>
-          <p style={{ margin: "0 0 12px 0", fontSize: "12px", color: textMain, opacity: 0.9, lineHeight: "1.5" }}>
+          <p style={{ margin: "0 0 12px 0", fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
             Développé avec passion pour offrir un outil 100 % libre, sans publicité et respectueux de vos données. Si l'application vous plaît, un petit don encourage les futures améliorations !
           </p>
 
@@ -596,9 +596,10 @@ export default function SettingsPanel({
                 flex: 1,
                 padding: "10px",
                 borderRadius: "12px",
-                background: "#facc15",
-                color: "#1e293b",
-                fontWeight: "800",
+                background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.08)",
+                border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
+                color: "#ffffff",
+                fontWeight: "700",
                 fontSize: "12px",
                 textAlign: "center",
                 textDecoration: "none",
@@ -619,7 +620,7 @@ export default function SettingsPanel({
                 flex: 1,
                 padding: "10px",
                 borderRadius: "12px",
-                background: isLight ? "#ffffff" : "rgba(255,255,255,0.1)",
+                background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)",
                 color: textMain,
                 fontWeight: "700",
                 fontSize: "12px",
@@ -638,14 +639,14 @@ export default function SettingsPanel({
         </div>
 
         {/* ============================================================ */}
-        {/* GROUPE 5 : CADRE LÉGAL ET CONDITIONS                          */}
+        {/* GROUPE 5 : MENTIONS LÉGALES ET CONFIDENTIALITÉ                */}
         {/* ============================================================ */}
-        {renderGroupHeader("⚖️", "Législation et Conditions", isLight ? "#000000" : "#ffffff")}
+        {renderGroupHeader("⚖️", "Mentions Légales et Confidentialité", isLight ? "#000000" : "#ffffff")}
 
         <div style={cardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff", marginBottom: 0 }}>
-              <span>⚖️</span> Mentions Légales et CGU
+              <span>⚖️</span> Cadre réglementaire et CGU
             </div>
             <button
               onClick={() => setShowLegal(!showLegal)}
@@ -669,10 +670,10 @@ export default function SettingsPanel({
                   onClick={onRestartOnboarding}
                   style={{
                     marginTop: "8px",
-                    padding: "8px 12px",
+                    padding: "10px 14px",
                     borderRadius: "10px",
-                    border: "none",
-                    background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+                    border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
+                    background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.08)",
                     color: "white",
                     fontSize: "11px",
                     fontWeight: "bold",

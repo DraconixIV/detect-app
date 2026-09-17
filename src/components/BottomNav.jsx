@@ -14,7 +14,7 @@ export default function BottomNav({
 
   const tabs = [
     { id: "map", label: "Carte", icon: "🗺️" },
-    { id: "gallery", label: "Trouvailles", icon: "🪙" },
+    { id: "gallery", label: "Galerie", icon: "📷" },
     { id: "reports", label: "Journal", icon: "📊" },
     { id: "settings", label: "Paramètres", icon: "⚙️" }
   ];
