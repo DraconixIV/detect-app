@@ -195,7 +195,7 @@ function App() {
     loadPhotosForAlbum
   } = useSupabaseSync(setToast, workspace);
 
-  const { teammates } = useTeamPresence(workspace, position, setToast);
+  const { teammates, broadcastFind } = useTeamPresence(workspace, position, setToast);
 
   const {
     isRecordingSortie,
@@ -652,6 +652,19 @@ function App() {
           video: videoVal,
           sessionCode: currentSessionCode
         });
+
+        if (workspace.mode === "session" && broadcastFind) {
+          broadcastFind({
+            title: titleVal,
+            description: descVal,
+            category: catVal,
+            sub_category: subCatVal,
+            position: finalPosition,
+            latitude: finalPosition[0],
+            longitude: finalPosition[1],
+            date: dateVal || new Date().toLocaleString()
+          });
+        }
       }
 
       const firstAvailableCat = Object.keys(loadCategoriesData().categories || {})[0] || "";

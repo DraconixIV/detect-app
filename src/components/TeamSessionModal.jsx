@@ -17,7 +17,7 @@ export default function TeamSessionModal({
   setWorkspace,
   theme = "dark"
 }) {
-  const [tab, setTab] = useState("my-code"); // "my-code" | "consult" | "session"
+  const [tab, setTab] = useState("session"); // "session" | "my-code" | "consult"
   const [myCode] = useState(() => getMyUserCode());
   const [displayName, setDisplayName] = useState(() => getMyDisplayName());
   const [nameSaved, setNameSaved] = useState(false);
@@ -558,6 +558,45 @@ export default function TeamSessionModal({
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                {/* 0. Nickname / Pseudo Header */}
+                <div
+                  style={{
+                    background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.03)",
+                    border: isLight ? "1px solid #e2e8f0" : "1px solid rgba(255, 255, 255, 0.08)",
+                    borderRadius: "14px",
+                    padding: "12px 14px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "6px"
+                  }}
+                >
+                  <label style={{ fontSize: "11px", fontWeight: "700", color: isLight ? "#475569" : "#cbd5e1" }}>
+                    👤 Votre pseudo pour la session :
+                  </label>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <input
+                      type="text"
+                      value={displayName}
+                      onChange={(e) => {
+                        setDisplayName(e.target.value);
+                        setMyDisplayName(e.target.value);
+                      }}
+                      placeholder="Ex: Marc Détection"
+                      style={{
+                        flex: 1,
+                        padding: "8px 12px",
+                        borderRadius: "8px",
+                        border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
+                        background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.05)",
+                        color: isLight ? "#000000" : "#ffffff",
+                        fontSize: "12px",
+                        fontWeight: "600",
+                        outline: "none"
+                      }}
+                    />
+                  </div>
+                </div>
+
                 {/* 1. Create a session */}
                 <form
                   onSubmit={handleCreateSession}

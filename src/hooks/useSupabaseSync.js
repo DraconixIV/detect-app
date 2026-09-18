@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabase";
 import { loadFinds as fetchFinds, addFind as createFind, normalizeCategoryAndSub, decodeMetadata } from "../services/findsService";
 import { getPendingFinds, deletePendingFind } from "../services/offlineStore";
@@ -133,6 +133,7 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
   useEffect(() => {
     let findsChannel = null;
     let photosChannel = null;
+    let broadcastChannel = null;
     let pingPongInterval = null;
 
     const isCollaborative =
@@ -220,8 +221,47 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
         )
         .subscribe();
 
-      // Polling every 5s during collaborative session, every 15s in personal mode
-      const pollRate = isCollaborative ? 5000 : 15000;
+      // Instant find broadcast listener for team session
+      if (workspace.mode === "session" && workspace.targetCode) {
+        broadcastChannel = supabase
+          .channel(`team-broadcast-${workspace.targetCode.trim().toUpperCase()}`)
+          .on("broadcast", { event: "new_team_find" }, ({ payload }) => {
+            if (!payload) return;
+            const myCode = getMyUserCode();
+            if (payload.user_code === myCode) return;
+
+            const normalized = normalizeCategoryAndSub(payload);
+            const lat = Number(normalized.latitude ?? (Array.isArray(normalized.position) ? normalized.position[0] : null));
+            const lng = Number(normalized.longitude ?? (Array.isArray(normalized.position) ? normalized.position[1] : null));
+
+            if (!isNaN(lat) && !isNaN(lng)) {
+              const formatted = {
+                ...normalized,
+                latitude: lat,
+                longitude: lng,
+                position: [lat, lng]
+              };
+
+              setFinds((currentFinds) => {
+                if (currentFinds.some((f) => f.id === formatted.id || (f.title === formatted.title && f.date === formatted.date))) {
+                  return currentFinds;
+                }
+                if (setToast) {
+                  setToast({
+                    message: `✨ ${payload.finder_name || "Un coéquipier"} vient de trouver : ${payload.title || payload.category} !`,
+                    type: "success"
+                  });
+                }
+                return [formatted, ...currentFinds];
+              });
+            }
+            loadFinds();
+          })
+          .subscribe();
+      }
+
+      // Polling every 4s during collaborative session, every 15s in personal mode
+      const pollRate = isCollaborative ? 4000 : 15000;
       pingPongInterval = setInterval(() => {
         if (document.visibilityState === "visible" && navigator.onLine) {
           loadFinds();
@@ -232,7 +272,6 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
     // Auto-sleep / Wakeup on visibility changes
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible" && navigator.onLine) {
-        // Instant ping-pong refresh on screen unlock
         loadFinds();
         loadPhotosForAlbum();
       }
@@ -260,6 +299,7 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
     return () => {
       if (findsChannel) supabase.removeChannel(findsChannel);
       if (photosChannel) supabase.removeChannel(photosChannel);
+      if (broadcastChannel) supabase.removeChannel(broadcastChannel);
       if (pingPongInterval) clearInterval(pingPongInterval);
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
@@ -278,4 +318,3 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
     loadPhotosForAlbum
   };
 }
-

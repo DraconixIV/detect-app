@@ -24,7 +24,7 @@ function formatDistance(meters) {
 }
 
 export default function TeammateMarker({ teammate, myPosition }) {
-  const { userCode, userName, position, updatedAt } = teammate;
+  const { userCode, userName, position } = teammate;
 
   const distanceText = useMemo(() => {
     if (!myPosition || !position) return null;
@@ -40,8 +40,27 @@ export default function TeammateMarker({ teammate, myPosition }) {
     return L.divIcon({
       className: "teammate-gps-marker-custom",
       html: `
-        <div style="position: relative; display: flex; flex-direction: column; align-items: center; pointer-events: auto; transform: translate(-50%, -50%);">
-          <!-- Teammate Name Badge -->
+        <style>
+          @keyframes teammatePulseRing {
+            0% {
+              transform: scale(0.6);
+              opacity: 0.9;
+            }
+            100% {
+              transform: scale(2.4);
+              opacity: 0;
+            }
+          }
+        </style>
+        <div style="
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          pointer-events: auto;
+        ">
+          <!-- Teammate Name Badge Tag -->
           <div style="
             background: rgba(15, 23, 42, 0.95);
             color: #ffffff;
@@ -62,21 +81,21 @@ export default function TeammateMarker({ teammate, myPosition }) {
             <span>${cleanName}</span>
           </div>
 
-          <!-- Pulsing Live Radar Dot -->
-          <div style="position: relative; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;">
+          <!-- Pulsing Live Radar Beacon -->
+          <div style="position: relative; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
             <div style="
               position: absolute;
-              width: 26px;
-              height: 26px;
-              background: rgba(16, 185, 129, 0.35);
+              width: 24px;
+              height: 24px;
+              background: rgba(16, 185, 129, 0.45);
               border-radius: 50%;
-              animation: gpsPulse 2s infinite ease-out;
+              animation: teammatePulseRing 2s infinite ease-out;
             "></div>
             <div style="
-              width: 12px;
-              height: 12px;
+              width: 14px;
+              height: 14px;
               background: #10b981;
-              border: 2px solid white;
+              border: 2.5px solid #ffffff;
               border-radius: 50%;
               box-shadow: 0 0 10px rgba(16, 185, 129, 0.9);
               z-index: 2;
@@ -84,8 +103,8 @@ export default function TeammateMarker({ teammate, myPosition }) {
           </div>
         </div>
       `,
-      iconSize: [0, 0],
-      iconAnchor: [0, 0]
+      iconSize: [140, 60],
+      iconAnchor: [70, 48]
     });
   }, [userName, userCode]);
 
@@ -94,7 +113,7 @@ export default function TeammateMarker({ teammate, myPosition }) {
   return (
     <Marker position={position} icon={customIcon}>
       <Popup className="gps-popup" autoPan={false}>
-        <div style={{ padding: "4px 2px", textAlign: "left" }}>
+        <div style={{ padding: "4px 2px", textAlign: "left", fontFamily: "system-ui, sans-serif" }}>
           <div style={{ fontSize: "13px", fontWeight: "800", color: "#10b981", display: "flex", alignItems: "center", gap: "6px" }}>
             <span>🟢</span>
             <span>{userName || "Coéquipier"}</span>
