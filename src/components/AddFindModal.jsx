@@ -16,6 +16,10 @@ export default function AddFindModal({
   addFind,
   newPhoto,
   setNewPhoto,
+  newAudio,
+  setNewAudio,
+  newVideo,
+  setNewVideo,
   addingFind,
   customDate,
   setCustomDate,
@@ -154,6 +158,10 @@ export default function AddFindModal({
             }}
             newPhoto={newPhoto}
             setNewPhoto={setNewPhoto}
+            newAudio={newAudio}
+            setNewAudio={setNewAudio}
+            newVideo={newVideo}
+            setNewVideo={setNewVideo}
             addingFind={addingFind}
             customDate={customDate}
             setCustomDate={setCustomDate}

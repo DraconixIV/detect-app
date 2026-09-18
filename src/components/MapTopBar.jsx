@@ -11,6 +11,7 @@ export default function MapTopBar({
   isRecordingSortie,
   onToggleRecording,
   onOpenTeamSession,
+  onOpenDrawer,
   onToggleSearch,
   showSearch,
   search,
@@ -163,8 +164,32 @@ export default function MapTopBar({
           pointerEvents: "auto"
         }}
       >
-        {/* LEFT: Branding with Official Logo */}
+        {/* LEFT: Menu Button & Branding with Official Logo */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {onOpenDrawer && (
+            <button
+              type="button"
+              onClick={onOpenDrawer}
+              aria-label="Ouvrir le menu latéral"
+              style={{
+                background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
+                border: `1px solid ${borderCol}`,
+                borderRadius: "10px",
+                width: "32px",
+                height: "32px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: textMain,
+                fontSize: "16px",
+                cursor: "pointer",
+                flexShrink: 0
+              }}
+            >
+              ☰
+            </button>
+          )}
+
           <div
             style={{
               width: "32px",
@@ -176,8 +201,10 @@ export default function MapTopBar({
               justifyContent: "center",
               overflow: "hidden",
               boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-              border: "1.5px solid rgba(245, 158, 11, 0.4)"
+              border: "1.5px solid rgba(245, 158, 11, 0.4)",
+              cursor: onOpenDrawer ? "pointer" : "default"
             }}
+            onClick={onOpenDrawer}
           >
             <img
               src="/icon-192.png"

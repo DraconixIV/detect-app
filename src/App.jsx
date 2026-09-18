@@ -21,6 +21,9 @@ import CategoryManagerModal from "./components/CategoryManagerModal";
 import TeamSessionModal from "./components/TeamSessionModal";
 import MapLayersModal from "./components/MapLayersModal";
 import SplashScreen from "./components/SplashScreen";
+import AppDrawer from "./components/AppDrawer";
+import NewsModal from "./components/NewsModal";
+import AboutModal from "./components/AboutModal";
 import { THEMES } from "./styles/themes";
 
 import { icons } from "./icons";
@@ -33,6 +36,7 @@ import { importData, exportData } from "./services/backupService";
 import { addFind as createFind, toggleFavorite } from "./services/findsService";
 import { getActiveSession, leaveTeamSession } from "./services/sessionService";
 import { loadCategoriesData } from "./services/categoriesService";
+import { latLngToUtm } from "./utils/coordinates";
 
 function offsetPosition(
   position,
@@ -130,6 +134,24 @@ function App() {
 
   const [newPhoto, setNewPhoto] =
     useState(null);
+
+  const [newAudio, setNewAudio] =
+    useState(null);
+
+  const [newVideo, setNewVideo] =
+    useState(null);
+
+  const [showDrawer, setShowDrawer] =
+    useState(false);
+
+  const [showNewsModal, setShowNewsModal] =
+    useState(false);
+
+  const [showAboutModal, setShowAboutModal] =
+    useState(false);
+
+  const [markerSize, setMarkerSize] =
+    useState(() => localStorage.getItem("marker_size") || "medium");
 
   const [showForm, setShowForm] =
     useState(false);
@@ -580,6 +602,9 @@ function App() {
     const subCatVal = quickParams ? quickParams.newSubCategory : newSubCategory;
     const photoVal = quickParams ? quickParams.newPhoto : newPhoto;
     const dateVal = quickParams ? quickParams.customDate : (customDate || null);
+    const audioVal = quickParams ? null : newAudio;
+    const videoVal = quickParams ? null : newVideo;
+    const utmVal = finalPosition ? (latLngToUtm(finalPosition[0], finalPosition[1])?.formatted || null) : null;
 
     try {
       if (!isOnline) {
@@ -589,7 +614,10 @@ function App() {
           newDescription: descVal,
           newCategory: catVal,
           newSubCategory: subCatVal,
-          customDate: dateVal
+          customDate: dateVal,
+          audio: audioVal,
+          video: videoVal,
+          utm: utmVal
         }, photoVal);
 
         alert("Trouvaille sauvegardée localement (Hors-ligne) ! Elle sera synchronisée dès le retour d'internet. 💾");
@@ -602,6 +630,9 @@ function App() {
           newSubCategory: subCatVal,
           newPhoto: photoVal,
           customDate: dateVal,
+          audio: audioVal,
+          video: videoVal,
+          utm: utmVal
         });
       }
 
@@ -615,6 +646,8 @@ function App() {
       setNewCategory(firstAvailableCat);
       setNewSubCategory("");
       setNewPhoto(null);
+      setNewAudio(null);
+      setNewVideo(null);
 
       await loadFinds();
       if (quickParams) {
@@ -629,7 +662,10 @@ function App() {
           newDescription: descVal,
           newCategory: catVal,
           newSubCategory: subCatVal,
-          customDate: dateVal
+          customDate: dateVal,
+          audio: audioVal,
+          video: videoVal,
+          utm: utmVal
         }, photoVal);
 
         alert("⚠️ Erreur de réseau ou connexion instable. Votre trouvaille a été sauvegardée localement (Hors-ligne) par précaution ! Elle sera synchronisée dès le retour d'internet. 💾");
@@ -644,6 +680,8 @@ function App() {
         setNewCategory(firstAvailableCat);
         setNewSubCategory("");
         setNewPhoto(null);
+        setNewAudio(null);
+        setNewVideo(null);
 
         await loadFinds();
       } catch (fallbackError) {
@@ -962,6 +1000,7 @@ return (
           isRecordingSortie={isRecordingSortie}
           onToggleRecording={() => isRecordingSortie ? stopSortie() : startSortie(position)}
           onOpenTeamSession={() => setShowTeamSessionModal(true)}
+          onOpenDrawer={() => setShowDrawer(true)}
           onToggleSearch={() => setShowSearch(!showSearch)}
           showSearch={showSearch}
           search={search}
@@ -1038,6 +1077,8 @@ return (
           workspace={workspace}
           setWorkspace={setWorkspace}
           onOpenTeamSession={() => setShowTeamSessionModal(true)}
+          markerSize={markerSize}
+          setMarkerSize={setMarkerSize}
         />
       )}
 
@@ -1077,6 +1118,7 @@ return (
         isRecordingSortie={isRecordingSortie}
         sortiePositions={sortiePositions}
         savedTracks={savedTracks}
+        markerSize={markerSize}
       />
 
       {/* FLOATING RIGHT-SIDE CONTROLS (GPS RECENTER, LAYERS & ZEN MODE) */}
@@ -1130,6 +1172,10 @@ return (
         setCustomLat={setCustomLat}
         customLng={customLng}
         setCustomLng={setCustomLng}
+        newAudio={newAudio}
+        setNewAudio={setNewAudio}
+        newVideo={newVideo}
+        setNewVideo={setNewVideo}
       />
 
       {/* Hidden input for quick add */}
@@ -1598,6 +1644,55 @@ return (
           onClose={() => setToast(null)}
         />
       )}
+
+      {/* App Drawer */}
+      <AppDrawer
+        isOpen={showDrawer}
+        onClose={() => setShowDrawer(false)}
+        theme={theme}
+        onNavigate={(tab) => {
+          setActiveTab(tab);
+          setShowDrawer(false);
+        }}
+        onOpenNews={() => {
+          setShowNewsModal(true);
+          setShowDrawer(false);
+        }}
+        onOpenAbout={() => {
+          setShowAboutModal(true);
+          setShowDrawer(false);
+        }}
+        onOpenTeamSession={() => {
+          setShowTeamSessionModal(true);
+          setShowDrawer(false);
+        }}
+        onOpenCategoryManager={() => {
+          setShowCategoryManagerModal(true);
+          setShowDrawer(false);
+        }}
+        onOpenMapLayers={() => {
+          setShowMapLayersModal(true);
+          setShowDrawer(false);
+        }}
+        onExportBackup={handleExport}
+        onImportBackup={handleImport}
+        totalFindsCount={finds.length}
+        isOnline={isOnline}
+      />
+
+      {/* News & Tips Modal */}
+      <NewsModal
+        isOpen={showNewsModal}
+        onClose={() => setShowNewsModal(false)}
+        theme={theme}
+      />
+
+      {/* About GeoProspect Modal */}
+      <AboutModal
+        isOpen={showAboutModal}
+        onClose={() => setShowAboutModal(false)}
+        theme={theme}
+      />
 
       {/* Bottom Navigation Bar */}
       <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} currentThemeKey={designTheme} zenMode={zenMode} />

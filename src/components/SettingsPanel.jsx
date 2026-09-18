@@ -19,7 +19,9 @@ export default function SettingsPanel({
   onRestartOnboarding,
   workspace = { mode: "personal" },
   setWorkspace,
-  onOpenTeamSession
+  onOpenTeamSession,
+  markerSize = "medium",
+  setMarkerSize
 }) {
   const [categoriesData, setCategoriesData] = useState(loadCategoriesData());
   const [user, setUser] = useState(null);
@@ -305,6 +307,58 @@ export default function SettingsPanel({
             >
               <span>☀️</span> Clair
             </button>
+          </div>
+        </div>
+
+        {/* Taille des curseurs / marqueurs sur la carte */}
+        <div style={cardStyle}>
+          <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
+            <span>📍</span> Taille des curseurs sur la carte
+          </div>
+          <p style={{ margin: "0 0 10px 0", fontSize: "11px", color: textSub }}>
+            Ajustez la taille d'affichage des épingles de trouvailles sur la carte.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
+            {[
+              { id: "small", label: "Compact", icon: "🔹" },
+              { id: "medium", label: "Normal", icon: "📍" },
+              { id: "large", label: "Grand", icon: "📌" }
+            ].map((sizeOpt) => {
+              const isSelected = (markerSize || "medium") === sizeOpt.id;
+              return (
+                <button
+                  key={sizeOpt.id}
+                  onClick={() => {
+                    if (setMarkerSize) {
+                      setMarkerSize(sizeOpt.id);
+                      localStorage.setItem("marker_size", sizeOpt.id);
+                    }
+                  }}
+                  style={{
+                    padding: "10px 6px",
+                    borderRadius: "12px",
+                    border: isSelected
+                      ? (isLight ? "2px solid #3b82f6" : "2px solid #38bdf8")
+                      : `1px solid ${cardBorder}`,
+                    background: isSelected
+                      ? (isLight ? "rgba(59, 130, 246, 0.12)" : "rgba(56, 189, 248, 0.15)")
+                      : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
+                    color: textMain,
+                    fontWeight: isSelected ? "800" : "600",
+                    fontSize: "12px",
+                    cursor: "pointer",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "4px",
+                    transition: "all 0.15s ease"
+                  }}
+                >
+                  <span style={{ fontSize: "16px" }}>{sizeOpt.icon}</span>
+                  <span>{sizeOpt.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 

@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { PRESET_CATEGORY_COLORS } from "../subCategories";
 import { loadCategoriesData, addCategory } from "../services/categoriesService";
 import { loadMaterialsData } from "../services/materialsService";
+import { latLngToUtm, formatDms } from "../utils/coordinates";
+import { startAudioRecording, stopAudioRecording, isAudioRecordingSupported } from "../services/audioRecorder";
 
 export default function AddFindForm({
   showForm,
@@ -17,6 +19,10 @@ export default function AddFindForm({
   addFind,
   newPhoto,
   setNewPhoto,
+  newAudio,
+  setNewAudio,
+  newVideo,
+  setNewVideo,
   addingFind,
   customDate,
   setCustomDate,
@@ -33,8 +39,21 @@ export default function AddFindForm({
   const [quickCatEmoji, setQuickCatEmoji] = useState("🪙");
   const [quickCatColor, setQuickCatColor] = useState("#facc15");
 
+  // Media states
+  const [isRecordingAudio, setIsRecordingAudio] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [localAudio, setLocalAudio] = useState(null);
+  const [localVideo, setLocalVideo] = useState(null);
+
+  const activeAudio = newAudio !== undefined ? newAudio : localAudio;
+  const updateAudio = setNewAudio || setLocalAudio;
+
+  const activeVideo = newVideo !== undefined ? newVideo : localVideo;
+  const updateVideo = setNewVideo || setLocalVideo;
+
   const cameraInputRef = useRef(null);
   const galleryInputRef = useRef(null);
+  const videoInputRef = useRef(null);
 
   useEffect(() => {
     const handleCategoriesUpdate = () => {
@@ -203,10 +222,35 @@ export default function AddFindForm({
         <span>{isManualMode ? "ℹ️" : "📍"}</span>
         <span>
           {isManualMode
-            ? "Mode différé : saisissez la date, coordonnées et choisissez une photo depuis votre galerie."
+            ? "Mode différé : saisissez la date, coordonnées et choisissez vos médias."
             : "Mode direct : position GPS actuelle et date enregistrées automatiquement."}
         </span>
       </div>
+
+      {/* COORDONNÉES GPS & UTM BADGE */}
+      {customLat && customLng && (
+        <div
+          style={{
+            padding: "8px 12px",
+            borderRadius: "10px",
+            background: "rgba(0, 0, 0, 0.35)",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+            fontSize: "11px",
+            color: "#94a3b8",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+          }}
+        >
+          <span>🌐 {formatDms(Number(customLat), Number(customLng)) || `${customLat}, ${customLng}`}</span>
+          {latLngToUtm(Number(customLat), Number(customLng)) && (
+            <span style={{ color: "#38bdf8", fontWeight: "700" }}>
+              UTM : {latLngToUtm(Number(customLat), Number(customLng)).formatted}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* TITRE (SANS EXEMPLE) */}
       <div>
@@ -501,54 +545,179 @@ export default function AddFindForm({
         </div>
       )}
 
-      {/* BOUTONS PHOTO (APPAREIL PHOTO & GALERIE DU TÉLÉPHONE) */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+      {/* Hidden file inputs for Camera, Gallery, and Video */}
+      <input
+        type="file"
+        accept="image/*"
+        capture="environment"
+        ref={cameraInputRef}
+        style={{ display: "none" }}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) setNewPhoto(file);
+        }}
+      />
+      <input
+        type="file"
+        accept="image/*"
+        ref={galleryInputRef}
+        style={{ display: "none" }}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) setNewPhoto(file);
+        }}
+      />
+      <input
+        type="file"
+        accept="video/*"
+        capture="environment"
+        ref={videoInputRef}
+        style={{ display: "none" }}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          if (file.size > 20 * 1024 * 1024) {
+            alert("⚠️ Vidéo trop volumineuse (max 20 Mo). Privilégiez un court extrait de 5 à 10 secondes.");
+            return;
+          }
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            updateVideo(reader.result);
+          };
+          reader.readAsDataURL(file);
+        }}
+      />
+
+      {/* MEDIA TOOLBAR (4 BOUTONS : PHOTO, GALERIE, VIDÉO, VOCAL) */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "6px" }}>
+        {/* Appareil Photo */}
         <button
           type="button"
           onClick={() => cameraInputRef.current?.click()}
+          title="Prendre une photo"
           style={{
-            background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
-            color: "white",
-            padding: "11px 8px",
+            background: newPhoto ? "rgba(16, 185, 129, 0.25)" : "rgba(255, 255, 255, 0.08)",
+            border: newPhoto ? "1.5px solid #10b981" : "1px solid rgba(255, 255, 255, 0.12)",
+            color: "#ffffff",
+            padding: "9px 4px",
             borderRadius: "12px",
-            border: "none",
-            textAlign: "center",
             cursor: "pointer",
-            fontSize: "12px",
-            fontWeight: "700",
-            boxShadow: "0 4px 12px rgba(37,99,235,0.25)",
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
-            gap: "6px"
+            gap: "3px",
+            fontSize: "11px",
+            fontWeight: "700",
+            transition: "all 0.15s"
           }}
         >
-          <span>📷</span>
-          <span>{newPhoto ? "Reprendre photo" : "Appareil photo"}</span>
+          <span style={{ fontSize: "16px" }}>📷</span>
+          <span>Photo</span>
         </button>
 
+        {/* Galerie Photo */}
         <button
           type="button"
           onClick={() => galleryInputRef.current?.click()}
+          title="Choisir depuis la galerie"
           style={{
-            background: "linear-gradient(135deg, #0284c7, #0369a1)",
-            color: "white",
-            padding: "11px 8px",
+            background: "rgba(255, 255, 255, 0.08)",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
+            color: "#ffffff",
+            padding: "9px 4px",
             borderRadius: "12px",
-            border: "none",
-            textAlign: "center",
             cursor: "pointer",
-            fontSize: "12px",
-            fontWeight: "700",
-            boxShadow: "0 4px 12px rgba(2,132,199,0.25)",
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
-            gap: "6px"
+            gap: "3px",
+            fontSize: "11px",
+            fontWeight: "700",
+            transition: "all 0.15s"
           }}
         >
-          <span>🖼️</span>
-          <span>Galerie photo</span>
+          <span style={{ fontSize: "16px" }}>🖼️</span>
+          <span>Galerie</span>
+        </button>
+
+        {/* Vidéo Live Dig */}
+        <button
+          type="button"
+          onClick={() => videoInputRef.current?.click()}
+          title="Ajouter un court extrait vidéo (<10s)"
+          style={{
+            background: activeVideo ? "rgba(168, 85, 247, 0.25)" : "rgba(255, 255, 255, 0.08)",
+            border: activeVideo ? "1.5px solid #a855f7" : "1px solid rgba(255, 255, 255, 0.12)",
+            color: "#ffffff",
+            padding: "9px 4px",
+            borderRadius: "12px",
+            cursor: "pointer",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "3px",
+            fontSize: "11px",
+            fontWeight: "700",
+            transition: "all 0.15s"
+          }}
+        >
+          <span style={{ fontSize: "16px" }}>🎥</span>
+          <span>Vidéo</span>
+        </button>
+
+        {/* Note Vocale Micro */}
+        <button
+          type="button"
+          onClick={async () => {
+            if (isRecordingAudio) {
+              try {
+                const res = await stopAudioRecording();
+                setIsRecordingAudio(false);
+                setRecordingTime(0);
+                if (res && res.base64) {
+                  updateAudio(res.base64);
+                }
+              } catch (e) {
+                console.error("Audio stop error", e);
+                setIsRecordingAudio(false);
+              }
+            } else {
+              try {
+                await startAudioRecording((sec) => setRecordingTime(sec), 60);
+                setIsRecordingAudio(true);
+              } catch (err) {
+                alert("Microphone non disponible ou permission refusée");
+                setIsRecordingAudio(false);
+              }
+            }
+          }}
+          title={isRecordingAudio ? "Arrêter l'enregistrement" : "Enregistrer une note vocale"}
+          style={{
+            background: isRecordingAudio
+              ? "#ef4444"
+              : activeAudio
+              ? "rgba(59, 130, 246, 0.25)"
+              : "rgba(255, 255, 255, 0.08)",
+            border: isRecordingAudio
+              ? "1.5px solid #ef4444"
+              : activeAudio
+              ? "1.5px solid #3b82f6"
+              : "1px solid rgba(255, 255, 255, 0.12)",
+            color: "#ffffff",
+            padding: "9px 4px",
+            borderRadius: "12px",
+            cursor: "pointer",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "3px",
+            fontSize: "11px",
+            fontWeight: "700",
+            transition: "all 0.15s"
+          }}
+        >
+          <span style={{ fontSize: "16px" }}>{isRecordingAudio ? "⏹️" : "🎙️"}</span>
+          <span>{isRecordingAudio ? `${recordingTime}s` : "Vocal"}</span>
         </button>
       </div>
 
@@ -605,6 +774,88 @@ export default function AddFindForm({
         </div>
       )}
 
+      {/* PREVIEW NOTE VOCALE AUDIO */}
+      {activeAudio && (
+        <div
+          style={{
+            background: "rgba(59, 130, 246, 0.15)",
+            border: "1px solid rgba(59, 130, 246, 0.35)",
+            padding: "8px 12px",
+            borderRadius: "14px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "8px"
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
+            <span style={{ fontSize: "16px" }}>🎙️</span>
+            <audio src={activeAudio} controls style={{ height: "30px", width: "100%", outline: "none" }} />
+          </div>
+          <button
+            type="button"
+            onClick={() => updateAudio(null)}
+            style={{
+              background: "rgba(239, 68, 68, 0.2)",
+              border: "1px solid rgba(239, 68, 68, 0.4)",
+              color: "#fca5a5",
+              borderRadius: "8px",
+              padding: "4px 8px",
+              fontSize: "11px",
+              fontWeight: "bold",
+              cursor: "pointer"
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* PREVIEW VIDEO LIVE DIG */}
+      {activeVideo && (
+        <div
+          style={{
+            background: "rgba(168, 85, 247, 0.12)",
+            border: "1px solid rgba(168, 85, 247, 0.35)",
+            padding: "10px",
+            borderRadius: "14px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px"
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: "12px", color: "#e9d5ff", fontWeight: "700" }}>🎥 Extrait Vidéo Live Dig</span>
+            <button
+              type="button"
+              onClick={() => updateVideo(null)}
+              style={{
+                background: "rgba(239, 68, 68, 0.2)",
+                border: "1px solid rgba(239, 68, 68, 0.4)",
+                color: "#fca5a5",
+                borderRadius: "8px",
+                padding: "3px 8px",
+                fontSize: "11px",
+                cursor: "pointer",
+                fontWeight: "bold"
+              }}
+            >
+              ✕ Retirer
+            </button>
+          </div>
+          <video
+            src={activeVideo}
+            controls
+            style={{
+              width: "100%",
+              maxHeight: "150px",
+              borderRadius: "10px",
+              background: "#000000"
+            }}
+          />
+        </div>
+      )}
+
       {/* BOUTON SAVE */}
       <button
         type="button"
@@ -612,7 +863,10 @@ export default function AddFindForm({
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          addFind();
+          addFind({
+            audio: activeAudio,
+            video: activeVideo
+          });
         }}
         style={{
           borderRadius: "14px",

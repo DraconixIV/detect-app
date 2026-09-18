@@ -11,7 +11,7 @@ import MarkerClusterGroup from "react-leaflet-cluster";
 
 import "leaflet/dist/leaflet.css";
 
-import { icons } from "../icons";
+import { icons, getCategoryIcon } from "../icons";
 import FindPopup from "./FindPopup";
 import GpsMarker from "./GpsMarker";
 import MapLayers from "./MapLayers";
@@ -140,7 +140,8 @@ export default function MainMap({
   onOpenTeamSession,
   isRecordingSortie = false,
   sortiePositions = [],
-  savedTracks = []
+  savedTracks = [],
+  markerSize = "medium"
 }) {
   const handleExitConsultation = () => {
     if (setWorkspace) {
@@ -402,7 +403,7 @@ export default function MainMap({
             <Marker
               key={find.id}
               position={find.finalPosition}
-              icon={icons[find.category] || icons.autre}
+              icon={getCategoryIcon(find.category, null, markerSize) || icons.autre}
             >
               <Popup
                 className="custom-find-leaflet-popup"
@@ -427,7 +428,7 @@ export default function MainMap({
           <Marker
             key={find.id}
             position={find.finalPosition}
-            icon={icons[find.category] || icons.autre}
+            icon={getCategoryIcon(find.category, null, markerSize) || icons.autre}
           >
             <Popup
               className="custom-find-leaflet-popup"

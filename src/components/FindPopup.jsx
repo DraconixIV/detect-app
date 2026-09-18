@@ -7,6 +7,7 @@ import ConfirmModal from "./ConfirmModal";
 import { materials, materialEmojis } from "../subCategories";
 import { loadCategoriesData } from "../services/categoriesService";
 import { loadMaterialsData } from "../services/materialsService";
+import { latLngToUtm, formatDms } from "../utils/coordinates";
 
 export default function FindPopup({
   find,
@@ -737,6 +738,77 @@ export default function FindPopup({
                   />
                 </div>
               </div>
+
+              {/* UTM Coordinates Badge */}
+              {latitude && longitude && latLngToUtm(Number(latitude), Number(longitude)) && (
+                <div
+                  style={{
+                    padding: "6px 10px",
+                    borderRadius: "8px",
+                    background: "rgba(0,0,0,0.3)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    fontSize: "11px",
+                    color: "#94a3b8",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    fontFamily: "monospace"
+                  }}
+                >
+                  <span>🌐 {formatDms(Number(latitude), Number(longitude))}</span>
+                  <span style={{ color: "#38bdf8", fontWeight: "700" }}>
+                    UTM : {latLngToUtm(Number(latitude), Number(longitude)).formatted}
+                  </span>
+                </div>
+              )}
+
+              {/* Note Vocale Audio Player */}
+              {(find.audio_url || find.audio) && (
+                <div
+                  style={{
+                    padding: "10px 12px",
+                    borderRadius: "12px",
+                    background: "rgba(59, 130, 246, 0.15)",
+                    border: "1px solid rgba(59, 130, 246, 0.35)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "6px"
+                  }}
+                >
+                  <span style={{ fontSize: "11px", fontWeight: "700", color: "#93c5fd", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span>🎙️</span> Note Vocale Enregistrée
+                  </span>
+                  <audio
+                    src={find.audio_url || find.audio}
+                    controls
+                    style={{ width: "100%", height: "32px", outline: "none" }}
+                  />
+                </div>
+              )}
+
+              {/* Vidéo Live Dig Player */}
+              {(find.video_url || find.video) && (
+                <div
+                  style={{
+                    padding: "10px 12px",
+                    borderRadius: "12px",
+                    background: "rgba(168, 85, 247, 0.12)",
+                    border: "1px solid rgba(168, 85, 247, 0.35)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "6px"
+                  }}
+                >
+                  <span style={{ fontSize: "11px", fontWeight: "700", color: "#e9d5ff", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span>🎥</span> Extrait Vidéo Live Dig
+                  </span>
+                  <video
+                    src={find.video_url || find.video}
+                    controls
+                    style={{ width: "100%", maxHeight: "160px", borderRadius: "8px", background: "#000" }}
+                  />
+                </div>
+              )}
 
               <div>
                 <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Catégorie</label>

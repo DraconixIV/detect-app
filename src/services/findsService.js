@@ -3,12 +3,15 @@ import imageCompression from "browser-image-compression";
 import { supabase } from "../supabase.js";
 import { getMyUserCode, getMyDisplayName, getActiveSession, getMyJoinedSessions } from "./sessionService.js";
 
-export function encodeMetadata(description, userCode, finderName, sessionCode, thumbnailUrl = null) {
+export function encodeMetadata(description, userCode, finderName, sessionCode, thumbnailUrl = null, extra = {}) {
   const meta = {};
   if (userCode) meta.u = userCode;
   if (finderName) meta.f = finderName;
   if (sessionCode) meta.s = sessionCode;
   if (thumbnailUrl) meta.t = thumbnailUrl;
+  if (extra.audio_url || extra.audio) meta.a = extra.audio_url || extra.audio;
+  if (extra.video_url || extra.video) meta.v = extra.video_url || extra.video;
+  if (extra.utm) meta.utm = extra.utm;
   if (Object.keys(meta).length === 0) return description || "";
   const metaTag = `\n<!--GP_META:${JSON.stringify(meta)}-->`;
   return ((description || "").replace(/<!--GP_META:.*?-->/g, "").trim() + metaTag);
@@ -20,6 +23,9 @@ export function decodeMetadata(find) {
   let finder_name = find.finder_name || null;
   let session_code = find.session_code || null;
   let thumbnail_url = find.thumbnail_url || null;
+  let audio_url = find.audio_url || null;
+  let video_url = find.video_url || null;
+  let utm = find.utm || null;
   let cleanDesc = find.description || "";
 
   const match = cleanDesc.match(/<!--GP_META:(.*?)-->/);
@@ -30,6 +36,9 @@ export function decodeMetadata(find) {
       if (meta.f && !finder_name) finder_name = meta.f;
       if (meta.s && !session_code) session_code = meta.s;
       if (meta.t && !thumbnail_url) thumbnail_url = meta.t;
+      if (meta.a && !audio_url) audio_url = meta.a;
+      if (meta.v && !video_url) video_url = meta.v;
+      if (meta.utm && !utm) utm = meta.utm;
       cleanDesc = cleanDesc.replace(/<!--GP_META:.*?-->/g, "").trim();
     } catch {
       // Ignore
@@ -42,7 +51,10 @@ export function decodeMetadata(find) {
     user_code,
     finder_name,
     session_code,
-    thumbnail_url: thumbnail_url || find.image_url
+    thumbnail_url: thumbnail_url || find.image_url,
+    audio_url,
+    video_url,
+    utm
   };
 }
 
@@ -142,13 +154,23 @@ export async function addFind({
   customDate = null,
   userCode = null,
   finderName = null,
-  sessionCode = null
+  sessionCode = null,
+  audio = null,
+  video = null,
+  utm = null
 }) {
   try {
     const finalUserCode = userCode || getMyUserCode();
     const finalFinderName = finderName || getMyDisplayName();
     const finalSessionCode = sessionCode !== undefined ? sessionCode : (getActiveSession()?.code || null);
-    const encodedDesc = encodeMetadata(newDescription, finalUserCode, finalFinderName, finalSessionCode);
+    const encodedDesc = encodeMetadata(
+      newDescription,
+      finalUserCode,
+      finalFinderName,
+      finalSessionCode,
+      null,
+      { audio, video, utm }
+    );
 
     const payload = {
       title: newTitle,
@@ -248,7 +270,8 @@ export async function addFind({
         finalUserCode,
         finalFinderName,
         finalSessionCode,
-        thumbnailUrl
+        thumbnailUrl,
+        { audio, video, utm }
       );
       await supabase
         .from("finds")
