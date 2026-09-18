@@ -7,7 +7,6 @@ import AuthForm from "./AuthForm";
 
 const DONATION_LINKS = {
   kofi: "https://ko-fi.com/geoprospect",
-  buymeacoffee: "https://buymeacoffee.com",
   paypal: "https://paypal.me/geoprospect"
 };
 
@@ -620,38 +619,6 @@ export default function SettingsPanel({
                   </div>
                   <div style={{ fontSize: "10px", color: textSub }}>
                     Don libre sans commission (CB, Apple Pay, Google Pay)
-                  </div>
-                </div>
-              </div>
-              <span style={{ fontSize: "13px", color: textSub, fontWeight: "bold" }}>↗</span>
-            </a>
-
-            {/* Buy Me a Coffee */}
-            <a
-              href={DONATION_LINKS.buymeacoffee}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                padding: "10px 14px",
-                borderRadius: "12px",
-                background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)",
-                border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
-                color: textMain,
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                transition: "all 0.2s"
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <span style={{ fontSize: "18px" }}>💛</span>
-                <div>
-                  <div style={{ fontSize: "12px", fontWeight: "700", color: isLight ? "#0f172a" : "#ffffff" }}>
-                    Buy Me a Coffee
-                  </div>
-                  <div style={{ fontSize: "10px", color: textSub }}>
-                    Offrir un café en 1 clic
                   </div>
                 </div>
               </div>
