@@ -8,7 +8,7 @@ import AuthForm from "./AuthForm";
 const DONATION_LINKS = {
   kofi: "https://ko-fi.com/geoprospect",
   buymeacoffee: "https://buymeacoffee.com",
-  paypal: "https://paypal.me"
+  paypal: "https://paypal.me/geoprospect"
 };
 
 export default function SettingsPanel({
