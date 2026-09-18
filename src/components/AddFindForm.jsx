@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { PRESET_CATEGORY_COLORS } from "../subCategories";
 import { loadCategoriesData, addCategory } from "../services/categoriesService";
 import { loadMaterialsData } from "../services/materialsService";
-import { latLngToUtm, formatDms } from "../utils/coordinates";
+import AudioNotePlayer from "./AudioNotePlayer";
 import { startAudioRecording, stopAudioRecording, isAudioRecordingSupported } from "../services/audioRecorder";
 
 export default function AddFindForm({
@@ -226,31 +226,6 @@ export default function AddFindForm({
             : "Mode direct : position GPS actuelle et date enregistrées automatiquement."}
         </span>
       </div>
-
-      {/* COORDONNÉES GPS & UTM BADGE */}
-      {customLat && customLng && (
-        <div
-          style={{
-            padding: "8px 12px",
-            borderRadius: "10px",
-            background: "rgba(0, 0, 0, 0.35)",
-            border: "1px solid rgba(255, 255, 255, 0.08)",
-            fontSize: "11px",
-            color: "#94a3b8",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
-          }}
-        >
-          <span>🌐 {formatDms(Number(customLat), Number(customLng)) || `${customLat}, ${customLng}`}</span>
-          {latLngToUtm(Number(customLat), Number(customLng)) && (
-            <span style={{ color: "#38bdf8", fontWeight: "700" }}>
-              UTM : {latLngToUtm(Number(customLat), Number(customLng)).formatted}
-            </span>
-          )}
-        </div>
-      )}
 
       {/* TITRE (SANS EXEMPLE) */}
       <div>
@@ -588,7 +563,7 @@ export default function AddFindForm({
         }}
       />
 
-      {/* MEDIA TOOLBAR (4 BOUTONS : PHOTO, GALERIE, VIDÉO, VOCAL) */}
+      {/* MEDIA TOOLBAR (4 BOUTONS : PHOTO, GALERIE, VIDÉO, VOCAL - MONOCHROME) */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "6px" }}>
         {/* Appareil Photo */}
         <button
@@ -596,8 +571,8 @@ export default function AddFindForm({
           onClick={() => cameraInputRef.current?.click()}
           title="Prendre une photo"
           style={{
-            background: newPhoto ? "rgba(16, 185, 129, 0.25)" : "rgba(255, 255, 255, 0.08)",
-            border: newPhoto ? "1.5px solid #10b981" : "1px solid rgba(255, 255, 255, 0.12)",
+            background: newPhoto ? "rgba(255, 255, 255, 0.18)" : "rgba(255, 255, 255, 0.06)",
+            border: newPhoto ? "1px solid rgba(255, 255, 255, 0.35)" : "1px solid rgba(255, 255, 255, 0.12)",
             color: "#ffffff",
             padding: "9px 4px",
             borderRadius: "12px",
@@ -621,7 +596,7 @@ export default function AddFindForm({
           onClick={() => galleryInputRef.current?.click()}
           title="Choisir depuis la galerie"
           style={{
-            background: "rgba(255, 255, 255, 0.08)",
+            background: "rgba(255, 255, 255, 0.06)",
             border: "1px solid rgba(255, 255, 255, 0.12)",
             color: "#ffffff",
             padding: "9px 4px",
@@ -640,14 +615,14 @@ export default function AddFindForm({
           <span>Galerie</span>
         </button>
 
-        {/* Vidéo Live Dig */}
+        {/* Vidéo */}
         <button
           type="button"
           onClick={() => videoInputRef.current?.click()}
-          title="Ajouter un court extrait vidéo (<10s)"
+          title="Ajouter un court extrait vidéo"
           style={{
-            background: activeVideo ? "rgba(168, 85, 247, 0.25)" : "rgba(255, 255, 255, 0.08)",
-            border: activeVideo ? "1.5px solid #a855f7" : "1px solid rgba(255, 255, 255, 0.12)",
+            background: activeVideo ? "rgba(255, 255, 255, 0.18)" : "rgba(255, 255, 255, 0.06)",
+            border: activeVideo ? "1px solid rgba(255, 255, 255, 0.35)" : "1px solid rgba(255, 255, 255, 0.12)",
             color: "#ffffff",
             padding: "9px 4px",
             borderRadius: "12px",
@@ -673,7 +648,6 @@ export default function AddFindForm({
               try {
                 const res = await stopAudioRecording();
                 setIsRecordingAudio(false);
-                setRecordingTime(0);
                 if (res && res.base64) {
                   updateAudio(res.base64);
                 }
@@ -683,6 +657,7 @@ export default function AddFindForm({
               }
             } else {
               try {
+                setRecordingTime(0);
                 await startAudioRecording((sec) => setRecordingTime(sec), 60);
                 setIsRecordingAudio(true);
               } catch (err) {
@@ -696,12 +671,12 @@ export default function AddFindForm({
             background: isRecordingAudio
               ? "#ef4444"
               : activeAudio
-              ? "rgba(59, 130, 246, 0.25)"
-              : "rgba(255, 255, 255, 0.08)",
+              ? "rgba(255, 255, 255, 0.18)"
+              : "rgba(255, 255, 255, 0.06)",
             border: isRecordingAudio
-              ? "1.5px solid #ef4444"
+              ? "1px solid #ef4444"
               : activeAudio
-              ? "1.5px solid #3b82f6"
+              ? "1px solid rgba(255, 255, 255, 0.35)"
               : "1px solid rgba(255, 255, 255, 0.12)",
             color: "#ffffff",
             padding: "9px 4px",
@@ -725,7 +700,8 @@ export default function AddFindForm({
       {newPhoto && (
         <div
           style={{
-            background: "rgba(255,255,255,0.08)",
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.12)",
             padding: "10px",
             borderRadius: "14px",
             display: "flex",
@@ -762,8 +738,8 @@ export default function AddFindForm({
               border: "none",
               borderRadius: "10px",
               padding: "8px",
-              background: "#ef4444",
-              color: "white",
+              background: "rgba(239, 68, 68, 0.2)",
+              color: "#fca5a5",
               cursor: "pointer",
               fontSize: "12px",
               fontWeight: "600"
@@ -776,47 +752,28 @@ export default function AddFindForm({
 
       {/* PREVIEW NOTE VOCALE AUDIO */}
       {activeAudio && (
-        <div
-          style={{
-            background: "rgba(59, 130, 246, 0.15)",
-            border: "1px solid rgba(59, 130, 246, 0.35)",
-            padding: "8px 12px",
-            borderRadius: "14px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "8px"
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
-            <span style={{ fontSize: "16px" }}>🎙️</span>
-            <audio src={activeAudio} controls style={{ height: "30px", width: "100%", outline: "none" }} />
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <div style={{ fontSize: "11px", fontWeight: "700", color: "#e2e8f0", display: "flex", alignItems: "center", gap: "6px" }}>
+            <span>🎙️</span> Note vocale
           </div>
-          <button
-            type="button"
-            onClick={() => updateAudio(null)}
-            style={{
-              background: "rgba(239, 68, 68, 0.2)",
-              border: "1px solid rgba(239, 68, 68, 0.4)",
-              color: "#fca5a5",
-              borderRadius: "8px",
-              padding: "4px 8px",
-              fontSize: "11px",
-              fontWeight: "bold",
-              cursor: "pointer"
+          <AudioNotePlayer
+            src={activeAudio}
+            duration={recordingTime || null}
+            onDelete={() => {
+              updateAudio(null);
+              setRecordingTime(0);
             }}
-          >
-            ✕
-          </button>
+            theme="dark"
+          />
         </div>
       )}
 
-      {/* PREVIEW VIDEO LIVE DIG */}
+      {/* PREVIEW VIDEO */}
       {activeVideo && (
         <div
           style={{
-            background: "rgba(168, 85, 247, 0.12)",
-            border: "1px solid rgba(168, 85, 247, 0.35)",
+            background: "rgba(255, 255, 255, 0.04)",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
             padding: "10px",
             borderRadius: "14px",
             display: "flex",
@@ -825,14 +782,14 @@ export default function AddFindForm({
           }}
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "12px", color: "#e9d5ff", fontWeight: "700" }}>🎥 Extrait Vidéo Live Dig</span>
+            <span style={{ fontSize: "12px", color: "#ffffff", fontWeight: "700" }}>🎥 Vidéo</span>
             <button
               type="button"
               onClick={() => updateVideo(null)}
               style={{
-                background: "rgba(239, 68, 68, 0.2)",
-                border: "1px solid rgba(239, 68, 68, 0.4)",
-                color: "#fca5a5",
+                background: "transparent",
+                border: "1px solid rgba(255, 255, 255, 0.16)",
+                color: "#94a3b8",
                 borderRadius: "8px",
                 padding: "3px 8px",
                 fontSize: "11px",
@@ -848,7 +805,7 @@ export default function AddFindForm({
             controls
             style={{
               width: "100%",
-              maxHeight: "150px",
+              maxHeight: "160px",
               borderRadius: "10px",
               background: "#000000"
             }}
@@ -863,24 +820,24 @@ export default function AddFindForm({
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          addFind({
-            audio: activeAudio,
-            video: activeVideo
-          });
+          // Ensure newAudio / newVideo are synchronized in parent before adding
+          if (setNewAudio && activeAudio !== newAudio) setNewAudio(activeAudio);
+          if (setNewVideo && activeVideo !== newVideo) setNewVideo(activeVideo);
+          addFind();
         }}
         style={{
           borderRadius: "14px",
           padding: "14px",
           border: "none",
           background: addingFind || !newTitle.trim()
-            ? "#4b5563"
-            : "linear-gradient(135deg, #10b981, #059669)",
+            ? "#334155"
+            : "#10b981",
           color: "white",
           fontSize: "14px",
           fontWeight: "700",
           cursor: addingFind || !newTitle.trim() ? "not-allowed" : "pointer",
           transition: "all 0.2s ease",
-          boxShadow: addingFind || !newTitle.trim() ? "none" : "0 4px 14px rgba(16,185,129,0.35)",
+          boxShadow: addingFind || !newTitle.trim() ? "none" : "0 4px 14px rgba(16,185,129,0.25)",
           marginTop: "4px"
         }}
       >

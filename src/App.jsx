@@ -36,7 +36,6 @@ import { importData, exportData } from "./services/backupService";
 import { addFind as createFind, toggleFavorite } from "./services/findsService";
 import { getActiveSession, leaveTeamSession } from "./services/sessionService";
 import { loadCategoriesData } from "./services/categoriesService";
-import { latLngToUtm } from "./utils/coordinates";
 
 function offsetPosition(
   position,
@@ -582,29 +581,43 @@ function App() {
     };
 
   const addFind = async (quickParams = null) => {
-    const finalPosition = quickParams
-      ? quickParams.position
-      : (customLat && customLng
-        ? [Number(customLat), Number(customLng)]
-        : position);
+    let finalPosition = null;
+
+    if (quickParams && quickParams.newTitle !== undefined) {
+      finalPosition = quickParams.position || position;
+    } else if (customLat && customLng) {
+      finalPosition = [Number(customLat), Number(customLng)];
+    } else {
+      finalPosition = position;
+    }
 
     if (!finalPosition) {
-      alert("GPS indisponible");
+      try {
+        const cached = localStorage.getItem("lastKnownPosition");
+        if (cached) {
+          finalPosition = JSON.parse(cached);
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    if (!finalPosition) {
+      alert("Position GPS non détectée. Veuillez autoriser la localisation ou saisir les coordonnées.");
       return;
     }
 
     if (addingFind) return;
     setAddingFind(true);
 
-    const titleVal = quickParams ? quickParams.newTitle : newTitle;
-    const descVal = quickParams ? quickParams.newDescription : newDescription;
-    const catVal = quickParams ? quickParams.newCategory : newCategory;
-    const subCatVal = quickParams ? quickParams.newSubCategory : newSubCategory;
-    const photoVal = quickParams ? quickParams.newPhoto : newPhoto;
-    const dateVal = quickParams ? quickParams.customDate : (customDate || null);
-    const audioVal = quickParams ? null : newAudio;
-    const videoVal = quickParams ? null : newVideo;
-    const utmVal = finalPosition ? (latLngToUtm(finalPosition[0], finalPosition[1])?.formatted || null) : null;
+    const titleVal = (quickParams && quickParams.newTitle) ? quickParams.newTitle : newTitle;
+    const descVal = (quickParams && quickParams.newDescription !== undefined) ? quickParams.newDescription : newDescription;
+    const catVal = (quickParams && quickParams.newCategory) ? quickParams.newCategory : newCategory;
+    const subCatVal = (quickParams && quickParams.newSubCategory !== undefined) ? quickParams.newSubCategory : newSubCategory;
+    const photoVal = (quickParams && quickParams.newPhoto) ? quickParams.newPhoto : newPhoto;
+    const dateVal = (quickParams && quickParams.customDate) ? quickParams.customDate : (customDate || null);
+    const audioVal = (quickParams && quickParams.newTitle) ? null : newAudio;
+    const videoVal = (quickParams && quickParams.newTitle) ? null : newVideo;
 
     try {
       if (!isOnline) {
@@ -616,8 +629,7 @@ function App() {
           newSubCategory: subCatVal,
           customDate: dateVal,
           audio: audioVal,
-          video: videoVal,
-          utm: utmVal
+          video: videoVal
         }, photoVal);
 
         alert("Trouvaille sauvegardée localement (Hors-ligne) ! Elle sera synchronisée dès le retour d'internet. 💾");
@@ -631,8 +643,7 @@ function App() {
           newPhoto: photoVal,
           customDate: dateVal,
           audio: audioVal,
-          video: videoVal,
-          utm: utmVal
+          video: videoVal
         });
       }
 
@@ -650,7 +661,7 @@ function App() {
       setNewVideo(null);
 
       await loadFinds();
-      if (quickParams) {
+      if (quickParams && quickParams.newTitle) {
         alert("📸 Trouvaille rapide enregistrée !");
       }
     } catch (error) {
@@ -664,11 +675,10 @@ function App() {
           newSubCategory: subCatVal,
           customDate: dateVal,
           audio: audioVal,
-          video: videoVal,
-          utm: utmVal
+          video: videoVal
         }, photoVal);
 
-        alert("⚠️ Erreur de réseau ou connexion instable. Votre trouvaille a été sauvegardée localement (Hors-ligne) par précaution ! Elle sera synchronisée dès le retour d'internet. 💾");
+        alert("⚠️ Connexion instable. Votre trouvaille a été sauvegardée localement (Hors-ligne) ! 💾");
 
         const firstAvailableCat = Object.keys(loadCategoriesData().categories || {})[0] || "";
         setCustomDate("");
@@ -685,8 +695,7 @@ function App() {
 
         await loadFinds();
       } catch (fallbackError) {
-        console.error("Critical fallback save error:", fallbackError);
-        alert("Erreur critique : impossible d'enregistrer la trouvaille même localement. Détail : " + (fallbackError?.message || fallbackError || "Inconnu"));
+        alert("Erreur critique d'enregistrement : " + (fallbackError?.message || fallbackError || "Inconnu"));
       }
     }
 

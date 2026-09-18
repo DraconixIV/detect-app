@@ -7,6 +7,7 @@ let mediaRecorder = null;
 let audioChunks = [];
 let audioStream = null;
 let recordingTimer = null;
+let recordedDuration = 0;
 
 export function isAudioRecordingSupported() {
   return (
@@ -37,6 +38,7 @@ export async function startAudioRecording(onTick, maxDuration = 60) {
   }
 
   audioChunks = [];
+  recordedDuration = 0;
 
   // Demande d'accès au micro
   audioStream = await navigator.mediaDevices.getUserMedia({
@@ -75,6 +77,7 @@ export async function startAudioRecording(onTick, maxDuration = 60) {
 
   recordingTimer = setInterval(() => {
     seconds += 1;
+    recordedDuration = seconds;
     if (onTick) onTick(seconds);
     if (seconds >= maxDuration) {
       stopAudioRecording().catch(() => {});
@@ -100,6 +103,8 @@ export function stopAudioRecording() {
       return;
     }
 
+    const finalDuration = recordedDuration || 1;
+
     mediaRecorder.onstop = async () => {
       try {
         const mime = mediaRecorder.mimeType || "audio/webm";
@@ -115,7 +120,7 @@ export function stopAudioRecording() {
             audioStream.getTracks().forEach((track) => track.stop());
             audioStream = null;
           }
-          resolve({ blob, base64, url, mimeType: mime });
+          resolve({ blob, base64, url, duration: finalDuration, mimeType: mime });
         };
         reader.onerror = reject;
         reader.readAsDataURL(blob);

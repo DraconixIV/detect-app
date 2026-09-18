@@ -6,16 +6,16 @@ const NEWS_ARTICLES = [
     date: "Septembre 2026",
     tag: "Nouveauté",
     tagColor: "#10b981",
-    title: "🎙️ Notes Vocales & Coordonnées UTM",
-    content: "Enregistrez vos mémos vocaux directement sur le terrain sans retirer vos gants ! Affichage des coordonnées militaires et topographiques UTM pour une précision cartographique maximale."
+    title: "🎙️ Notes Vocales & Vidéo de Trouvailles",
+    content: "Enregistrez vos mémos vocaux directement sur le terrain sans retirer vos gants et ajoutez des vidéos courtes de vos découvertes !"
   },
   {
     id: "v3.1",
     date: "Septembre 2026",
     tag: "Mise à jour",
-    tagColor: "#3b82f6",
+    tagColor: "#64748b",
     title: "🧭 Nouveau Menu Latéral & Synchronisation Cloud",
-    content: "Accédez rapidement à vos sorties, trouvailles, statistiques et sessions d'équipe grâce au nouveau menu latéral rapide."
+    content: "Accédez rapidement aux nouvelles, à propos et aux paramètres grâce au nouveau menu latéral."
   },
   {
     id: "tip-1",
@@ -29,7 +29,7 @@ const NEWS_ARTICLES = [
     id: "law-1",
     date: "Législation",
     tag: "Rappel Légal",
-    tagColor: "#8b5cf6",
+    tagColor: "#64748b",
     title: "⚖️ Autorisation du propriétaire & Code du Patrimoine",
     content: "Rappel amical : l'accord exprès et écrit du propriétaire du terrain est obligatoire avant toute sortie de détection de loisir (Art. L. 542-1 du Code du Patrimoine)."
   }

@@ -110,21 +110,22 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
           >
             <div
               style={{
-                width: "56px",
-                height: "56px",
+                width: "52px",
+                height: "52px",
                 borderRadius: "16px",
-                background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
+                background: isLight ? "#0f172a" : "#1e293b",
+                border: `1px solid ${cardBorder}`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "28px",
-                boxShadow: "0 8px 16px rgba(59, 130, 246, 0.3)"
+                fontSize: "26px",
+                color: "#ffffff"
               }}
             >
               🧭
             </div>
             <div style={{ fontSize: "16px", fontWeight: "900", color: textMain }}>GeoProspect</div>
-            <div style={{ fontSize: "11px", fontWeight: "700", color: "#3b82f6" }}>
+            <div style={{ fontSize: "11px", fontWeight: "700", color: textSub }}>
               Le carnet de terrain GPS des détectoristes
             </div>
             <p style={{ margin: "4px 0 0 0", fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
