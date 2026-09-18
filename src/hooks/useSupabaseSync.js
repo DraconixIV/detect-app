@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabase";
-import { loadFinds as fetchFinds, addFind as createFind, normalizeCategoryAndSub } from "../services/findsService";
+import { loadFinds as fetchFinds, addFind as createFind, normalizeCategoryAndSub, decodeMetadata } from "../services/findsService";
 import { getPendingFinds, deletePendingFind } from "../services/offlineStore";
 import { getMyUserCode } from "../services/sessionService";
 
@@ -129,7 +129,7 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
     loadFinds();
   }, [workspace.mode, workspace.targetCode]);
 
-  // Dynamic channel lifecycle & smart ping-pong polling for zero server saturation
+  // Dynamic channel lifecycle & smart ping-pong polling for team sessions
   useEffect(() => {
     let findsChannel = null;
     let photosChannel = null;
@@ -138,30 +138,38 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
     const isCollaborative =
       workspace.mode === "session" || workspace.mode === "consultation";
 
-    // Only open persistent WebSockets when in active team / consultation mode
-    if (isCollaborative && isOnline) {
+    // Open persistent WebSockets when online
+    if (isOnline) {
       findsChannel = supabase
-        .channel(`sync-finds-${workspace.targetCode || "shared"}`)
+        .channel(`sync-finds-${workspace.targetCode || "global"}-${Date.now()}`)
         .on(
           "postgres_changes",
           { event: "*", schema: "public", table: "finds" },
           (payload) => {
             const { eventType, new: newRow, old: oldRow } = payload;
             const currentWs = workspaceRef.current || { mode: "personal" };
+            const myCode = getMyUserCode();
+            const decodedRow = newRow ? decodeMetadata(newRow) : null;
 
             // Workspace relevance check
             if (eventType === "INSERT" || eventType === "UPDATE") {
-              if (currentWs.mode === "consultation" && newRow.user_code !== currentWs.targetCode) {
+              if (currentWs.mode === "consultation" && decodedRow.user_code !== currentWs.targetCode) {
                 return;
               }
-              if (currentWs.mode === "session" && newRow.session_code !== currentWs.targetCode) {
-                return;
+              if (currentWs.mode === "session") {
+                const targetCodeUpper = (currentWs.targetCode || "").toUpperCase();
+                const sessionCodeUpper = (decodedRow.session_code || "").toUpperCase();
+                const isSessionFind = sessionCodeUpper && sessionCodeUpper === targetCodeUpper;
+                const isMyFind = decodedRow.user_code === myCode;
+                if (!isSessionFind && !isMyFind) {
+                  return;
+                }
               }
             }
 
             setFinds((currentFinds) => {
               if (eventType === "INSERT") {
-                const normalized = normalizeCategoryAndSub(newRow);
+                const normalized = normalizeCategoryAndSub(decodedRow);
                 const formatted = {
                   ...normalized,
                   position: [normalized.latitude, normalized.longitude]
@@ -170,9 +178,9 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
                   return currentFinds;
                 }
 
-                if (currentWs.mode === "session" && newRow.finder_name && setToast) {
+                if (currentWs.mode === "session" && decodedRow.user_code !== myCode && setToast) {
                   setToast({
-                    message: `✨ ${newRow.finder_name} vient d'ajouter une trouvaille (${newRow.title || newRow.category}) !`,
+                    message: `✨ ${decodedRow.finder_name || "Un coéquipier"} vient de trouver : ${decodedRow.title || decodedRow.category} !`,
                     type: "success"
                   });
                 }
@@ -183,7 +191,7 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
               }
 
               if (eventType === "UPDATE") {
-                const normalized = normalizeCategoryAndSub(newRow);
+                const normalized = normalizeCategoryAndSub(decodedRow);
                 const formatted = {
                   ...normalized,
                   position: [normalized.latitude, normalized.longitude]
@@ -202,7 +210,7 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
         .subscribe();
 
       photosChannel = supabase
-        .channel(`sync-photos-${workspace.targetCode || "shared"}`)
+        .channel(`sync-photos-${workspace.targetCode || "global"}-${Date.now()}`)
         .on(
           "postgres_changes",
           { event: "*", schema: "public", table: "find_photos" },
@@ -212,12 +220,13 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
         )
         .subscribe();
 
-      // Smart Ping-Pong polling every 10s as a resilient lightweight heartbeat
+      // Polling every 5s during collaborative session, every 15s in personal mode
+      const pollRate = isCollaborative ? 5000 : 15000;
       pingPongInterval = setInterval(() => {
         if (document.visibilityState === "visible" && navigator.onLine) {
           loadFinds();
         }
-      }, 10000);
+      }, pollRate);
     }
 
     // Auto-sleep / Wakeup on visibility changes

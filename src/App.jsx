@@ -30,6 +30,7 @@ import { icons } from "./icons";
 import { supabase } from "./supabase";
 
 import useSupabaseSync from "./hooks/useSupabaseSync";
+import useTeamPresence from "./hooks/useTeamPresence";
 import useSortieRecorder from "./hooks/useSortieRecorder";
 import { addPendingFind, deletePendingFind } from "./services/offlineStore";
 import { importData, exportData } from "./services/backupService";
@@ -193,6 +194,8 @@ function App() {
     syncOfflineFinds,
     loadPhotosForAlbum
   } = useSupabaseSync(setToast, workspace);
+
+  const { teammates } = useTeamPresence(workspace, position, setToast);
 
   const {
     isRecordingSortie,
@@ -619,6 +622,8 @@ function App() {
     const audioVal = (quickParams && quickParams.newTitle) ? null : newAudio;
     const videoVal = (quickParams && quickParams.newTitle) ? null : newVideo;
 
+    const currentSessionCode = workspace.mode === "session" ? workspace.targetCode : null;
+
     try {
       if (!isOnline) {
         await addPendingFind({
@@ -629,7 +634,8 @@ function App() {
           newSubCategory: subCatVal,
           customDate: dateVal,
           audio: audioVal,
-          video: videoVal
+          video: videoVal,
+          sessionCode: currentSessionCode
         }, photoVal);
 
         alert("Trouvaille sauvegardée localement (Hors-ligne) ! Elle sera synchronisée dès le retour d'internet. 💾");
@@ -643,7 +649,8 @@ function App() {
           newPhoto: photoVal,
           customDate: dateVal,
           audio: audioVal,
-          video: videoVal
+          video: videoVal,
+          sessionCode: currentSessionCode
         });
       }
 
@@ -675,7 +682,8 @@ function App() {
           newSubCategory: subCatVal,
           customDate: dateVal,
           audio: audioVal,
-          video: videoVal
+          video: videoVal,
+          sessionCode: currentSessionCode
         }, photoVal);
 
         alert("⚠️ Connexion instable. Votre trouvaille a été sauvegardée localement (Hors-ligne) ! 💾");
@@ -1128,6 +1136,7 @@ return (
         sortiePositions={sortiePositions}
         savedTracks={savedTracks}
         markerSize={markerSize}
+        teammates={teammates}
       />
 
       {/* FLOATING RIGHT-SIDE CONTROLS (GPS RECENTER, LAYERS & ZEN MODE) */}

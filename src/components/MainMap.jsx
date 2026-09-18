@@ -14,6 +14,7 @@ import "leaflet/dist/leaflet.css";
 import { icons, getCategoryIcon } from "../icons";
 import FindPopup from "./FindPopup";
 import GpsMarker from "./GpsMarker";
+import TeammateMarker from "./TeammateMarker";
 import MapLayers from "./MapLayers";
 
 // Helper: Recenter map to target coords
@@ -141,7 +142,8 @@ export default function MainMap({
   isRecordingSortie = false,
   sortiePositions = [],
   savedTracks = [],
-  markerSize = "medium"
+  markerSize = "medium",
+  teammates = []
 }) {
   const handleExitConsultation = () => {
     if (setWorkspace) {
@@ -208,7 +210,7 @@ export default function MainMap({
               </div>
               <div style={{ fontSize: "10px", color: workspace.mode === "session" ? "#6ee7b7" : "#93c5fd", fontWeight: "600" }}>
                 {workspace.mode === "session"
-                  ? `Code : ${workspace.targetCode} • Partage en direct`
+                  ? `Code : ${workspace.targetCode} • ${teammates.length > 0 ? `${teammates.length} coéquipier(s) en direct` : "Partage en direct"}`
                   : "Mode lecture seule"}
               </div>
             </div>
@@ -391,6 +393,15 @@ export default function MainMap({
         position={position}
         gpsStyle={gpsStyle}
       />
+
+      {/* TEAMMATES LIVE GPS CURSORS */}
+      {teammates && teammates.map((teammate) => (
+        <TeammateMarker
+          key={teammate.userCode}
+          teammate={teammate}
+          myPosition={position}
+        />
+      ))}
 
       {useClustering ? (
         <MarkerClusterGroup

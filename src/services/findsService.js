@@ -11,7 +11,6 @@ export function encodeMetadata(description, userCode, finderName, sessionCode, t
   if (thumbnailUrl) meta.t = thumbnailUrl;
   if (extra.audio_url || extra.audio) meta.a = extra.audio_url || extra.audio;
   if (extra.video_url || extra.video) meta.v = extra.video_url || extra.video;
-  if (extra.utm) meta.utm = extra.utm;
   if (Object.keys(meta).length === 0) return description || "";
   const metaTag = `\n<!--GP_META:${JSON.stringify(meta)}-->`;
   return ((description || "").replace(/<!--GP_META:.*?-->/g, "").trim() + metaTag);
@@ -25,7 +24,6 @@ export function decodeMetadata(find) {
   let thumbnail_url = find.thumbnail_url || null;
   let audio_url = find.audio_url || null;
   let video_url = find.video_url || null;
-  let utm = find.utm || null;
   let cleanDesc = find.description || "";
 
   const match = cleanDesc.match(/<!--GP_META:(.*?)-->/);
@@ -38,7 +36,6 @@ export function decodeMetadata(find) {
       if (meta.t && !thumbnail_url) thumbnail_url = meta.t;
       if (meta.a && !audio_url) audio_url = meta.a;
       if (meta.v && !video_url) video_url = meta.v;
-      if (meta.utm && !utm) utm = meta.utm;
       cleanDesc = cleanDesc.replace(/<!--GP_META:.*?-->/g, "").trim();
     } catch {
       // Ignore
@@ -53,8 +50,7 @@ export function decodeMetadata(find) {
     session_code,
     thumbnail_url: thumbnail_url || find.image_url,
     audio_url,
-    video_url,
-    utm
+    video_url
   };
 }
 
@@ -100,7 +96,8 @@ export async function loadFinds(options = {}) {
   try {
     const { mode, targetCode } = options;
     const myCode = options.myUserCode || getMyUserCode();
-    const joinedSessions = getMyJoinedSessions().map((s) => s.code).filter(Boolean);
+    const activeSess = getActiveSession();
+    const currentSessionCode = targetCode || activeSess?.code;
 
     // Fetch all finds reliably from Supabase
     const { data, error } = await supabase
@@ -120,8 +117,8 @@ export async function loadFinds(options = {}) {
       if (mode === "consultation" && targetCode) {
         return find.user_code === targetCode;
       }
-      if (mode === "session" && targetCode) {
-        return find.session_code === targetCode || find.user_code === myCode;
+      if (mode === "session" && currentSessionCode) {
+        return (find.session_code && find.session_code.toUpperCase() === currentSessionCode.toUpperCase()) || find.user_code === myCode;
       }
       // Mode personnel: always show all finds in the personal account
       return true;
@@ -154,22 +151,22 @@ export async function addFind({
   customDate = null,
   userCode = null,
   finderName = null,
-  sessionCode = null,
+  sessionCode = undefined,
   audio = null,
-  video = null,
-  utm = null
+  video = null
 }) {
   try {
     const finalUserCode = userCode || getMyUserCode();
-    const finalFinderName = finderName || getMyDisplayName();
-    const finalSessionCode = sessionCode !== undefined ? sessionCode : (getActiveSession()?.code || null);
+    const finalFinderName = finderName || getMyDisplayName() || "Détecteuriste";
+    const activeSess = getActiveSession();
+    const finalSessionCode = (sessionCode !== undefined && sessionCode !== null) ? sessionCode : (activeSess?.code || null);
     const encodedDesc = encodeMetadata(
       newDescription,
       finalUserCode,
       finalFinderName,
       finalSessionCode,
       null,
-      { audio, video, utm }
+      { audio, video }
     );
 
     const payload = {
