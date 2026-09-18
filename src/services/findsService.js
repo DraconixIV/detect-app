@@ -1,7 +1,7 @@
 import imageCompression from "browser-image-compression";
 
 import { supabase } from "../supabase.js";
-import { getMyUserCode, getMyDisplayName, getActiveSession, getMyJoinedSessions } from "./sessionService.js";
+import { getMyUserCode, getMyDisplayName, getActiveSession, getMyJoinedSessions, normalizeSessionCode } from "./sessionService.js";
 
 export function encodeMetadata(description, userCode, finderName, sessionCode, thumbnailUrl = null, extra = {}) {
   const meta = {};
@@ -111,16 +111,22 @@ export async function loadFinds(options = {}) {
     }
 
     const allFinds = data || [];
+    const cleanCurrentSess = currentSessionCode ? normalizeSessionCode(currentSessionCode) : null;
+    const cleanMyCode = myCode ? normalizeSessionCode(myCode) : null;
+    const cleanTargetCode = targetCode ? normalizeSessionCode(targetCode) : null;
 
     const filteredFinds = allFinds.filter((rawFind) => {
       const find = decodeMetadata(rawFind);
-      if (mode === "consultation" && targetCode) {
-        return find.user_code === targetCode;
+      const findSess = find.session_code ? normalizeSessionCode(find.session_code) : null;
+      const findUser = find.user_code ? normalizeSessionCode(find.user_code) : null;
+
+      if (mode === "consultation" && cleanTargetCode) {
+        return findUser === cleanTargetCode;
       }
-      if (mode === "session" && currentSessionCode) {
-        return (find.session_code && find.session_code.toUpperCase() === currentSessionCode.toUpperCase()) || find.user_code === myCode;
+      if (mode === "session" && cleanCurrentSess) {
+        return findSess === cleanCurrentSess || findUser === cleanMyCode;
       }
-      // Mode personnel: always show all finds in the personal account
+      // Mode personnel: show all finds
       return true;
     });
 
@@ -156,10 +162,12 @@ export async function addFind({
   video = null
 }) {
   try {
-    const finalUserCode = userCode || getMyUserCode();
+    const rawUser = userCode || getMyUserCode();
+    const finalUserCode = rawUser ? normalizeSessionCode(rawUser) : null;
     const finalFinderName = finderName || getMyDisplayName() || "Détecteuriste";
     const activeSess = getActiveSession();
-    const finalSessionCode = (sessionCode !== undefined && sessionCode !== null) ? sessionCode : (activeSess?.code || null);
+    const rawSess = (sessionCode !== undefined && sessionCode !== null) ? sessionCode : (activeSess?.code || null);
+    const finalSessionCode = rawSess ? normalizeSessionCode(rawSess) : null;
     const encodedDesc = encodeMetadata(
       newDescription,
       finalUserCode,

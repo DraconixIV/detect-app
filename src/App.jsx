@@ -195,7 +195,7 @@ function App() {
     loadPhotosForAlbum
   } = useSupabaseSync(setToast, workspace);
 
-  const { teammates, broadcastFind } = useTeamPresence(workspace, position, setToast);
+  const { teammates, broadcastFind, broadcastDeleteFind } = useTeamPresence(workspace, position, setToast);
 
   const {
     isRecordingSortie,
@@ -817,6 +817,10 @@ function App() {
       .from("finds")
       .delete()
       .eq("id", findId);
+
+    if (broadcastDeleteFind) {
+      broadcastDeleteFind(findId);
+    }
 
     await loadFinds();
   };

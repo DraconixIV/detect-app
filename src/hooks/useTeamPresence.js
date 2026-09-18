@@ -1,6 +1,6 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabase";
-import { getMyUserCode, getMyDisplayName } from "../services/sessionService";
+import { getMyUserCode, getMyDisplayName, normalizeSessionCode } from "../services/sessionService";
 
 /**
  * Hook to manage live GPS presence & real-time alerts for collaborative team sessions
@@ -22,7 +22,7 @@ export default function useTeamPresence(workspace, position, setToast) {
   useEffect(() => {
     if (!position || !channelRef.current || workspace?.mode !== "session" || !workspace?.targetCode) return;
 
-    const myCode = getMyUserCode();
+    const myCode = normalizeSessionCode(getMyUserCode());
     const myName = getMyDisplayName() || `Détecteuriste ${myCode.slice(-4)}`;
 
     channelRef.current.send({
@@ -52,8 +52,8 @@ export default function useTeamPresence(workspace, position, setToast) {
       return;
     }
 
-    const sessionCode = workspace.targetCode.trim().toUpperCase();
-    const myCode = getMyUserCode();
+    const sessionCode = normalizeSessionCode(workspace.targetCode);
+    const myCode = normalizeSessionCode(getMyUserCode());
     const myName = getMyDisplayName() || `Détecteuriste ${myCode.slice(-4)}`;
 
     const channelName = `team-session-${sessionCode}`;
@@ -143,7 +143,24 @@ export default function useTeamPresence(workspace, position, setToast) {
       isInitialSyncRef.current = false;
     });
 
-    // 3. Periodic GPS heartbeat (every 3 seconds) to ensure fresh position broadcast
+    // 3. New Find & Delete Find Broadcast listeners
+    channel.on("broadcast", { event: "new_team_find" }, ({ payload }) => {
+      if (!payload || payload.user_code === myCode) return;
+      if (setToast) {
+        setToast({
+          message: `✨ ${payload.finder_name || "Un coéquipier"} vient de trouver : ${payload.title || payload.category} !`,
+          type: "success"
+        });
+      }
+      window.dispatchEvent(new CustomEvent("geoprospect-team-find-added", { detail: payload }));
+    });
+
+    channel.on("broadcast", { event: "delete_team_find" }, ({ payload }) => {
+      if (!payload || !payload.id) return;
+      window.dispatchEvent(new CustomEvent("geoprospect-team-find-deleted", { detail: payload.id }));
+    });
+
+    // 4. Periodic GPS heartbeat (every 3 seconds) to ensure fresh position broadcast
     const heartbeatInterval = setInterval(() => {
       if (positionRef.current && channelRef.current) {
         const curMyName = getMyDisplayName() || `Détecteuriste ${myCode.slice(-4)}`;
@@ -160,7 +177,7 @@ export default function useTeamPresence(workspace, position, setToast) {
       }
     }, 3000);
 
-    // 4. Subscribe and register presence
+    // 5. Subscribe and register presence
     channel.subscribe(async (status) => {
       if (status === "SUBSCRIBED") {
         try {
@@ -203,7 +220,7 @@ export default function useTeamPresence(workspace, position, setToast) {
 
   const broadcastFind = (find) => {
     if (channelRef.current && workspace?.mode === "session" && workspace?.targetCode) {
-      const myCode = getMyUserCode();
+      const myCode = normalizeSessionCode(getMyUserCode());
       const myName = getMyDisplayName() || `Détecteuriste ${myCode.slice(-4)}`;
       channelRef.current.send({
         type: "broadcast",
@@ -212,7 +229,7 @@ export default function useTeamPresence(workspace, position, setToast) {
           ...find,
           finder_name: myName,
           user_code: myCode,
-          session_code: workspace.targetCode
+          session_code: normalizeSessionCode(workspace.targetCode)
         }
       }).catch((err) => {
         console.warn("Find broadcast error:", err);
@@ -220,5 +237,17 @@ export default function useTeamPresence(workspace, position, setToast) {
     }
   };
 
-  return { teammates, broadcastFind };
+  const broadcastDeleteFind = (findId) => {
+    if (channelRef.current && workspace?.mode === "session" && workspace?.targetCode) {
+      channelRef.current.send({
+        type: "broadcast",
+        event: "delete_team_find",
+        payload: { id: findId }
+      }).catch((err) => {
+        console.warn("Delete find broadcast error:", err);
+      });
+    }
+  };
+
+  return { teammates, broadcastFind, broadcastDeleteFind };
 }

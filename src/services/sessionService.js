@@ -1,9 +1,23 @@
-import { supabase } from "../supabase.js";
+﻿import { supabase } from "../supabase.js";
 
 const USER_CODE_STORAGE_KEY = "geoprospect_user_code_v1";
 const USER_DISPLAY_NAME_KEY = "geoprospect_user_display_name_v1";
 const ACTIVE_SESSION_STORAGE_KEY = "geoprospect_active_session_v1";
 const JOINED_SESSIONS_HISTORY_KEY = "geoprospect_joined_sessions_history_v1";
+
+/**
+ * Normalizes any entered code format (e.g. "7k3p", "geo-7k3p", "GEO 7K3P") -> "GEO-7K3P"
+ */
+export function normalizeSessionCode(code) {
+  if (!code) return "";
+  let clean = String(code).trim().toUpperCase().replace(/[\s_]+/g, "-");
+  if (!clean.startsWith("GEO-") && !clean.startsWith("GEO")) {
+    clean = `GEO-${clean.replace(/^-+/, "")}`;
+  } else if (clean.startsWith("GEO") && !clean.startsWith("GEO-")) {
+    clean = `GEO-${clean.slice(3).replace(/^-+/, "")}`;
+  }
+  return clean;
+}
 
 /**
  * Generate a random, readable 6-character alphanumeric code (e.g. "GEO-7K3P")
@@ -36,6 +50,7 @@ export function getMyUserCode() {
     if (!code) {
       code = generateRandomCode("GEO");
     }
+    code = normalizeSessionCode(code);
     localStorage.setItem(USER_CODE_STORAGE_KEY, code);
     return code;
   } catch (e) {
@@ -96,11 +111,11 @@ export function getMyJoinedSessions() {
  */
 export function recordJoinedSession(code, name = "") {
   try {
-    const cleanCode = (code || "").trim().toUpperCase();
+    const cleanCode = normalizeSessionCode(code);
     if (!cleanCode) return;
 
     const existing = getMyJoinedSessions();
-    const filtered = existing.filter((s) => s.code !== cleanCode);
+    const filtered = existing.filter((s) => normalizeSessionCode(s.code) !== cleanCode);
     const updated = [
       {
         code: cleanCode,
@@ -123,7 +138,11 @@ export function getActiveSession() {
   try {
     const raw = localStorage.getItem(ACTIVE_SESSION_STORAGE_KEY);
     if (raw) {
-      return JSON.parse(raw);
+      const sess = JSON.parse(raw);
+      if (sess && sess.code) {
+        sess.code = normalizeSessionCode(sess.code);
+        return sess;
+      }
     }
   } catch (e) {
     console.warn("Error reading active session:", e);
@@ -136,7 +155,8 @@ export function getActiveSession() {
  */
 export function setActiveSession(session) {
   try {
-    if (session) {
+    if (session && session.code) {
+      session.code = normalizeSessionCode(session.code);
       localStorage.setItem(ACTIVE_SESSION_STORAGE_KEY, JSON.stringify(session));
       recordJoinedSession(session.code, session.name);
     } else {
@@ -157,7 +177,7 @@ export function createTeamSession(name = "") {
     name: name.trim() || `Sortie d'équipe ${sessionCode}`,
     createdAt: new Date().toISOString(),
     creatorCode: getMyUserCode(),
-    creatorName: getMyDisplayName() || "Anonyme"
+    creatorName: getMyDisplayName() || "Détecteuriste"
   };
   setActiveSession(session);
   return session;
@@ -167,7 +187,7 @@ export function createTeamSession(name = "") {
  * Join an existing team session with a given code
  */
 export function joinTeamSession(code, name = "") {
-  const cleanCode = (code || "").trim().toUpperCase();
+  const cleanCode = normalizeSessionCode(code);
   if (!cleanCode) return null;
 
   const session = {
@@ -175,7 +195,7 @@ export function joinTeamSession(code, name = "") {
     name: name.trim() || `Session ${cleanCode}`,
     joinedAt: new Date().toISOString(),
     userCode: getMyUserCode(),
-    userName: getMyDisplayName() || "Anonyme"
+    userName: getMyDisplayName() || "Détecteuriste"
   };
   setActiveSession(session);
   return session;

@@ -7,7 +7,8 @@ import {
   joinTeamSession,
   leaveTeamSession,
   getActiveSession,
-  getMyJoinedSessions
+  getMyJoinedSessions,
+  normalizeSessionCode
 } from "../services/sessionService";
 
 export default function TeamSessionModal({
@@ -54,7 +55,7 @@ export default function TeamSessionModal({
 
   const handleStartConsultation = (e) => {
     e.preventDefault();
-    const clean = consultCodeInput.trim().toUpperCase();
+    const clean = normalizeSessionCode(consultCodeInput);
     if (!clean) return;
     setWorkspace({
       mode: "consultation",
@@ -85,7 +86,7 @@ export default function TeamSessionModal({
 
   const handleJoinSession = (e) => {
     e.preventDefault();
-    const clean = joinSessionCodeInput.trim().toUpperCase();
+    const clean = normalizeSessionCode(joinSessionCodeInput);
     if (!clean) return;
     if (!displayName || !displayName.trim()) {
       setPseudoRequiredError("Un pseudo est obligatoire pour rejoindre une session d'équipe en ligne. Veuillez renseigner votre pseudo ci-dessous.");

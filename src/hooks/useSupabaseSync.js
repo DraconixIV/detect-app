@@ -1,8 +1,8 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabase";
 import { loadFinds as fetchFinds, addFind as createFind, normalizeCategoryAndSub, decodeMetadata } from "../services/findsService";
 import { getPendingFinds, deletePendingFind } from "../services/offlineStore";
-import { getMyUserCode } from "../services/sessionService";
+import { getMyUserCode, normalizeSessionCode } from "../services/sessionService";
 
 export default function useSupabaseSync(setToast, workspace = { mode: "personal", targetCode: null }) {
   const [finds, setFinds] = useState([]);
@@ -154,14 +154,20 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
 
             // Workspace relevance check
             if (eventType === "INSERT" || eventType === "UPDATE") {
-              if (currentWs.mode === "consultation" && decodedRow.user_code !== currentWs.targetCode) {
-                return;
+              const myCodeClean = normalizeSessionCode(myCode);
+              const rowUserClean = decodedRow?.user_code ? normalizeSessionCode(decodedRow.user_code) : null;
+              const rowSessionClean = decodedRow?.session_code ? normalizeSessionCode(decodedRow.session_code) : null;
+
+              if (currentWs.mode === "consultation" && currentWs.targetCode) {
+                const targetClean = normalizeSessionCode(currentWs.targetCode);
+                if (rowUserClean !== targetClean) {
+                  return;
+                }
               }
-              if (currentWs.mode === "session") {
-                const targetCodeUpper = (currentWs.targetCode || "").toUpperCase();
-                const sessionCodeUpper = (decodedRow.session_code || "").toUpperCase();
-                const isSessionFind = sessionCodeUpper && sessionCodeUpper === targetCodeUpper;
-                const isMyFind = decodedRow.user_code === myCode;
+              if (currentWs.mode === "session" && currentWs.targetCode) {
+                const targetSessClean = normalizeSessionCode(currentWs.targetCode);
+                const isSessionFind = rowSessionClean && rowSessionClean === targetSessClean;
+                const isMyFind = rowUserClean && rowUserClean === myCodeClean;
                 if (!isSessionFind && !isMyFind) {
                   return;
                 }
@@ -292,9 +298,40 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
     window.addEventListener("offline", handleOffline);
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    if (navigator.onLine) {
-      syncOfflineFinds();
-    }
+    const handleTeamFindAdded = (e) => {
+      const payload = e.detail;
+      if (!payload) return;
+      const normalized = normalizeCategoryAndSub(payload);
+      const lat = Number(normalized.latitude ?? (Array.isArray(normalized.position) ? normalized.position[0] : null));
+      const lng = Number(normalized.longitude ?? (Array.isArray(normalized.position) ? normalized.position[1] : null));
+
+      if (!isNaN(lat) && !isNaN(lng)) {
+        const formatted = {
+          ...normalized,
+          id: normalized.id || `temp-${Date.now()}`,
+          latitude: lat,
+          longitude: lng,
+          position: [lat, lng]
+        };
+
+        setFinds((currentFinds) => {
+          if (currentFinds.some((f) => f.id === formatted.id || (f.title === formatted.title && f.date === formatted.date))) {
+            return currentFinds;
+          }
+          return [formatted, ...currentFinds];
+        });
+      }
+      setTimeout(() => loadFinds(), 800);
+    };
+
+    const handleTeamFindDeleted = (e) => {
+      const deletedId = e.detail;
+      if (!deletedId) return;
+      setFinds((currentFinds) => currentFinds.filter((f) => f.id !== deletedId));
+    };
+
+    window.addEventListener("geoprospect-team-find-added", handleTeamFindAdded);
+    window.addEventListener("geoprospect-team-find-deleted", handleTeamFindDeleted);
 
     return () => {
       if (findsChannel) supabase.removeChannel(findsChannel);
@@ -303,6 +340,8 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
       if (pingPongInterval) clearInterval(pingPongInterval);
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("geoprospect-team-find-added", handleTeamFindAdded);
+      window.removeEventListener("geoprospect-team-find-deleted", handleTeamFindDeleted);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [workspace.mode, workspace.targetCode, isOnline]);
