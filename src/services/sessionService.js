@@ -14,13 +14,13 @@ const APPROVED_CONSULTATION_VIEWERS_KEY = "geoprospect_approved_viewers_v1";
  */
 export function normalizeSessionCode(code) {
   if (!code) return "";
-  let clean = String(code).trim().toUpperCase().replace(/[\s_]+/g, "-");
+  let clean = String(code).trim().toUpperCase().replace(/[\s_]+/g, "-").replace(/-+/g, "-");
   if (!clean.startsWith("GEO-") && !clean.startsWith("GEO")) {
     clean = `GEO-${clean.replace(/^-+/, "")}`;
   } else if (clean.startsWith("GEO") && !clean.startsWith("GEO-")) {
     clean = `GEO-${clean.slice(3).replace(/^-+/, "")}`;
   }
-  return clean;
+  return clean.replace(/-+/g, "-");
 }
 
 /**
@@ -53,11 +53,11 @@ export function getMyUserCode() {
       code = code.replace(/^RDL-/i, "GEO-");
     }
 
-    // Upgrade legacy 4-character codes (like GEO-ESBD) to 6-character format
+    // Auto-migrate previous codes (GEO-ESBD, GEO-ESBD77) to the primary detector code GEO-KE9Q88
     if (code) {
       const pureCode = code.replace(/^GEO-/i, "").trim().toUpperCase();
-      if (pureCode === "ESBD") {
-        code = "GEO-ESBD77";
+      if (pureCode === "ESBD" || pureCode === "ESBD77" || pureCode === "ESBD88") {
+        code = "GEO-KE9Q88";
       } else if (pureCode.length < 6) {
         code = `GEO-${pureCode}88`;
       }
