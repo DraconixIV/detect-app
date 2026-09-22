@@ -140,6 +140,9 @@ function App() {
   const [newAudio, setNewAudio] =
     useState(null);
 
+  const [newAudioDuration, setNewAudioDuration] =
+    useState(null);
+
   const [newVideo, setNewVideo] =
     useState(null);
 
@@ -647,8 +650,9 @@ function App() {
     const subCatVal = (quickParams && quickParams.newSubCategory !== undefined) ? quickParams.newSubCategory : newSubCategory;
     const photoVal = (quickParams && quickParams.newPhoto) ? quickParams.newPhoto : newPhoto;
     const dateVal = (quickParams && quickParams.customDate) ? quickParams.customDate : (customDate || null);
-    const audioVal = (quickParams && quickParams.newTitle) ? null : newAudio;
-    const videoVal = (quickParams && quickParams.newTitle) ? null : newVideo;
+    const audioVal = (quickParams && quickParams.audio !== undefined) ? quickParams.audio : ((quickParams && quickParams.newTitle) ? null : newAudio);
+    const audioDurationVal = (quickParams && quickParams.audioDuration !== undefined) ? quickParams.audioDuration : ((quickParams && quickParams.newTitle) ? null : newAudioDuration);
+    const videoVal = (quickParams && quickParams.video !== undefined) ? quickParams.video : ((quickParams && quickParams.newTitle) ? null : newVideo);
 
     const currentSessionCode = workspace.mode === "session" ? workspace.targetCode : null;
 
@@ -662,6 +666,7 @@ function App() {
           newSubCategory: subCatVal,
           customDate: dateVal,
           audio: audioVal,
+          audioDuration: audioDurationVal,
           video: videoVal,
           sessionCode: currentSessionCode
         }, photoVal);
@@ -677,6 +682,7 @@ function App() {
           newPhoto: photoVal,
           customDate: dateVal,
           audio: audioVal,
+          audioDuration: audioDurationVal,
           video: videoVal,
           sessionCode: currentSessionCode
         });
@@ -706,6 +712,7 @@ function App() {
       setNewSubCategory("");
       setNewPhoto(null);
       setNewAudio(null);
+      setNewAudioDuration(null);
       setNewVideo(null);
 
       await loadFinds();
@@ -723,6 +730,7 @@ function App() {
           newSubCategory: subCatVal,
           customDate: dateVal,
           audio: audioVal,
+          audioDuration: audioDurationVal,
           video: videoVal,
           sessionCode: currentSessionCode
         }, photoVal);
@@ -740,6 +748,7 @@ function App() {
         setNewSubCategory("");
         setNewPhoto(null);
         setNewAudio(null);
+        setNewAudioDuration(null);
         setNewVideo(null);
 
         await loadFinds();
@@ -1241,6 +1250,8 @@ return (
         setCustomLng={setCustomLng}
         newAudio={newAudio}
         setNewAudio={setNewAudio}
+        newAudioDuration={newAudioDuration}
+        setNewAudioDuration={setNewAudioDuration}
         newVideo={newVideo}
         setNewVideo={setNewVideo}
       />

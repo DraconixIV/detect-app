@@ -21,6 +21,8 @@ export default function AddFindForm({
   setNewPhoto,
   newAudio,
   setNewAudio,
+  newAudioDuration,
+  setNewAudioDuration,
   newVideo,
   setNewVideo,
   addingFind,
@@ -41,7 +43,7 @@ export default function AddFindForm({
 
   // Media states
   const [isRecordingAudio, setIsRecordingAudio] = useState(false);
-  const [recordingTime, setRecordingTime] = useState(0);
+  const [recordingTime, setRecordingTime] = useState(newAudioDuration || 0);
   const [localAudio, setLocalAudio] = useState(null);
   const [localVideo, setLocalVideo] = useState(null);
 
@@ -54,6 +56,19 @@ export default function AddFindForm({
   const cameraInputRef = useRef(null);
   const galleryInputRef = useRef(null);
   const videoInputRef = useRef(null);
+
+  const videoPreviewUrl = useMemo(() => {
+    if (!activeVideo) return null;
+    if (typeof activeVideo === "string") return activeVideo;
+    if (activeVideo instanceof Blob || activeVideo instanceof File) {
+      try {
+        return URL.createObjectURL(activeVideo);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }, [activeVideo]);
 
   useEffect(() => {
     const handleCategoriesUpdate = () => {
@@ -551,15 +566,11 @@ export default function AddFindForm({
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (!file) return;
-          if (file.size > 20 * 1024 * 1024) {
-            alert("⚠️ Vidéo trop volumineuse (max 20 Mo). Privilégiez un court extrait de 5 à 10 secondes.");
+          if (file.size > 25 * 1024 * 1024) {
+            alert("⚠️ Vidéo trop volumineuse (max 25 Mo). Privilégiez un court extrait de 5 à 15 secondes.");
             return;
           }
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            updateVideo(reader.result);
-          };
-          reader.readAsDataURL(file);
+          updateVideo(file);
         }}
       />
 
@@ -650,6 +661,8 @@ export default function AddFindForm({
                 setIsRecordingAudio(false);
                 if (res && res.base64) {
                   updateAudio(res.base64);
+                  setRecordingTime(res.duration);
+                  if (setNewAudioDuration) setNewAudioDuration(res.duration);
                 }
               } catch (e) {
                 console.error("Audio stop error", e);
@@ -762,6 +775,7 @@ export default function AddFindForm({
             onDelete={() => {
               updateAudio(null);
               setRecordingTime(0);
+              if (setNewAudioDuration) setNewAudioDuration(null);
             }}
             theme="dark"
           />
@@ -769,7 +783,7 @@ export default function AddFindForm({
       )}
 
       {/* PREVIEW VIDEO */}
-      {activeVideo && (
+      {videoPreviewUrl && (
         <div
           style={{
             background: "rgba(255, 255, 255, 0.04)",
@@ -801,8 +815,10 @@ export default function AddFindForm({
             </button>
           </div>
           <video
-            src={activeVideo}
+            src={videoPreviewUrl}
             controls
+            playsInline
+            preload="metadata"
             style={{
               width: "100%",
               maxHeight: "160px",
@@ -820,10 +836,14 @@ export default function AddFindForm({
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          // Ensure newAudio / newVideo are synchronized in parent before adding
           if (setNewAudio && activeAudio !== newAudio) setNewAudio(activeAudio);
           if (setNewVideo && activeVideo !== newVideo) setNewVideo(activeVideo);
-          addFind();
+          if (setNewAudioDuration && recordingTime > 0) setNewAudioDuration(recordingTime);
+          addFind({
+            audio: activeAudio,
+            audioDuration: recordingTime,
+            video: activeVideo
+          });
         }}
         style={{
           borderRadius: "14px",

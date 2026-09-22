@@ -91,7 +91,10 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
             customDate: f.customDate,
             userCode: f.userCode,
             finderName: f.finderName,
-            sessionCode: f.sessionCode
+            sessionCode: f.sessionCode,
+            audio: f.audio,
+            audioDuration: f.audioDuration,
+            video: f.video
           });
           await deletePendingFind(f.id);
           syncedCount++;

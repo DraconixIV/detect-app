@@ -16,11 +16,15 @@ export default function AudioNotePlayer({
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [totalDuration, setTotalDuration] = useState(duration || 0);
+  const [totalDuration, setTotalDuration] = useState(() => {
+    const num = Number(duration);
+    return !isNaN(num) && num > 0 ? num : 0;
+  });
 
   useEffect(() => {
-    if (duration && duration > 0) {
-      setTotalDuration(duration);
+    const num = Number(duration);
+    if (!isNaN(num) && num > 0) {
+      setTotalDuration(num);
     }
   }, [duration]);
 
@@ -46,20 +50,36 @@ export default function AudioNotePlayer({
 
   const handleTimeUpdate = () => {
     if (!audioRef.current) return;
-    setCurrentTime(audioRef.current.currentTime);
-    if (!totalDuration || totalDuration === 0) {
+    const cur = audioRef.current.currentTime;
+    
+    // Check if passed duration is defined
+    const hasExplicitDuration = totalDuration > 0;
+    if (hasExplicitDuration && cur >= totalDuration) {
+      handleEnded();
+      return;
+    }
+
+    setCurrentTime(hasExplicitDuration ? Math.min(cur, totalDuration) : cur);
+
+    // If no explicit duration was provided, try reading audio.duration
+    if (!hasExplicitDuration) {
       const d = audioRef.current.duration;
       if (d && isFinite(d) && d > 0) {
-        setTotalDuration(d);
+        setTotalDuration(Math.round(d));
       }
     }
   };
 
   const handleLoadedMetadata = () => {
     if (!audioRef.current) return;
+    const num = Number(duration);
+    if (!isNaN(num) && num > 0) {
+      setTotalDuration(num);
+      return;
+    }
     const d = audioRef.current.duration;
-    if (d && isFinite(d) && d > 0 && (!totalDuration || totalDuration === 0)) {
-      setTotalDuration(d);
+    if (d && isFinite(d) && d > 0) {
+      setTotalDuration(Math.round(d));
     }
   };
 
@@ -67,6 +87,7 @@ export default function AudioNotePlayer({
     setIsPlaying(false);
     setCurrentTime(0);
     if (audioRef.current) {
+      audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
   };

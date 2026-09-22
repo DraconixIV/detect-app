@@ -12,6 +12,7 @@ export function encodeMetadata(description, userCode, finderName, sessionCode, t
   if (sessionCode) meta.s = sessionCode;
   if (thumbnailUrl) meta.t = thumbnailUrl;
   if (extra.audio_url || extra.audio) meta.a = extra.audio_url || extra.audio;
+  if (extra.audio_duration || extra.ad) meta.ad = Number(extra.audio_duration || extra.ad);
   if (extra.video_url || extra.video) meta.v = extra.video_url || extra.video;
   if (Object.keys(meta).length === 0) return description || "";
   const metaTag = `\n<!--GP_META:${JSON.stringify(meta)}-->`;
@@ -25,6 +26,7 @@ export function decodeMetadata(find) {
   let session_code = find.session_code || null;
   let thumbnail_url = find.thumbnail_url || null;
   let audio_url = find.audio_url || null;
+  let audio_duration = find.audio_duration ? Number(find.audio_duration) : null;
   let video_url = find.video_url || null;
   let cleanDesc = find.description || "";
 
@@ -37,6 +39,7 @@ export function decodeMetadata(find) {
       if (meta.s && !session_code) session_code = meta.s;
       if (meta.t && !thumbnail_url) thumbnail_url = meta.t;
       if (meta.a && !audio_url) audio_url = meta.a;
+      if (meta.ad && !audio_duration) audio_duration = Number(meta.ad);
       if (meta.v && !video_url) video_url = meta.v;
       cleanDesc = cleanDesc.replace(/<!--GP_META:.*?-->/g, "").trim();
     } catch {
@@ -52,6 +55,7 @@ export function decodeMetadata(find) {
     session_code,
     thumbnail_url: thumbnail_url || find.image_url,
     audio_url,
+    audio_duration,
     video_url
   };
 }
@@ -216,6 +220,7 @@ export async function addFind({
   finderName = null,
   sessionCode = undefined,
   audio = null,
+  audioDuration = null,
   video = null
 }) {
   try {
@@ -225,13 +230,97 @@ export async function addFind({
     const activeSess = getActiveSession();
     const rawSess = (sessionCode !== undefined && sessionCode !== null) ? sessionCode : (activeSess?.code || null);
     const finalSessionCode = rawSess ? normalizeSessionCode(rawSess) : null;
+
+    // 1. Upload Video if provided (File, Blob, or DataURL)
+    let finalVideoUrl = null;
+    if (video) {
+      if (typeof video === "string" && video.startsWith("http")) {
+        finalVideoUrl = video;
+      } else {
+        try {
+          let videoBlob = video;
+          let ext = "mp4";
+          if (typeof video === "string" && video.startsWith("data:")) {
+            const res = await fetch(video);
+            videoBlob = await res.blob();
+            if (videoBlob.type.includes("webm")) ext = "webm";
+            else if (videoBlob.type.includes("quicktime")) ext = "mov";
+          } else if (video.name) {
+            ext = video.name.split(".").pop() || "mp4";
+          }
+
+          const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
+          const { error: vErr } = await supabase.storage
+            .from("find-photos")
+            .upload(videoFileName, videoBlob, {
+              contentType: videoBlob.type || "video/mp4",
+              upsert: false
+            });
+
+          if (!vErr) {
+            const { data: { publicUrl } } = supabase.storage
+              .from("find-photos")
+              .getPublicUrl(videoFileName);
+            finalVideoUrl = publicUrl;
+          } else {
+            console.error("Video storage upload error:", vErr);
+            if (typeof video === "string" && video.length < 500000) {
+              finalVideoUrl = video; // Fallback to inline only if very small
+            }
+          }
+        } catch (vEx) {
+          console.error("Video upload exception:", vEx);
+        }
+      }
+    }
+
+    // 2. Upload Audio Note if provided
+    let finalAudioUrl = null;
+    if (audio) {
+      if (typeof audio === "string" && audio.startsWith("http")) {
+        finalAudioUrl = audio;
+      } else {
+        try {
+          let audioBlob = audio;
+          if (typeof audio === "string" && audio.startsWith("data:")) {
+            const res = await fetch(audio);
+            audioBlob = await res.blob();
+          }
+          const audioFileName = `audio-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.webm`;
+          const { error: aErr } = await supabase.storage
+            .from("find-photos")
+            .upload(audioFileName, audioBlob, {
+              contentType: audioBlob.type || "audio/webm",
+              upsert: false
+            });
+
+          if (!aErr) {
+            const { data: { publicUrl } } = supabase.storage
+              .from("find-photos")
+              .getPublicUrl(audioFileName);
+            finalAudioUrl = publicUrl;
+          } else {
+            console.warn("Audio storage upload fallback to inline:", aErr);
+            finalAudioUrl = audio;
+          }
+        } catch (aEx) {
+          console.warn("Audio upload exception:", aEx);
+          finalAudioUrl = audio;
+        }
+      }
+    }
+
     const encodedDesc = encodeMetadata(
       newDescription,
       finalUserCode,
       finalFinderName,
       finalSessionCode,
       null,
-      { audio, video }
+      {
+        audio_url: finalAudioUrl,
+        audio_duration: audioDuration,
+        video_url: finalVideoUrl
+      }
     );
 
     const payload = {
@@ -333,7 +422,11 @@ export async function addFind({
         finalFinderName,
         finalSessionCode,
         thumbnailUrl,
-        { audio, video }
+        {
+          audio_url: finalAudioUrl,
+          audio_duration: audioDuration,
+          video_url: finalVideoUrl
+        }
       );
       await supabase
         .from("finds")

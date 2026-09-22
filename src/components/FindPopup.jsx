@@ -7,6 +7,7 @@ import ConfirmModal from "./ConfirmModal";
 import { materials, materialEmojis } from "../subCategories";
 import { loadCategoriesData } from "../services/categoriesService";
 import { loadMaterialsData } from "../services/materialsService";
+import { encodeMetadata } from "../services/findsService";
 import AudioNotePlayer from "./AudioNotePlayer";
 
 export default function FindPopup({
@@ -130,6 +131,19 @@ export default function FindPopup({
     if (saving) return;
     setSaving(true);
 
+    const encodedDesc = encodeMetadata(
+      material,
+      find.user_code,
+      find.finder_name,
+      find.session_code,
+      find.thumbnail_url,
+      {
+        audio_url: find.audio_url || find.audio,
+        audio_duration: find.audio_duration,
+        video_url: find.video_url || find.video
+      }
+    );
+
     const { error } = await supabase
       .from("finds")
       .update({
@@ -142,7 +156,7 @@ export default function FindPopup({
         date,
         category,
         sub_category: subCategory || null,
-        description: material
+        description: encodedDesc
       })
       .eq("id", find.id);
 
@@ -467,16 +481,56 @@ export default function FindPopup({
           {material && material !== "Indéterminé" ? ` • ${materialEmojis[material] || "🪙"} ${material}` : ""}
         </div>
 
+        {/* Media display (Photo or Video) */}
         {coverPhoto ? (
-          <img
-            src={coverPhoto}
-            alt={title}
+          <div style={{ position: "relative", width: "100%", height: "110px" }}>
+            <img
+              src={coverPhoto}
+              alt={title}
+              style={{
+                width: "100%",
+                height: "110px",
+                objectFit: "cover",
+                borderRadius: "10px",
+                border: "1px solid #e5e7eb"
+              }}
+            />
+            {(find.video_url || find.video) && (
+              <span
+                style={{
+                  position: "absolute",
+                  bottom: "6px",
+                  right: "6px",
+                  background: "rgba(0,0,0,0.75)",
+                  backdropFilter: "blur(4px)",
+                  color: "#ffffff",
+                  fontSize: "10px",
+                  fontWeight: "700",
+                  padding: "2px 6px",
+                  borderRadius: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "3px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.4)"
+                }}
+              >
+                🎥 Vidéo
+              </span>
+            )}
+          </div>
+        ) : (find.video_url || find.video) ? (
+          <video
+            src={find.video_url || find.video}
+            controls
+            playsInline
+            preload="metadata"
             style={{
               width: "100%",
               height: "110px",
-              objectFit: "cover",
               borderRadius: "10px",
-              border: "1px solid #e5e7eb"
+              background: "#000000",
+              border: "1px solid #e5e7eb",
+              objectFit: "cover"
             }}
           />
         ) : (
@@ -493,6 +547,17 @@ export default function FindPopup({
             }}
           >
             {categoryEmojis[category] || "📍"}
+          </div>
+        )}
+
+        {/* Audio Note player in popup bubble */}
+        {(find.audio_url || find.audio) && (
+          <div style={{ marginTop: "4px" }}>
+            <AudioNotePlayer
+              src={find.audio_url || find.audio}
+              duration={find.audio_duration || null}
+              theme="light"
+            />
           </div>
         )}
 
@@ -747,6 +812,7 @@ export default function FindPopup({
                   </span>
                   <AudioNotePlayer
                     src={find.audio_url || find.audio}
+                    duration={find.audio_duration || null}
                     theme="dark"
                   />
                 </div>
@@ -771,7 +837,9 @@ export default function FindPopup({
                   <video
                     src={find.video_url || find.video}
                     controls
-                    style={{ width: "100%", maxHeight: "160px", borderRadius: "8px", background: "#000" }}
+                    playsInline
+                    preload="metadata"
+                    style={{ width: "100%", maxHeight: "180px", borderRadius: "8px", background: "#000" }}
                   />
                 </div>
               )}

@@ -76,6 +76,12 @@ export async function addPendingFind(findData, photoFile) {
     newCategory: findData.newCategory,
     newSubCategory: findData.newSubCategory,
     customDate: findData.customDate || null,
+    audio: findData.audio || null,
+    audioDuration: findData.audioDuration || findData.ad || null,
+    video: findData.video || null,
+    sessionCode: findData.sessionCode || null,
+    userCode: findData.userCode || null,
+    finderName: findData.finderName || null,
     photo: safePhoto,
     createdAt: new Date().toISOString()
   };

@@ -112,33 +112,6 @@ export default function MapFloatingControls({
       {/* When in Zen mode, other controls are hidden to give 100% clean view */}
       {!zenMode && (
         <>
-          {/* CLUSTERING / GROUPING TOGGLE (Standard mode) */}
-          {setUseClustering && (
-            <button
-              onClick={() => setUseClustering(!useClustering)}
-              style={{
-                width: "44px",
-                height: "44px",
-                borderRadius: "50%",
-                border: `1.5px solid ${useClustering ? "#38bdf8" : "rgba(255, 255, 255, 0.18)"}`,
-                background: useClustering ? "rgba(14, 165, 233, 0.35)" : "rgba(11, 19, 41, 0.82)",
-                backdropFilter: "blur(12px)",
-                WebkitBackdropFilter: "blur(12px)",
-                color: useClustering ? "#38bdf8" : "#ffffff",
-                fontSize: "18px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: useClustering ? "0 0 16px rgba(56, 189, 248, 0.6)" : "0 4px 16px rgba(0, 0, 0, 0.45)",
-                transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
-              }}
-              title={useClustering ? "Regroupement des trouvailles (Clustering) : ACTIVÉ" : "Regroupement des trouvailles (Clustering) : DÉSACTIVÉ"}
-            >
-              🫧
-            </button>
-          )}
-
           {/* 2. MAP LAYERS & CADASTRE / CASSINI MODAL TRIGGER */}
           <button
             onClick={onOpenMapLayers}

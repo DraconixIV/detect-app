@@ -18,6 +18,8 @@ export default function AddFindModal({
   setNewPhoto,
   newAudio,
   setNewAudio,
+  newAudioDuration,
+  setNewAudioDuration,
   newVideo,
   setNewVideo,
   addingFind,
@@ -160,6 +162,8 @@ export default function AddFindModal({
             setNewPhoto={setNewPhoto}
             newAudio={newAudio}
             setNewAudio={setNewAudio}
+            newAudioDuration={newAudioDuration}
+            setNewAudioDuration={setNewAudioDuration}
             newVideo={newVideo}
             setNewVideo={setNewVideo}
             addingFind={addingFind}
