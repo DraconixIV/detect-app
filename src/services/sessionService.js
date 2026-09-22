@@ -52,6 +52,17 @@ export function getMyUserCode() {
     if (code && code.toUpperCase().startsWith("RDL-")) {
       code = code.replace(/^RDL-/i, "GEO-");
     }
+
+    // Upgrade legacy 4-character codes (like GEO-ESBD) to 6-character format
+    if (code) {
+      const pureCode = code.replace(/^GEO-/i, "").trim().toUpperCase();
+      if (pureCode === "ESBD") {
+        code = "GEO-ESBD77";
+      } else if (pureCode.length < 6) {
+        code = `GEO-${pureCode}88`;
+      }
+    }
+
     if (!code) {
       code = generateRandomCode("GEO", 6);
     }
@@ -61,6 +72,19 @@ export function getMyUserCode() {
   } catch (e) {
     console.warn("Storage error in getMyUserCode:", e);
     return "GEO-LOCAL";
+  }
+}
+
+/**
+ * Reset and generate a completely fresh, random 6-character user detector code (blank map)
+ */
+export function resetAndGenerateNewUserCode() {
+  try {
+    const newCode = generateRandomCode("GEO", 6);
+    localStorage.setItem(USER_CODE_STORAGE_KEY, newCode);
+    return newCode;
+  } catch (e) {
+    return generateRandomCode("GEO", 6);
   }
 }
 

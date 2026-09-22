@@ -9,7 +9,8 @@ import {
   getActiveSession,
   normalizeSessionCode,
   isSessionHost,
-  isLocallyBannedFromSession
+  isLocallyBannedFromSession,
+  resetAndGenerateNewUserCode
 } from "../services/sessionService";
 
 export default function TeamSessionModal({
@@ -31,7 +32,7 @@ export default function TeamSessionModal({
   revokeViewerAccess
 }) {
   const [tab, setTab] = useState("session"); // "session" | "my-code" | "consult"
-  const [myCode] = useState(() => getMyUserCode());
+  const [myCode, setMyCode] = useState(() => getMyUserCode());
   const [displayName, setDisplayName] = useState(() => getMyDisplayName());
   const [nameSaved, setNameSaved] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
@@ -50,8 +51,17 @@ export default function TeamSessionModal({
   const [activeSession, setActiveSessionState] = useState(() => getActiveSession());
 
   useEffect(() => {
+    setMyCode(getMyUserCode());
     setActiveSessionState(getActiveSession());
   }, [workspace?.mode, workspace?.targetCode, isOpen]);
+
+  const handleRegenerateCode = () => {
+    if (window.confirm("Voulez-vous générer un nouveau code détecteur ? Votre profil repartira avec une carte 100% vierge.")) {
+      const fresh = resetAndGenerateNewUserCode();
+      setMyCode(fresh);
+      window.location.reload();
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -380,28 +390,48 @@ export default function TeamSessionModal({
                 {myCode}
               </div>
 
-              <button
-                type="button"
-                onClick={() => handleCopyCode(myCode, "personal")}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  borderRadius: "10px",
-                  border: "none",
-                  background: copiedCode ? "#10b981" : "#2563eb",
-                  color: "white",
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "6px",
-                  transition: "background 0.2s"
-                }}
-              >
-                <span>{copiedCode ? "✓ Code copié dans le presse-papier !" : "Copier mon code"}</span>
-              </button>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button
+                  type="button"
+                  onClick={() => handleCopyCode(myCode, "personal")}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    borderRadius: "10px",
+                    border: "none",
+                    background: copiedCode ? "#10b981" : "#2563eb",
+                    color: "white",
+                    fontSize: "12px",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "6px",
+                    transition: "background 0.2s"
+                  }}
+                >
+                  <span>{copiedCode ? "✓ Code copié !" : "Copier mon code"}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleRegenerateCode}
+                  title="Générer un nouveau code (démarre une carte 100% vierge)"
+                  style={{
+                    padding: "10px 12px",
+                    borderRadius: "10px",
+                    border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.15)",
+                    background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
+                    color: isLight ? "#475569" : "#cbd5e1",
+                    fontSize: "11px",
+                    fontWeight: "700",
+                    cursor: "pointer"
+                  }}
+                >
+                  🔄 Nouveau
+                </button>
+              </div>
             </div>
 
             {/* Error / Alert banner if pseudo required */}
