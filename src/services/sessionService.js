@@ -1,12 +1,16 @@
-﻿import { supabase } from "../supabase.js";
+import { supabase } from "../supabase.js";
 
 const USER_CODE_STORAGE_KEY = "geoprospect_user_code_v1";
 const USER_DISPLAY_NAME_KEY = "geoprospect_user_display_name_v1";
 const ACTIVE_SESSION_STORAGE_KEY = "geoprospect_active_session_v1";
 const JOINED_SESSIONS_HISTORY_KEY = "geoprospect_joined_sessions_history_v1";
+const SESSION_BLACKLIST_STORAGE_KEY = "geoprospect_session_blacklist_v1";
+const USER_BANNED_SESSIONS_STORAGE_KEY = "geoprospect_user_banned_sessions_v1";
+const SESSION_LOCK_STORAGE_KEY = "geoprospect_session_locked_v1";
+const APPROVED_CONSULTATION_VIEWERS_KEY = "geoprospect_approved_viewers_v1";
 
 /**
- * Normalizes any entered code format (e.g. "7k3p", "geo-7k3p", "GEO 7K3P") -> "GEO-7K3P"
+ * Normalizes any entered code format (e.g. "7k3p", "geo-7k3p", "GEO 7K3P", "8X2M9P") -> "GEO-8X2M9P"
  */
 export function normalizeSessionCode(code) {
   if (!code) return "";
@@ -20,12 +24,13 @@ export function normalizeSessionCode(code) {
 }
 
 /**
- * Generate a random, readable 6-character alphanumeric code (e.g. "GEO-7K3P")
+ * Generate a random, readable 6-character alphanumeric code (e.g. "GEO-8X2M9P")
+ * Over 1.07 billion possible combinations without ambiguous chars (0, O, 1, I).
  */
-export function generateRandomCode(prefix = "GEO") {
+export function generateRandomCode(prefix = "GEO", length = 6) {
   const chars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // without ambiguous 0/O, 1/I
   let result = "";
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return `${prefix}-${result}`;
@@ -48,7 +53,7 @@ export function getMyUserCode() {
       code = code.replace(/^RDL-/i, "GEO-");
     }
     if (!code) {
-      code = generateRandomCode("GEO");
+      code = generateRandomCode("GEO", 6);
     }
     code = normalizeSessionCode(code);
     localStorage.setItem(USER_CODE_STORAGE_KEY, code);
@@ -168,19 +173,29 @@ export function setActiveSession(session) {
 }
 
 /**
- * Create a new team detection session
+ * Create a new team detection session with 6-character unique code
  */
 export function createTeamSession(name = "") {
-  const sessionCode = generateRandomCode("GEO");
+  const sessionCode = generateRandomCode("GEO", 6);
+  const myCode = getMyUserCode();
   const session = {
     code: sessionCode,
     name: name.trim() || `Sortie d'équipe ${sessionCode}`,
     createdAt: new Date().toISOString(),
-    creatorCode: getMyUserCode(),
+    creatorCode: myCode,
     creatorName: getMyDisplayName() || "Détecteuriste"
   };
   setActiveSession(session);
   return session;
+}
+
+/**
+ * Check if the current user (or specified userCode) is the Host / Creator of the session
+ */
+export function isSessionHost(session, userCode = null) {
+  if (!session || !session.creatorCode) return false;
+  const myCode = normalizeSessionCode(userCode || getMyUserCode());
+  return normalizeSessionCode(session.creatorCode) === myCode;
 }
 
 /**
@@ -190,12 +205,20 @@ export function joinTeamSession(code, name = "") {
   const cleanCode = normalizeSessionCode(code);
   if (!cleanCode) return null;
 
+  if (isLocallyBannedFromSession(cleanCode)) {
+    throw new Error("Vous avez été banni de cette session par l'administrateur.");
+  }
+
+  const existing = getActiveSession();
+  const creatorCode = (existing && existing.code === cleanCode) ? existing.creatorCode : null;
+
   const session = {
     code: cleanCode,
     name: name.trim() || `Session ${cleanCode}`,
     joinedAt: new Date().toISOString(),
     userCode: getMyUserCode(),
-    userName: getMyDisplayName() || "Détecteuriste"
+    userName: getMyDisplayName() || "Détecteuriste",
+    creatorCode: creatorCode
   };
   setActiveSession(session);
   return session;
@@ -206,4 +229,225 @@ export function joinTeamSession(code, name = "") {
  */
 export function leaveTeamSession() {
   setActiveSession(null);
+}
+
+/* =========================================================================
+   HOST MODERATION & BLACKLIST SYSTEM
+   ========================================================================= */
+
+/**
+ * Get the blacklist of banned user codes for a given sessionCode
+ */
+export function getSessionBlacklist(sessionCode) {
+  try {
+    const clean = normalizeSessionCode(sessionCode);
+    if (!clean) return [];
+    const raw = localStorage.getItem(SESSION_BLACKLIST_STORAGE_KEY);
+    if (raw) {
+      const map = JSON.parse(raw);
+      if (map && Array.isArray(map[clean])) {
+        return map[clean];
+      }
+    }
+  } catch (e) {
+    console.warn("Error reading session blacklist:", e);
+  }
+  return [];
+}
+
+/**
+ * Add a user to the blacklist for a specific session
+ */
+export function banUserFromSession(sessionCode, targetUserCode, targetUserName = "") {
+  try {
+    const cleanSess = normalizeSessionCode(sessionCode);
+    const cleanUser = normalizeSessionCode(targetUserCode);
+    if (!cleanSess || !cleanUser) return;
+
+    const raw = localStorage.getItem(SESSION_BLACKLIST_STORAGE_KEY);
+    let map = raw ? JSON.parse(raw) : {};
+    if (!map || typeof map !== "object") map = {};
+
+    const list = Array.isArray(map[cleanSess]) ? map[cleanSess] : [];
+    if (!list.some((item) => (typeof item === "string" ? item === cleanUser : item.userCode === cleanUser))) {
+      list.push({
+        userCode: cleanUser,
+        userName: targetUserName || cleanUser,
+        bannedAt: new Date().toISOString()
+      });
+      map[cleanSess] = list;
+      localStorage.setItem(SESSION_BLACKLIST_STORAGE_KEY, JSON.stringify(map));
+    }
+    return list;
+  } catch (e) {
+    console.warn("Error banning user from session:", e);
+  }
+}
+
+/**
+ * Unban / remove a user from the blacklist for a specific session
+ */
+export function unbanUserFromSession(sessionCode, targetUserCode) {
+  try {
+    const cleanSess = normalizeSessionCode(sessionCode);
+    const cleanUser = normalizeSessionCode(targetUserCode);
+    if (!cleanSess || !cleanUser) return;
+
+    const raw = localStorage.getItem(SESSION_BLACKLIST_STORAGE_KEY);
+    let map = raw ? JSON.parse(raw) : {};
+    if (!map || typeof map !== "object") return [];
+
+    let list = Array.isArray(map[cleanSess]) ? map[cleanSess] : [];
+    list = list.filter((item) => (typeof item === "string" ? item !== cleanUser : item.userCode !== cleanUser));
+    map[cleanSess] = list;
+    localStorage.setItem(SESSION_BLACKLIST_STORAGE_KEY, JSON.stringify(map));
+    return list;
+  } catch (e) {
+    console.warn("Error unbanning user from session:", e);
+    return [];
+  }
+}
+
+/**
+ * Check if a user is banned from a session
+ */
+export function isUserBannedFromSession(sessionCode, targetUserCode) {
+  const list = getSessionBlacklist(sessionCode);
+  const cleanUser = normalizeSessionCode(targetUserCode);
+  return list.some((item) => (typeof item === "string" ? item === cleanUser : item.userCode === cleanUser));
+}
+
+/**
+ * Record that current user has been banned from a session
+ */
+export function recordLocallyBannedSession(sessionCode) {
+  try {
+    const clean = normalizeSessionCode(sessionCode);
+    if (!clean) return;
+    const raw = localStorage.getItem(USER_BANNED_SESSIONS_STORAGE_KEY);
+    let list = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(list)) list = [];
+    if (!list.includes(clean)) {
+      list.push(clean);
+      localStorage.setItem(USER_BANNED_SESSIONS_STORAGE_KEY, JSON.stringify(list));
+    }
+  } catch (e) {
+    console.warn("Error recording locally banned session:", e);
+  }
+}
+
+/**
+ * Check if current user is locally banned from a session
+ */
+export function isLocallyBannedFromSession(sessionCode) {
+  try {
+    const clean = normalizeSessionCode(sessionCode);
+    if (!clean) return false;
+    const raw = localStorage.getItem(USER_BANNED_SESSIONS_STORAGE_KEY);
+    if (raw) {
+      const list = JSON.parse(raw);
+      if (Array.isArray(list) && list.includes(clean)) return true;
+    }
+  } catch (e) {
+    console.warn("Error reading locally banned sessions:", e);
+  }
+  return false;
+}
+
+/**
+ * Set lock status of a session (Host only)
+ */
+export function setSessionLockedState(sessionCode, isLocked) {
+  try {
+    const clean = normalizeSessionCode(sessionCode);
+    if (!clean) return;
+    const raw = localStorage.getItem(SESSION_LOCK_STORAGE_KEY);
+    let map = raw ? JSON.parse(raw) : {};
+    if (!map || typeof map !== "object") map = {};
+    map[clean] = !!isLocked;
+    localStorage.setItem(SESSION_LOCK_STORAGE_KEY, JSON.stringify(map));
+  } catch (e) {
+    console.warn("Error setting session lock state:", e);
+  }
+}
+
+/**
+ * Get lock status of a session
+ */
+export function isSessionLockedState(sessionCode) {
+  try {
+    const clean = normalizeSessionCode(sessionCode);
+    if (!clean) return false;
+    const raw = localStorage.getItem(SESSION_LOCK_STORAGE_KEY);
+    if (raw) {
+      const map = JSON.parse(raw);
+      if (map && typeof map === "object") {
+        return !!map[clean];
+      }
+    }
+  } catch (e) {
+    console.warn("Error reading session lock state:", e);
+  }
+  return false;
+}
+
+/* =========================================================================
+   ON-DEMAND MAP CONSULTATION APPROVAL SYSTEM
+   ========================================================================= */
+
+/**
+ * Get list of currently approved viewers who can consult my map
+ */
+export function getApprovedConsultationViewers() {
+  try {
+    const raw = localStorage.getItem(APPROVED_CONSULTATION_VIEWERS_KEY);
+    if (raw) {
+      const list = JSON.parse(raw);
+      if (Array.isArray(list)) return list;
+    }
+  } catch (e) {
+    console.warn("Error reading approved viewers:", e);
+  }
+  return [];
+}
+
+/**
+ * Add a user to approved consultation viewers
+ */
+export function addApprovedConsultationViewer(userCode, userName = "") {
+  try {
+    const clean = normalizeSessionCode(userCode);
+    if (!clean) return;
+    const list = getApprovedConsultationViewers();
+    const filtered = list.filter((v) => normalizeSessionCode(v.userCode) !== clean);
+    const updated = [
+      {
+        userCode: clean,
+        userName: userName || clean,
+        approvedAt: new Date().toISOString()
+      },
+      ...filtered
+    ];
+    localStorage.setItem(APPROVED_CONSULTATION_VIEWERS_KEY, JSON.stringify(updated));
+    return updated;
+  } catch (e) {
+    console.warn("Error adding approved viewer:", e);
+  }
+}
+
+/**
+ * Remove / Revoke a viewer from approved consultation list
+ */
+export function removeApprovedConsultationViewer(userCode) {
+  try {
+    const clean = normalizeSessionCode(userCode);
+    if (!clean) return [];
+    const list = getApprovedConsultationViewers();
+    const updated = list.filter((v) => normalizeSessionCode(v.userCode) !== clean);
+    localStorage.setItem(APPROVED_CONSULTATION_VIEWERS_KEY, JSON.stringify(updated));
+    return updated;
+  } catch (e) {
+    console.warn("Error removing approved viewer:", e);
+    return [];
+  }
 }

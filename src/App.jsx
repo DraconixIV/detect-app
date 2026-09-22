@@ -19,6 +19,7 @@ import ReportsPanel from "./components/ReportsPanel";
 import SettingsPanel from "./components/SettingsPanel";
 import CategoryManagerModal from "./components/CategoryManagerModal";
 import TeamSessionModal from "./components/TeamSessionModal";
+import ConsultationRequestModal from "./components/ConsultationRequestModal";
 import MapLayersModal from "./components/MapLayersModal";
 import SplashScreen from "./components/SplashScreen";
 import AppDrawer from "./components/AppDrawer";
@@ -31,6 +32,7 @@ import { supabase } from "./supabase";
 
 import useSupabaseSync from "./hooks/useSupabaseSync";
 import useTeamPresence from "./hooks/useTeamPresence";
+import useConsultationRequests from "./hooks/useConsultationRequests";
 import useSortieRecorder from "./hooks/useSortieRecorder";
 import { addPendingFind, deletePendingFind } from "./services/offlineStore";
 import { importData, exportData } from "./services/backupService";
@@ -195,7 +197,27 @@ function App() {
     loadPhotosForAlbum
   } = useSupabaseSync(setToast, workspace);
 
-  const { teammates, broadcastFind, broadcastDeleteFind } = useTeamPresence(workspace, position, setToast);
+  const {
+    teammates,
+    broadcastFind,
+    broadcastDeleteFind,
+    isHost,
+    isLocked,
+    bannedList,
+    kickTeammate,
+    banTeammate,
+    unbanTeammate,
+    toggleSessionLock
+  } = useTeamPresence(workspace, position, setToast, setWorkspace);
+
+  const {
+    incomingRequest,
+    activeViewers,
+    approveRequest,
+    rejectRequest,
+    revokeViewerAccess,
+    requestMapConsultation
+  } = useConsultationRequests(workspace, setWorkspace, setToast);
 
   const {
     isRecordingSortie,
@@ -1267,6 +1289,25 @@ return (
         onClose={() => setShowTeamSessionModal(false)}
         workspace={workspace}
         setWorkspace={setWorkspace}
+        theme={theme}
+        teammates={teammates}
+        isHost={isHost}
+        isLocked={isLocked}
+        bannedList={bannedList}
+        kickTeammate={kickTeammate}
+        banTeammate={banTeammate}
+        unbanTeammate={unbanTeammate}
+        toggleSessionLock={toggleSessionLock}
+        requestMapConsultation={requestMapConsultation}
+        activeViewers={activeViewers}
+        revokeViewerAccess={revokeViewerAccess}
+      />
+
+      {/* Real-time incoming map consultation permission request modal */}
+      <ConsultationRequestModal
+        request={incomingRequest}
+        onApprove={approveRequest}
+        onReject={rejectRequest}
         theme={theme}
       />
 
