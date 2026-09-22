@@ -276,7 +276,7 @@ export async function addFind({
         finalFinderName,
         finalSessionCode,
         thumbnailUrl,
-        { audio, video, utm }
+        { audio, video }
       );
       await supabase
         .from("finds")

@@ -1169,6 +1169,8 @@ return (
           activeLayersCount={(showCadastre ? 1 : 0) + ((showCassini || showHistoricalMap) ? 1 : 0) + (showEtatMajor ? 1 : 0)}
           zenMode={zenMode}
           setZenMode={setZenMode}
+          hideAllFinds={hideAllFinds}
+          setHideAllFinds={setHideAllFinds}
           onAddFindClick={() => setShowForm(true)}
         />
       )}

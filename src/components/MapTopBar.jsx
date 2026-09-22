@@ -138,10 +138,10 @@ export default function MapTopBar({
         left: 0,
         right: 0,
         zIndex: 5000,
-        padding: "env(safe-area-inset-top, 8px) 12px 8px 12px",
+        padding: "env(safe-area-inset-top, 6px) 8px 6px 8px",
         display: "flex",
         flexDirection: "column",
-        gap: "8px",
+        gap: "6px",
         pointerEvents: "none",
         fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
         userSelect: "none"
@@ -153,19 +153,19 @@ export default function MapTopBar({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: "8px",
+          gap: "4px",
           background: bgBar,
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
           border: `1px solid ${borderCol}`,
-          borderRadius: "16px",
-          padding: "6px 10px",
+          borderRadius: "14px",
+          padding: "4px 8px",
           boxShadow: isLight ? "0 4px 20px rgba(0,0,0,0.08)" : "0 8px 32px rgba(0, 0, 0, 0.45)",
           pointerEvents: "auto"
         }}
       >
         {/* LEFT: Menu Button & Branding with Official Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 }}>
           {onOpenDrawer && (
             <button
               type="button"
@@ -174,14 +174,14 @@ export default function MapTopBar({
               style={{
                 background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
                 border: `1px solid ${borderCol}`,
-                borderRadius: "10px",
-                width: "32px",
-                height: "32px",
+                borderRadius: "8px",
+                width: "28px",
+                height: "28px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 color: textMain,
-                fontSize: "16px",
+                fontSize: "14px",
                 cursor: "pointer",
                 flexShrink: 0
               }}
@@ -192,17 +192,18 @@ export default function MapTopBar({
 
           <div
             style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "10px",
+              width: "28px",
+              height: "28px",
+              borderRadius: "8px",
               background: "#ebe3d3",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               overflow: "hidden",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-              border: "1.5px solid rgba(245, 158, 11, 0.4)",
-              cursor: onOpenDrawer ? "pointer" : "default"
+              boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+              border: "1px solid rgba(245, 158, 11, 0.4)",
+              cursor: onOpenDrawer ? "pointer" : "default",
+              flexShrink: 0
             }}
             onClick={onOpenDrawer}
           >
@@ -213,16 +214,17 @@ export default function MapTopBar({
             />
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", flexDirection: "column", flexShrink: 0 }}>
             <span
               style={{
-                fontSize: "13px",
+                fontSize: "12px",
                 fontWeight: "900",
                 letterSpacing: "-0.3px",
                 color: textMain,
                 display: "flex",
                 alignItems: "center",
-                gap: "2px"
+                gap: "2px",
+                lineHeight: "1.1"
               }}
             >
               <span>Geo</span>
@@ -230,10 +232,11 @@ export default function MapTopBar({
             </span>
             <span
               style={{
-                fontSize: "9px",
+                fontSize: "8px",
                 fontWeight: "700",
                 color: isOnline ? "#34d399" : "#fbbf24",
-                letterSpacing: "0.2px"
+                letterSpacing: "0.2px",
+                lineHeight: "1.1"
               }}
             >
               {isOnline ? "● Connecté" : "○ Hors-ligne"}
@@ -246,17 +249,18 @@ export default function MapTopBar({
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "5px",
+            gap: "4px",
             background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255, 255, 255, 0.06)",
             border: `1px solid ${workspace.mode === "session" ? "#10b981" : borderCol}`,
-            padding: "3px 8px",
-            borderRadius: "999px"
+            padding: "2px 6px",
+            borderRadius: "999px",
+            flexShrink: 0
           }}
         >
           <span
             style={{
-              width: "6px",
-              height: "6px",
+              width: "5px",
+              height: "5px",
               borderRadius: "50%",
               background: workspace.mode === "session" ? "#10b981" : getGpsStatusColor(),
               boxShadow: `0 0 6px ${workspace.mode === "session" ? "#10b981" : getGpsStatusColor()}`
@@ -264,7 +268,7 @@ export default function MapTopBar({
           />
           <span
             style={{
-              fontSize: "10px",
+              fontSize: "9px",
               fontWeight: "800",
               color: textMain,
               fontFamily: "monospace"
@@ -279,24 +283,25 @@ export default function MapTopBar({
         </div>
 
         {/* RIGHT: Actions (Search, Team, Sortie) */}
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "4px", flexShrink: 0 }}>
           {/* Search Toggle Button */}
           <button
             type="button"
             onClick={onToggleSearch}
             style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "10px",
+              width: "28px",
+              height: "28px",
+              borderRadius: "8px",
               border: `1px solid ${showSearch ? "#38bdf8" : borderCol}`,
               background: showSearch ? "rgba(56, 189, 248, 0.2)" : (isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)"),
               color: showSearch ? "#38bdf8" : textMain,
-              fontSize: "14px",
+              fontSize: "13px",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              transition: "all 0.15s ease"
+              transition: "all 0.15s ease",
+              flexShrink: 0
             }}
             title={showSearch ? "Fermer la recherche" : "Rechercher une trouvaille"}
           >
@@ -309,18 +314,19 @@ export default function MapTopBar({
               type="button"
               onClick={onOpenTeamSession}
               style={{
-                width: "32px",
-                height: "32px",
-                borderRadius: "10px",
+                width: "28px",
+                height: "28px",
+                borderRadius: "8px",
                 border: `1px solid ${workspace.mode === "session" ? "#10b981" : borderCol}`,
                 background: workspace.mode === "session" ? "rgba(16, 185, 129, 0.2)" : (isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)"),
                 color: workspace.mode === "session" ? "#34d399" : textMain,
-                fontSize: "14px",
+                fontSize: "13px",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                transition: "all 0.15s ease"
+                transition: "all 0.15s ease",
+                flexShrink: 0
               }}
               title={workspace.mode === "session" ? "Session d'équipe en direct" : "Session d'équipe"}
             >
@@ -333,25 +339,27 @@ export default function MapTopBar({
             type="button"
             onClick={onToggleRecording}
             style={{
-              padding: "5px 9px",
-              borderRadius: "10px",
+              padding: "4px 7px",
+              borderRadius: "8px",
               border: `1px solid ${isRecordingSortie ? "#ef4444" : borderCol}`,
               background: isRecordingSortie ? "rgba(239, 68, 68, 0.2)" : (isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)"),
               color: isRecordingSortie ? "#ef4444" : textMain,
-              fontSize: "10px",
+              fontSize: "9.5px",
               fontWeight: "800",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
               gap: "4px",
-              transition: "all 0.15s ease"
+              transition: "all 0.15s ease",
+              whiteSpace: "nowrap",
+              flexShrink: 0
             }}
             title={isRecordingSortie ? "Arrêter la sortie" : "Démarrer une sortie"}
           >
             <span
               style={{
-                width: "6px",
-                height: "6px",
+                width: "5px",
+                height: "5px",
                 borderRadius: "50%",
                 background: isRecordingSortie ? "#ef4444" : textSub,
                 boxShadow: isRecordingSortie ? "0 0 8px #ef4444" : "none",

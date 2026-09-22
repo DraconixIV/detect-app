@@ -9,6 +9,8 @@ export default function MapFloatingControls({
   activeLayersCount = 0,
   zenMode,
   setZenMode,
+  hideAllFinds = false,
+  setHideAllFinds,
   onAddFindClick
 }) {
   return (
@@ -19,14 +21,41 @@ export default function MapFloatingControls({
         bottom: zenMode ? "20px" : "84px",
         zIndex: 5100,
         display: "flex",
-        flexDirection: "column",
+        flexDirection: zenMode ? "row" : "column",
         gap: "10px",
         alignItems: "center",
         transition: "bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
         userSelect: "none"
       }}
     >
-      {/* 1. ZEN MODE / FULLSCREEN TOGGLE (Always visible) */}
+      {/* 1. HIDE / SHOW ALL FINDS ON MAP TOGGLE (Visible in Zen Mode next to Telescope) */}
+      {zenMode && setHideAllFinds && (
+        <button
+          onClick={() => setHideAllFinds(!hideAllFinds)}
+          style={{
+            width: "44px",
+            height: "44px",
+            borderRadius: "50%",
+            border: `1.5px solid ${hideAllFinds ? "#ef4444" : "rgba(255, 255, 255, 0.18)"}`,
+            background: hideAllFinds ? "rgba(239, 68, 68, 0.85)" : "rgba(11, 19, 41, 0.82)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            color: "#ffffff",
+            fontSize: "17px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: hideAllFinds ? "0 4px 20px rgba(239, 68, 68, 0.5)" : "0 4px 16px rgba(0, 0, 0, 0.45)",
+            transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
+          }}
+          title={hideAllFinds ? "Afficher les trouvailles sur la carte" : "Masquer toutes les trouvailles sur la carte"}
+        >
+          {hideAllFinds ? "🚫" : "📍"}
+        </button>
+      )}
+
+      {/* 2. ZEN MODE / FULLSCREEN TOGGLE (Always visible) */}
       <button
         onClick={() => setZenMode(!zenMode)}
         style={{

@@ -359,9 +359,25 @@ export default function AlbumPanel({
     if (f.photo_url) return f.photo_url;
     if (f.photo && typeof f.photo === "string") return f.photo;
     const match = allPhotos.find(
+      (p) => (String(p.find_id) === String(f.id) || p.find_id === f.id) && p.type !== "thumbnail"
+    ) || allPhotos.find(
       (p) => String(p.find_id) === String(f.id) || p.find_id === f.id
     );
-    return match?.image_url || null;
+    if (match?.image_url) return match.image_url;
+    if (f.thumbnail_url) return f.thumbnail_url;
+    return null;
+  };
+
+  const getFindThumbUrl = (f) => {
+    if (!f) return null;
+    if (f.isOfflinePending && f.offlinePhoto) return f.offlinePhoto;
+    if (f.offlinePhoto) return f.offlinePhoto;
+    if (f.thumbnail_url) return f.thumbnail_url;
+    const thumbMatch = allPhotos.find(
+      (p) => (String(p.find_id) === String(f.id) || p.find_id === f.id) && p.type === "thumbnail"
+    );
+    if (thumbMatch?.image_url) return thumbMatch.image_url;
+    return getFindPhotoUrl(f);
   };
 
   const albumFilteredFinds = useMemo(() => {
@@ -654,7 +670,7 @@ export default function AlbumPanel({
           <div style={{ flex: 1, overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", paddingRight: "4px" }}>
             {albumFilteredFinds.map((find) => {
               const photoUrl = getFindPhotoUrl(find) || "";
-              const thumbUrl = find.thumbnail_url || photoUrl;
+              const thumbUrl = getFindThumbUrl(find) || photoUrl;
               const hasFlipCoin = !!getFlipCoin(find.id);
 
               return (
@@ -693,8 +709,13 @@ export default function AlbumPanel({
                     <div style={{ fontSize: "10px", fontWeight: "800", color: "#ffffff", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
                       {find.title || "Sans titre"}
                     </div>
+                    {find.finder_name && (
+                      <div style={{ fontSize: "8px", color: "#38bdf8", fontWeight: "700", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                        👤 {find.finder_name}
+                      </div>
+                    )}
                     {find.date && (
-                      <div style={{ fontSize: "8px", color: "#ffffff" }}>
+                      <div style={{ fontSize: "8px", color: "#ffffff", opacity: 0.85 }}>
                         {find.date.split(",")[0]}
                       </div>
                     )}
@@ -967,6 +988,7 @@ export default function AlbumPanel({
                   {categoryEmojis[selectedAlbumPhoto.find.category] || "📍"} {selectedAlbumPhoto.find.category}
                   {selectedAlbumPhoto.find.sub_category ? ` • ${selectedAlbumPhoto.find.sub_category}` : ""}
                   {selectedAlbumPhoto.find.date ? ` • 📅 ${selectedAlbumPhoto.find.date.split(",")[0]}` : ""}
+                  {selectedAlbumPhoto.find.finder_name ? ` • 👤 ${selectedAlbumPhoto.find.finder_name}` : ""}
                 </p>
 
                 {/* Primary Button: Voir sur la carte */}
