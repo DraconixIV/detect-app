@@ -75,35 +75,84 @@ function GpsFollower({ position, followGps }) {
   return null;
 }
 
-// Helper: Custom Cluster Icon
+// Helper: Custom Cluster Icon (Ultra-smooth modern bubble)
 const createClusterCustomIcon = (cluster) => {
   const count = cluster.getChildCount();
   return L.divIcon({
     html: `
       <div style="
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        border: 3px solid white;
+        width: 38px;
+        height: 38px;
+        background: linear-gradient(135deg, #1d4ed8 0%, #0284c7 100%);
+        border: 2px solid #ffffff;
         border-radius: 50%;
-        color: white;
-        font-weight: 800;
-        font-size: 15px;
-        font-family: system-ui, sans-serif;
+        color: #ffffff;
+        font-weight: 900;
+        font-size: 14px;
+        font-family: system-ui, -apple-system, sans-serif;
         display: flex;
         align-items: center;
-        justifyContent: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+        justify-content: center;
+        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.6), 0 0 0 3px rgba(56, 189, 248, 0.35);
+        user-select: none;
       ">
         ${count}
       </div>
     `,
     className: "custom-cluster-marker",
-    iconSize: L.point(40, 40, true),
-    iconAnchor: L.point(20, 20)
+    iconSize: L.point(38, 38, true),
+    iconAnchor: L.point(19, 19)
   });
 };
 
+// Helper: Lightweight lazy-loaded find marker (avoids mounting heavy popups for all items until opened)
+function LazyFindMarker({
+  find,
+  markerSize,
+  deleteFind,
+  handleFavorite,
+  loadFinds,
+  workspace,
+  setOpenPopupFind
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Marker
+      position={find.finalPosition || find.position}
+      icon={getCategoryIcon(find.category, null, markerSize) || icons.autre}
+      eventHandlers={{
+        popupopen: () => setIsOpen(true),
+        popupclose: () => setIsOpen(false)
+      }}
+    >
+      <Popup
+        className="custom-find-leaflet-popup"
+        autoPan={true}
+        autoPanPadding={[25, 25]}
+        closeButton={true}
+      >
+        {isOpen ? (
+          <FindPopup
+            find={find}
+            onClose={() => {
+              setIsOpen(false);
+              if (setOpenPopupFind) setOpenPopupFind(null);
+            }}
+            onDelete={deleteFind}
+            onFavorite={handleFavorite}
+            onUpdate={loadFinds}
+            workspace={workspace}
+          />
+        ) : (
+          <div style={{ padding: "10px", fontSize: "12px", color: "#94a3b8", textAlign: "center" }}>
+            Chargement...
+          </div>
+        )}
+      </Popup>
+    </Marker>
+  );
+}
 
 import { leaveTeamSession } from "../services/sessionService";
 
@@ -411,52 +460,30 @@ export default function MainMap({
           maxClusterRadius={50}
         >
           {positionedFinds.map((find) => (
-            <Marker
+            <LazyFindMarker
               key={find.id}
-              position={find.finalPosition}
-              icon={getCategoryIcon(find.category, null, markerSize) || icons.autre}
-            >
-              <Popup
-                className="custom-find-leaflet-popup"
-                autoPan={true}
-                autoPanPadding={[25, 25]}
-                closeButton={true}
-              >
-                <FindPopup
-                  find={find}
-                  onClose={() => setOpenPopupFind(null)}
-                  onDelete={deleteFind}
-                  onFavorite={handleFavorite}
-                  onUpdate={loadFinds}
-                  workspace={workspace}
-                />
-              </Popup>
-            </Marker>
+              find={find}
+              markerSize={markerSize}
+              deleteFind={deleteFind}
+              handleFavorite={handleFavorite}
+              loadFinds={loadFinds}
+              workspace={workspace}
+              setOpenPopupFind={setOpenPopupFind}
+            />
           ))}
         </MarkerClusterGroup>
       ) : (
         positionedFinds.map((find) => (
-          <Marker
+          <LazyFindMarker
             key={find.id}
-            position={find.finalPosition}
-            icon={getCategoryIcon(find.category, null, markerSize) || icons.autre}
-          >
-            <Popup
-              className="custom-find-leaflet-popup"
-              autoPan={true}
-              autoPanPadding={[25, 25]}
-              closeButton={true}
-            >
-              <FindPopup
-                find={find}
-                onClose={() => setOpenPopupFind(null)}
-                onDelete={deleteFind}
-                onFavorite={handleFavorite}
-                onUpdate={loadFinds}
-                workspace={workspace}
-              />
-            </Popup>
-          </Marker>
+            find={find}
+            markerSize={markerSize}
+            deleteFind={deleteFind}
+            handleFavorite={handleFavorite}
+            loadFinds={loadFinds}
+            workspace={workspace}
+            setOpenPopupFind={setOpenPopupFind}
+          />
         ))
       )}
     </MapContainer>

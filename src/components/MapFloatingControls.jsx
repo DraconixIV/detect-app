@@ -11,6 +11,8 @@ export default function MapFloatingControls({
   setZenMode,
   hideAllFinds = false,
   setHideAllFinds,
+  useClustering = false,
+  setUseClustering,
   onAddFindClick
 }) {
   return (
@@ -28,7 +30,7 @@ export default function MapFloatingControls({
         userSelect: "none"
       }}
     >
-      {/* 1. HIDE / SHOW ALL FINDS ON MAP TOGGLE (Visible in Zen Mode next to Telescope) */}
+      {/* 1. HIDE / SHOW ALL FINDS ON MAP TOGGLE (Visible in Zen Mode) */}
       {zenMode && setHideAllFinds && (
         <button
           onClick={() => setHideAllFinds(!hideAllFinds)}
@@ -55,7 +57,34 @@ export default function MapFloatingControls({
         </button>
       )}
 
-      {/* 2. ZEN MODE / FULLSCREEN TOGGLE (Always visible) */}
+      {/* 2. CLUSTERING / GROUPING TOGGLE (In Zen Mode next to telescope) */}
+      {zenMode && setUseClustering && (
+        <button
+          onClick={() => setUseClustering(!useClustering)}
+          style={{
+            width: "44px",
+            height: "44px",
+            borderRadius: "50%",
+            border: `1.5px solid ${useClustering ? "#38bdf8" : "rgba(255, 255, 255, 0.18)"}`,
+            background: useClustering ? "rgba(14, 165, 233, 0.85)" : "rgba(11, 19, 41, 0.82)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            color: "#ffffff",
+            fontSize: "18px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: useClustering ? "0 4px 20px rgba(56, 189, 248, 0.5)" : "0 4px 16px rgba(0, 0, 0, 0.45)",
+            transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
+          }}
+          title={useClustering ? "Désactiver le regroupement (Clustering)" : "Activer le regroupement (Clustering)"}
+        >
+          🫧
+        </button>
+      )}
+
+      {/* 3. ZEN MODE / FULLSCREEN TOGGLE (Always visible) */}
       <button
         onClick={() => setZenMode(!zenMode)}
         style={{
@@ -83,6 +112,33 @@ export default function MapFloatingControls({
       {/* When in Zen mode, other controls are hidden to give 100% clean view */}
       {!zenMode && (
         <>
+          {/* CLUSTERING / GROUPING TOGGLE (Standard mode) */}
+          {setUseClustering && (
+            <button
+              onClick={() => setUseClustering(!useClustering)}
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "50%",
+                border: `1.5px solid ${useClustering ? "#38bdf8" : "rgba(255, 255, 255, 0.18)"}`,
+                background: useClustering ? "rgba(14, 165, 233, 0.35)" : "rgba(11, 19, 41, 0.82)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+                color: useClustering ? "#38bdf8" : "#ffffff",
+                fontSize: "18px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: useClustering ? "0 0 16px rgba(56, 189, 248, 0.6)" : "0 4px 16px rgba(0, 0, 0, 0.45)",
+                transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
+              }}
+              title={useClustering ? "Regroupement des trouvailles (Clustering) : ACTIVÉ" : "Regroupement des trouvailles (Clustering) : DÉSACTIVÉ"}
+            >
+              🫧
+            </button>
+          )}
+
           {/* 2. MAP LAYERS & CADASTRE / CASSINI MODAL TRIGGER */}
           <button
             onClick={onOpenMapLayers}

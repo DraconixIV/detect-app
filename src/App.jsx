@@ -267,7 +267,13 @@ function App() {
   const [showMapLayersModal, setShowMapLayersModal] = useState(false);
   const [showHistoricalMap, setShowHistoricalMap] = useState(false);
   const [historicalMapOpacity, setHistoricalMapOpacity] = useState(0.5);
-  const [useClustering, setUseClustering] = useState(false);
+  const [useClustering, setUseClustering] = useState(() => {
+    return localStorage.getItem("useClustering") === "true";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("useClustering", useClustering);
+  }, [useClustering]);
   const [activeSubCategory, setActiveSubCategory] = useState(null);
   const [subCategorySelectCat, setSubCategorySelectCat] = useState(null);
   const [subCatModalStep, setSubCatModalStep] = useState(1);
@@ -1171,6 +1177,8 @@ return (
           setZenMode={setZenMode}
           hideAllFinds={hideAllFinds}
           setHideAllFinds={setHideAllFinds}
+          useClustering={useClustering}
+          setUseClustering={setUseClustering}
           onAddFindClick={() => setShowForm(true)}
         />
       )}
