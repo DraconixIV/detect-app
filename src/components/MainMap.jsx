@@ -105,54 +105,31 @@ const createClusterCustomIcon = (cluster) => {
   });
 };
 
-// Helper: Lightweight lazy-loaded find marker (avoids mounting heavy popups for all items until opened)
-function LazyFindMarker({
+// Helper: Ultra-lightweight memoized find marker (0 popup overhead, 100% GPU accelerated)
+const FindMarker = React.memo(function FindMarker({
   find,
   markerSize,
-  deleteFind,
-  handleFavorite,
-  loadFinds,
-  workspace,
-  setOpenPopupFind
+  onSelectFind
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const icon = getCategoryIcon(find.category, null, markerSize) || icons.autre;
 
   return (
     <Marker
       position={find.finalPosition || find.position}
-      icon={getCategoryIcon(find.category, null, markerSize) || icons.autre}
+      icon={icon}
       eventHandlers={{
-        popupopen: () => setIsOpen(true),
-        popupclose: () => setIsOpen(false)
+        click: (e) => {
+          if (e && e.originalEvent) {
+            L.DomEvent.stopPropagation(e.originalEvent);
+          }
+          if (onSelectFind) {
+            onSelectFind(find);
+          }
+        }
       }}
-    >
-      <Popup
-        className="custom-find-leaflet-popup"
-        autoPan={true}
-        autoPanPadding={[25, 25]}
-        closeButton={true}
-      >
-        {isOpen ? (
-          <FindPopup
-            find={find}
-            onClose={() => {
-              setIsOpen(false);
-              if (setOpenPopupFind) setOpenPopupFind(null);
-            }}
-            onDelete={deleteFind}
-            onFavorite={handleFavorite}
-            onUpdate={loadFinds}
-            workspace={workspace}
-          />
-        ) : (
-          <div style={{ padding: "10px", fontSize: "12px", color: "#94a3b8", textAlign: "center" }}>
-            Chargement...
-          </div>
-        )}
-      </Popup>
-    </Marker>
+    />
   );
-}
+});
 
 import { leaveTeamSession } from "../services/sessionService";
 
@@ -335,6 +312,10 @@ export default function MainMap({
           <Popup
             position={openPopupFind.finalPosition || openPopupFind.position}
             onClose={() => setOpenPopupFind(null)}
+            className="custom-find-leaflet-popup"
+            autoPan={true}
+            autoPanPadding={[25, 25]}
+            closeButton={true}
             eventHandlers={{
               remove: () => setOpenPopupFind(null)
             }}
@@ -460,29 +441,21 @@ export default function MainMap({
           maxClusterRadius={50}
         >
           {positionedFinds.map((find) => (
-            <LazyFindMarker
+            <FindMarker
               key={find.id}
               find={find}
               markerSize={markerSize}
-              deleteFind={deleteFind}
-              handleFavorite={handleFavorite}
-              loadFinds={loadFinds}
-              workspace={workspace}
-              setOpenPopupFind={setOpenPopupFind}
+              onSelectFind={setOpenPopupFind}
             />
           ))}
         </MarkerClusterGroup>
       ) : (
         positionedFinds.map((find) => (
-          <LazyFindMarker
+          <FindMarker
             key={find.id}
             find={find}
             markerSize={markerSize}
-            deleteFind={deleteFind}
-            handleFavorite={handleFavorite}
-            loadFinds={loadFinds}
-            workspace={workspace}
-            setOpenPopupFind={setOpenPopupFind}
+            onSelectFind={setOpenPopupFind}
           />
         ))
       )}

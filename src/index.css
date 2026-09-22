@@ -204,8 +204,50 @@ POPUP MOBILE FIX & VISUAL STABILITY
   pointer-events: none !important;
 }
 
-/* Hardware acceleration for tile opacity transitions */
+/* Hardware acceleration for tile opacity transitions & GPU scaling */
 .leaflet-tile {
-  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  will-change: opacity;
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  will-change: opacity, transform;
+}
+
+.leaflet-container {
+  touch-action: pan-x pan-y pinch-zoom !important;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+  will-change: transform;
+}
+
+.leaflet-marker-pane,
+.leaflet-tile-pane,
+.leaflet-shadow-pane {
+  will-change: transform;
+}
+
+.leaflet-marker-icon {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Global Keyframes for GPS & Teammate Markers */
+@keyframes gpsPulse {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(2.0); opacity: 0; }
+}
+
+@keyframes radarSweep {
+  0% { transform: scale(0.4); opacity: 1; border-color: rgba(16, 185, 129, 0.8); }
+  100% { transform: scale(1.8); opacity: 0; border-color: rgba(16, 185, 129, 0); }
+}
+
+@keyframes royalHalo {
+  0%, 100% { transform: scale(0.7); box-shadow: 0 0 4px rgba(251, 191, 36, 0.3); }
+  50% { transform: scale(1.2); box-shadow: 0 0 12px rgba(251, 191, 36, 0.7); }
+}
+
+@keyframes teammatePulseRing {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(2.4); opacity: 0; }
 }

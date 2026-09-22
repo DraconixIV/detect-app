@@ -1,4 +1,4 @@
-﻿import React, { useMemo } from "react";
+import React, { useMemo } from "react";
 import L from "leaflet";
 import { Marker, Popup } from "react-leaflet";
 
@@ -40,18 +40,6 @@ export default function TeammateMarker({ teammate, myPosition }) {
     return L.divIcon({
       className: "teammate-gps-marker-custom",
       html: `
-        <style>
-          @keyframes teammatePulseRing {
-            0% {
-              transform: scale(0.6);
-              opacity: 0.9;
-            }
-            100% {
-              transform: scale(2.4);
-              opacity: 0;
-            }
-          }
-        </style>
         <div style="
           position: relative;
           display: flex;
