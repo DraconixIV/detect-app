@@ -158,13 +158,16 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
               const rowUserClean = decodedRow?.user_code ? normalizeSessionCode(decodedRow.user_code) : null;
               const rowSessionClean = decodedRow?.session_code ? normalizeSessionCode(decodedRow.session_code) : null;
 
-              if (currentWs.mode === "consultation" && currentWs.targetCode) {
+              if (currentWs.mode === "personal") {
+                if (rowUserClean !== myCodeClean) {
+                  return; // Strictly ignore finds from other users in personal mode
+                }
+              } else if (currentWs.mode === "consultation" && currentWs.targetCode) {
                 const targetClean = normalizeSessionCode(currentWs.targetCode);
                 if (rowUserClean !== targetClean) {
                   return;
                 }
-              }
-              if (currentWs.mode === "session" && currentWs.targetCode) {
+              } else if (currentWs.mode === "session" && currentWs.targetCode) {
                 const targetSessClean = normalizeSessionCode(currentWs.targetCode);
                 const isSessionFind = rowSessionClean && rowSessionClean === targetSessClean;
                 const isMyFind = rowUserClean && rowUserClean === myCodeClean;

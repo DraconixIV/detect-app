@@ -3,6 +3,8 @@ import imageCompression from "browser-image-compression";
 import { supabase } from "../supabase.js";
 import { getMyUserCode, getMyDisplayName, getActiveSession, getMyJoinedSessions, normalizeSessionCode } from "./sessionService.js";
 
+const LEGACY_CLAIMED_FLAG = "geoprospect_legacy_finds_claimed_v3";
+
 export function encodeMetadata(description, userCode, finderName, sessionCode, thumbnailUrl = null, extra = {}) {
   const meta = {};
   if (userCode) meta.u = userCode;
@@ -92,6 +94,58 @@ export function normalizeCategoryAndSub(find) {
   };
 }
 
+/**
+ * Ensures existing historical finds in Supabase (from the single-user era) are permanently
+ * attributed to the primary creator's personal detector code so they are never lost.
+ */
+export async function ensureLegacyFindsClaimed(myCode) {
+  try {
+    if (!myCode) return;
+    const cleanMyCode = normalizeSessionCode(myCode);
+    const alreadyClaimed = localStorage.getItem(LEGACY_CLAIMED_FLAG);
+    if (alreadyClaimed === "true") return;
+
+    const { data: allFinds, error } = await supabase
+      .from("finds")
+      .select("id, description");
+
+    if (error || !allFinds) return;
+
+    let claimedCount = 0;
+    for (const row of allFinds) {
+      const decoded = decodeMetadata(row);
+      if (!decoded.user_code) {
+        const updatedDesc = encodeMetadata(
+          decoded.description,
+          cleanMyCode,
+          decoded.finder_name || getMyDisplayName() || "Détecteuriste",
+          decoded.session_code,
+          decoded.thumbnail_url,
+          { audio_url: decoded.audio_url, video_url: decoded.video_url }
+        );
+        await supabase
+          .from("finds")
+          .update({ description: updatedDesc })
+          .eq("id", row.id);
+        claimedCount++;
+      }
+    }
+
+    localStorage.setItem(LEGACY_CLAIMED_FLAG, "true");
+    if (claimedCount > 0) {
+      console.log(`[GeoProspect] Successfully claimed and secured ${claimedCount} historical finds for ${cleanMyCode}`);
+    }
+  } catch (err) {
+    console.warn("Legacy finds attribution error:", err);
+  }
+}
+
+/**
+ * Load finds strictly according to the active workspace mode:
+ * - personal: ONLY finds belonging to the current user (myCode). New users get 0 finds (blank map).
+ * - session: finds from the current team session + current user's finds.
+ * - consultation: ONLY finds from the target detector code (read-only).
+ */
 export async function loadFinds(options = {}) {
   try {
     const { mode, targetCode } = options;
@@ -99,7 +153,10 @@ export async function loadFinds(options = {}) {
     const activeSess = getActiveSession();
     const currentSessionCode = targetCode || activeSess?.code;
 
-    // Fetch all finds reliably from Supabase
+    // Run safe one-time legacy attribution on launch
+    ensureLegacyFindsClaimed(myCode).catch(() => {});
+
+    // Fetch finds from Supabase
     const { data, error } = await supabase
       .from("finds")
       .select("*")
@@ -126,8 +183,8 @@ export async function loadFinds(options = {}) {
       if (mode === "session" && cleanCurrentSess) {
         return findSess === cleanCurrentSess || findUser === cleanMyCode;
       }
-      // Mode personnel: show all finds
-      return true;
+      // Mode personnel: STRICT FILTER to current user's private finds
+      return findUser === cleanMyCode;
     });
 
     return filteredFinds.map((find) => {

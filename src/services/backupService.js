@@ -1,14 +1,33 @@
 import { supabase } from "../supabase";
+import { getMyUserCode, getMyDisplayName, normalizeSessionCode } from "./sessionService";
+import { decodeMetadata, encodeMetadata } from "./findsService";
 
 export async function exportData() {
   try {
-    const { data: findsData } = await supabase
+    const myCode = normalizeSessionCode(getMyUserCode());
+
+    const { data: allFinds, error: findsErr } = await supabase
       .from("finds")
       .select("*");
 
-    const { data: photosData } = await supabase
+    if (findsErr) throw findsErr;
+
+    // Filter to export current user's personal finds
+    const findsData = (allFinds || []).filter((f) => {
+      const decoded = decodeMetadata(f);
+      const userCodeClean = decoded.user_code ? normalizeSessionCode(decoded.user_code) : null;
+      return userCodeClean === myCode || !userCodeClean;
+    });
+
+    const userFindIds = new Set(findsData.map((f) => f.id));
+
+    const { data: allPhotos, error: photosErr } = await supabase
       .from("find_photos")
       .select("*");
+
+    if (photosErr) throw photosErr;
+
+    const photosData = (allPhotos || []).filter((p) => userFindIds.has(p.find_id));
 
     let tracksData = [];
     try {
@@ -22,13 +41,14 @@ export async function exportData() {
 
     const backup = {
       exportDate: new Date().toISOString(),
-      version: "2.0",
-      findsCount: findsData?.length || 0,
-      photosCount: photosData?.length || 0,
-      tracksCount: tracksData?.length || 0,
-      finds: findsData || [],
-      photos: photosData || [],
-      tracks: tracksData || []
+      userCode: myCode,
+      version: "3.0",
+      findsCount: findsData.length,
+      photosCount: photosData.length,
+      tracksCount: tracksData.length,
+      finds: findsData,
+      photos: photosData,
+      tracks: tracksData
     };
 
     const blob = new Blob([JSON.stringify(backup, null, 2)], {
@@ -38,11 +58,11 @@ export async function exportData() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `geoprospect-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `geoprospect-backup-${myCode}-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
 
-    alert(`✅ Sauvegarde exportée avec succès !\n• ${backup.findsCount} trouvailles\n• ${backup.photosCount} photos\n• ${backup.tracksCount} tracés GPS`);
+    alert(`✅ Sauvegarde exportée avec succès !\n• ${backup.findsCount} trouvailles personnelles\n• ${backup.photosCount} photos\n• ${backup.tracksCount} tracés GPS`);
     return backup;
   } catch (err) {
     console.error("Export error:", err);
@@ -66,21 +86,46 @@ export async function importData(onSuccess) {
 
       let importedFinds = 0;
       let importedPhotos = 0;
+      const myCode = normalizeSessionCode(getMyUserCode());
+      const myName = getMyDisplayName() || "Détecteuriste";
 
       if (backup.finds && backup.finds.length > 0) {
-        // Clean ids to avoid primary key conflict on insert, or upsert
         for (const find of backup.finds) {
-          const { id, ...findWithoutId } = find;
-          const { error } = await supabase.from("finds").insert([findWithoutId]);
-          if (!error) importedFinds++;
-        }
-      }
+          const { id: originalId, ...findWithoutId } = find;
+          const decoded = decodeMetadata(findWithoutId);
 
-      if (backup.photos && backup.photos.length > 0) {
-        for (const photo of backup.photos) {
-          const { id, ...photoWithoutId } = photo;
-          const { error } = await supabase.from("find_photos").insert([photoWithoutId]);
-          if (!error) importedPhotos++;
+          // Stamp imported find with current user's code
+          const stampedDesc = encodeMetadata(
+            decoded.description,
+            myCode,
+            decoded.finder_name || myName,
+            null,
+            decoded.thumbnail_url,
+            { audio_url: decoded.audio_url, video_url: decoded.video_url }
+          );
+
+          const { data: insertedRow, error: insertErr } = await supabase
+            .from("finds")
+            .insert([{ ...findWithoutId, description: stampedDesc }])
+            .select()
+            .single();
+
+          if (!insertErr && insertedRow) {
+            importedFinds++;
+
+            // Re-link photos to the newly generated find ID
+            if (backup.photos && backup.photos.length > 0) {
+              const matchedPhotos = backup.photos.filter((p) => p.find_id === originalId);
+              for (const photo of matchedPhotos) {
+                const { id: pId, ...photoWithoutId } = photo;
+                const { error: photoErr } = await supabase.from("find_photos").insert([{
+                  ...photoWithoutId,
+                  find_id: insertedRow.id
+                }]);
+                if (!photoErr) importedPhotos++;
+              }
+            }
+          }
         }
       }
 
@@ -92,7 +137,7 @@ export async function importData(onSuccess) {
         }
       }
 
-      alert(`✅ Sauvegarde restaurée avec succès !\n• ${importedFinds} trouvaille(s) importée(s)`);
+      alert(`✅ Sauvegarde restaurée avec succès !\n• ${importedFinds} trouvaille(s) importée(s) et attribuée(s) à votre code (${myCode})`);
       if (onSuccess) onSuccess();
     } catch (err) {
       console.error("Import failed:", err);
