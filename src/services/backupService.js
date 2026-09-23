@@ -101,7 +101,11 @@ export async function importData(onSuccess) {
             decoded.finder_name || myName,
             null,
             decoded.thumbnail_url,
-            { audio_url: decoded.audio_url, video_url: decoded.video_url }
+            {
+              audio_url: decoded.audio_url,
+              audio_duration: decoded.audio_duration,
+              video_url: decoded.video_url
+            }
           );
 
           const { data: insertedRow, error: insertErr } = await supabase
