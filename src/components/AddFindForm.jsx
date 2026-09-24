@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { PRESET_CATEGORY_COLORS } from "../subCategories";
 import { loadCategoriesData, addCategory } from "../services/categoriesService";
 import { loadMaterialsData } from "../services/materialsService";
