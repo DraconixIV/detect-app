@@ -9,6 +9,34 @@ const USER_BANNED_SESSIONS_STORAGE_KEY = "geoprospect_user_banned_sessions_v1";
 const SESSION_LOCK_STORAGE_KEY = "geoprospect_session_locked_v1";
 const APPROVED_CONSULTATION_VIEWERS_KEY = "geoprospect_approved_viewers_v1";
 
+// Anti-bruteforce / Rate-limiting in-memory tracker
+const rateLimitTracker = [];
+
+/**
+ * Checks rate limits for sensitive operations (joining sessions, consultation requests)
+ */
+export function checkRateLimit(action = "general", maxAttempts = 6, windowMs = 30000) {
+  const now = Date.now();
+  while (rateLimitTracker.length > 0 && rateLimitTracker[0].timestamp < now - windowMs) {
+    rateLimitTracker.shift();
+  }
+  const matching = rateLimitTracker.filter((item) => item.action === action);
+  if (matching.length >= maxAttempts) {
+    const waitSecs = Math.ceil((matching[0].timestamp + windowMs - now) / 1000);
+    throw new Error(`Trop de requêtes rapides. Veuillez patienter ${waitSecs}s.`);
+  }
+  rateLimitTracker.push({ action, timestamp: now });
+  return true;
+}
+
+/**
+ * Sanitizes text strings to prevent JSON or markup injection
+ */
+export function sanitizeText(str) {
+  if (typeof str !== "string") return "";
+  return str.replace(/[<>"'`]/g, "").trim();
+}
+
 /**
  * Normalizes any entered code format (e.g. "7k3p", "geo-7k3p", "GEO 7K3P", "8X2M9P") -> "GEO-8X2M9P"
  */
@@ -226,6 +254,7 @@ export function isSessionHost(session, userCode = null) {
  * Join an existing team session with a given code
  */
 export function joinTeamSession(code, name = "") {
+  checkRateLimit("join_session", 6, 30000);
   const cleanCode = normalizeSessionCode(code);
   if (!cleanCode) return null;
 
@@ -427,7 +456,14 @@ export function getApprovedConsultationViewers() {
     const raw = localStorage.getItem(APPROVED_CONSULTATION_VIEWERS_KEY);
     if (raw) {
       const list = JSON.parse(raw);
-      if (Array.isArray(list)) return list;
+      if (Array.isArray(list)) {
+        const now = Date.now();
+        // Strict 2-minute expiration window for authorized viewers
+        return list.filter((v) => {
+          const approvedTime = v.approvedAt ? new Date(v.approvedAt).getTime() : 0;
+          return now - approvedTime < 120000;
+        });
+      }
     }
   } catch (e) {
     console.warn("Error reading approved viewers:", e);

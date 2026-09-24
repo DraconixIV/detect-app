@@ -28,7 +28,7 @@ import AboutModal from "./components/AboutModal";
 import { THEMES } from "./styles/themes";
 
 import { icons } from "./icons";
-import { supabase } from "./supabase";
+import { supabase, initAnonymousAuth } from "./supabase";
 
 import useSupabaseSync from "./hooks/useSupabaseSync";
 import useTeamPresence from "./hooks/useTeamPresence";
@@ -93,6 +93,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem("hideAllFinds", hideAllFinds);
   }, [hideAllFinds]);
+
+  useEffect(() => {
+    initAnonymousAuth();
+  }, []);
 
   const [categoriesData, setCategoriesData] = useState(() => loadCategoriesData());
 

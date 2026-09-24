@@ -7,16 +7,16 @@ const LEGACY_CLAIMED_FLAG = "geoprospect_legacy_finds_claimed_v3";
 
 export function encodeMetadata(description, userCode, finderName, sessionCode, thumbnailUrl = null, extra = {}) {
   const meta = {};
-  if (userCode) meta.u = userCode;
-  if (finderName) meta.f = finderName;
-  if (sessionCode) meta.s = sessionCode;
+  if (userCode) meta.u = normalizeSessionCode(userCode);
+  if (finderName) meta.f = String(finderName).slice(0, 50);
+  if (sessionCode) meta.s = normalizeSessionCode(sessionCode);
   if (thumbnailUrl) meta.t = thumbnailUrl;
   if (extra.audio_url || extra.audio) meta.a = extra.audio_url || extra.audio;
   if (extra.audio_duration || extra.ad) meta.ad = Number(extra.audio_duration || extra.ad);
   if (extra.video_url || extra.video) meta.v = extra.video_url || extra.video;
-  if (Object.keys(meta).length === 0) return description || "";
+  if (Object.keys(meta).length === 0) return (description || "").replace(/<!--GP_META:[\s\S]*?-->/g, "").trim();
   const metaTag = `\n<!--GP_META:${JSON.stringify(meta)}-->`;
-  return ((description || "").replace(/<!--GP_META:.*?-->/g, "").trim() + metaTag);
+  return ((description || "").replace(/<!--GP_META:[\s\S]*?-->/g, "").trim() + metaTag);
 }
 
 export function decodeMetadata(find) {
