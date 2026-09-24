@@ -260,20 +260,27 @@ export async function addFind({
           }
 
           const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext || "mp4"}`;
-          const { error: vErr } = await supabase.storage
+          let uploadResult = await supabase.storage
             .from("find-photos")
             .upload(videoFileName, videoBlob, {
               contentType: contentType,
               upsert: true
             });
 
-          if (!vErr) {
+          if (uploadResult.error) {
+            console.warn("Retrying video storage upload without explicit content-type...", uploadResult.error);
+            uploadResult = await supabase.storage
+              .from("find-photos")
+              .upload(videoFileName, videoBlob, { upsert: true });
+          }
+
+          if (!uploadResult.error) {
             const { data: { publicUrl } } = supabase.storage
               .from("find-photos")
               .getPublicUrl(videoFileName);
             finalVideoUrl = publicUrl;
           } else {
-            console.error("Video storage upload error:", vErr);
+            console.error("Video storage upload error:", uploadResult.error);
             if (typeof video === "string" && video.length < 500000) {
               finalVideoUrl = video; // Fallback to inline only if very small
             }
