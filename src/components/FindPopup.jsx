@@ -651,7 +651,7 @@ export default function FindPopup({
           {material && material !== "Indéterminé" ? ` • ${materialEmojis[material] || "🪙"} ${material}` : ""}
         </div>
 
-        {/* Media display (Photo or Video) */}
+        {/* Media display (Photo or Standard Category Placeholder) */}
         {coverPhoto && !isVideoFile(coverPhoto) ? (
           <div style={{ position: "relative", width: "100%", height: "110px" }}>
             <img
@@ -665,45 +665,7 @@ export default function FindPopup({
                 border: "1px solid #e5e7eb"
               }}
             />
-            {effectiveVideoUrl && (
-              <span
-                style={{
-                  position: "absolute",
-                  bottom: "6px",
-                  right: "6px",
-                  background: "rgba(0,0,0,0.75)",
-                  backdropFilter: "blur(4px)",
-                  color: "#ffffff",
-                  fontSize: "10px",
-                  fontWeight: "700",
-                  padding: "2px 6px",
-                  borderRadius: "6px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "3px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.4)"
-                }}
-              >
-                🎥 Vidéo
-              </span>
-            )}
           </div>
-        ) : effectiveVideoUrl ? (
-          <video
-            key={effectiveVideoUrl}
-            src={effectiveVideoUrl}
-            controls
-            playsInline
-            preload="metadata"
-            style={{
-              width: "100%",
-              height: "110px",
-              borderRadius: "10px",
-              background: "#000000",
-              border: "1px solid #e5e7eb",
-              objectFit: "cover"
-            }}
-          />
         ) : (
           <div
             style={{
@@ -714,7 +676,7 @@ export default function FindPopup({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "24px"
+              fontSize: "26px"
             }}
           >
             {categoryEmojis[category] || "📍"}
