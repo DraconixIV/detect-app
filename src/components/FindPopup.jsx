@@ -7,7 +7,7 @@ import ConfirmModal from "./ConfirmModal";
 import { materials, materialEmojis } from "../subCategories";
 import { loadCategoriesData } from "../services/categoriesService";
 import { loadMaterialsData } from "../services/materialsService";
-import { encodeMetadata } from "../services/findsService";
+import { encodeMetadata, decodeMetadata } from "../services/findsService";
 import AudioNotePlayer from "./AudioNotePlayer";
 
 export default function FindPopup({
@@ -28,7 +28,7 @@ export default function FindPopup({
   const [category, setCategory] = useState(find.category || "");
   const [subCategory, setSubCategory] = useState(find.sub_category || "");
   const [material, setMaterial] = useState(find.description || "Indéterminé");
-  const [videoUrl, setVideoUrl] = useState(find.video_url || find.video || null);
+  const [videoUrl, setVideoUrl] = useState(() => find.video_url || find.video || decodeMetadata(find)?.video_url || null);
   const [photos, setPhotos] = useState([]);
   const [discoveryIndex, setDiscoveryIndex] = useState(0);
   const [cleanIndex, setCleanIndex] = useState(0);
@@ -52,9 +52,10 @@ export default function FindPopup({
     setCategory(find.category || "");
     setSubCategory(find.sub_category || "");
     setMaterial(find.description || "Indéterminé");
-    setVideoUrl(find.video_url || find.video || null);
+    const resolvedVideo = find.video_url || find.video || decodeMetadata(find)?.video_url || null;
+    setVideoUrl(resolvedVideo);
     setIsFav(!!find.favorite);
-  }, [find.id, find.video_url, find.video]);
+  }, [find.id, find.video_url, find.video, find.description]);
 
   useEffect(() => {
     const handleCategoriesUpdate = () => {
@@ -217,12 +218,20 @@ export default function FindPopup({
         let contentType = file.type || (ext === "mov" ? "video/quicktime" : (ext === "webm" ? "video/webm" : "video/mp4"));
 
         const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
-        const { error: vErr } = await supabase.storage
+        let { error: vErr } = await supabase.storage
           .from("find-photos")
           .upload(videoFileName, file, {
             contentType: contentType,
-            upsert: true
+            upsert: false
           });
+
+        if (vErr) {
+          console.warn("Retrying video upload without options...", vErr);
+          const retry = await supabase.storage
+            .from("find-photos")
+            .upload(videoFileName, file);
+          vErr = retry.error;
+        }
 
         if (vErr) {
           console.error("Storage upload error:", vErr);
@@ -1085,7 +1094,7 @@ export default function FindPopup({
               </div>
 
               {/* Vidéo Player (onglet Description) */}
-              {(videoUrl || find.video_url || find.video) && (
+              {(videoUrl || find.video_url || find.video || decodeMetadata(find)?.video_url) && (
                 <div
                   style={{
                     padding: "12px",
@@ -1121,7 +1130,7 @@ export default function FindPopup({
                     )}
                   </div>
                   <video
-                    src={videoUrl || find.video_url || find.video}
+                    src={videoUrl || find.video_url || find.video || decodeMetadata(find)?.video_url}
                     controls
                     playsInline
                     preload="metadata"
@@ -1136,30 +1145,23 @@ export default function FindPopup({
                 </div>
               )}
 
-              {/* Boutons d'action Photos & Vidéo */}
-              <div style={{ display: "flex", gap: "8px", marginTop: "2px", flexWrap: "wrap" }}>
+              {/* Boutons d'action Photos */}
+              <div style={{ display: "flex", gap: "8px", marginTop: "2px" }}>
                 {!find.isOfflinePending && !isReadOnly && (
                   <>
                     <button
                       disabled={uploading}
                       onClick={() => uploadPhoto("clean", true)}
-                      style={{ ...buttonStyle, flex: 1, minWidth: "85px", padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
+                      style={{ ...buttonStyle, flex: 1, padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
                     >
                       📸 Photo
                     </button>
                     <button
                       disabled={uploading}
                       onClick={() => uploadPhoto("clean", false)}
-                      style={{ ...buttonStyle, flex: 1, minWidth: "85px", padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
+                      style={{ ...buttonStyle, flex: 1, padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
                     >
                       🖼️ Album
-                    </button>
-                    <button
-                      disabled={uploading}
-                      onClick={uploadVideo}
-                      style={{ ...buttonStyle, flex: 1, minWidth: "85px", padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
-                    >
-                      🎥 {videoUrl || find.video_url || find.video ? "Remplacer Vidéo" : "+ Vidéo"}
                     </button>
                   </>
                 )}

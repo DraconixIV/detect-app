@@ -69,6 +69,19 @@ export async function addPendingFind(findData, photoFile) {
     }
   }
 
+  let safeVideo = null;
+  if (findData.video) {
+    if (findData.video instanceof Blob || findData.video instanceof File) {
+      try {
+        safeVideo = new Blob([findData.video], { type: findData.video.type || "video/mp4" });
+      } catch (blobErr) {
+        safeVideo = findData.video;
+      }
+    } else {
+      safeVideo = findData.video;
+    }
+  }
+
   const record = {
     position: findData.position,
     newTitle: findData.newTitle,
@@ -78,7 +91,7 @@ export async function addPendingFind(findData, photoFile) {
     customDate: findData.customDate || null,
     audio: findData.audio || null,
     audioDuration: findData.audioDuration || findData.ad || null,
-    video: findData.video || null,
+    video: safeVideo,
     sessionCode: findData.sessionCode || null,
     userCode: findData.userCode || null,
     finderName: findData.finderName || null,

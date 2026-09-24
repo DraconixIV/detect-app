@@ -125,7 +125,11 @@ export async function ensureLegacyFindsClaimed(myCode) {
           decoded.finder_name || getMyDisplayName() || "Détecteuriste",
           decoded.session_code,
           decoded.thumbnail_url,
-          { audio_url: decoded.audio_url, video_url: decoded.video_url }
+          {
+            audio_url: decoded.audio_url,
+            audio_duration: decoded.audio_duration,
+            video_url: decoded.video_url
+          }
         );
         await supabase
           .from("finds")
@@ -243,8 +247,8 @@ export async function addFind({
           if (typeof video === "string" && video.startsWith("data:")) {
             const res = await fetch(video);
             videoBlob = await res.blob();
-            if (videoBlob.type.includes("webm")) ext = "webm";
-            else if (videoBlob.type.includes("quicktime") || videoBlob.type.includes("mov")) ext = "mov";
+            if (videoBlob.type && videoBlob.type.includes("webm")) ext = "webm";
+            else if (videoBlob.type && (videoBlob.type.includes("quicktime") || videoBlob.type.includes("mov"))) ext = "mov";
           } else if (video.name) {
             ext = (video.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/gi, "");
           } else if (video.type) {
@@ -260,12 +264,20 @@ export async function addFind({
           }
 
           const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext || "mp4"}`;
-          const { error: vErr } = await supabase.storage
+          let { error: vErr } = await supabase.storage
             .from("find-photos")
             .upload(videoFileName, videoBlob, {
               contentType: contentType,
-              upsert: true
+              upsert: false
             });
+
+          if (vErr) {
+            console.warn("Storage video upload with contentType failed, retrying simple upload:", vErr);
+            const retry = await supabase.storage
+              .from("find-photos")
+              .upload(videoFileName, videoBlob);
+            vErr = retry.error;
+          }
 
           if (!vErr) {
             const { data: { publicUrl } } = supabase.storage
@@ -273,7 +285,7 @@ export async function addFind({
               .getPublicUrl(videoFileName);
             finalVideoUrl = publicUrl;
           } else {
-            console.error("Video storage upload error:", vErr);
+            console.error("Video storage upload error after retry:", vErr);
             if (typeof video === "string" && video.length < 500000) {
               finalVideoUrl = video; // Fallback to inline only if very small
             }
