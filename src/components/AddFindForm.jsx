@@ -47,11 +47,18 @@ export default function AddFindForm({
   const [localAudio, setLocalAudio] = useState(null);
   const [localVideo, setLocalVideo] = useState(null);
 
-  const activeAudio = newAudio !== undefined ? newAudio : localAudio;
-  const updateAudio = setNewAudio || setLocalAudio;
+  const activeAudio = newAudio || localAudio;
+  const activeVideo = newVideo || localVideo;
 
-  const activeVideo = newVideo !== undefined ? newVideo : localVideo;
-  const updateVideo = setNewVideo || setLocalVideo;
+  const updateAudio = (val) => {
+    setLocalAudio(val);
+    if (setNewAudio) setNewAudio(val);
+  };
+
+  const updateVideo = (val) => {
+    setLocalVideo(val);
+    if (setNewVideo) setNewVideo(val);
+  };
 
   const cameraInputRef = useRef(null);
   const galleryInputRef = useRef(null);

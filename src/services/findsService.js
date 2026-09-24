@@ -256,17 +256,24 @@ export async function addFind({
             else if (video.type.includes("quicktime") || video.type.includes("mov")) ext = "mov";
           }
 
-          let contentType = videoBlob.type;
-          if (!contentType) {
-            if (ext === "mov") contentType = "video/quicktime";
-            else if (ext === "webm") contentType = "video/webm";
-            else contentType = "video/mp4";
+          let contentType = videoBlob.type || (ext === "mov" ? "video/quicktime" : (ext === "webm" ? "video/webm" : "video/mp4"));
+
+          // Ensure video is read into a clean Blob from ArrayBuffer for Android/iOS streaming safety
+          let uploadPayload = videoBlob;
+          if (videoBlob instanceof Blob || (typeof videoBlob === "object" && typeof videoBlob.arrayBuffer === "function")) {
+            try {
+              const buffer = await videoBlob.arrayBuffer();
+              uploadPayload = new Blob([buffer], { type: contentType });
+            } catch (bufErr) {
+              console.warn("ArrayBuffer conversion fallback:", bufErr);
+              uploadPayload = videoBlob;
+            }
           }
 
           const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext || "mp4"}`;
           let { error: vErr } = await supabase.storage
             .from("find-photos")
-            .upload(videoFileName, videoBlob, {
+            .upload(videoFileName, uploadPayload, {
               contentType: contentType,
               upsert: false
             });
@@ -275,7 +282,7 @@ export async function addFind({
             console.warn("Storage video upload with contentType failed, retrying simple upload:", vErr);
             const retry = await supabase.storage
               .from("find-photos")
-              .upload(videoFileName, videoBlob);
+              .upload(videoFileName, uploadPayload);
             vErr = retry.error;
           }
 

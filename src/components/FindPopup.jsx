@@ -255,6 +255,18 @@ export default function FindPopup({
         find.video = publicUrl;
         setVideoUrl(publicUrl);
 
+        try {
+          await supabase.from("find_photos").insert([
+            {
+              find_id: find.id,
+              image_url: publicUrl,
+              type: "video"
+            }
+          ]);
+        } catch (dbErr) {
+          console.warn("Non-blocking find_photos video insert:", dbErr);
+        }
+
         const encodedDesc = encodeMetadata(
           material || "Indéterminé",
           find.user_code,
@@ -272,6 +284,11 @@ export default function FindPopup({
           .from("finds")
           .update({ description: encodedDesc })
           .eq("id", find.id);
+
+        if (window.findPhotosCache) {
+          delete window.findPhotosCache[find.id];
+        }
+        await loadPhotos();
 
         alert("Vidéo enregistrée avec succès ! 🎥");
         if (onUpdate) onUpdate();
@@ -1114,8 +1131,8 @@ export default function FindPopup({
                 />
               </div>
 
-              {/* Vidéo Player (onglet Description) */}
-              {effectiveVideoUrl && (
+              {/* Section Vidéo (onglet Description) */}
+              {effectiveVideoUrl ? (
                 <div
                   style={{
                     padding: "12px",
@@ -1132,22 +1149,42 @@ export default function FindPopup({
                       <span>🎥</span> Vidéo de la trouvaille
                     </span>
                     {!isReadOnly && (
-                      <button
-                        type="button"
-                        onClick={deleteVideo}
-                        style={{
-                          background: "rgba(239, 68, 68, 0.15)",
-                          border: "1px solid rgba(239, 68, 68, 0.3)",
-                          color: "#fca5a5",
-                          borderRadius: "8px",
-                          padding: "3px 8px",
-                          fontSize: "11px",
-                          cursor: "pointer",
-                          fontWeight: "bold"
-                        }}
-                      >
-                        🗑️ Supprimer
-                      </button>
+                      <div style={{ display: "flex", gap: "6px" }}>
+                        <button
+                          type="button"
+                          disabled={uploading}
+                          onClick={uploadVideo}
+                          style={{
+                            background: "rgba(37, 99, 235, 0.2)",
+                            border: "1px solid rgba(37, 99, 235, 0.35)",
+                            color: "#93c5fd",
+                            borderRadius: "8px",
+                            padding: "3px 8px",
+                            fontSize: "11px",
+                            cursor: "pointer",
+                            fontWeight: "bold"
+                          }}
+                        >
+                          🔄 Remplacer
+                        </button>
+                        <button
+                          type="button"
+                          disabled={uploading}
+                          onClick={deleteVideo}
+                          style={{
+                            background: "rgba(239, 68, 68, 0.15)",
+                            border: "1px solid rgba(239, 68, 68, 0.3)",
+                            color: "#fca5a5",
+                            borderRadius: "8px",
+                            padding: "3px 8px",
+                            fontSize: "11px",
+                            cursor: "pointer",
+                            fontWeight: "bold"
+                          }}
+                        >
+                          🗑️ Supprimer
+                        </button>
+                      </div>
                     )}
                   </div>
                   <video
@@ -1164,6 +1201,42 @@ export default function FindPopup({
                       border: "1px solid rgba(255, 255, 255, 0.1)"
                     }}
                   />
+                </div>
+              ) : (
+                <div
+                  style={{
+                    padding: "12px",
+                    borderRadius: "14px",
+                    background: "rgba(255, 255, 255, 0.03)",
+                    border: "1px dashed rgba(255, 255, 255, 0.15)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "8px"
+                  }}
+                >
+                  <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: "600", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span>🎥</span> Vidéo de la trouvaille : Aucune
+                  </span>
+                  {!isReadOnly && !find.isOfflinePending && (
+                    <button
+                      type="button"
+                      disabled={uploading}
+                      onClick={uploadVideo}
+                      style={{
+                        background: "rgba(37, 99, 235, 0.2)",
+                        border: "1px solid rgba(37, 99, 235, 0.4)",
+                        color: "#93c5fd",
+                        borderRadius: "10px",
+                        padding: "6px 12px",
+                        fontSize: "11px",
+                        cursor: "pointer",
+                        fontWeight: "bold"
+                      }}
+                    >
+                      {uploading ? "Envoi..." : "🎥 + Ajouter vidéo"}
+                    </button>
+                  )}
                 </div>
               )}
 
