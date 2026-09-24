@@ -47,6 +47,11 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
       // In personal mode, also display offline pending finds
       if (currentWs.mode === "personal") {
         const offlineFinds = await getPendingFinds();
+        if (offlineFinds.length > 0 && navigator.onLine) {
+          setTimeout(() => {
+            syncOfflineFinds();
+          }, 1200);
+        }
         const formattedOffline = offlineFinds.map((f) => ({
           id: `offline-${f.id}`,
           title: f.newTitle,

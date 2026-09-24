@@ -589,7 +589,7 @@ export default function FindPopup({
     border: "none",
     borderRadius: "12px",
     padding: "10px",
-    background: "#2563eb",
+    background: "#1f2937",
     color: "white",
     fontWeight: "bold",
     fontSize: "13px",
@@ -631,7 +631,7 @@ export default function FindPopup({
         </div>
 
         {finderText && (
-          <div style={{ fontSize: "10px", color: "#2563eb", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px" }}>
+          <div style={{ fontSize: "10px", color: "#374151", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px" }}>
             <span>👤</span>
             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               Trouvé par : {finderText}
@@ -738,7 +738,7 @@ export default function FindPopup({
               height: "36px",
               border: "none",
               borderRadius: "10px",
-              background: "#2563eb",
+              background: "#111827",
               color: "white",
               fontSize: "11px",
               fontWeight: "bold",
@@ -773,10 +773,10 @@ export default function FindPopup({
     >
       <div
         style={{
-          background: "#111827",
+          background: "#0d1117",
           border: "1px solid rgba(255, 255, 255, 0.12)",
           borderRadius: "24px",
-          boxShadow: "0 12px 40px rgba(0, 0, 0, 0.5)",
+          boxShadow: "0 16px 48px rgba(0, 0, 0, 0.7)",
           color: "white",
           width: "100%",
           maxWidth: "480px",
@@ -798,17 +798,17 @@ export default function FindPopup({
               {isReadOnly ? "🔍 Fiche Trouvaille" : "🔍 Détails et Édition"}
             </h3>
             {isReadOnly && (
-              <span style={{ fontSize: "10px", background: "rgba(234, 179, 8, 0.2)", color: "#facc15", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>
+              <span style={{ fontSize: "10px", background: "rgba(234, 179, 8, 0.15)", color: "#facc15", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>
                 🔒 Lecture
               </span>
             )}
             {finderText && (
-              <span style={{ fontSize: "10px", background: "rgba(37, 99, 235, 0.2)", color: "#60a5fa", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>
+              <span style={{ fontSize: "10px", background: "rgba(255, 255, 255, 0.08)", color: "#e2e8f0", border: "1px solid rgba(255, 255, 255, 0.1)", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>
                 👤 {finderText}
               </span>
             )}
             {find.session_code && (
-              <span style={{ fontSize: "10px", background: "rgba(16, 185, 129, 0.2)", color: "#10b981", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>
+              <span style={{ fontSize: "10px", background: "rgba(16, 185, 129, 0.15)", color: "#10b981", border: "1px solid rgba(16, 185, 129, 0.25)", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>
                 👥 Session {find.session_code}
               </span>
             )}
@@ -820,7 +820,7 @@ export default function FindPopup({
               height: "30px",
               borderRadius: "50%",
               border: "none",
-              background: "rgba(255, 255, 255, 0.1)",
+              background: "rgba(255, 255, 255, 0.08)",
               color: "white",
               fontSize: "14px",
               cursor: "pointer",
@@ -842,11 +842,11 @@ export default function FindPopup({
               style={{
                 flex: 1,
                 padding: "8px",
-                border: "none",
+                border: activeTab === "discovery" ? "1px solid rgba(255,255,255,0.25)" : "1px solid rgba(255,255,255,0.06)",
                 borderRadius: "10px",
-                background: activeTab === "discovery" ? "#2563eb" : "rgba(255,255,255,0.06)",
-                color: "white",
-                fontWeight: "600",
+                background: activeTab === "discovery" ? "#1e293b" : "rgba(255,255,255,0.04)",
+                color: activeTab === "discovery" ? "#ffffff" : "#94a3b8",
+                fontWeight: activeTab === "discovery" ? "700" : "600",
                 fontSize: "11px",
                 cursor: "pointer"
               }}
@@ -859,11 +859,11 @@ export default function FindPopup({
               style={{
                 flex: 1,
                 padding: "8px",
-                border: "none",
+                border: activeTab === "clean" ? "1px solid rgba(255,255,255,0.25)" : "1px solid rgba(255,255,255,0.06)",
                 borderRadius: "10px",
-                background: activeTab === "clean" ? "#2563eb" : "rgba(255,255,255,0.06)",
-                color: "white",
-                fontWeight: "600",
+                background: activeTab === "clean" ? "#1e293b" : "rgba(255,255,255,0.04)",
+                color: activeTab === "clean" ? "#ffffff" : "#94a3b8",
+                fontWeight: activeTab === "clean" ? "700" : "600",
                 fontSize: "11px",
                 cursor: "pointer"
               }}
@@ -876,11 +876,11 @@ export default function FindPopup({
               style={{
                 flex: 1.2,
                 padding: "8px",
-                border: "none",
+                border: activeTab === "identification" ? "1px solid rgba(255,255,255,0.25)" : "1px solid rgba(255,255,255,0.06)",
                 borderRadius: "10px",
-                background: activeTab === "identification" ? "#2563eb" : "rgba(255,255,255,0.06)",
-                color: "white",
-                fontWeight: "600",
+                background: activeTab === "identification" ? "#1e293b" : "rgba(255,255,255,0.04)",
+                color: activeTab === "identification" ? "#ffffff" : "#94a3b8",
+                fontWeight: activeTab === "identification" ? "700" : "600",
                 fontSize: "11px",
                 cursor: "pointer"
               }}
@@ -1074,58 +1074,28 @@ export default function FindPopup({
                   </button>
                 </div>
               )}
-
-              {/* Notice Vidéo disponible dans Description */}
-              {effectiveVideoUrl && (
-                <div
-                  onClick={() => setActiveTab("clean")}
-                  style={{
-                    padding: "10px 14px",
-                    borderRadius: "14px",
-                    background: "linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(59, 130, 246, 0.1))",
-                    border: "1px solid rgba(96, 165, 250, 0.35)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    cursor: "pointer",
-                    color: "#93c5fd",
-                    fontWeight: "700",
-                    fontSize: "12px",
-                    marginTop: "4px",
-                    boxShadow: "0 2px 10px rgba(0,0,0,0.2)"
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{ fontSize: "16px" }}>🎥</span>
-                    <span>Vidéo enregistrée (voir dans Description)</span>
-                  </div>
-                  <span style={{ fontSize: "11px", background: "#2563eb", color: "#ffffff", padding: "4px 10px", borderRadius: "8px", fontWeight: "800" }}>
-                    Consulter 👉
-                  </span>
-                </div>
-              )}
             </div>
           )}
 
           {/* Tab 2: Clean Description */}
           {activeTab === "clean" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {/* Section Vidéo de terrain (Priorité visuelle dans l'onglet Description) */}
+              {/* Section Vidéo de terrain */}
               {effectiveVideoUrl ? (
                 <div
                   style={{
                     padding: "12px",
                     borderRadius: "16px",
-                    background: "rgba(15, 23, 42, 0.8)",
-                    border: "1.5px solid rgba(59, 130, 246, 0.35)",
+                    background: "rgba(0, 0, 0, 0.45)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
                     display: "flex",
                     flexDirection: "column",
                     gap: "8px",
-                    boxShadow: "0 4px 16px rgba(0, 0, 0, 0.35)"
+                    boxShadow: "0 4px 16px rgba(0, 0, 0, 0.4)"
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "12px", fontWeight: "800", color: "#ffffff", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span style={{ fontSize: "12px", fontWeight: "800", color: "#f1f5f9", display: "flex", alignItems: "center", gap: "6px" }}>
                       <span>🎥</span> Vidéo de la trouvaille
                     </span>
                     {!isReadOnly && (
@@ -1135,11 +1105,11 @@ export default function FindPopup({
                           disabled={uploading}
                           onClick={uploadVideo}
                           style={{
-                            background: "rgba(37, 99, 235, 0.2)",
-                            border: "1px solid rgba(37, 99, 235, 0.35)",
-                            color: "#93c5fd",
+                            background: "rgba(255, 255, 255, 0.08)",
+                            border: "1px solid rgba(255, 255, 255, 0.15)",
+                            color: "#e2e8f0",
                             borderRadius: "8px",
-                            padding: "3px 8px",
+                            padding: "4px 9px",
                             fontSize: "11px",
                             cursor: "pointer",
                             fontWeight: "bold"
@@ -1156,7 +1126,7 @@ export default function FindPopup({
                             border: "1px solid rgba(239, 68, 68, 0.3)",
                             color: "#fca5a5",
                             borderRadius: "8px",
-                            padding: "3px 8px",
+                            padding: "4px 9px",
                             fontSize: "11px",
                             cursor: "pointer",
                             fontWeight: "bold"
@@ -1178,7 +1148,7 @@ export default function FindPopup({
                       maxHeight: "240px",
                       borderRadius: "12px",
                       background: "#000000",
-                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
                       objectFit: "contain"
                     }}
                   />
@@ -1205,15 +1175,14 @@ export default function FindPopup({
                       disabled={uploading}
                       onClick={uploadVideo}
                       style={{
-                        background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-                        border: "none",
+                        background: "#1f2937",
+                        border: "1px solid rgba(255, 255, 255, 0.15)",
                         color: "#ffffff",
                         borderRadius: "10px",
                         padding: "6px 12px",
                         fontSize: "11px",
                         cursor: "pointer",
-                        fontWeight: "bold",
-                        boxShadow: "0 2px 8px rgba(37, 99, 235, 0.3)"
+                        fontWeight: "bold"
                       }}
                     >
                       {uploading ? "Envoi..." : "🎥 + Ajouter vidéo"}
@@ -1341,9 +1310,9 @@ export default function FindPopup({
                       gap: "8px",
                       padding: "12px",
                       borderRadius: "14px",
-                      background: "rgba(59, 130, 246, 0.15)",
-                      border: "1px solid rgba(59, 130, 246, 0.3)",
-                      color: "#60a5fa",
+                      background: "#1f2937",
+                      border: "1px solid rgba(255, 255, 255, 0.15)",
+                      color: "#ffffff",
                       textDecoration: "none",
                       fontSize: "13px",
                       fontWeight: "700",
@@ -1351,10 +1320,10 @@ export default function FindPopup({
                       transition: "0.2s"
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
+                      e.currentTarget.style.background = "#374151";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
+                      e.currentTarget.style.background = "#1f2937";
                     }}
                   >
                     🌐 Ouvrir le lien de référence
@@ -1372,7 +1341,7 @@ export default function FindPopup({
           {isReadOnly ? (
             <button
               onClick={() => setIsModalOpen(false)}
-              style={{ ...buttonStyle, background: "#2563eb", flex: 1, padding: "12px", fontSize: "14px" }}
+              style={{ ...buttonStyle, background: "#1f2937", border: "1px solid rgba(255,255,255,0.15)", flex: 1, padding: "12px", fontSize: "14px" }}
             >
               Fermer la fiche
             </button>
