@@ -491,6 +491,20 @@ export async function addFind({
       }
     }
 
+    if (finalVideoUrl && insertedFind && insertedFind.id) {
+      try {
+        await supabase.from("find_photos").insert([
+          {
+            find_id: insertedFind.id,
+            image_url: finalVideoUrl,
+            type: "video"
+          }
+        ]);
+      } catch (videoDbErr) {
+        console.warn("Non-blocking video db insert:", videoDbErr);
+      }
+    }
+
     return insertedFind;
 
   } catch (error) {

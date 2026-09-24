@@ -124,9 +124,15 @@ export default function FindPopup({
     window.findPhotosCache[find.id] = fetchedPhotos;
     setPhotos(fetchedPhotos);
 
+    // Auto-detect video if present in find_photos
+    const foundVid = fetchedPhotos.find((p) => p.type === "video" || (typeof p.image_url === "string" && p.image_url.match(/\.(mp4|mov|webm|m4v|ogg)(\?.*)?$/i)));
+    if (foundVid?.image_url) {
+      setVideoUrl((prev) => prev || foundVid.image_url);
+    }
+
     // Preload image source
     fetchedPhotos.forEach((photo) => {
-      if (photo.image_url) {
+      if (photo.image_url && !photo.image_url.match(/\.(mp4|mov|webm|m4v|ogg)(\?.*)?$/i)) {
         const img = new Image();
         img.src = photo.image_url;
       }
@@ -152,7 +158,7 @@ export default function FindPopup({
       {
         audio_url: find.audio_url || find.audio,
         audio_duration: find.audio_duration,
-        video_url: videoUrl || find.video_url || find.video
+        video_url: effectiveVideoUrl
       }
     );
 
@@ -190,7 +196,7 @@ export default function FindPopup({
     find.category = category;
     find.sub_category = subCategory || null;
     find.description = material || "Indéterminé";
-    find.video_url = videoUrl || find.video_url || find.video;
+    find.video_url = effectiveVideoUrl;
 
     alert("Sauvegardé ✅");
     if (onUpdate) onUpdate();
@@ -283,11 +289,17 @@ export default function FindPopup({
     if (!confirm("Voulez-vous supprimer cette vidéo ?")) return;
     setUploading(true);
     try {
-      if (find.video_url && find.video_url.includes("/find-photos/")) {
-        const fileName = find.video_url.split("/").pop();
+      const targetVid = effectiveVideoUrl;
+      if (targetVid && targetVid.includes("/find-photos/")) {
+        const fileName = targetVid.split("/").pop();
         if (fileName) {
           await supabase.storage.from("find-photos").remove([fileName]);
         }
+      }
+      try {
+        await supabase.from("find_photos").delete().eq("find_id", find.id).eq("type", "video");
+      } catch (pErr) {
+        console.warn("find_photos delete warning:", pErr);
       }
       find.video_url = null;
       find.video = null;
@@ -311,6 +323,10 @@ export default function FindPopup({
         .update({ description: encodedDesc })
         .eq("id", find.id);
 
+      if (window.findPhotosCache) {
+        delete window.findPhotosCache[find.id];
+      }
+      await loadPhotos();
       alert("Vidéo supprimée ✅");
       if (onUpdate) onUpdate();
     } catch (err) {
@@ -537,8 +553,11 @@ export default function FindPopup({
     }
   };
 
-  const discoveryPhotos = photos.filter((p) => p.type === "discovery");
-  const cleanPhotos = photos.filter((p) => p.type === "clean" || p.type === "avers" || p.type === "revers");
+  const isVideoFile = (url) => typeof url === "string" && url.match(/\.(mp4|mov|webm|m4v|ogg)(\?.*)?$/i);
+  const discoveryPhotos = photos.filter((p) => p.type === "discovery" && !isVideoFile(p.image_url) && p.type !== "video");
+  const cleanPhotos = photos.filter((p) => (p.type === "clean" || p.type === "avers" || p.type === "revers") && !isVideoFile(p.image_url) && p.type !== "video");
+  const photoVideoUrl = photos.find((p) => p.type === "video" || isVideoFile(p.image_url))?.image_url;
+  const effectiveVideoUrl = videoUrl || find.video_url || find.video || decodeMetadata(find)?.video_url || photoVideoUrl || null;
 
   const inputStyle = {
     width: "100%",
@@ -564,7 +583,8 @@ export default function FindPopup({
     transition: "background 0.2s"
   };
 
-  const coverPhoto = photos.length > 0 ? photos[0].image_url : (find.thumbnail_url || find.image_url || null);
+  const validPhotoList = photos.filter((p) => !isVideoFile(p.image_url) && p.type !== "video");
+  const coverPhoto = validPhotoList.length > 0 ? validPhotoList[0].image_url : (find.thumbnail_url || find.image_url || null);
   const isReadOnly = workspace?.mode === "consultation";
   const finderText = find.finder_name || find.user_code;
 
@@ -618,7 +638,7 @@ export default function FindPopup({
         </div>
 
         {/* Media display (Photo or Video) */}
-        {coverPhoto ? (
+        {coverPhoto && !isVideoFile(coverPhoto) ? (
           <div style={{ position: "relative", width: "100%", height: "110px" }}>
             <img
               src={coverPhoto}
@@ -631,7 +651,7 @@ export default function FindPopup({
                 border: "1px solid #e5e7eb"
               }}
             />
-            {(find.video_url || find.video) && (
+            {effectiveVideoUrl && (
               <span
                 style={{
                   position: "absolute",
@@ -654,9 +674,10 @@ export default function FindPopup({
               </span>
             )}
           </div>
-        ) : (find.video_url || find.video) ? (
+        ) : effectiveVideoUrl ? (
           <video
-            src={find.video_url || find.video}
+            key={effectiveVideoUrl}
+            src={effectiveVideoUrl}
             controls
             playsInline
             preload="metadata"
@@ -1094,7 +1115,7 @@ export default function FindPopup({
               </div>
 
               {/* Vidéo Player (onglet Description) */}
-              {(videoUrl || find.video_url || find.video || decodeMetadata(find)?.video_url) && (
+              {effectiveVideoUrl && (
                 <div
                   style={{
                     padding: "12px",
@@ -1130,7 +1151,8 @@ export default function FindPopup({
                     )}
                   </div>
                   <video
-                    src={videoUrl || find.video_url || find.video || decodeMetadata(find)?.video_url}
+                    key={effectiveVideoUrl}
+                    src={effectiveVideoUrl}
                     controls
                     playsInline
                     preload="metadata"

@@ -138,29 +138,6 @@ export default function AddFindForm({
         zIndex: 10
       }}
     >
-      {/* Hidden file inputs for Camera and Gallery */}
-      <input
-        type="file"
-        accept="image/*"
-        capture="environment"
-        ref={cameraInputRef}
-        style={{ display: "none" }}
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) setNewPhoto(file);
-        }}
-      />
-      <input
-        type="file"
-        accept="image/*"
-        ref={galleryInputRef}
-        style={{ display: "none" }}
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) setNewPhoto(file);
-        }}
-      />
-
       {/* MODE SELECTOR TOGGLE (DIRECT LIVE VS MANUEL DIFFERÉ) */}
       <div
         style={{
