@@ -20,6 +20,7 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
       const { data: photoData } = await supabase
         .from("find_photos")
         .select("id, find_id, image_url, type")
+        .neq("type", "video")
         .order("id", { ascending: true });
       if (photoData) {
         setAllPhotos(photoData);

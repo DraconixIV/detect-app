@@ -271,16 +271,13 @@ export async function addFind({
     const rawSess = (sessionCode !== undefined && sessionCode !== null) ? sessionCode : (activeSess?.code || null);
     const finalSessionCode = rawSess ? normalizeSessionCode(rawSess) : null;
 
-    // 1. Process Video if provided (File, Blob, or DataURL)
+    // 1. Process Video if provided (Direct streaming storage upload)
     let finalVideoUrl = null;
-    let videoDataUrl = null;
     if (video) {
       if (typeof video === "string" && video.startsWith("http")) {
         finalVideoUrl = video;
       } else {
         try {
-          videoDataUrl = await fileToDataUrl(video);
-
           let videoBlob = video;
           let ext = "mp4";
           if (typeof video === "string" && video.startsWith("data:")) {
@@ -290,15 +287,16 @@ export async function addFind({
             else if (videoBlob.type && (videoBlob.type.includes("quicktime") || videoBlob.type.includes("mov"))) ext = "mov";
           } else if (video.name) {
             ext = (video.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/gi, "");
+            if (ext === "quicktime") ext = "mov";
           } else if (video.type) {
             if (video.type.includes("webm")) ext = "webm";
             else if (video.type.includes("quicktime") || video.type.includes("mov")) ext = "mov";
           }
 
           let contentType = videoBlob.type || (ext === "mov" ? "video/quicktime" : (ext === "webm" ? "video/webm" : "video/mp4"));
-
           const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext || "mp4"}`;
-          let { error: vErr } = await supabase.storage
+
+          const { error: vErr } = await supabase.storage
             .from("find-photos")
             .upload(videoFileName, videoBlob, {
               contentType: contentType,
@@ -311,12 +309,12 @@ export async function addFind({
               .getPublicUrl(videoFileName);
             finalVideoUrl = publicUrl;
           } else {
-            console.warn("Storage video upload fallback to data URL:", vErr);
-            finalVideoUrl = videoDataUrl;
+            console.error("Storage video upload error:", vErr);
+            throw vErr;
           }
         } catch (vEx) {
-          console.warn("Video upload exception fallback to data URL:", vEx);
-          finalVideoUrl = videoDataUrl || (typeof video === "string" ? video : null);
+          console.error("Video upload exception:", vEx);
+          throw vEx;
         }
       }
     }
@@ -366,7 +364,7 @@ export async function addFind({
       {
         audio_url: finalAudioUrl,
         audio_duration: audioDuration,
-        video_url: (finalVideoUrl && finalVideoUrl.length < 2000) ? finalVideoUrl : null
+        video_url: finalVideoUrl
       }
     );
 
@@ -397,15 +395,12 @@ export async function addFind({
     // 3. Process Photo if provided
     if (newPhoto) {
       let finalPhotoUrl = null;
-      let photoDataUrl = null;
       try {
         const compressedFile = await imageCompression(newPhoto, {
           maxSizeMB: 0.3,
           maxWidthOrHeight: 1600,
           useWebWorker: true
         });
-
-        photoDataUrl = await fileToDataUrl(compressedFile);
 
         const rawName = newPhoto.name || `photo-${Date.now()}.jpg`;
         const cleanName = rawName
@@ -418,39 +413,33 @@ export async function addFind({
 
         const { error: uploadError } = await supabase.storage
           .from("find-photos")
-          .upload(fileName, compressedFile);
+          .upload(fileName, compressedFile, { upsert: false });
 
-        if (!uploadError) {
-          const { data: { publicUrl } } = supabase.storage
-            .from("find-photos")
-            .getPublicUrl(fileName);
-          finalPhotoUrl = publicUrl;
-        } else {
-          console.warn("Photo storage upload fallback to data URL:", uploadError);
-          finalPhotoUrl = photoDataUrl;
+        if (uploadError) {
+          console.error("Storage photo upload error:", uploadError);
+          throw uploadError;
         }
-      } catch (photoErr) {
-        console.warn("Photo compression/upload error fallback to data URL:", photoErr);
-        finalPhotoUrl = await fileToDataUrl(newPhoto);
-      }
 
-      if (finalPhotoUrl) {
+        const { data: { publicUrl } } = supabase.storage
+          .from("find-photos")
+          .getPublicUrl(fileName);
+        finalPhotoUrl = publicUrl;
+
         await supabase
           .from("finds")
           .update({ image_url: finalPhotoUrl })
           .eq("id", insertedFind.id);
 
-        try {
-          await supabase.from("find_photos").insert([
-            {
-              find_id: insertedFind.id,
-              image_url: finalPhotoUrl,
-              type: "discovery"
-            }
-          ]);
-        } catch (photoDbErr) {
-          console.warn("Photo find_photos insert error:", photoDbErr);
-        }
+        await supabase.from("find_photos").insert([
+          {
+            find_id: insertedFind.id,
+            image_url: finalPhotoUrl,
+            type: "discovery"
+          }
+        ]);
+      } catch (photoErr) {
+        console.error("Photo upload error:", photoErr);
+        throw photoErr;
       }
     }
 

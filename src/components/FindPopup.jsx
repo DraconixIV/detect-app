@@ -219,49 +219,33 @@ export default function FindPopup({
 
       setUploading(true);
       try {
-        let publicUrl = null;
-        let dataUrl = null;
+        let ext = (file.name?.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/gi, "");
+        if (!ext || ext === "quicktime") ext = "mov";
+        let contentType = file.type || (ext === "mov" ? "video/quicktime" : (ext === "webm" ? "video/webm" : "video/mp4"));
 
-        try {
-          dataUrl = await fileToDataUrl(file);
-        } catch (readErr) {
-          console.warn("Could not read video file as dataUrl:", readErr);
-        }
+        const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
+        const { error: vErr } = await supabase.storage
+          .from("find-photos")
+          .upload(videoFileName, file, {
+            contentType: contentType,
+            upsert: false
+          });
 
-        try {
-          let ext = (file.name?.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/gi, "");
-          if (!ext || ext === "quicktime") ext = "mov";
-          let contentType = file.type || (ext === "mov" ? "video/quicktime" : (ext === "webm" ? "video/webm" : "video/mp4"));
-
-          const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
-          let { error: vErr } = await supabase.storage
-            .from("find-photos")
-            .upload(videoFileName, file, {
-              contentType: contentType,
-              upsert: false
-            });
-
-          if (!vErr) {
-            const { data: pubData } = supabase.storage
-              .from("find-photos")
-              .getPublicUrl(videoFileName);
-            publicUrl = pubData.publicUrl;
-          }
-        } catch (storErr) {
-          console.warn("Storage upload error, using dataUrl fallback:", storErr);
-        }
-
-        const finalUrl = publicUrl || dataUrl;
-        if (!finalUrl) {
-          alert("Impossible de traiter la vidéo.");
+        if (vErr) {
+          console.error("Storage upload error:", vErr);
+          alert("Erreur lors du téléchargement de la vidéo : " + (vErr.message || "Serveur indisponible"));
           setUploading(false);
           return;
         }
 
+        const { data: { publicUrl } } = supabase.storage
+          .from("find-photos")
+          .getPublicUrl(videoFileName);
+
         // Update find metadata and state
-        find.video_url = finalUrl;
-        find.video = finalUrl;
-        setVideoUrl(finalUrl);
+        find.video_url = publicUrl;
+        find.video = publicUrl;
+        setVideoUrl(publicUrl);
 
         try {
           await supabase.from("find_photos").delete().eq("find_id", find.id).eq("type", "video");
@@ -269,41 +253,31 @@ export default function FindPopup({
           console.warn("Clean old video entry error:", delErr);
         }
 
-        try {
-          await supabase.from("find_photos").insert([
-            {
-              find_id: find.id,
-              image_url: finalUrl,
-              type: "video"
-            }
-          ]);
-        } catch (dbErr) {
-          console.warn("find_photos video insert warning:", dbErr);
-        }
-
-        if (finalUrl.length < 2000) {
-          try {
-            const encodedDesc = encodeMetadata(
-              material || "Indéterminé",
-              find.user_code,
-              find.finder_name,
-              find.session_code,
-              find.thumbnail_url,
-              {
-                audio_url: find.audio_url || find.audio,
-                audio_duration: find.audio_duration,
-                video_url: finalUrl
-              }
-            );
-
-            await supabase
-              .from("finds")
-              .update({ description: encodedDesc })
-              .eq("id", find.id);
-          } catch (descErr) {
-            console.warn("Find meta description update warning:", descErr);
+        await supabase.from("find_photos").insert([
+          {
+            find_id: find.id,
+            image_url: publicUrl,
+            type: "video"
           }
-        }
+        ]);
+
+        const encodedDesc = encodeMetadata(
+          material || "Indéterminé",
+          find.user_code,
+          find.finder_name,
+          find.session_code,
+          find.thumbnail_url,
+          {
+            audio_url: find.audio_url || find.audio,
+            audio_duration: find.audio_duration,
+            video_url: publicUrl
+          }
+        );
+
+        await supabase
+          .from("finds")
+          .update({ description: encodedDesc })
+          .eq("id", find.id);
 
         if (window.findPhotosCache) {
           delete window.findPhotosCache[find.id];
@@ -393,50 +367,40 @@ export default function FindPopup({
 
       try {
         for (const file of files) {
-          let photoUrl = null;
-          let photoDataUrl = null;
+          const compressedFile = await imageCompression(file, {
+            maxSizeMB: 0.3,
+            maxWidthOrHeight: 1600,
+            useWebWorker: true
+          });
 
-          try {
-            const compressedFile = await imageCompression(file, {
-              maxSizeMB: 0.3,
-              maxWidthOrHeight: 1600,
-              useWebWorker: true
-            });
-            photoDataUrl = await fileToDataUrl(compressedFile);
+          const cleanName = file.name
+            .replaceAll(" ", "-")
+            .replaceAll("é", "e")
+            .replaceAll("è", "e")
+            .replaceAll("à", "a");
 
-            const cleanName = file.name
-              .replaceAll(" ", "-")
-              .replaceAll("é", "e")
-              .replaceAll("è", "e")
-              .replaceAll("à", "a");
+          const fileName = `${Date.now()}-${cleanName}`;
 
-            const fileName = `${Date.now()}-${cleanName}`;
+          const { error: uploadError } = await supabase.storage
+            .from("find-photos")
+            .upload(fileName, compressedFile, { upsert: false });
 
-            const { error: uploadError } = await supabase.storage
-              .from("find-photos")
-              .upload(fileName, compressedFile);
+          if (uploadError) {
+            console.error(uploadError);
+            continue;
+          }
 
-            if (!uploadError) {
-              const { data: { publicUrl } } = supabase.storage
-                .from("find-photos")
-                .getPublicUrl(fileName);
-              photoUrl = publicUrl;
-            } else {
-              photoUrl = photoDataUrl;
+          const { data: { publicUrl } } = supabase.storage
+            .from("find-photos")
+            .getPublicUrl(fileName);
+
+          await supabase.from("find_photos").insert([
+            {
+              find_id: find.id,
+              image_url: publicUrl,
+              type
             }
-          } catch (compErr) {
-            photoUrl = await fileToDataUrl(file);
-          }
-
-          if (photoUrl) {
-            await supabase.from("find_photos").insert([
-              {
-                find_id: find.id,
-                image_url: photoUrl,
-                type
-              }
-            ]);
-          }
+          ]);
         }
 
         // Clear local cache to force reload
