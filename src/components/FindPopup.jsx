@@ -7,7 +7,7 @@ import ConfirmModal from "./ConfirmModal";
 import { materials, materialEmojis } from "../subCategories";
 import { loadCategoriesData } from "../services/categoriesService";
 import { loadMaterialsData } from "../services/materialsService";
-import { encodeMetadata, decodeMetadata } from "../services/findsService";
+import { encodeMetadata, decodeMetadata, fileToDataUrl } from "../services/findsService";
 import AudioNotePlayer from "./AudioNotePlayer";
 
 export default function FindPopup({
@@ -212,78 +212,98 @@ export default function FindPopup({
     input.onchange = async (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
-      if (file.size > 30 * 1024 * 1024) {
-        alert("⚠️ Vidéo trop volumineuse (max 30 Mo). Privilégiez un court extrait de 5 à 15 secondes.");
+      if (file.size > 50 * 1024 * 1024) {
+        alert("⚠️ Vidéo trop volumineuse (max 50 Mo). Privilégiez un court extrait de 5 à 15 secondes.");
         return;
       }
 
       setUploading(true);
       try {
-        let ext = (file.name?.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/gi, "");
-        if (!ext || ext === "quicktime") ext = "mov";
-        let contentType = file.type || (ext === "mov" ? "video/quicktime" : (ext === "webm" ? "video/webm" : "video/mp4"));
+        let publicUrl = null;
+        let dataUrl = null;
 
-        const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
-        let { error: vErr } = await supabase.storage
-          .from("find-photos")
-          .upload(videoFileName, file, {
-            contentType: contentType,
-            upsert: false
-          });
-
-        if (vErr) {
-          console.warn("Retrying video upload without options...", vErr);
-          const retry = await supabase.storage
-            .from("find-photos")
-            .upload(videoFileName, file);
-          vErr = retry.error;
+        try {
+          dataUrl = await fileToDataUrl(file);
+        } catch (readErr) {
+          console.warn("Could not read video file as dataUrl:", readErr);
         }
 
-        if (vErr) {
-          console.error("Storage upload error:", vErr);
-          alert("Erreur lors du téléchargement de la vidéo: " + (vErr.message || "Erreur serveur"));
+        try {
+          let ext = (file.name?.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/gi, "");
+          if (!ext || ext === "quicktime") ext = "mov";
+          let contentType = file.type || (ext === "mov" ? "video/quicktime" : (ext === "webm" ? "video/webm" : "video/mp4"));
+
+          const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
+          let { error: vErr } = await supabase.storage
+            .from("find-photos")
+            .upload(videoFileName, file, {
+              contentType: contentType,
+              upsert: false
+            });
+
+          if (!vErr) {
+            const { data: pubData } = supabase.storage
+              .from("find-photos")
+              .getPublicUrl(videoFileName);
+            publicUrl = pubData.publicUrl;
+          }
+        } catch (storErr) {
+          console.warn("Storage upload error, using dataUrl fallback:", storErr);
+        }
+
+        const finalUrl = publicUrl || dataUrl;
+        if (!finalUrl) {
+          alert("Impossible de traiter la vidéo.");
           setUploading(false);
           return;
         }
 
-        const { data: { publicUrl } } = supabase.storage
-          .from("find-photos")
-          .getPublicUrl(videoFileName);
+        // Update find metadata and state
+        find.video_url = finalUrl;
+        find.video = finalUrl;
+        setVideoUrl(finalUrl);
 
-        // Update find metadata in database
-        find.video_url = publicUrl;
-        find.video = publicUrl;
-        setVideoUrl(publicUrl);
+        try {
+          await supabase.from("find_photos").delete().eq("find_id", find.id).eq("type", "video");
+        } catch (delErr) {
+          console.warn("Clean old video entry error:", delErr);
+        }
 
         try {
           await supabase.from("find_photos").insert([
             {
               find_id: find.id,
-              image_url: publicUrl,
+              image_url: finalUrl,
               type: "video"
             }
           ]);
         } catch (dbErr) {
-          console.warn("Non-blocking find_photos video insert:", dbErr);
+          console.warn("find_photos video insert warning:", dbErr);
         }
 
-        const encodedDesc = encodeMetadata(
-          material || "Indéterminé",
-          find.user_code,
-          find.finder_name,
-          find.session_code,
-          find.thumbnail_url,
-          {
-            audio_url: find.audio_url || find.audio,
-            audio_duration: find.audio_duration,
-            video_url: publicUrl
-          }
-        );
+        if (finalUrl.length < 2000) {
+          try {
+            const encodedDesc = encodeMetadata(
+              material || "Indéterminé",
+              find.user_code,
+              find.finder_name,
+              find.session_code,
+              find.thumbnail_url,
+              {
+                audio_url: find.audio_url || find.audio,
+                audio_duration: find.audio_duration,
+                video_url: finalUrl
+              }
+            );
 
-        await supabase
-          .from("finds")
-          .update({ description: encodedDesc })
-          .eq("id", find.id);
+            await supabase
+              .from("finds")
+              .update({ description: encodedDesc })
+              .eq("id", find.id);
+          } catch (descErr) {
+            console.warn("Find meta description update warning:", descErr);
+          }
+        }
 
         if (window.findPhotosCache) {
           delete window.findPhotosCache[find.id];
@@ -352,7 +372,6 @@ export default function FindPopup({
     setUploading(false);
   };
 
-
   const uploadPhoto = async (type, useCamera = false) => {
     if (uploading) return;
 
@@ -374,40 +393,50 @@ export default function FindPopup({
 
       try {
         for (const file of files) {
-          const compressedFile = await imageCompression(file, {
-            maxSizeMB: 0.3,
-            maxWidthOrHeight: 1600,
-            useWebWorker: true
-          });
+          let photoUrl = null;
+          let photoDataUrl = null;
 
-          const cleanName = file.name
-            .replaceAll(" ", "-")
-            .replaceAll("é", "e")
-            .replaceAll("è", "e")
-            .replaceAll("à", "a");
+          try {
+            const compressedFile = await imageCompression(file, {
+              maxSizeMB: 0.3,
+              maxWidthOrHeight: 1600,
+              useWebWorker: true
+            });
+            photoDataUrl = await fileToDataUrl(compressedFile);
 
-          const fileName = `${Date.now()}-${cleanName}`;
+            const cleanName = file.name
+              .replaceAll(" ", "-")
+              .replaceAll("é", "e")
+              .replaceAll("è", "e")
+              .replaceAll("à", "a");
 
-          const { error: uploadError } = await supabase.storage
-            .from("find-photos")
-            .upload(fileName, compressedFile);
+            const fileName = `${Date.now()}-${cleanName}`;
 
-          if (uploadError) {
-            console.error(uploadError);
-            continue;
+            const { error: uploadError } = await supabase.storage
+              .from("find-photos")
+              .upload(fileName, compressedFile);
+
+            if (!uploadError) {
+              const { data: { publicUrl } } = supabase.storage
+                .from("find-photos")
+                .getPublicUrl(fileName);
+              photoUrl = publicUrl;
+            } else {
+              photoUrl = photoDataUrl;
+            }
+          } catch (compErr) {
+            photoUrl = await fileToDataUrl(file);
           }
 
-          const { data: { publicUrl } } = supabase.storage
-            .from("find-photos")
-            .getPublicUrl(fileName);
-
-          await supabase.from("find_photos").insert([
-            {
-              find_id: find.id,
-              image_url: publicUrl,
-              type
-            }
-          ]);
+          if (photoUrl) {
+            await supabase.from("find_photos").insert([
+              {
+                find_id: find.id,
+                image_url: photoUrl,
+                type
+              }
+            ]);
+          }
         }
 
         // Clear local cache to force reload
@@ -570,7 +599,11 @@ export default function FindPopup({
     }
   };
 
-  const isVideoFile = (url) => typeof url === "string" && url.match(/\.(mp4|mov|webm|m4v|ogg)(\?.*)?$/i);
+  const isVideoFile = (url) => typeof url === "string" && (
+    url.startsWith("data:video/") ||
+    url.match(/\.(mp4|mov|webm|m4v|ogg)(\?.*)?$/i) ||
+    url.includes("/video-")
+  );
   const discoveryPhotos = photos.filter((p) => p.type === "discovery" && !isVideoFile(p.image_url) && p.type !== "video");
   const cleanPhotos = photos.filter((p) => (p.type === "clean" || p.type === "avers" || p.type === "revers") && !isVideoFile(p.image_url) && p.type !== "video");
   const photoVideoUrl = photos.find((p) => p.type === "video" || isVideoFile(p.image_url))?.image_url;
@@ -1115,37 +1148,58 @@ export default function FindPopup({
                   </button>
                 </div>
               )}
+
+              {/* Notice Vidéo disponible dans Description */}
+              {effectiveVideoUrl && (
+                <div
+                  onClick={() => setActiveTab("clean")}
+                  style={{
+                    padding: "10px 14px",
+                    borderRadius: "14px",
+                    background: "linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(59, 130, 246, 0.1))",
+                    border: "1px solid rgba(96, 165, 250, 0.35)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    cursor: "pointer",
+                    color: "#93c5fd",
+                    fontWeight: "700",
+                    fontSize: "12px",
+                    marginTop: "4px",
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.2)"
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ fontSize: "16px" }}>🎥</span>
+                    <span>Vidéo enregistrée (voir dans Description)</span>
+                  </div>
+                  <span style={{ fontSize: "11px", background: "#2563eb", color: "#ffffff", padding: "4px 10px", borderRadius: "8px", fontWeight: "800" }}>
+                    Consulter 👉
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
           {/* Tab 2: Clean Description */}
           {activeTab === "clean" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <div>
-                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Description</label>
-                <textarea
-                  value={cleanDescription}
-                  onChange={(e) => setCleanDescription(e.target.value)}
-                  placeholder="Notes sur la trouvaille (description, état, métal...)"
-                  style={{ ...inputStyle, minHeight: "100px", resize: "vertical" }}
-                />
-              </div>
-
-              {/* Section Vidéo (onglet Description) */}
+              {/* Section Vidéo de terrain (Priorité visuelle dans l'onglet Description) */}
               {effectiveVideoUrl ? (
                 <div
                   style={{
                     padding: "12px",
-                    borderRadius: "14px",
-                    background: "rgba(255, 255, 255, 0.04)",
-                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    borderRadius: "16px",
+                    background: "rgba(15, 23, 42, 0.8)",
+                    border: "1.5px solid rgba(59, 130, 246, 0.35)",
                     display: "flex",
                     flexDirection: "column",
-                    gap: "8px"
+                    gap: "8px",
+                    boxShadow: "0 4px 16px rgba(0, 0, 0, 0.35)"
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "11px", fontWeight: "700", color: "#ffffff", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span style={{ fontSize: "12px", fontWeight: "800", color: "#ffffff", display: "flex", alignItems: "center", gap: "6px" }}>
                       <span>🎥</span> Vidéo de la trouvaille
                     </span>
                     {!isReadOnly && (
@@ -1192,13 +1246,14 @@ export default function FindPopup({
                     src={effectiveVideoUrl}
                     controls
                     playsInline
-                    preload="metadata"
+                    preload="auto"
                     style={{
                       width: "100%",
-                      maxHeight: "220px",
-                      borderRadius: "10px",
+                      maxHeight: "240px",
+                      borderRadius: "12px",
                       background: "#000000",
-                      border: "1px solid rgba(255, 255, 255, 0.1)"
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      objectFit: "contain"
                     }}
                   />
                 </div>
@@ -1224,14 +1279,15 @@ export default function FindPopup({
                       disabled={uploading}
                       onClick={uploadVideo}
                       style={{
-                        background: "rgba(37, 99, 235, 0.2)",
-                        border: "1px solid rgba(37, 99, 235, 0.4)",
-                        color: "#93c5fd",
+                        background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                        border: "none",
+                        color: "#ffffff",
                         borderRadius: "10px",
                         padding: "6px 12px",
                         fontSize: "11px",
                         cursor: "pointer",
-                        fontWeight: "bold"
+                        fontWeight: "bold",
+                        boxShadow: "0 2px 8px rgba(37, 99, 235, 0.3)"
                       }}
                     >
                       {uploading ? "Envoi..." : "🎥 + Ajouter vidéo"}
@@ -1239,6 +1295,16 @@ export default function FindPopup({
                   )}
                 </div>
               )}
+
+              <div>
+                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Description</label>
+                <textarea
+                  value={cleanDescription}
+                  onChange={(e) => setCleanDescription(e.target.value)}
+                  placeholder="Notes sur la trouvaille (description, état, métal...)"
+                  style={{ ...inputStyle, minHeight: "100px", resize: "vertical" }}
+                />
+              </div>
 
               {/* Boutons d'action Photos */}
               <div style={{ display: "flex", gap: "8px", marginTop: "2px" }}>

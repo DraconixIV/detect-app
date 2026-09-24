@@ -550,8 +550,8 @@ export default function AddFindForm({
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (!file) return;
-          if (file.size > 25 * 1024 * 1024) {
-            alert("⚠️ Vidéo trop volumineuse (max 25 Mo). Privilégiez un court extrait de 5 à 15 secondes.");
+          if (file.size > 50 * 1024 * 1024) {
+            alert("⚠️ Vidéo trop volumineuse (max 50 Mo). Privilégiez un court extrait de 5 à 15 secondes.");
             return;
           }
           updateVideo(file);
@@ -845,7 +845,9 @@ export default function AddFindForm({
           marginTop: "4px"
         }}
       >
-        {addingFind ? "Enregistrement en cours..." : "✅ Enregistrer la trouvaille"}
+        {addingFind
+          ? (activeVideo ? "🎥 Téléversement vidéo et enregistrement..." : "Enregistrement en cours...")
+          : "✅ Enregistrer la trouvaille"}
       </button>
     </div>
   );
