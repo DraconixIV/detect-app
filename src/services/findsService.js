@@ -244,17 +244,27 @@ export async function addFind({
             const res = await fetch(video);
             videoBlob = await res.blob();
             if (videoBlob.type.includes("webm")) ext = "webm";
-            else if (videoBlob.type.includes("quicktime")) ext = "mov";
+            else if (videoBlob.type.includes("quicktime") || videoBlob.type.includes("mov")) ext = "mov";
           } else if (video.name) {
-            ext = video.name.split(".").pop() || "mp4";
+            ext = (video.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/gi, "");
+          } else if (video.type) {
+            if (video.type.includes("webm")) ext = "webm";
+            else if (video.type.includes("quicktime") || video.type.includes("mov")) ext = "mov";
           }
 
-          const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
+          let contentType = videoBlob.type;
+          if (!contentType) {
+            if (ext === "mov") contentType = "video/quicktime";
+            else if (ext === "webm") contentType = "video/webm";
+            else contentType = "video/mp4";
+          }
+
+          const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext || "mp4"}`;
           const { error: vErr } = await supabase.storage
             .from("find-photos")
             .upload(videoFileName, videoBlob, {
-              contentType: videoBlob.type || "video/mp4",
-              upsert: false
+              contentType: contentType,
+              upsert: true
             });
 
           if (!vErr) {
@@ -270,6 +280,9 @@ export async function addFind({
           }
         } catch (vEx) {
           console.error("Video upload exception:", vEx);
+          if (typeof video === "string" && video.length < 500000) {
+            finalVideoUrl = video;
+          }
         }
       }
     }

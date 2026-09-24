@@ -428,7 +428,7 @@ export default function FindPopup({
     transition: "background 0.2s"
   };
 
-  const coverPhoto = photos.length > 0 ? photos[0].image_url : null;
+  const coverPhoto = photos.length > 0 ? photos[0].image_url : (find.thumbnail_url || find.image_url || null);
   const isReadOnly = workspace?.mode === "consultation";
   const finderText = find.finder_name || find.user_code;
 
@@ -818,32 +818,6 @@ export default function FindPopup({
                 </div>
               )}
 
-              {/* Vidéo Player */}
-              {(find.video_url || find.video) && (
-                <div
-                  style={{
-                    padding: "10px 12px",
-                    borderRadius: "14px",
-                    background: "rgba(255, 255, 255, 0.04)",
-                    border: "1px solid rgba(255, 255, 255, 0.12)",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "8px"
-                  }}
-                >
-                  <span style={{ fontSize: "11px", fontWeight: "700", color: "#ffffff", display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span>🎥</span> Vidéo
-                  </span>
-                  <video
-                    src={find.video_url || find.video}
-                    controls
-                    playsInline
-                    preload="metadata"
-                    style={{ width: "100%", maxHeight: "180px", borderRadius: "8px", background: "#000" }}
-                  />
-                </div>
-              )}
-
               <div>
                 <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Catégorie</label>
                 <select
@@ -971,7 +945,7 @@ export default function FindPopup({
 
           {/* Tab 2: Clean Description */}
           {activeTab === "clean" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               <div>
                 <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Description</label>
                 <textarea
@@ -982,7 +956,39 @@ export default function FindPopup({
                 />
               </div>
 
-              <div style={{ display: "flex", gap: "8px", marginTop: "5px" }}>
+              {/* Vidéo Player (onglet Description) */}
+              {(find.video_url || find.video) && (
+                <div
+                  style={{
+                    padding: "12px",
+                    borderRadius: "14px",
+                    background: "rgba(255, 255, 255, 0.04)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px"
+                  }}
+                >
+                  <span style={{ fontSize: "11px", fontWeight: "700", color: "#ffffff", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span>🎥</span> Vidéo de la trouvaille
+                  </span>
+                  <video
+                    src={find.video_url || find.video}
+                    controls
+                    playsInline
+                    preload="metadata"
+                    style={{
+                      width: "100%",
+                      maxHeight: "220px",
+                      borderRadius: "10px",
+                      background: "#000000",
+                      border: "1px solid rgba(255, 255, 255, 0.1)"
+                    }}
+                  />
+                </div>
+              )}
+
+              <div style={{ display: "flex", gap: "8px", marginTop: "2px" }}>
                 {!find.isOfflinePending && (
                   <>
                     <button

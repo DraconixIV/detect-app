@@ -58,6 +58,9 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
           date: f.customDate || f.createdAt,
           isOfflinePending: true,
           offlinePhoto: f.photo ? URL.createObjectURL(f.photo) : null,
+          audio_url: f.audio || null,
+          audio_duration: f.audioDuration || null,
+          video_url: f.video ? (typeof f.video === "string" ? f.video : URL.createObjectURL(f.video)) : null,
           finder_name: f.finderName || "Moi (Hors-ligne)"
         }));
         setFinds([...formattedOffline, ...(data || [])]);
