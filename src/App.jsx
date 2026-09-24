@@ -126,7 +126,7 @@ function App() {
   const [
     newDescription,
     setNewDescription
-  ] = useState("");
+  ] = useState("Indéterminé");
 
   const [
     newCategory,
@@ -711,7 +711,7 @@ function App() {
       setCustomLng("");
       setShowForm(false);
       setNewTitle("");
-      setNewDescription("");
+      setNewDescription("Indéterminé");
       setNewCategory(firstAvailableCat);
       setNewSubCategory("");
       setNewPhoto(null);
@@ -747,7 +747,7 @@ function App() {
         setCustomLng("");
         setShowForm(false);
         setNewTitle("");
-        setNewDescription("");
+        setNewDescription("Indéterminé");
         setNewCategory(firstAvailableCat);
         setNewSubCategory("");
         setNewPhoto(null);

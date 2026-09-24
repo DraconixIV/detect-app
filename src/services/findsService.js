@@ -30,7 +30,7 @@ export function decodeMetadata(find) {
   let video_url = find.video_url || null;
   let cleanDesc = find.description || "";
 
-  const match = cleanDesc.match(/<!--GP_META:(.*?)-->/);
+  const match = cleanDesc.match(/<!--GP_META:([\s\S]*?)-->/);
   if (match) {
     try {
       const meta = JSON.parse(match[1]);
@@ -40,8 +40,8 @@ export function decodeMetadata(find) {
       if (meta.t && !thumbnail_url) thumbnail_url = meta.t;
       if (meta.a && !audio_url) audio_url = meta.a;
       if (meta.ad && !audio_duration) audio_duration = Number(meta.ad);
-      if (meta.v && !video_url) video_url = meta.v;
-      cleanDesc = cleanDesc.replace(/<!--GP_META:.*?-->/g, "").trim();
+      if ((meta.v || meta.video_url) && !video_url) video_url = meta.v || meta.video_url;
+      cleanDesc = cleanDesc.replace(/<!--GP_META:[\s\S]*?-->/g, "").trim();
     } catch {
       // Ignore
     }

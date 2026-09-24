@@ -464,14 +464,14 @@ export default function AddFindForm({
           Métal
         </label>
         <select
-          value={newDescription}
+          value={newDescription || "Indéterminé"}
           onChange={(e) => setNewDescription(e.target.value)}
           style={inputStyle}
         >
-          <option value="" style={{ background: "#1f2937", color: "#ffffff" }}>
-            Métal non spécifié
+          <option value="Indéterminé" style={{ background: "#1f2937", color: "#ffffff" }}>
+            ❓ Métal non spécifié
           </option>
-          {(materialsData.materials || []).map((mat) => (
+          {(materialsData.materials || []).filter((m) => m !== "Indéterminé").map((mat) => (
             <option key={mat} value={mat} style={{ background: "#1f2937", color: "#ffffff" }}>
               {materialsData.emojis?.[mat] || "🪙"} {mat}
             </option>

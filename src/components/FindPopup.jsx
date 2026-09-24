@@ -28,6 +28,7 @@ export default function FindPopup({
   const [category, setCategory] = useState(find.category || "");
   const [subCategory, setSubCategory] = useState(find.sub_category || "");
   const [material, setMaterial] = useState(find.description || "Indéterminé");
+  const [videoUrl, setVideoUrl] = useState(find.video_url || find.video || null);
   const [photos, setPhotos] = useState([]);
   const [discoveryIndex, setDiscoveryIndex] = useState(0);
   const [cleanIndex, setCleanIndex] = useState(0);
@@ -42,8 +43,18 @@ export default function FindPopup({
   const [isFav, setIsFav] = useState(!!find.favorite);
 
   useEffect(() => {
+    setTitle(find.title || "");
+    setCleanDescription(find.clean_description || "");
+    setIdentificationLink(find.identification_link || "");
+    setLatitude(find.latitude || "");
+    setLongitude(find.longitude || "");
+    setDate(find.date || "");
+    setCategory(find.category || "");
+    setSubCategory(find.sub_category || "");
+    setMaterial(find.description || "Indéterminé");
+    setVideoUrl(find.video_url || find.video || null);
     setIsFav(!!find.favorite);
-  }, [find.favorite, find.id]);
+  }, [find.id, find.video_url, find.video]);
 
   useEffect(() => {
     const handleCategoriesUpdate = () => {
@@ -132,7 +143,7 @@ export default function FindPopup({
     setSaving(true);
 
     const encodedDesc = encodeMetadata(
-      material,
+      material || "Indéterminé",
       find.user_code,
       find.finder_name,
       find.session_code,
@@ -140,7 +151,7 @@ export default function FindPopup({
       {
         audio_url: find.audio_url || find.audio,
         audio_duration: find.audio_duration,
-        video_url: find.video_url || find.video
+        video_url: videoUrl || find.video_url || find.video
       }
     );
 
@@ -177,10 +188,126 @@ export default function FindPopup({
     find.date = date;
     find.category = category;
     find.sub_category = subCategory || null;
-    find.description = material;
+    find.description = material || "Indéterminé";
+    find.video_url = videoUrl || find.video_url || find.video;
 
     alert("Sauvegardé ✅");
     if (onUpdate) onUpdate();
+  };
+
+  const uploadVideo = async () => {
+    if (uploading) return;
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "video/*";
+    input.setAttribute("capture", "environment");
+
+    input.onchange = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      if (file.size > 30 * 1024 * 1024) {
+        alert("⚠️ Vidéo trop volumineuse (max 30 Mo). Privilégiez un court extrait de 5 à 15 secondes.");
+        return;
+      }
+
+      setUploading(true);
+      try {
+        let ext = (file.name?.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/gi, "");
+        if (!ext || ext === "quicktime") ext = "mov";
+        let contentType = file.type || (ext === "mov" ? "video/quicktime" : (ext === "webm" ? "video/webm" : "video/mp4"));
+
+        const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
+        const { error: vErr } = await supabase.storage
+          .from("find-photos")
+          .upload(videoFileName, file, {
+            contentType: contentType,
+            upsert: true
+          });
+
+        if (vErr) {
+          console.error("Storage upload error:", vErr);
+          alert("Erreur lors du téléchargement de la vidéo: " + (vErr.message || "Erreur serveur"));
+          setUploading(false);
+          return;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from("find-photos")
+          .getPublicUrl(videoFileName);
+
+        // Update find metadata in database
+        find.video_url = publicUrl;
+        find.video = publicUrl;
+        setVideoUrl(publicUrl);
+
+        const encodedDesc = encodeMetadata(
+          material || "Indéterminé",
+          find.user_code,
+          find.finder_name,
+          find.session_code,
+          find.thumbnail_url,
+          {
+            audio_url: find.audio_url || find.audio,
+            audio_duration: find.audio_duration,
+            video_url: publicUrl
+          }
+        );
+
+        await supabase
+          .from("finds")
+          .update({ description: encodedDesc })
+          .eq("id", find.id);
+
+        alert("Vidéo enregistrée avec succès ! 🎥");
+        if (onUpdate) onUpdate();
+      } catch (err) {
+        console.error("Video upload error:", err);
+        alert("Erreur lors de l'enregistrement de la vidéo.");
+      }
+      setUploading(false);
+    };
+
+    input.click();
+  };
+
+  const deleteVideo = async () => {
+    if (!confirm("Voulez-vous supprimer cette vidéo ?")) return;
+    setUploading(true);
+    try {
+      if (find.video_url && find.video_url.includes("/find-photos/")) {
+        const fileName = find.video_url.split("/").pop();
+        if (fileName) {
+          await supabase.storage.from("find-photos").remove([fileName]);
+        }
+      }
+      find.video_url = null;
+      find.video = null;
+      setVideoUrl(null);
+
+      const encodedDesc = encodeMetadata(
+        material || "Indéterminé",
+        find.user_code,
+        find.finder_name,
+        find.session_code,
+        find.thumbnail_url,
+        {
+          audio_url: find.audio_url || find.audio,
+          audio_duration: find.audio_duration,
+          video_url: null
+        }
+      );
+
+      await supabase
+        .from("finds")
+        .update({ description: encodedDesc })
+        .eq("id", find.id);
+
+      alert("Vidéo supprimée ✅");
+      if (onUpdate) onUpdate();
+    } catch (err) {
+      console.error("Delete video error:", err);
+    }
+    setUploading(false);
   };
 
 
@@ -860,11 +987,12 @@ export default function FindPopup({
               <div>
                 <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Métal</label>
                 <select
-                  value={material}
+                  value={material || "Indéterminé"}
                   onChange={(e) => setMaterial(e.target.value)}
                   style={{ ...inputStyle, background: "#1f2937" }}
                 >
-                  {(materialsData.materials || []).map((mat) => (
+                  <option value="Indéterminé">❓ Métal non spécifié</option>
+                  {(materialsData.materials || []).filter((m) => m !== "Indéterminé").map((mat) => (
                     <option key={mat} value={mat}>
                       {materialsData.emojis?.[mat] || "🪙"} {mat}
                     </option>
@@ -957,7 +1085,7 @@ export default function FindPopup({
               </div>
 
               {/* Vidéo Player (onglet Description) */}
-              {(find.video_url || find.video) && (
+              {(videoUrl || find.video_url || find.video) && (
                 <div
                   style={{
                     padding: "12px",
@@ -969,11 +1097,31 @@ export default function FindPopup({
                     gap: "8px"
                   }}
                 >
-                  <span style={{ fontSize: "11px", fontWeight: "700", color: "#ffffff", display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span>🎥</span> Vidéo de la trouvaille
-                  </span>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "11px", fontWeight: "700", color: "#ffffff", display: "flex", alignItems: "center", gap: "6px" }}>
+                      <span>🎥</span> Vidéo de la trouvaille
+                    </span>
+                    {!isReadOnly && (
+                      <button
+                        type="button"
+                        onClick={deleteVideo}
+                        style={{
+                          background: "rgba(239, 68, 68, 0.15)",
+                          border: "1px solid rgba(239, 68, 68, 0.3)",
+                          color: "#fca5a5",
+                          borderRadius: "8px",
+                          padding: "3px 8px",
+                          fontSize: "11px",
+                          cursor: "pointer",
+                          fontWeight: "bold"
+                        }}
+                      >
+                        🗑️ Supprimer
+                      </button>
+                    )}
+                  </div>
                   <video
-                    src={find.video_url || find.video}
+                    src={videoUrl || find.video_url || find.video}
                     controls
                     playsInline
                     preload="metadata"
@@ -988,22 +1136,30 @@ export default function FindPopup({
                 </div>
               )}
 
-              <div style={{ display: "flex", gap: "8px", marginTop: "2px" }}>
-                {!find.isOfflinePending && (
+              {/* Boutons d'action Photos & Vidéo */}
+              <div style={{ display: "flex", gap: "8px", marginTop: "2px", flexWrap: "wrap" }}>
+                {!find.isOfflinePending && !isReadOnly && (
                   <>
                     <button
                       disabled={uploading}
                       onClick={() => uploadPhoto("clean", true)}
-                      style={{ ...buttonStyle, flex: 1, padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
+                      style={{ ...buttonStyle, flex: 1, minWidth: "85px", padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
                     >
-                      📸 Photo Nettoyée
+                      📸 Photo
                     </button>
                     <button
                       disabled={uploading}
                       onClick={() => uploadPhoto("clean", false)}
-                      style={{ ...buttonStyle, flex: 1, padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
+                      style={{ ...buttonStyle, flex: 1, minWidth: "85px", padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
                     >
                       🖼️ Album
+                    </button>
+                    <button
+                      disabled={uploading}
+                      onClick={uploadVideo}
+                      style={{ ...buttonStyle, flex: 1, minWidth: "85px", padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
+                    >
+                      🎥 {videoUrl || find.video_url || find.video ? "Remplacer Vidéo" : "+ Vidéo"}
                     </button>
                   </>
                 )}
