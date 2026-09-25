@@ -46,18 +46,20 @@ function MapEventsHandler({ onLongPress, onMapDrag }) {
       }
     };
 
-    const handleDragStart = () => {
+    const handleUserMapMove = () => {
       if (onMapDrag) {
         onMapDrag();
       }
     };
 
     map.on("contextmenu", handleContextMenu);
-    map.on("dragstart", handleDragStart);
+    map.on("dragstart", handleUserMapMove);
+    map.on("movestart", handleUserMapMove);
 
     return () => {
       map.off("contextmenu", handleContextMenu);
-      map.off("dragstart", handleDragStart);
+      map.off("dragstart", handleUserMapMove);
+      map.off("movestart", handleUserMapMove);
     };
   }, [map, onLongPress, onMapDrag]);
 
@@ -316,8 +318,7 @@ export default function MainMap({
             position={openPopupFind.finalPosition || openPopupFind.position}
             onClose={() => setOpenPopupFind(null)}
             className="custom-find-leaflet-popup"
-            autoPan={true}
-            autoPanPadding={[25, 25]}
+            autoPan={false}
             closeButton={true}
             eventHandlers={{
               remove: () => setOpenPopupFind(null)
