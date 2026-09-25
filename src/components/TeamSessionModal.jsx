@@ -3,6 +3,7 @@ import {
   getMyUserCode,
   getMyDisplayName,
   setMyDisplayName,
+  isDisplayNameLocked,
   createTeamSession,
   joinTeamSession,
   leaveTeamSession,
@@ -65,13 +66,16 @@ export default function TeamSessionModal({
 
   if (!isOpen) return null;
 
+  const isLockedName = isDisplayNameLocked();
+
   const handleSaveName = (e) => {
     e.preventDefault();
+    if (isDisplayNameLocked()) return;
     if (!displayName || !displayName.trim()) {
       setPseudoRequiredError("Veuillez saisir un pseudo valide.");
       return;
     }
-    setMyDisplayName(displayName);
+    setMyDisplayName(displayName, true);
     setPseudoRequiredError("");
     setNameSaved(true);
     setTimeout(() => setNameSaved(false), 2000);
@@ -156,7 +160,7 @@ export default function TeamSessionModal({
       return;
     }
     setPseudoRequiredError("");
-    setMyDisplayName(displayName);
+    setMyDisplayName(displayName, true);
     const session = createTeamSession(newSessionName);
     setActiveSessionState(session);
     setWorkspace({
@@ -185,7 +189,7 @@ export default function TeamSessionModal({
 
     setPseudoRequiredError("");
     setJoinError("");
-    setMyDisplayName(displayName);
+    setMyDisplayName(displayName, true);
 
     try {
       const session = joinTeamSession(clean);
@@ -457,51 +461,102 @@ export default function TeamSessionModal({
             )}
 
             {/* Pseudonym field */}
-            <form onSubmit={handleSaveName} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: "600", color: isLight ? "#000000" : "#ffffff" }}>
-                Votre pseudo affiché lors des sorties :
-              </label>
-              <div style={{ display: "flex", gap: "8px" }}>
-                <input
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => {
-                    setDisplayName(e.target.value);
-                    if (pseudoRequiredError) setPseudoRequiredError("");
-                  }}
-                  placeholder="Votre pseudo"
-                  autoFocus={!!pseudoRequiredError}
-                  style={{
-                    flex: 1,
-                    padding: "10px 12px",
-                    borderRadius: "10px",
-                    border: pseudoRequiredError
-                      ? "1.5px solid #ef4444"
-                      : (isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)"),
-                    background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)",
-                    color: isLight ? "#000000" : "#ffffff",
-                    fontSize: "13px",
-                    outline: "none"
-                  }}
-                />
-                <button
-                  type="submit"
-                  style={{
-                    padding: "10px 14px",
-                    borderRadius: "10px",
-                    border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                    background: nameSaved ? "#10b981" : (isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.12)"),
-                    color: nameSaved ? "#ffffff" : (isLight ? "#0f172a" : "#ffffff"),
-                    fontSize: "12px",
-                    fontWeight: "700",
-                    cursor: "pointer",
-                    transition: "all 0.2s"
-                  }}
-                >
-                  {nameSaved ? "✓" : "Enregistrer"}
-                </button>
+            {isLockedName ? (
+              <div
+                style={{
+                  background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.03)",
+                  border: isLight ? "1px solid #e2e8f0" : "1px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "14px",
+                  padding: "14px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px"
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <label style={{ fontSize: "11px", fontWeight: "700", color: isLight ? "#000000" : "#ffffff" }}>
+                    👤 Pseudonyme du compte :
+                  </label>
+                  <span style={{ fontSize: "10px", background: "rgba(16, 185, 129, 0.15)", color: "#10b981", padding: "2px 7px", borderRadius: "6px", fontWeight: "800" }}>
+                    🔒 Verrouillé
+                  </span>
+                </div>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <input
+                    type="text"
+                    value={displayName}
+                    readOnly
+                    disabled
+                    style={{
+                      flex: 1,
+                      padding: "10px 12px",
+                      borderRadius: "10px",
+                      border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
+                      background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.06)",
+                      color: isLight ? "#000000" : "#ffffff",
+                      fontSize: "13px",
+                      fontWeight: "700",
+                      outline: "none",
+                      cursor: "not-allowed"
+                    }}
+                  />
+                </div>
+                <div style={{ fontSize: "11px", color: isLight ? "#475569" : "#94a3b8", lineHeight: "1.4" }}>
+                  Ce pseudonyme est attribué à toutes vos trouvailles sur ce compte. Pour en changer, créez un nouveau compte avec le bouton <strong>« 🔄 Nouveau »</strong> ci-dessus.
+                </div>
               </div>
-            </form>
+            ) : (
+              <form onSubmit={handleSaveName} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <label style={{ fontSize: "11px", fontWeight: "700", color: isLight ? "#000000" : "#ffffff" }}>
+                    👤 Définir votre pseudonyme (Saisie unique) :
+                  </label>
+                </div>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <input
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => {
+                      setDisplayName(e.target.value);
+                      if (pseudoRequiredError) setPseudoRequiredError("");
+                    }}
+                    placeholder="Votre pseudonyme (ex: Alex Détection)"
+                    autoFocus={!!pseudoRequiredError}
+                    style={{
+                      flex: 1,
+                      padding: "10px 12px",
+                      borderRadius: "10px",
+                      border: pseudoRequiredError
+                        ? "1.5px solid #ef4444"
+                        : (isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)"),
+                      background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)",
+                      color: isLight ? "#000000" : "#ffffff",
+                      fontSize: "13px",
+                      outline: "none"
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    style={{
+                      padding: "10px 14px",
+                      borderRadius: "10px",
+                      border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
+                      background: nameSaved ? "#10b981" : (isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.12)"),
+                      color: nameSaved ? "#ffffff" : (isLight ? "#0f172a" : "#ffffff"),
+                      fontSize: "12px",
+                      fontWeight: "700",
+                      cursor: "pointer",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    {nameSaved ? "✓" : "Enregistrer"}
+                  </button>
+                </div>
+                <div style={{ fontSize: "11px", color: isLight ? "#b45309" : "#fcd34d", lineHeight: "1.4" }}>
+                  ⚠️ Ce pseudonyme sera définitivement associé à votre compte et attribué à toutes vos trouvailles.
+                </div>
+              </form>
+            )}
 
             {/* Active Read-Only Permissions List */}
             <div
@@ -1082,16 +1137,26 @@ export default function TeamSessionModal({
                     gap: "6px"
                   }}
                 >
-                  <label style={{ fontSize: "11px", fontWeight: "700", color: isLight ? "#475569" : "#cbd5e1" }}>
-                    👤 Votre pseudo pour la session :
-                  </label>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <label style={{ fontSize: "11px", fontWeight: "700", color: isLight ? "#475569" : "#cbd5e1" }}>
+                      👤 Votre pseudo pour la session :
+                    </label>
+                    {isLockedName && (
+                      <span style={{ fontSize: "10px", background: "rgba(16, 185, 129, 0.15)", color: "#10b981", padding: "1px 6px", borderRadius: "5px", fontWeight: "800" }}>
+                        🔒 Verrouillé
+                      </span>
+                    )}
+                  </div>
                   <div style={{ display: "flex", gap: "8px" }}>
                     <input
                       type="text"
                       value={displayName}
+                      readOnly={isLockedName}
+                      disabled={isLockedName}
                       onChange={(e) => {
-                        setDisplayName(e.target.value);
-                        setMyDisplayName(e.target.value);
+                        if (!isLockedName) {
+                          setDisplayName(e.target.value);
+                        }
                       }}
                       placeholder="Ex: Marc Détection"
                       style={{
@@ -1099,11 +1164,12 @@ export default function TeamSessionModal({
                         padding: "8px 12px",
                         borderRadius: "8px",
                         border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
-                        background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.05)",
+                        background: isLockedName ? (isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)") : (isLight ? "#ffffff" : "rgba(255, 255, 255, 0.05)"),
                         color: isLight ? "#000000" : "#ffffff",
                         fontSize: "12px",
                         fontWeight: "600",
-                        outline: "none"
+                        outline: "none",
+                        cursor: isLockedName ? "not-allowed" : "text"
                       }}
                     />
                   </div>

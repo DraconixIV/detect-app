@@ -8,6 +8,7 @@ import { materials, materialEmojis } from "../subCategories";
 import { loadCategoriesData } from "../services/categoriesService";
 import { loadMaterialsData } from "../services/materialsService";
 import { encodeMetadata, decodeMetadata, fileToDataUrl } from "../services/findsService";
+import { getMyUserCode, getMyDisplayName, normalizeSessionCode } from "../services/sessionService";
 import AudioNotePlayer from "./AudioNotePlayer";
 
 export default function FindPopup({
@@ -150,10 +151,16 @@ export default function FindPopup({
     if (saving) return;
     setSaving(true);
 
+    const myCode = getMyUserCode();
+    const myName = getMyDisplayName();
+    const isMyFind = !find.user_code || normalizeSessionCode(find.user_code) === normalizeSessionCode(myCode);
+    const activeUserCode = isMyFind ? (myCode || find.user_code) : find.user_code;
+    const activeFinderName = isMyFind ? (myName || find.finder_name || "Détecteuriste") : find.finder_name;
+
     const encodedDesc = encodeMetadata(
       material || "Indéterminé",
-      find.user_code,
-      find.finder_name,
+      activeUserCode,
+      activeFinderName,
       find.session_code,
       find.thumbnail_url,
       {
@@ -262,10 +269,16 @@ export default function FindPopup({
           }
         ]);
 
+        const myCode = getMyUserCode();
+        const myName = getMyDisplayName();
+        const isMyFind = !find.user_code || normalizeSessionCode(find.user_code) === normalizeSessionCode(myCode);
+        const activeUserCode = isMyFind ? (myCode || find.user_code) : find.user_code;
+        const activeFinderName = isMyFind ? (myName || find.finder_name || "Détecteuriste") : find.finder_name;
+
         const encodedDesc = encodeMetadata(
           material || "Indéterminé",
-          find.user_code,
-          find.finder_name,
+          activeUserCode,
+          activeFinderName,
           find.session_code,
           find.thumbnail_url,
           {
@@ -317,10 +330,16 @@ export default function FindPopup({
       find.video = null;
       setVideoUrl(null);
 
+      const myCode = getMyUserCode();
+      const myName = getMyDisplayName();
+      const isMyFind = !find.user_code || normalizeSessionCode(find.user_code) === normalizeSessionCode(myCode);
+      const activeUserCode = isMyFind ? (myCode || find.user_code) : find.user_code;
+      const activeFinderName = isMyFind ? (myName || find.finder_name || "Détecteuriste") : find.finder_name;
+
       const encodedDesc = encodeMetadata(
         material || "Indéterminé",
-        find.user_code,
-        find.finder_name,
+        activeUserCode,
+        activeFinderName,
         find.session_code,
         find.thumbnail_url,
         {
@@ -601,7 +620,10 @@ export default function FindPopup({
   const validPhotoList = photos.filter((p) => !isVideoFile(p.image_url) && p.type !== "video");
   const coverPhoto = validPhotoList.length > 0 ? validPhotoList[0].image_url : (find.thumbnail_url || find.image_url || null);
   const isReadOnly = workspace?.mode === "consultation";
-  const finderText = find.finder_name || find.user_code;
+  const myCode = getMyUserCode();
+  const myName = getMyDisplayName();
+  const isMyFind = !find.user_code || normalizeSessionCode(find.user_code) === normalizeSessionCode(myCode);
+  const finderText = isMyFind ? (myName || find.finder_name || "Moi") : (find.finder_name || find.user_code);
 
   return (
     <>

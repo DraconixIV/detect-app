@@ -104,12 +104,15 @@ export function getMyUserCode() {
 }
 
 /**
- * Reset and generate a completely fresh, random 6-character user detector code (blank map)
+ * Reset and generate a completely fresh, random 6-character user detector code (blank map & new account)
  */
 export function resetAndGenerateNewUserCode() {
   try {
     const newCode = generateRandomCode("GEO", 6);
     localStorage.setItem(USER_CODE_STORAGE_KEY, newCode);
+    localStorage.removeItem(USER_DISPLAY_NAME_KEY);
+    localStorage.removeItem(ACTIVE_SESSION_STORAGE_KEY);
+    localStorage.removeItem("geoprospect_legacy_finds_claimed_v3");
     return newCode;
   } catch (e) {
     return generateRandomCode("GEO", 6);
@@ -130,14 +133,31 @@ export function getMyDisplayName() {
 }
 
 /**
- * Save user's display name
+ * Check if display name is permanently locked for the current account
  */
-export function setMyDisplayName(name) {
+export function isDisplayNameLocked() {
   try {
+    const saved = localStorage.getItem(USER_DISPLAY_NAME_KEY);
+    return Boolean(saved && saved.trim());
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * Save user's display name (Single entry lock: immutable once set unless forced during account creation/reset)
+ */
+export function setMyDisplayName(name, force = false) {
+  try {
+    const current = getMyDisplayName();
+    if (current && !force) {
+      console.warn("Display name is permanently locked for this account and cannot be modified.");
+      return current;
+    }
     const clean = (name || "").trim();
     if (clean) {
       localStorage.setItem(USER_DISPLAY_NAME_KEY, clean);
-    } else {
+    } else if (force) {
       localStorage.removeItem(USER_DISPLAY_NAME_KEY);
     }
     return clean;

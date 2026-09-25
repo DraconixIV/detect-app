@@ -202,6 +202,12 @@ export default function SettingsPanel({
               <div style={{ fontSize: "18px", fontWeight: "900", letterSpacing: "1.5px", color: isLight ? "#000000" : "#ffffff" }}>
                 {myCode}
               </div>
+              {myName && (
+                <div style={{ fontSize: "11px", color: textSub, fontWeight: "600", marginTop: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
+                  <span>👤 Pseudo : <strong style={{ color: textMain }}>{myName}</strong></span>
+                  <span style={{ fontSize: "9px", background: "rgba(16, 185, 129, 0.15)", color: "#10b981", padding: "1px 5px", borderRadius: "4px", fontWeight: "700" }}>🔒</span>
+                </div>
+              )}
             </div>
 
             <button

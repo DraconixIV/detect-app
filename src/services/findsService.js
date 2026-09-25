@@ -47,6 +47,24 @@ export function decodeMetadata(find) {
     }
   }
 
+  // DYNAMIC PSEUDONYM HARMONIZATION:
+  // If this find belongs to current user's detector code (or is untagged), always attribute it
+  // consistently to the current active locked display name.
+  try {
+    const myCode = getMyUserCode();
+    const myName = getMyDisplayName();
+    const cleanMyCode = myCode ? normalizeSessionCode(myCode) : null;
+    const cleanUserCode = user_code ? normalizeSessionCode(user_code) : null;
+    if (myName && (!cleanUserCode || cleanUserCode === cleanMyCode)) {
+      finder_name = myName;
+      if (!user_code && cleanMyCode) {
+        user_code = cleanMyCode;
+      }
+    }
+  } catch {
+    // fallback
+  }
+
   return {
     ...find,
     description: cleanDesc,
@@ -99,14 +117,16 @@ export function normalizeCategoryAndSub(find) {
 }
 
 /**
- * Ensures existing historical finds in Supabase (from the single-user era) are permanently
- * attributed to the primary creator's personal detector code so they are never lost.
+ * Ensures existing historical finds in Supabase (from the single-user era or previous sessions)
+ * are permanently attributed to the primary creator's personal detector code and unified pseudonym.
  */
 export async function ensureLegacyFindsClaimed(myCode) {
   try {
     if (!myCode) return;
     const cleanMyCode = normalizeSessionCode(myCode);
-    const alreadyClaimed = localStorage.getItem(LEGACY_CLAIMED_FLAG);
+    const myName = getMyDisplayName();
+    const claimKey = `geoprospect_claimed_${cleanMyCode}_${myName || "anon"}`;
+    const alreadyClaimed = localStorage.getItem(claimKey);
     if (alreadyClaimed === "true") return;
 
     const { data: allFinds, error } = await supabase
@@ -115,14 +135,17 @@ export async function ensureLegacyFindsClaimed(myCode) {
 
     if (error || !allFinds) return;
 
-    let claimedCount = 0;
+    let updatedCount = 0;
     for (const row of allFinds) {
       const decoded = decodeMetadata(row);
-      if (!decoded.user_code) {
+      const isMine = !decoded.user_code || normalizeSessionCode(decoded.user_code) === cleanMyCode;
+      
+      // Update if find is untagged or has outdated finder name
+      if (isMine && (!decoded.user_code || (myName && decoded.finder_name !== myName))) {
         const updatedDesc = encodeMetadata(
           decoded.description,
           cleanMyCode,
-          decoded.finder_name || getMyDisplayName() || "Détecteuriste",
+          myName || decoded.finder_name || "Détecteuriste",
           decoded.session_code,
           decoded.thumbnail_url,
           {
@@ -135,13 +158,13 @@ export async function ensureLegacyFindsClaimed(myCode) {
           .from("finds")
           .update({ description: updatedDesc })
           .eq("id", row.id);
-        claimedCount++;
+        updatedCount++;
       }
     }
 
-    localStorage.setItem(LEGACY_CLAIMED_FLAG, "true");
-    if (claimedCount > 0) {
-      console.log(`[GeoProspect] Successfully claimed and secured ${claimedCount} historical finds for ${cleanMyCode}`);
+    localStorage.setItem(claimKey, "true");
+    if (updatedCount > 0) {
+      console.log(`[GeoProspect] Harmonized and secured ${updatedCount} finds for ${cleanMyCode} (${myName})`);
     }
   } catch (err) {
     console.warn("Legacy finds attribution error:", err);
