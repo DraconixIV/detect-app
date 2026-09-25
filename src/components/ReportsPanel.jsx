@@ -35,10 +35,10 @@ export default function ReportsPanel({
           <div style={{ fontSize: "28px" }}>📊</div>
           <div>
             <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: textMain }}>
-              Rapports et Statistiques
+              Rapport
             </h1>
             <p style={{ margin: 0, fontSize: "12px", color: textSub }}>
-              Historique de vos sorties, distances et découvertes
+              Historique de vos sorties
             </p>
           </div>
         </div>

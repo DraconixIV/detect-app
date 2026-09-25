@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { categoriesWithSub, defaultCategoryColors, PRESET_CATEGORY_COLORS } from "../subCategories";
 import { loadCategoriesData } from "../services/categoriesService";
+import { normalizeDateStr } from "../services/findsService";
 
 function getDistance(p1, p2) {
   const R = 6371e3; // metres
@@ -40,7 +41,7 @@ export default function StatsPanel({
   onOpenCategoryManager
 }) {
   const { emojis: categoryEmojis, categories: customCategories, colors: categoryColors = {} } = loadCategoriesData();
-  const [chartType, setChartType] = useState("donut"); // 'donut' | 'bar' | 'treemap' | 'radar' | 'pyramid'
+  const [chartType, setChartType] = useState("donut"); // 'donut' | 'bar' | 'radar'
   const [expandedCats, setExpandedCats] = useState({});
 
   const isLight = theme === "light";
@@ -52,19 +53,22 @@ export default function StatsPanel({
   const cardShadow = isLight ? "0 2px 8px rgba(0, 0, 0, 0.06)" : "none";
   const subBg = isLight ? "#f1f5f9" : "rgba(0, 0, 0, 0.25)";
 
-  // Group finds by date
+  // Group finds by clean normalized date
   const findsByDate = finds.reduce((acc, find) => {
-    if (!find.date) return acc;
-    const datePart = find.date.split(",")[0].split(" ")[0].trim();
+    const raw = find.date || find.customDate || find.created_at;
+    if (!raw) return acc;
+    const datePart = normalizeDateStr(raw);
+    if (!datePart) return acc;
     if (!acc[datePart]) acc[datePart] = [];
     acc[datePart].push(find);
     return acc;
   }, {});
 
-  // Group tracks by date
+  // Group tracks by clean normalized date
   const tracksByDate = savedTracks.reduce((acc, track) => {
     if (!track.created_at) return acc;
-    const dateStr = new Date(track.created_at).toLocaleDateString("fr-FR");
+    const dateStr = normalizeDateStr(track.created_at);
+    if (!dateStr) return acc;
     if (!acc[dateStr]) acc[dateStr] = [];
     acc[dateStr].push(track);
     return acc;
@@ -75,7 +79,10 @@ export default function StatsPanel({
   ).sort((a, b) => {
     const parseDate = (dStr) => {
       const parts = dStr.split("/");
-      return new Date(parts[2], parts[1] - 1, parts[0]);
+      if (parts.length === 3) {
+        return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+      }
+      return new Date(dStr);
     };
     return parseDate(b) - parseDate(a);
   });
@@ -248,15 +255,15 @@ export default function StatsPanel({
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
           <span style={{ fontSize: "12px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px", color: textMain }}>
-            🏆 Organigrammes et Répartition
+            🏆 Organigrammes
           </span>
         </div>
 
-        {/* 5-Way Chart Selector */}
+        {/* 3-Way Chart Selector */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
+            gridTemplateColumns: "repeat(3, 1fr)",
             gap: "4px",
             background: isLight ? "#e2e8f0" : "rgba(0,0,0,0.3)",
             padding: "4px",
@@ -267,9 +274,7 @@ export default function StatsPanel({
           {[
             { id: "donut", label: "Donut", icon: "🍩" },
             { id: "bar", label: "Barres", icon: "📊" },
-            { id: "treemap", label: "Mosaïque", icon: "🧱" },
-            { id: "radar", label: "Radar", icon: "🕸️" },
-            { id: "pyramid", label: "Pyramide", icon: "🏛️" }
+            { id: "radar", label: "Radar", icon: "🕸️" }
           ].map((item) => {
             const isSel = chartType === item.id;
             return (
@@ -395,57 +400,7 @@ export default function StatsPanel({
           </div>
         )}
 
-        {/* 3. TREEMAP / MOSAÏQUE PROPORTIONNELLE */}
-        {chartType === "treemap" && (
-          <div>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))",
-                gap: "6px"
-              }}
-            >
-              {categoryData.map(([category, count], idx) => {
-                const pct = Math.round((count / (totalFinds || 1)) * 100);
-                const color = getCategoryColor(category, idx);
-                const isLarge = count >= maxCount * 0.7;
-
-                return (
-                  <div
-                    key={category}
-                    style={{
-                      background: isLight ? `${color}18` : `${color}25`,
-                      border: `1.5px solid ${color}`,
-                      borderRadius: "12px",
-                      padding: isLarge ? "14px 10px" : "10px 8px",
-                      gridColumn: isLarge ? "span 2" : "span 1",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                      minHeight: isLarge ? "70px" : "55px",
-                      boxSizing: "border-box"
-                    }}
-                  >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: isLarge ? "18px" : "14px" }}>{categoryEmojis[category] || "🏷️"}</span>
-                      <span style={{ fontSize: "10px", fontWeight: "800", color }}>{pct}%</span>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "11px", fontWeight: "800", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {category}
-                      </div>
-                      <div style={{ fontSize: "9px", color: textSub }}>
-                        {count} objet{count > 1 ? "s" : ""}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* 4. RADAR / TOILE D'ARAIGNÉE */}
+        {/* 3. RADAR / TOILE D'ARAIGNÉE */}
         {chartType === "radar" && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             {(() => {
@@ -560,42 +515,6 @@ export default function StatsPanel({
                 </span>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* 5. PYRAMID CHART */}
-        {chartType === "pyramid" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px", alignItems: "center" }}>
-            {categoryData.map(([category, count], idx) => {
-              const pct = Math.round((count / (totalFinds || 1)) * 100);
-              const color = getCategoryColor(category, idx);
-              // Pyramid sizing: wider at base
-              const widthPct = 40 + ((idx + 1) / categoryData.length) * 60;
-
-              return (
-                <div
-                  key={category}
-                  style={{
-                    width: `${widthPct}%`,
-                    background: isLight ? `${color}20` : `${color}30`,
-                    border: `1px solid ${color}`,
-                    borderRadius: "10px",
-                    padding: "6px 10px",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    boxSizing: "border-box"
-                  }}
-                >
-                  <span style={{ fontSize: "11px", fontWeight: "700", color: textMain }}>
-                    #{idx + 1} {categoryEmojis[category] || ""} {category}
-                  </span>
-                  <span style={{ fontSize: "10px", fontWeight: "800", color }}>
-                    {count} ({pct}%)
-                  </span>
-                </div>
-              );
-            })}
           </div>
         )}
       </div>
@@ -825,18 +744,15 @@ export default function StatsPanel({
             return (
               <div
                 key={dateStr}
-                onClick={() => {
-                  if (dayFinds.length > 0) {
-                    setSelectedDate(dateStr);
-                  }
-                }}
+                onClick={() => setSelectedDate(dateStr)}
                 style={{
                   background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)",
                   border: `1px solid ${cardBorder}`,
                   borderRadius: "12px",
                   padding: "10px",
                   fontSize: "12px",
-                  cursor: dayFinds.length > 0 ? "pointer" : "default"
+                  cursor: "pointer",
+                  transition: "0.2s"
                 }}
               >
                 <div style={{ fontWeight: "bold", display: "flex", justifyContent: "space-between", marginBottom: "2px" }}>

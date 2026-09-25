@@ -36,7 +36,7 @@ import useConsultationRequests from "./hooks/useConsultationRequests";
 import useSortieRecorder from "./hooks/useSortieRecorder";
 import { addPendingFind, deletePendingFind } from "./services/offlineStore";
 import { importData, exportData } from "./services/backupService";
-import { addFind as createFind, toggleFavorite } from "./services/findsService";
+import { addFind as createFind, toggleFavorite, normalizeDateStr, isFindInSortie } from "./services/findsService";
 import { getActiveSession, leaveTeamSession } from "./services/sessionService";
 import { loadCategoriesData } from "./services/categoriesService";
 
@@ -891,13 +891,9 @@ function App() {
         find.sub_category?.toLowerCase().includes(search.toLowerCase()) ||
         find.date?.toLowerCase().includes(search.toLowerCase());
 
-      const matchesDate =
-        !selectedDate ||
-        find.date?.startsWith(selectedDate);
-
-      return matchesCategory && matchesSubCategory && matchesSearch && matchesDate;
+      return matchesCategory && matchesSubCategory && matchesSearch;
     });
-  }, [finds, filters, activeSubCategory, search, selectedDate, favoritesOnly]);
+  }, [finds, filters, activeSubCategory, search, favoritesOnly]);
 
   const positionedFinds = useMemo(() => {
     if (hideAllFinds || filteredFinds.length === 0) return [];
@@ -944,8 +940,6 @@ function App() {
     });
   }, [filteredFinds, hideAllFinds]);
 
-
-
   const todayFindsCount = useMemo(() => {
     const today = new Date().toLocaleDateString("fr-FR");
     const todayIso = new Date().toISOString().split("T")[0];
@@ -959,10 +953,14 @@ function App() {
     if (!selectedDate) return [];
     return savedTracks.filter((track) => {
       if (!track.created_at) return false;
-      const trackDate = new Date(track.created_at).toLocaleDateString("fr-FR");
-      return trackDate === selectedDate;
+      return isFindInSortie(track, selectedDate);
     });
   }, [selectedDate, savedTracks]);
+
+  const selectedSortieFindsCount = useMemo(() => {
+    if (!selectedDate) return 0;
+    return finds.filter((f) => isFindInSortie(f, selectedDate)).length;
+  }, [selectedDate, finds]);
 
     const groupedDates = finds.reduce(
   (acc, find) => {
@@ -984,82 +982,107 @@ function App() {
   {}
 );
 
+  useEffect(() => {
+    if (zoomToDate) {
+      const match = finds.find((f) => isFindInSortie(f, zoomToDate));
+      if (match) {
+        const lat = match.latitude ?? (Array.isArray(match.position) ? match.position[0] : null);
+        const lng = match.longitude ?? (Array.isArray(match.position) ? match.position[1] : null);
+        if (lat !== null && lng !== null) {
+          setFollowGps(false);
+          setZoomTarget({ position: [Number(lat), Number(lng)], zoom: 17 });
+        }
+      } else {
+        const trackMatch = savedTracks.find((t) => isFindInSortie(t, zoomToDate));
+        if (trackMatch && trackMatch.positions && trackMatch.positions.length > 0) {
+          setFollowGps(false);
+          setZoomTarget({ position: trackMatch.positions[0], zoom: 17 });
+        }
+      }
+    }
+  }, [zoomToDate, finds, savedTracks]);
+
   if (!position) {
     return <LoadingScreen />;
   }
 
-
-const dateFinds =
-  zoomToDate
-    ? finds.filter((find) =>
-        find.date?.startsWith(
-          zoomToDate
-        )
-      )
-    : [];
-
-const zoomPosition =
-  dateFinds.length > 0
-    ? dateFinds[0].position
-    : null;
-
-return (
-
+  return (
     <div
       style={{
         height: "100vh",
         width: "100%"
       }}
     >
-      {/* FILTER BANNER */}
+      {/* FLOATING SORTIE HIGHLIGHT BANNER */}
       {selectedDate && (
         <div
           style={{
-            position: "absolute",
-            top: "20px",
+            position: "fixed",
+            top: "calc(env(safe-area-inset-top, 0px) + 68px)",
             left: "50%",
             transform: "translateX(-50%)",
-            zIndex: 5000,
-            background: "rgba(17, 24, 39, 0.92)",
-            backdropFilter: "blur(8px)",
-            color: "white",
-            padding: "10px 18px",
-            borderRadius: "20px",
+            zIndex: 4900,
+            background: "rgba(15, 23, 42, 0.94)",
+            backdropFilter: "blur(14px)",
+            WebkitBackdropFilter: "blur(14px)",
+            color: "#ffffff",
+            padding: "8px 14px",
+            borderRadius: "14px",
             display: "flex",
             alignItems: "center",
+            justifyContent: "space-between",
             gap: "12px",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.35)",
-            fontFamily: "system-ui, sans-serif",
-            fontSize: "14px",
-            fontWeight: "600",
-            border: "1px solid rgba(255, 255, 255, 0.12)"
+            boxShadow: "0 8px 30px rgba(0, 0, 0, 0.45)",
+            fontFamily: "system-ui, -apple-system, sans-serif",
+            fontSize: "13px",
+            fontWeight: "700",
+            border: "1.5px solid rgba(250, 204, 21, 0.6)",
+            maxWidth: "460px",
+            width: "calc(100% - 28px)",
+            boxSizing: "border-box"
           }}
         >
-          <span>
-            📅 Sortie du {selectedDate} : {filteredFinds.length} trouvaille{filteredFinds.length > 1 ? "s" : ""}
-          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+            <span style={{ fontSize: "16px", flexShrink: 0 }}>✨</span>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontSize: "13px", fontWeight: "800", color: "#fef08a" }}>
+                Sortie du {normalizeDateStr(selectedDate)}
+              </div>
+              <div style={{ fontSize: "11px", color: "#94a3b8", fontWeight: "600" }}>
+                {selectedSortieFindsCount > 0 ? (
+                  <>🪙 <strong style={{ color: "#facc15" }}>{selectedSortieFindsCount}</strong> trouvaille{selectedSortieFindsCount > 1 ? "s" : ""} en surbrillance</>
+                ) : (
+                  <>Tracé GPS de la sortie affiché</>
+                )}
+              </div>
+            </div>
+          </div>
+
           <button
+            type="button"
             onClick={() => {
               setSelectedDate(null);
               setZoomToDate(null);
             }}
+            title="Quitter le mode sortie"
             style={{
-              border: "none",
-              background: "#ef4444",
-              color: "white",
-              borderRadius: "50%",
-              width: "20px",
-              height: "20px",
+              background: "rgba(239, 68, 68, 0.2)",
+              border: "1px solid rgba(239, 68, 68, 0.4)",
+              color: "#f87171",
+              borderRadius: "8px",
+              padding: "5px 9px",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
+              gap: "4px",
               cursor: "pointer",
-              fontSize: "12px",
-              fontWeight: "bold",
-              padding: 0
+              fontSize: "11px",
+              fontWeight: "800",
+              flexShrink: 0,
+              transition: "0.2s"
             }}
           >
-            ✕
+            <span>✕</span>
+            <span>Fermer</span>
           </button>
         </div>
       )}
@@ -1183,6 +1206,7 @@ return (
         onOpenMapLayers={() => setShowMapLayersModal(true)}
         positionedFinds={positionedFinds}
         selectedDateTracks={selectedDateTracks}
+        selectedDate={selectedDate}
         handleMapLongPress={handleMapLongPress}
         deleteFind={deleteFind}
         handleFavorite={handleFavorite}

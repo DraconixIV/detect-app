@@ -12,6 +12,8 @@ import MarkerClusterGroup from "react-leaflet-cluster";
 import "leaflet/dist/leaflet.css";
 
 import { icons, getCategoryIcon } from "../icons";
+import { isFindInSortie } from "../services/findsService";
+import { leaveTeamSession } from "../services/sessionService";
 import FindPopup from "./FindPopup";
 import GpsMarker from "./GpsMarker";
 import TeammateMarker from "./TeammateMarker";
@@ -109,14 +111,16 @@ const createClusterCustomIcon = (cluster) => {
 const FindMarker = React.memo(function FindMarker({
   find,
   markerSize,
+  isHighlighted = false,
   onSelectFind
 }) {
-  const icon = getCategoryIcon(find.category, null, markerSize) || icons.autre;
+  const icon = getCategoryIcon(find.category, null, markerSize, isHighlighted) || icons.autre;
 
   return (
     <Marker
       position={find.finalPosition || find.position}
       icon={icon}
+      zIndexOffset={isHighlighted ? 1500 : 0}
       eventHandlers={{
         click: (e) => {
           if (e && e.originalEvent) {
@@ -130,8 +134,6 @@ const FindMarker = React.memo(function FindMarker({
     />
   );
 });
-
-import { leaveTeamSession } from "../services/sessionService";
 
 export default function MainMap({
   position,
@@ -158,6 +160,7 @@ export default function MainMap({
   onOpenMapLayers,
   positionedFinds = [],
   selectedDateTracks = [],
+  selectedDate = null,
   handleMapLongPress,
   deleteFind,
   handleFavorite,
@@ -445,6 +448,7 @@ export default function MainMap({
               key={find.id}
               find={find}
               markerSize={markerSize}
+              isHighlighted={Boolean(selectedDate && isFindInSortie(find, selectedDate))}
               onSelectFind={setOpenPopupFind}
             />
           ))}
@@ -455,6 +459,7 @@ export default function MainMap({
             key={find.id}
             find={find}
             markerSize={markerSize}
+            isHighlighted={Boolean(selectedDate && isFindInSortie(find, selectedDate))}
             onSelectFind={setOpenPopupFind}
           />
         ))

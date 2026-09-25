@@ -613,3 +613,49 @@ export async function toggleFavorite(findId, targetOrCurrentValue) {
 
   return true;
 }
+
+export function normalizeDateStr(rawDate) {
+  if (!rawDate) return "";
+  const str = String(rawDate).trim();
+  
+  // 1. Check if DD/MM/YYYY
+  const frMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (frMatch) {
+    const d = frMatch[1].padStart(2, "0");
+    const m = frMatch[2].padStart(2, "0");
+    const y = frMatch[3];
+    return `${d}/${m}/${y}`;
+  }
+
+  // 2. Check if ISO or YYYY-MM-DD
+  const isoMatch = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (isoMatch) {
+    const y = isoMatch[1];
+    const m = isoMatch[2].padStart(2, "0");
+    const d = isoMatch[3].padStart(2, "0");
+    return `${d}/${m}/${y}`;
+  }
+
+  // 3. Fallback standard Date parsing
+  try {
+    const dt = new Date(str);
+    if (!isNaN(dt.getTime())) {
+      const d = String(dt.getDate()).padStart(2, "0");
+      const m = String(dt.getMonth() + 1).padStart(2, "0");
+      const y = dt.getFullYear();
+      return `${d}/${m}/${y}`;
+    }
+  } catch {
+    // fallback
+  }
+
+  return str.split(" ")[0].split("T")[0];
+}
+
+export function isFindInSortie(find, targetDate) {
+  if (!find || !targetDate) return false;
+  const rawFindDate = find.date || find.customDate || find.created_at;
+  const findNorm = normalizeDateStr(rawFindDate);
+  const targetNorm = normalizeDateStr(targetDate);
+  return findNorm === targetNorm && Boolean(findNorm);
+}
