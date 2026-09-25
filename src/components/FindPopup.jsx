@@ -12,6 +12,7 @@ import AudioNotePlayer from "./AudioNotePlayer";
 
 export default function FindPopup({
   find,
+  onClose,
   onDelete,
   onFavorite,
   onUpdate,
@@ -1353,10 +1354,14 @@ export default function FindPopup({
                     e.stopPropagation();
                     setConfirmConfig({
                       message: "Supprimer définitivement cette trouvaille ?",
-                      onConfirm: () => {
-                        if (onClose) onClose();
-                        onDelete(find.id);
+                      onConfirm: async () => {
                         setIsModalOpen(false);
+                        if (onDelete) {
+                          await onDelete(find.id);
+                        }
+                        if (onClose) {
+                          onClose();
+                        }
                       }
                     });
                   }}

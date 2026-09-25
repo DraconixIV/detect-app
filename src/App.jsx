@@ -832,59 +832,65 @@ function App() {
   };
 
   const deleteFind = async (findId) => {
-    // Immediately close popup if this find is open
-    setOpenPopupFind((prev) => {
-      if (!prev) return null;
-      if (prev.id === findId || String(prev.id) === String(findId)) return null;
-      return prev;
-    });
-    setActivePopupId((prev) => {
-      if (!prev) return null;
-      if (prev === findId || String(prev) === String(findId)) return null;
-      return prev;
-    });
+    try {
+      // Optimistic UI: remove immediately from state
+      setFinds((prev) => prev.filter((f) => String(f.id) !== String(findId)));
+      setOpenPopupFind((prev) => (prev && String(prev.id) === String(findId) ? null : prev));
+      setActivePopupId((prev) => (prev && String(prev) === String(findId) ? null : prev));
 
-    if (typeof findId === "string" && findId.startsWith("offline-")) {
-      const offlineId = Number(findId.replace("offline-", ""));
-      await deletePendingFind(offlineId);
-      await loadFinds();
-      return;
-    }
-
-    const { data: photos } =
-      await supabase
-        .from("find_photos")
-        .select("*")
-        .eq("find_id", findId);
-
-    if (photos?.length) {
-      for (const photo of photos) {
-        const fileName =
-          photo.image_url
-            .split("/")
-            .pop();
-
-        await supabase.storage
-          .from("find-photos")
-          .remove([fileName]);
+      if (typeof findId === "string" && findId.startsWith("offline-")) {
+        const offlineId = Number(findId.replace("offline-", ""));
+        await deletePendingFind(offlineId);
+        await loadFinds();
+        setToast({ message: "🗑️ Trouvaille supprimée.", type: "info" });
+        return;
       }
 
-      await supabase
-        .from("find_photos")
+      // 1. Delete associated photos from storage
+      try {
+        const { data: photos } = await supabase
+          .from("find_photos")
+          .select("*")
+          .eq("find_id", findId);
+
+        if (photos && photos.length > 0) {
+          for (const photo of photos) {
+            try {
+              const fileName = photo.image_url?.split("/").pop();
+              if (fileName) {
+                await supabase.storage.from("find-photos").remove([fileName]);
+              }
+            } catch (err) {
+              console.warn("Storage delete warning:", err);
+            }
+          }
+          await supabase.from("find_photos").delete().eq("find_id", findId);
+        }
+      } catch (photoErr) {
+        console.warn("Find photos delete query warning:", photoErr);
+      }
+
+      // 2. Delete main record in finds
+      const { error: delError } = await supabase
+        .from("finds")
         .delete()
-        .eq("find_id", findId);
+        .eq("id", findId);
+
+      if (delError) {
+        console.error("Supabase delete error:", delError);
+        alert("Erreur lors de la suppression : " + delError.message);
+      }
+
+      if (broadcastDeleteFind) {
+        broadcastDeleteFind(findId);
+      }
+
+      await loadFinds();
+      setToast({ message: "🗑️ Trouvaille supprimée avec succès.", type: "info" });
+    } catch (fatalErr) {
+      console.error("deleteFind fatal error:", fatalErr);
+      alert("Erreur imprévue lors de la suppression.");
     }
-
-    await supabase
-      .from("finds")
-      .delete()
-      .eq("id", findId);
-
-    if (broadcastDeleteFind) {
-      broadcastDeleteFind(findId);
-    }
-
-    await loadFinds();
   };
 
   const filteredFinds = useMemo(() => {
