@@ -92,12 +92,12 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
         try {
           await createFind({
             position: f.position,
-            newTitle: f.newTitle,
-            newDescription: f.newDescription,
-            newCategory: f.newCategory,
-            newSubCategory: f.newSubCategory,
+            newTitle: f.newTitle || "Trouvaille de terrain",
+            newDescription: f.newDescription || "Indéterminé",
+            newCategory: f.newCategory || "Autre",
+            newSubCategory: f.newSubCategory || null,
             newPhoto: f.photo,
-            customDate: f.customDate,
+            customDate: f.customDate || f.createdAt,
             userCode: f.userCode,
             finderName: f.finderName,
             sessionCode: f.sessionCode,
@@ -109,6 +109,13 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
           syncedCount++;
         } catch (singleErr) {
           console.error(`Failed to sync find id ${f.id}:`, singleErr);
+          // If unrecoverable after retry, remove from offline queue to avoid infinite failure loop
+          const count = (f.retryCount || 0) + 1;
+          f.retryCount = count;
+          if (count >= 2) {
+            console.warn(`Purging unrecoverable offline find ${f.id}`);
+            await deletePendingFind(f.id);
+          }
           failedCount++;
         }
       }
@@ -122,10 +129,11 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
         }
         await loadFinds();
       } else if (failedCount > 0) {
-        if (setToast) {
+        const remaining = await getPendingFinds();
+        if (remaining.length > 0 && setToast) {
           setToast({
-            message: `⚠️ Échec de la synchronisation pour ${failedCount} trouvaille(s).`,
-            type: "error"
+            message: `⚠️ Synchronisation : 1 trouvaille en attente de réseau stable.`,
+            type: "warning"
           });
         }
       }

@@ -271,6 +271,19 @@ export async function addFind({
     const rawSess = (sessionCode !== undefined && sessionCode !== null) ? sessionCode : (activeSess?.code || null);
     const finalSessionCode = rawSess ? normalizeSessionCode(rawSess) : null;
 
+    // Normalize GPS Position safely
+    let lat = 0;
+    let lng = 0;
+    if (Array.isArray(position) && position.length >= 2) {
+      lat = Number(position[0]);
+      lng = Number(position[1]);
+    } else if (position && typeof position === "object") {
+      lat = Number(position.lat ?? position.latitude);
+      lng = Number(position.lng ?? position.longitude);
+    }
+    if (isNaN(lat) || lat === null) lat = 0;
+    if (isNaN(lng) || lng === null) lng = 0;
+
     // 1. Process Video if provided (Direct streaming storage upload)
     let finalVideoUrl = null;
     if (video) {
@@ -280,41 +293,49 @@ export async function addFind({
         try {
           let videoBlob = video;
           let ext = "mp4";
-          if (typeof video === "string" && video.startsWith("data:")) {
-            const res = await fetch(video);
-            videoBlob = await res.blob();
+          if (typeof video === "string" && (video.startsWith("data:") || video.startsWith("blob:"))) {
+            try {
+              const res = await fetch(video);
+              if (res.ok) {
+                videoBlob = await res.blob();
+              } else {
+                videoBlob = null;
+              }
+            } catch (fetchErr) {
+              console.warn("Could not fetch video blob/data URL:", fetchErr);
+              videoBlob = null;
+            }
+          }
+
+          if (videoBlob && (videoBlob instanceof Blob || videoBlob instanceof File)) {
             if (videoBlob.type && videoBlob.type.includes("webm")) ext = "webm";
             else if (videoBlob.type && (videoBlob.type.includes("quicktime") || videoBlob.type.includes("mov"))) ext = "mov";
-          } else if (video.name) {
-            ext = (video.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/gi, "");
-            if (ext === "quicktime") ext = "mov";
-          } else if (video.type) {
-            if (video.type.includes("webm")) ext = "webm";
-            else if (video.type.includes("quicktime") || video.type.includes("mov")) ext = "mov";
-          }
+            else if (videoBlob.name) {
+              ext = (videoBlob.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/gi, "");
+              if (ext === "quicktime") ext = "mov";
+            }
 
-          let contentType = videoBlob.type || (ext === "mov" ? "video/quicktime" : (ext === "webm" ? "video/webm" : "video/mp4"));
-          const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext || "mp4"}`;
+            let contentType = videoBlob.type || (ext === "mov" ? "video/quicktime" : (ext === "webm" ? "video/webm" : "video/mp4"));
+            const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext || "mp4"}`;
 
-          const { error: vErr } = await supabase.storage
-            .from("find-photos")
-            .upload(videoFileName, videoBlob, {
-              contentType: contentType,
-              upsert: false
-            });
-
-          if (!vErr) {
-            const { data: { publicUrl } } = supabase.storage
+            const { error: vErr } = await supabase.storage
               .from("find-photos")
-              .getPublicUrl(videoFileName);
-            finalVideoUrl = publicUrl;
-          } else {
-            console.error("Storage video upload error:", vErr);
-            throw vErr;
+              .upload(videoFileName, videoBlob, {
+                contentType: contentType,
+                upsert: false
+              });
+
+            if (!vErr) {
+              const { data: { publicUrl } } = supabase.storage
+                .from("find-photos")
+                .getPublicUrl(videoFileName);
+              finalVideoUrl = publicUrl;
+            } else {
+              console.warn("Storage video upload warning:", vErr);
+            }
           }
         } catch (vEx) {
-          console.error("Video upload exception:", vEx);
-          throw vEx;
+          console.warn("Video upload exception:", vEx);
         }
       }
     }
@@ -327,30 +348,34 @@ export async function addFind({
       } else {
         try {
           let audioBlob = audio;
-          if (typeof audio === "string" && audio.startsWith("data:")) {
-            const res = await fetch(audio);
-            audioBlob = await res.blob();
+          if (typeof audio === "string" && (audio.startsWith("data:") || audio.startsWith("blob:"))) {
+            try {
+              const res = await fetch(audio);
+              if (res.ok) audioBlob = await res.blob();
+            } catch {
+              // fallback
+            }
           }
-          const audioFileName = `audio-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.webm`;
-          const { error: aErr } = await supabase.storage
-            .from("find-photos")
-            .upload(audioFileName, audioBlob, {
-              contentType: audioBlob.type || "audio/webm",
-              upsert: false
-            });
-
-          if (!aErr) {
-            const { data: { publicUrl } } = supabase.storage
+          if (audioBlob && (audioBlob instanceof Blob || audioBlob instanceof File)) {
+            const audioFileName = `audio-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.webm`;
+            const { error: aErr } = await supabase.storage
               .from("find-photos")
-              .getPublicUrl(audioFileName);
-            finalAudioUrl = publicUrl;
-          } else {
-            console.warn("Audio storage upload fallback to inline:", aErr);
-            finalAudioUrl = audio;
+              .upload(audioFileName, audioBlob, {
+                contentType: audioBlob.type || "audio/webm",
+                upsert: false
+              });
+
+            if (!aErr) {
+              const { data: { publicUrl } } = supabase.storage
+                .from("find-photos")
+                .getPublicUrl(audioFileName);
+              finalAudioUrl = publicUrl;
+            } else {
+              console.warn("Audio storage upload fallback:", aErr);
+            }
           }
         } catch (aEx) {
           console.warn("Audio upload exception:", aEx);
-          finalAudioUrl = audio;
         }
       }
     }
@@ -369,12 +394,12 @@ export async function addFind({
     );
 
     const payload = {
-      title: newTitle,
+      title: newTitle || "Sans titre",
       description: encodedDesc,
-      category: newCategory,
+      category: newCategory || "Autre",
       sub_category: newSubCategory || null,
-      latitude: position[0],
-      longitude: position[1],
+      latitude: lat,
+      longitude: lng,
       date: customDate || new Date().toLocaleString()
     };
 
@@ -395,51 +420,77 @@ export async function addFind({
     // 3. Process Photo if provided
     if (newPhoto) {
       let finalPhotoUrl = null;
-      try {
-        const compressedFile = await imageCompression(newPhoto, {
-          maxSizeMB: 0.3,
-          maxWidthOrHeight: 1600,
-          useWebWorker: true
-        });
-
-        const rawName = newPhoto.name || `photo-${Date.now()}.jpg`;
-        const cleanName = rawName
-          .replaceAll(" ", "-")
-          .replaceAll("é", "e")
-          .replaceAll("è", "e")
-          .replaceAll("à", "a");
-
-        const fileName = `${Date.now()}-${cleanName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from("find-photos")
-          .upload(fileName, compressedFile, { upsert: false });
-
-        if (uploadError) {
-          console.error("Storage photo upload error:", uploadError);
-          throw uploadError;
+      if (typeof newPhoto === "string" && newPhoto.startsWith("http")) {
+        finalPhotoUrl = newPhoto;
+        try {
+          await supabase.from("finds").update({ image_url: finalPhotoUrl }).eq("id", insertedFind.id);
+          await supabase.from("find_photos").insert([{ find_id: insertedFind.id, image_url: finalPhotoUrl, type: "discovery" }]);
+        } catch (err) {
+          console.warn("Photo record link error:", err);
         }
-
-        const { data: { publicUrl } } = supabase.storage
-          .from("find-photos")
-          .getPublicUrl(fileName);
-        finalPhotoUrl = publicUrl;
-
-        await supabase
-          .from("finds")
-          .update({ image_url: finalPhotoUrl })
-          .eq("id", insertedFind.id);
-
-        await supabase.from("find_photos").insert([
-          {
-            find_id: insertedFind.id,
-            image_url: finalPhotoUrl,
-            type: "discovery"
+      } else {
+        try {
+          let photoBlob = newPhoto;
+          if (typeof newPhoto === "string" && (newPhoto.startsWith("data:") || newPhoto.startsWith("blob:"))) {
+            try {
+              const res = await fetch(newPhoto);
+              if (res.ok) photoBlob = await res.blob();
+              else photoBlob = null;
+            } catch {
+              photoBlob = null;
+            }
           }
-        ]);
-      } catch (photoErr) {
-        console.error("Photo upload error:", photoErr);
-        throw photoErr;
+
+          if (photoBlob && (photoBlob instanceof Blob || photoBlob instanceof File)) {
+            let compressedFile = photoBlob;
+            try {
+              compressedFile = await imageCompression(photoBlob, {
+                maxSizeMB: 0.3,
+                maxWidthOrHeight: 1600,
+                useWebWorker: true
+              });
+            } catch (compErr) {
+              console.warn("Image compression warning, uploading raw:", compErr);
+            }
+
+            const rawName = photoBlob.name || `photo-${Date.now()}.jpg`;
+            const cleanName = rawName
+              .replaceAll(" ", "-")
+              .replaceAll("é", "e")
+              .replaceAll("è", "e")
+              .replaceAll("à", "a");
+
+            const fileName = `${Date.now()}-${cleanName}`;
+
+            const { error: uploadError } = await supabase.storage
+              .from("find-photos")
+              .upload(fileName, compressedFile, { upsert: false });
+
+            if (!uploadError) {
+              const { data: { publicUrl } } = supabase.storage
+                .from("find-photos")
+                .getPublicUrl(fileName);
+              finalPhotoUrl = publicUrl;
+
+              await supabase
+                .from("finds")
+                .update({ image_url: finalPhotoUrl })
+                .eq("id", insertedFind.id);
+
+              await supabase.from("find_photos").insert([
+                {
+                  find_id: insertedFind.id,
+                  image_url: finalPhotoUrl,
+                  type: "discovery"
+                }
+              ]);
+            } else {
+              console.warn("Storage photo upload warning:", uploadError);
+            }
+          }
+        } catch (photoErr) {
+          console.warn("Photo upload warning:", photoErr);
+        }
       }
     }
 
