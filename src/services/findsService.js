@@ -116,6 +116,19 @@ export function normalizeCategoryAndSub(find) {
   };
 }
 
+export function getRawMetadata(findOrDesc) {
+  const desc = typeof findOrDesc === "string" ? findOrDesc : (findOrDesc?.description || "");
+  const match = desc.match(/<!--GP_META:([\s\S]*?)-->/);
+  if (match) {
+    try {
+      return JSON.parse(match[1]) || {};
+    } catch {
+      return {};
+    }
+  }
+  return {};
+}
+
 /**
  * Ensures existing historical finds in Supabase (from the single-user era or previous sessions)
  * are permanently attributed to the primary creator's personal detector code and unified pseudonym.
@@ -125,50 +138,181 @@ export async function ensureLegacyFindsClaimed(myCode) {
     if (!myCode) return;
     const cleanMyCode = normalizeSessionCode(myCode);
     const myName = getMyDisplayName();
-    const claimKey = `geoprospect_claimed_${cleanMyCode}_${myName || "anon"}`;
+    if (!myName && !cleanMyCode) return;
+
+    const claimKey = `geoprospect_harmonized_v4_${cleanMyCode}_${myName || "anon"}`;
     const alreadyClaimed = localStorage.getItem(claimKey);
     if (alreadyClaimed === "true") return;
 
     const { data: allFinds, error } = await supabase
       .from("finds")
-      .select("id, description");
+      .select("id, description, image_url");
 
     if (error || !allFinds) return;
 
     let updatedCount = 0;
     for (const row of allFinds) {
-      const decoded = decodeMetadata(row);
-      const isMine = !decoded.user_code || normalizeSessionCode(decoded.user_code) === cleanMyCode;
-      
-      // Update if find is untagged or has outdated finder name
-      if (isMine && (!decoded.user_code || (myName && decoded.finder_name !== myName))) {
-        const updatedDesc = encodeMetadata(
-          decoded.description,
-          cleanMyCode,
-          myName || decoded.finder_name || "Détecteuriste",
-          decoded.session_code,
-          decoded.thumbnail_url,
-          {
-            audio_url: decoded.audio_url,
-            audio_duration: decoded.audio_duration,
-            video_url: decoded.video_url
-          }
-        );
-        await supabase
-          .from("finds")
-          .update({ description: updatedDesc })
-          .eq("id", row.id);
-        updatedCount++;
+      const rawMeta = getRawMetadata(row.description);
+      const cleanDesc = (row.description || "").replace(/<!--GP_META:[\s\S]*?-->/g, "").trim();
+      const rawUser = rawMeta.u ? normalizeSessionCode(rawMeta.u) : null;
+      const rawFinder = rawMeta.f || null;
+
+      // Belongs to current user if untagged or matching user code
+      const isMine = !rawUser || rawUser === cleanMyCode;
+
+      if (isMine) {
+        const needsUserCodeUpdate = !rawUser || rawUser !== cleanMyCode;
+        const needsFinderNameUpdate = myName && rawFinder !== myName;
+
+        if (needsUserCodeUpdate || needsFinderNameUpdate) {
+          const updatedDesc = encodeMetadata(
+            cleanDesc,
+            cleanMyCode,
+            myName || rawFinder || "Détecteuriste",
+            rawMeta.s,
+            rawMeta.t || row.image_url,
+            {
+              audio_url: rawMeta.a,
+              audio_duration: rawMeta.ad,
+              video_url: rawMeta.v
+            }
+          );
+          await supabase
+            .from("finds")
+            .update({ description: updatedDesc })
+            .eq("id", row.id);
+          updatedCount++;
+        }
       }
     }
 
     localStorage.setItem(claimKey, "true");
     if (updatedCount > 0) {
-      console.log(`[GeoProspect] Harmonized and secured ${updatedCount} finds for ${cleanMyCode} (${myName})`);
+      console.log(`[GeoProspect] Harmonized and updated ${updatedCount} finds in database for ${cleanMyCode} (${myName})`);
     }
   } catch (err) {
-    console.warn("Legacy finds attribution error:", err);
+    console.warn("Legacy finds harmonization error:", err);
   }
+}
+
+/**
+ * Permanently deletes all user data from Supabase (finds, storage images/videos/audio, photos records)
+ * and completely purges all local storage and session data.
+ */
+export async function purgeAllUserDataAndAccount(myCode = null) {
+  const targetCode = normalizeSessionCode(myCode || getMyUserCode());
+
+  // 1. Fetch all finds from Supabase
+  try {
+    const { data: allFinds, error: fetchErr } = await supabase
+      .from("finds")
+      .select("id, description, image_url");
+
+    if (!fetchErr && allFinds && allFinds.length > 0) {
+      const userFinds = allFinds.filter((row) => {
+        const rawMeta = getRawMetadata(row.description);
+        const rawUser = rawMeta.u ? normalizeSessionCode(rawMeta.u) : null;
+        return !rawUser || rawUser === targetCode;
+      });
+
+      for (const find of userFinds) {
+        try {
+          // Fetch photos associated with this find
+          const { data: photos } = await supabase
+            .from("find_photos")
+            .select("image_url")
+            .eq("find_id", find.id);
+
+          const storageFiles = [];
+          if (photos && photos.length > 0) {
+            photos.forEach((p) => {
+              if (p.image_url && p.image_url.includes("/find-photos/")) {
+                const name = p.image_url.split("/").pop()?.split("?")[0];
+                if (name) storageFiles.push(name);
+              }
+            });
+          }
+          if (find.image_url && find.image_url.includes("/find-photos/")) {
+            const name = find.image_url.split("/").pop()?.split("?")[0];
+            if (name && !storageFiles.includes(name)) storageFiles.push(name);
+          }
+
+          const rawMeta = getRawMetadata(find.description);
+          if (rawMeta.v && rawMeta.v.includes("/find-photos/")) {
+            const name = rawMeta.v.split("/").pop()?.split("?")[0];
+            if (name && !storageFiles.includes(name)) storageFiles.push(name);
+          }
+          if (rawMeta.a && rawMeta.a.includes("/find-photos/")) {
+            const name = rawMeta.a.split("/").pop()?.split("?")[0];
+            if (name && !storageFiles.includes(name)) storageFiles.push(name);
+          }
+
+          // Delete files from storage
+          if (storageFiles.length > 0) {
+            await supabase.storage.from("find-photos").remove(storageFiles);
+          }
+
+          // Delete find_photos rows
+          await supabase.from("find_photos").delete().eq("find_id", find.id);
+
+          // Delete find row
+          await supabase.from("finds").delete().eq("id", find.id);
+        } catch (findErr) {
+          console.warn(`Error deleting find ${find.id}:`, findErr);
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Error purging database finds:", err);
+  }
+
+  // 2. Clear memory caches
+  if (window.findPhotosCache) {
+    window.findPhotosCache = {};
+  }
+
+  // 3. Supabase Auth Sign Out
+  try {
+    await supabase.auth.signOut();
+  } catch (authErr) {
+    console.warn("Auth signout warning:", authErr);
+  }
+
+  // 4. Wipe all GeoProspect localStorage keys
+  try {
+    const keysToRemove = [
+      "geoprospect_user_code_v1",
+      "geoprospect_user_display_name_v1",
+      "geoprospect_active_session_v1",
+      "geoprospect_joined_sessions_history_v1",
+      "geoprospect_session_blacklist_v1",
+      "geoprospect_user_banned_sessions_v1",
+      "geoprospect_session_locked_v1",
+      "geoprospect_approved_viewers_v1",
+      "geoprospect_onboarding_completed_v3",
+      "geoprospect_cgu_accepted",
+      "geoprospect_categories_v1",
+      "geoprospect_materials_v1",
+      "geoprospect_offline_pending_finds_v1",
+      "geoprospect_legacy_finds_claimed_v3",
+      "app_theme",
+      "app_design_theme",
+      "mapStyle",
+      "gpsStyle",
+      "marker_size"
+    ];
+
+    const allKeys = Object.keys(localStorage);
+    allKeys.forEach((key) => {
+      if (key.startsWith("geoprospect_") || keysToRemove.includes(key)) {
+        localStorage.removeItem(key);
+      }
+    });
+  } catch (storageErr) {
+    console.warn("Local storage wipe warning:", storageErr);
+  }
+
+  return true;
 }
 
 /**

@@ -3,6 +3,7 @@ import { supabase } from "../supabase";
 import { loadCategoriesData, addCategory, removeCategory, addSubCategory, removeSubCategory } from "../services/categoriesService";
 import { defaultCategoryColors } from "../subCategories";
 import { getMyUserCode, getMyDisplayName } from "../services/sessionService";
+import { purgeAllUserDataAndAccount } from "../services/findsService";
 import AuthForm from "./AuthForm";
 
 const DONATION_LINKS = {
@@ -33,6 +34,9 @@ export default function SettingsPanel({
   const [showCatManager, setShowCatManager] = useState(false);
   const [showLegal, setShowLegal] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
   const myCode = getMyUserCode();
   const myName = getMyDisplayName();
 
@@ -767,7 +771,235 @@ export default function SettingsPanel({
             </div>
           )}
         </div>
+
+        {/* ============================================================ */}
+        {/* GROUPE 6 : ZONE DE DANGER - SUPPRESSION DU COMPTE             */}
+        {/* ============================================================ */}
+        {renderGroupHeader("⚠️", "Zone de danger", isLight ? "#dc2626" : "#ef4444")}
+
+        <div
+          style={{
+            background: isLight ? "#fef2f2" : "rgba(239, 68, 68, 0.06)",
+            borderRadius: "18px",
+            border: isLight ? "1.5px solid #fecaca" : "1px solid rgba(239, 68, 68, 0.25)",
+            boxShadow: cardShadow,
+            padding: "16px",
+            marginBottom: "24px"
+          }}
+        >
+          <div style={{ ...sectionTitleStyle, color: isLight ? "#b91c1c" : "#f87171" }}>
+            <span>🗑️</span> Suppression définitive du compte
+          </div>
+          <p style={{ margin: "0 0 14px 0", fontSize: "12px", color: isLight ? "#991b1b" : "#fca5a5", lineHeight: "1.5" }}>
+            Cette action effacera irréversiblement votre profil ({myCode}), votre pseudonyme ({myName || "Non défini"}) ainsi que <strong>l'ensemble de vos trouvailles, photos HD, vidéos et notes vocales</strong> de nos serveurs et de votre appareil.
+          </p>
+
+          <button
+            type="button"
+            onClick={() => setShowDeleteConfirm(true)}
+            style={{
+              width: "100%",
+              padding: "12px 16px",
+              borderRadius: "12px",
+              border: "none",
+              background: "#ef4444",
+              color: "#ffffff",
+              fontSize: "13px",
+              fontWeight: "800",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              boxShadow: "0 4px 14px rgba(239, 68, 68, 0.3)",
+              transition: "background 0.2s ease"
+            }}
+          >
+            <span>🗑️</span>
+            <span>Supprimer définitivement mon compte et mes données</span>
+          </button>
+        </div>
       </div>
+
+      {/* MODAL DE CONFIRMATION DE SUPPRESSION DE COMPTE */}
+      {showDeleteConfirm && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1000000,
+            background: "rgba(0, 0, 0, 0.85)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "16px",
+            boxSizing: "border-box",
+            fontFamily: "system-ui, -apple-system, sans-serif"
+          }}
+          onClick={() => {
+            if (!isDeleting && !deleteSuccess) setShowDeleteConfirm(false);
+          }}
+        >
+          <div
+            style={{
+              background: isLight ? "#ffffff" : "#0f172a",
+              border: isLight ? "2px solid #ef4444" : "1.5px solid rgba(239, 68, 68, 0.5)",
+              borderRadius: "24px",
+              width: "100%",
+              maxWidth: "440px",
+              padding: "24px",
+              boxSizing: "border-box",
+              display: "flex",
+              flexDirection: "column",
+              gap: "16px",
+              color: isLight ? "#0f172a" : "#ffffff",
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8)"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {deleteSuccess ? (
+              <div style={{ textAlign: "center", padding: "20px 0", display: "flex", flexDirection: "column", gap: "12px", alignItems: "center" }}>
+                <div style={{ fontSize: "40px" }}>✅</div>
+                <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "800", color: "#10b981" }}>
+                  Compte et données supprimés
+                </h3>
+                <p style={{ margin: 0, fontSize: "13px", color: textSub }}>
+                  Toutes vos données ont été définitivement effacées. Réinitialisation de l'application...
+                </p>
+              </div>
+            ) : isDeleting ? (
+              <div style={{ textAlign: "center", padding: "24px 0", display: "flex", flexDirection: "column", gap: "14px", alignItems: "center" }}>
+                <div style={{ fontSize: "36px", animation: "pulse 1.5s infinite" }}>⏳</div>
+                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800" }}>
+                  Suppression en cours...
+                </h3>
+                <p style={{ margin: 0, fontSize: "12px", color: textSub }}>
+                  Purge des trouvailles, photos, vidéos, notes vocales et métadonnées en cours. Veuillez patienter.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <div
+                    style={{
+                      width: "44px",
+                      height: "44px",
+                      borderRadius: "14px",
+                      background: "rgba(239, 68, 68, 0.15)",
+                      border: "1px solid rgba(239, 68, 68, 0.3)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "22px",
+                      flexShrink: 0
+                    }}
+                  >
+                    ⚠️
+                  </div>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "900", color: isLight ? "#991b1b" : "#ef4444" }}>
+                      Êtes-vous bien sûr de vouloir supprimer votre compte ?
+                    </h3>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    background: isLight ? "#fef2f2" : "rgba(239, 68, 68, 0.08)",
+                    border: isLight ? "1px solid #fecaca" : "1px solid rgba(239, 68, 68, 0.2)",
+                    borderRadius: "14px",
+                    padding: "14px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                    fontSize: "12px",
+                    lineHeight: "1.45"
+                  }}
+                >
+                  <div style={{ fontWeight: "800", color: isLight ? "#991b1b" : "#fca5a5", marginBottom: "2px" }}>
+                    Cette opération est définitive et irréversible. Voici ce qui sera supprimé :
+                  </div>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
+                    <span>❌</span>
+                    <span><strong>Toutes vos trouvailles</strong> (positions GPS, descriptions, métaux, dates)</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
+                    <span>❌</span>
+                    <span><strong>Toutes vos photos et vidéos de terrain</strong> stockées sur nos serveurs</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
+                    <span>❌</span>
+                    <span><strong>Toutes vos notes vocales</strong> enregistrées</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
+                    <span>❌</span>
+                    <span>Votre code détecteur unique (<strong>{myCode}</strong>) et votre pseudonyme (<strong>{myName || "Non défini"}</strong>)</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
+                    <span>❌</span>
+                    <span>Votre historique de sessions, autorisations de partage et préférences locales</span>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteConfirm(false)}
+                    style={{
+                      flex: 1,
+                      padding: "12px",
+                      borderRadius: "12px",
+                      border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
+                      background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
+                      color: isLight ? "#0f172a" : "#ffffff",
+                      fontSize: "13px",
+                      fontWeight: "700",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Annuler
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setIsDeleting(true);
+                      try {
+                        await purgeAllUserDataAndAccount(myCode);
+                        setIsDeleting(false);
+                        setDeleteSuccess(true);
+                        setTimeout(() => {
+                          window.location.reload();
+                        }, 1200);
+                      } catch (err) {
+                        console.error("Account deletion error:", err);
+                        setIsDeleting(false);
+                        alert("Erreur lors de la suppression du compte.");
+                      }
+                    }}
+                    style={{
+                      flex: 1.4,
+                      padding: "12px",
+                      borderRadius: "12px",
+                      border: "none",
+                      background: "#ef4444",
+                      color: "#ffffff",
+                      fontSize: "13px",
+                      fontWeight: "800",
+                      cursor: "pointer",
+                      boxShadow: "0 4px 14px rgba(239, 68, 68, 0.35)"
+                    }}
+                  >
+                    Oui, tout supprimer
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
