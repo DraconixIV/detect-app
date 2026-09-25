@@ -442,6 +442,9 @@ export default function MainMap({
           chunkedLoading={true}
           showCoverageOnHover={false}
           maxClusterRadius={50}
+          animate={false}
+          animateAddingMarkers={false}
+          spiderfyOnMaxZoom={false}
         >
           {positionedFinds.map((find) => (
             <FindMarker
