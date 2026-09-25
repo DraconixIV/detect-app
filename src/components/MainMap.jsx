@@ -79,6 +79,78 @@ function GpsFollower({ position, followGps }) {
   return null;
 }
 
+// Helper: Direct Leaflet Canvas/SVG Polyline renderer for live sortie tracking
+function LiveSortieTrack({ positions, isRecording }) {
+  const map = useMap();
+  const polyRef = React.useRef(null);
+  const glowRef = React.useRef(null);
+
+  useEffect(() => {
+    if (!isRecording || !positions || positions.length < 2) {
+      if (polyRef.current) {
+        map.removeLayer(polyRef.current);
+        polyRef.current = null;
+      }
+      if (glowRef.current) {
+        map.removeLayer(glowRef.current);
+        glowRef.current = null;
+      }
+      return;
+    }
+
+    const latlngs = positions.map((p) => [p[0], p[1]]);
+
+    if (!glowRef.current) {
+      glowRef.current = L.polyline(latlngs, {
+        color: "#083344",
+        weight: 8,
+        opacity: 0.85,
+        lineCap: "round",
+        lineJoin: "round",
+        smoothFactor: 1.0,
+        interactive: false
+      }).addTo(map);
+    } else {
+      glowRef.current.setLatLngs(latlngs);
+      if (typeof glowRef.current.redraw === "function") {
+        glowRef.current.redraw();
+      }
+    }
+
+    if (!polyRef.current) {
+      polyRef.current = L.polyline(latlngs, {
+        color: "#06b6d4",
+        weight: 4.5,
+        opacity: 1,
+        lineCap: "round",
+        lineJoin: "round",
+        smoothFactor: 1.0,
+        interactive: false
+      }).addTo(map);
+    } else {
+      polyRef.current.setLatLngs(latlngs);
+      if (typeof polyRef.current.redraw === "function") {
+        polyRef.current.redraw();
+      }
+    }
+  }, [positions, isRecording, map]);
+
+  useEffect(() => {
+    return () => {
+      if (polyRef.current) {
+        map.removeLayer(polyRef.current);
+        polyRef.current = null;
+      }
+      if (glowRef.current) {
+        map.removeLayer(glowRef.current);
+        glowRef.current = null;
+      }
+    };
+  }, [map]);
+
+  return null;
+}
+
 // Helper: Custom Cluster Icon (Ultra-smooth modern bubble)
 const createClusterCustomIcon = (cluster) => {
   const count = cluster.getChildCount();
@@ -363,33 +435,8 @@ export default function MainMap({
         />
       ))}
 
-      {/* LIVE ACTIVE SORTIE TRACK (Electric Cyan with Dark Glow Halo) */}
-      {isRecordingSortie && sortiePositions && sortiePositions.length > 1 && (
-        <>
-          {/* Contrast Outer Stroke (visible over bright aerials or dark maps) */}
-          <Polyline
-            positions={sortiePositions}
-            pathOptions={{
-              color: "#083344",
-              weight: 7,
-              opacity: 0.7,
-              lineCap: "round",
-              lineJoin: "round"
-            }}
-          />
-          {/* Vibrant Core Stroke */}
-          <Polyline
-            positions={sortiePositions}
-            pathOptions={{
-              color: "#06b6d4",
-              weight: 4,
-              opacity: 0.95,
-              lineCap: "round",
-              lineJoin: "round"
-            }}
-          />
-        </>
-      )}
+      {/* LIVE ACTIVE SORTIE TRACK (Direct Leaflet Canvas/SVG Layer) */}
+      <LiveSortieTrack positions={sortiePositions} isRecording={isRecordingSortie} />
 
       {/* START SORTIE PIN */}
       {isRecordingSortie && sortiePositions && sortiePositions.length > 0 && (

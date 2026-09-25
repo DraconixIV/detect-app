@@ -320,12 +320,15 @@ function App() {
   const [zenMode, setZenMode] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
 
-  const [isLocatingGps, setIsLocatingGps] = useState(false);
+  const isLocatingGpsState = useState(false);
+  const [isLocatingGps, setIsLocatingGps] = isLocatingGpsState;
   const hasAutoCenteredRef = useRef(false);
   const gpsWatchIdRef = useRef(null);
+  const isSimulatingGpsRef = useRef(false);
 
   // Core Geolocation Engine: Force a fresh satellite hardware read & center map
   const requestFreshGpsFix = (shouldCenter = false, showFeedback = false) => {
+    if (isSimulatingGpsRef.current) return;
     if (!("geolocation" in navigator)) {
       if (showFeedback) {
         setToast({
@@ -339,6 +342,10 @@ function App() {
     setIsLocatingGps(true);
 
     const handleSuccess = (pos) => {
+      if (isSimulatingGpsRef.current) {
+        setIsLocatingGps(false);
+        return;
+      }
       const freshPos = [pos.coords.latitude, pos.coords.longitude];
       const accuracy = pos.coords.accuracy;
 
@@ -346,6 +353,10 @@ function App() {
       localStorage.setItem("lastKnownPosition", JSON.stringify(freshPos));
       setGpsAccuracy(accuracy);
       setIsLocatingGps(false);
+
+      if (isRecordingRef.current) {
+        recordNewPosition(freshPos, accuracy);
+      }
 
       if (shouldCenter || !hasAutoCenteredRef.current) {
         hasAutoCenteredRef.current = true;
@@ -403,6 +414,7 @@ function App() {
 
     gpsWatchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
+        if (isSimulatingGpsRef.current) return;
         const livePos = [pos.coords.latitude, pos.coords.longitude];
         setPosition(livePos);
         localStorage.setItem("lastKnownPosition", JSON.stringify(livePos));
@@ -526,11 +538,16 @@ function App() {
     stepsInLeg: 0
   });
 
+  useEffect(() => {
+    isSimulatingGpsRef.current = isSimulatingGps;
+  }, [isSimulatingGps]);
+
   const stopGpsSimulation = () => {
     if (simIntervalRef.current) {
       clearInterval(simIntervalRef.current);
       simIntervalRef.current = null;
     }
+    isSimulatingGpsRef.current = false;
     setIsSimulatingGps(false);
   };
 
@@ -544,22 +561,25 @@ function App() {
       return;
     }
 
-    const baseLat = position?.[0] || 47.3941;
-    const baseLng = position?.[1] || 0.6848;
+    const baseLat = (position && typeof position[0] === "number") ? position[0] : 47.3941;
+    const baseLng = (position && typeof position[1] === "number") ? position[1] : 0.6848;
+    const startPos = [baseLat, baseLng];
 
     if (!isRecordingSortie) {
-      startSortieRaw([baseLat, baseLng]);
+      startSortieRaw(startPos);
       setToast({
-        message: "🧪 Sortie de test démarrée avec simulation de marche GPS !",
+        message: "🧪 Sortie démarrée avec simulation de marche GPS en direct !",
         type: "success"
       });
     }
 
+    isSimulatingGpsRef.current = true;
     setIsSimulatingGps(true);
     setFollowGps(true);
+    setZoomTarget({ position: startPos, zoom: 18 });
 
     simStateRef.current = {
-      currentPos: [baseLat, baseLng],
+      currentPos: startPos,
       direction: 1,
       stepsInLeg: 0
     };
@@ -570,26 +590,27 @@ function App() {
       const state = simStateRef.current;
       state.stepsInLeg += 1;
 
-      // Realistic detectorist zig-zag pattern
-      const latNoise = (Math.random() - 0.5) * 0.000004;
-      const lngStep = state.direction * (0.000030 + (Math.random() - 0.5) * 0.000005);
+      // Realistic sweep pattern (~6-7m per step, easily visible on screen)
+      const latNoise = (Math.random() - 0.5) * 0.000010;
+      const lngStep = state.direction * (0.000085 + (Math.random() - 0.5) * 0.000010);
 
       let newLat = state.currentPos[0] + latNoise;
       let newLng = state.currentPos[1] + lngStep;
 
-      // Every 10 steps (~25m), step south 3m and reverse east/west direction
-      if (state.stepsInLeg >= 10) {
+      // Every 8 steps (~50m sweep), advance North ~12m and reverse sweep direction
+      if (state.stepsInLeg >= 8) {
         state.stepsInLeg = 0;
         state.direction = -state.direction;
-        newLat -= 0.000035;
+        newLat += 0.00011;
       }
 
-      state.currentPos = [newLat, newLng];
+      const nextPos = [newLat, newLng];
+      state.currentPos = nextPos;
 
-      setPosition([newLat, newLng]);
-      setGpsAccuracy(3);
-      recordNewPosition([newLat, newLng], 3);
-    }, 1200);
+      setPosition(nextPos);
+      setGpsAccuracy(2.5);
+      recordNewPosition(nextPos, 2.5);
+    }, 750);
   };
 
   useEffect(() => {
