@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { THEMES } from '../styles/themes';
 import { BASE_MAPS } from './MapLayers';
 
@@ -21,55 +21,100 @@ export default function MapLayersModal({
   etatMajorOpacity,
   setEtatMajorOpacity
 }) {
-  if (!isOpen) return null;
-
   const theme = THEMES[currentThemeKey] || THEMES.tactical;
   const c = theme.colors;
   const baseMapList = Object.values(BASE_MAPS);
 
-  // Helper for exclusive overlay selection (only one active at a time)
+  // Local draft state to hold temporary selections until user clicks "Appliquer et fermer"
+  const [draftBaseMap, setDraftBaseMap] = useState(baseMap);
+  const [draftShowCadastre, setDraftShowCadastre] = useState(showCadastre);
+  const [draftCadastreOpacity, setDraftCadastreOpacity] = useState(cadastreOpacity);
+  const [draftShowCassini, setDraftShowCassini] = useState(showCassini);
+  const [draftCassiniOpacity, setDraftCassiniOpacity] = useState(cassiniOpacity);
+  const [draftShowEtatMajor, setDraftShowEtatMajor] = useState(showEtatMajor);
+  const [draftEtatMajorOpacity, setDraftEtatMajorOpacity] = useState(etatMajorOpacity);
+
+  // Sync draft state whenever the modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setDraftBaseMap(baseMap);
+      setDraftShowCadastre(showCadastre);
+      setDraftCadastreOpacity(cadastreOpacity);
+      setDraftShowCassini(showCassini);
+      setDraftCassiniOpacity(cassiniOpacity);
+      setDraftShowEtatMajor(showEtatMajor);
+      setDraftEtatMajorOpacity(etatMajorOpacity);
+    }
+  }, [isOpen, baseMap, showCadastre, cadastreOpacity, showCassini, cassiniOpacity, showEtatMajor, etatMajorOpacity]);
+
+  if (!isOpen) return null;
+
+  // Helper for exclusive overlay selection (only one active at a time in draft state)
   const handleSelectOverlay = (overlayKey) => {
     if (overlayKey === 'cadastre') {
-      const next = !showCadastre;
-      setShowCadastre(next);
-      localStorage.setItem('showCadastre', String(next));
+      const next = !draftShowCadastre;
+      setDraftShowCadastre(next);
       if (next) {
-        setShowCassini(false);
-        localStorage.setItem('showCassini', 'false');
-        setShowEtatMajor(false);
-        localStorage.setItem('showEtatMajor', 'false');
+        setDraftShowCassini(false);
+        setDraftShowEtatMajor(false);
       }
     } else if (overlayKey === 'cassini') {
-      const next = !showCassini;
-      setShowCassini(next);
-      localStorage.setItem('showCassini', String(next));
+      const next = !draftShowCassini;
+      setDraftShowCassini(next);
       if (next) {
-        setShowCadastre(false);
-        localStorage.setItem('showCadastre', 'false');
-        setShowEtatMajor(false);
-        localStorage.setItem('showEtatMajor', 'false');
+        setDraftShowCadastre(false);
+        setDraftShowEtatMajor(false);
       }
     } else if (overlayKey === 'etatmajor') {
-      const next = !showEtatMajor;
-      setShowEtatMajor(next);
-      localStorage.setItem('showEtatMajor', String(next));
+      const next = !draftShowEtatMajor;
+      setDraftShowEtatMajor(next);
       if (next) {
-        setShowCadastre(false);
-        localStorage.setItem('showCadastre', 'false');
-        setShowCassini(false);
-        localStorage.setItem('showCassini', 'false');
+        setDraftShowCadastre(false);
+        setDraftShowCassini(false);
       }
     } else if (overlayKey === 'none') {
-      setShowCadastre(false);
-      localStorage.setItem('showCadastre', 'false');
-      setShowCassini(false);
-      localStorage.setItem('showCassini', 'false');
-      setShowEtatMajor(false);
-      localStorage.setItem('showEtatMajor', 'false');
+      setDraftShowCadastre(false);
+      setDraftShowCassini(false);
+      setDraftShowEtatMajor(false);
     }
   };
 
-  const activeOverlayKey = showCadastre ? 'cadastre' : (showCassini ? 'cassini' : (showEtatMajor ? 'etatmajor' : 'none'));
+  // Commit all draft changes to main state & localStorage upon clicking "Appliquer et fermer"
+  const handleApply = () => {
+    if (setBaseMap) {
+      setBaseMap(draftBaseMap);
+      localStorage.setItem('baseMap', draftBaseMap);
+    }
+
+    if (setShowCadastre) {
+      setShowCadastre(draftShowCadastre);
+      localStorage.setItem('showCadastre', String(draftShowCadastre));
+    }
+    if (setCadastreOpacity) {
+      setCadastreOpacity(draftCadastreOpacity);
+      localStorage.setItem('cadastreOpacity', String(draftCadastreOpacity));
+    }
+
+    if (setShowCassini) {
+      setShowCassini(draftShowCassini);
+      localStorage.setItem('showCassini', String(draftShowCassini));
+    }
+    if (setCassiniOpacity) {
+      setCassiniOpacity(draftCassiniOpacity);
+      localStorage.setItem('cassiniOpacity', String(draftCassiniOpacity));
+    }
+
+    if (setShowEtatMajor) {
+      setShowEtatMajor(draftShowEtatMajor);
+      localStorage.setItem('showEtatMajor', String(draftShowEtatMajor));
+    }
+    if (setEtatMajorOpacity) {
+      setEtatMajorOpacity(draftEtatMajorOpacity);
+      localStorage.setItem('etatMajorOpacity', String(draftEtatMajorOpacity));
+    }
+
+    onClose();
+  };
 
   return (
     <div
@@ -200,13 +245,12 @@ export default function MapLayersModal({
               }}
             >
               {baseMapList.map((bm) => {
-                const isSelected = (baseMap === bm.id) || (!baseMap && bm.id === 'satellite');
+                const isSelected = (draftBaseMap === bm.id) || (!draftBaseMap && bm.id === 'satellite');
                 return (
                   <button
                     key={bm.id}
                     onClick={() => {
-                      setBaseMap(bm.id);
-                      localStorage.setItem('baseMap', bm.id);
+                      setDraftBaseMap(bm.id);
                     }}
                     style={{
                       padding: '10px 12px',
@@ -278,8 +322,8 @@ export default function MapLayersModal({
               {/* 1. Cadastre Officiel IGN */}
               <div
                 style={{
-                  background: showCadastre ? 'rgba(16, 185, 129, 0.12)' : (c.bgCard || 'rgba(255,255,255,0.04)'),
-                  border: showCadastre
+                  background: draftShowCadastre ? 'rgba(16, 185, 129, 0.12)' : (c.bgCard || 'rgba(255,255,255,0.04)'),
+                  border: draftShowCadastre
                     ? '1.5px solid #10b981'
                     : `1px solid ${c.border || 'rgba(255,255,255,0.08)'}`,
                   borderRadius: '16px',
@@ -302,34 +346,33 @@ export default function MapLayersModal({
                       padding: '6px 12px',
                       borderRadius: '10px',
                       border: 'none',
-                      background: showCadastre ? '#10b981' : 'rgba(255,255,255,0.1)',
-                      color: showCadastre ? '#ffffff' : '#ffffff',
+                      background: draftShowCadastre ? '#10b981' : 'rgba(255,255,255,0.1)',
+                      color: draftShowCadastre ? '#ffffff' : '#ffffff',
                       fontSize: '11px',
                       fontWeight: '800',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    {showCadastre ? 'Actif' : 'Activer'}
+                    {draftShowCadastre ? 'Actif' : 'Activer'}
                   </button>
                 </div>
 
-                {showCadastre && (
+                {draftShowCadastre && (
                   <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#ffffff', marginBottom: '4px' }}>
                       <span>Opacité Cadastre</span>
-                      <strong style={{ color: '#ffffff' }}>{Math.round(cadastreOpacity * 100)}%</strong>
+                      <strong style={{ color: '#ffffff' }}>{Math.round(draftCadastreOpacity * 100)}%</strong>
                     </div>
                     <input
                       type='range'
                       min='0.1'
                       max='1'
                       step='0.05'
-                      value={cadastreOpacity}
+                      value={draftCadastreOpacity}
                       onChange={(e) => {
                         const val = parseFloat(e.target.value);
-                        setCadastreOpacity(val);
-                        localStorage.setItem('cadastreOpacity', String(val));
+                        setDraftCadastreOpacity(val);
                       }}
                       style={{ width: '100%', accentColor: '#10b981', cursor: 'pointer' }}
                     />
@@ -340,8 +383,8 @@ export default function MapLayersModal({
               {/* 2. Carte de Cassini (18e) */}
               <div
                 style={{
-                  background: showCassini ? 'rgba(59, 130, 246, 0.12)' : (c.bgCard || 'rgba(255,255,255,0.04)'),
-                  border: showCassini
+                  background: draftShowCassini ? 'rgba(59, 130, 246, 0.12)' : (c.bgCard || 'rgba(255,255,255,0.04)'),
+                  border: draftShowCassini
                     ? '1.5px solid #3b82f6'
                     : `1px solid ${c.border || 'rgba(255,255,255,0.08)'}`,
                   borderRadius: '16px',
@@ -364,34 +407,33 @@ export default function MapLayersModal({
                       padding: '6px 12px',
                       borderRadius: '10px',
                       border: 'none',
-                      background: showCassini ? '#3b82f6' : 'rgba(255,255,255,0.1)',
-                      color: showCassini ? '#ffffff' : '#ffffff',
+                      background: draftShowCassini ? '#3b82f6' : 'rgba(255,255,255,0.1)',
+                      color: '#ffffff',
                       fontSize: '11px',
                       fontWeight: '800',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    {showCassini ? 'Actif' : 'Activer'}
+                    {draftShowCassini ? 'Actif' : 'Activer'}
                   </button>
                 </div>
 
-                {showCassini && (
+                {draftShowCassini && (
                   <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#ffffff', marginBottom: '4px' }}>
                       <span>Opacité Cassini</span>
-                      <strong style={{ color: '#ffffff' }}>{Math.round(cassiniOpacity * 100)}%</strong>
+                      <strong style={{ color: '#ffffff' }}>{Math.round(draftCassiniOpacity * 100)}%</strong>
                     </div>
                     <input
                       type='range'
                       min='0.1'
                       max='1'
                       step='0.05'
-                      value={cassiniOpacity}
+                      value={draftCassiniOpacity}
                       onChange={(e) => {
                         const val = parseFloat(e.target.value);
-                        setCassiniOpacity(val);
-                        localStorage.setItem('cassiniOpacity', String(val));
+                        setDraftCassiniOpacity(val);
                       }}
                       style={{ width: '100%', accentColor: '#3b82f6', cursor: 'pointer' }}
                     />
@@ -402,8 +444,8 @@ export default function MapLayersModal({
               {/* 3. Carte d'État-Major 1820-1866 (IGN) */}
               <div
                 style={{
-                  background: showEtatMajor ? 'rgba(217, 119, 6, 0.12)' : (c.bgCard || 'rgba(255,255,255,0.04)'),
-                  border: showEtatMajor
+                  background: draftShowEtatMajor ? 'rgba(217, 119, 6, 0.12)' : (c.bgCard || 'rgba(255,255,255,0.04)'),
+                  border: draftShowEtatMajor
                     ? '1.5px solid #d97706'
                     : `1px solid ${c.border || 'rgba(255,255,255,0.08)'}`,
                   borderRadius: '16px',
@@ -426,34 +468,33 @@ export default function MapLayersModal({
                       padding: '6px 12px',
                       borderRadius: '10px',
                       border: 'none',
-                      background: showEtatMajor ? '#d97706' : 'rgba(255,255,255,0.1)',
-                      color: showEtatMajor ? '#ffffff' : '#ffffff',
+                      background: draftShowEtatMajor ? '#d97706' : 'rgba(255,255,255,0.1)',
+                      color: draftShowEtatMajor ? '#ffffff' : '#ffffff',
                       fontSize: '11px',
                       fontWeight: '800',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    {showEtatMajor ? 'Actif' : 'Activer'}
+                    {draftShowEtatMajor ? 'Actif' : 'Activer'}
                   </button>
                 </div>
 
-                {showEtatMajor && (
+                {draftShowEtatMajor && (
                   <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#ffffff', marginBottom: '4px' }}>
                       <span>Opacité État-Major</span>
-                      <strong style={{ color: '#ffffff' }}>{Math.round(etatMajorOpacity * 100)}%</strong>
+                      <strong style={{ color: '#ffffff' }}>{Math.round(draftEtatMajorOpacity * 100)}%</strong>
                     </div>
                     <input
                       type='range'
                       min='0.1'
                       max='1'
                       step='0.05'
-                      value={etatMajorOpacity}
+                      value={draftEtatMajorOpacity}
                       onChange={(e) => {
                         const val = parseFloat(e.target.value);
-                        setEtatMajorOpacity(val);
-                        localStorage.setItem('etatMajorOpacity', String(val));
+                        setDraftEtatMajorOpacity(val);
                       }}
                       style={{ width: '100%', accentColor: '#d97706', cursor: 'pointer' }}
                     />
@@ -476,7 +517,7 @@ export default function MapLayersModal({
             }}
           >
             <div style={{ fontSize: '11px', fontWeight: '800', color: '#ffffff' }}>
-              Charte Éthique et Limite Légale
+              Limite légale
             </div>
             <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, lineHeight: '1.4' }}>
               Cette application fournit exclusivement des cartes topographiques, historiques et cadastrales publiques.
@@ -488,7 +529,7 @@ export default function MapLayersModal({
         {/* Modal Footer */}
         <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: `1px solid ${c.border || 'rgba(255,255,255,0.1)'}`, display: 'flex', justifyContent: 'flex-end' }}>
           <button
-            onClick={onClose}
+            onClick={handleApply}
             style={{
               padding: '10px 20px',
               borderRadius: '12px',
@@ -501,7 +542,7 @@ export default function MapLayersModal({
               boxShadow: `0 4px 12px ${c.accent || '#ef4444'}44`
             }}
           >
-            Appliquer et Fermer
+            Appliquer et fermer
           </button>
         </div>
       </div>
