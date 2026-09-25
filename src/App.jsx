@@ -276,6 +276,16 @@ function App() {
   const [zoomTarget, setZoomTarget] = useState(null);
   const [openPopupFind, setOpenPopupFind] = useState(null);
   const [activePopupId, setActivePopupId] = useState(null);
+
+  // Auto-close popup if the opened find is deleted or removed
+  useEffect(() => {
+    if (openPopupFind) {
+      const exists = finds.some((f) => String(f.id) === String(openPopupFind.id));
+      if (!exists && !openPopupFind.isOfflinePending) {
+        setOpenPopupFind(null);
+      }
+    }
+  }, [finds, openPopupFind]);
   const [gpsAccuracy, setGpsAccuracy] = useState(null);
   const [baseMap, setBaseMap] = useState(() => localStorage.getItem("baseMap") || "satellite");
   const [showCadastre, setShowCadastre] = useState(() => localStorage.getItem("showCadastre") === "true");
@@ -822,6 +832,17 @@ function App() {
   };
 
   const deleteFind = async (findId) => {
+    // Immediately close popup if this find is open
+    setOpenPopupFind((prev) => {
+      if (!prev) return null;
+      if (prev.id === findId || String(prev.id) === String(findId)) return null;
+      return prev;
+    });
+    setActivePopupId((prev) => {
+      if (!prev) return null;
+      if (prev === findId || String(prev) === String(findId)) return null;
+      return prev;
+    });
 
     if (typeof findId === "string" && findId.startsWith("offline-")) {
       const offlineId = Number(findId.replace("offline-", ""));

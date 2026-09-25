@@ -1354,6 +1354,7 @@ export default function FindPopup({
                     setConfirmConfig({
                       message: "Supprimer définitivement cette trouvaille ?",
                       onConfirm: () => {
+                        if (onClose) onClose();
                         onDelete(find.id);
                         setIsModalOpen(false);
                       }
