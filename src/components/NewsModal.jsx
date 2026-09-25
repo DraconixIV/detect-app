@@ -1,39 +1,6 @@
 import React from "react";
 
-const NEWS_ARTICLES = [
-  {
-    id: "v3.2",
-    date: "Septembre 2026",
-    tag: "Nouveauté",
-    tagColor: "#10b981",
-    title: "🎙️ Notes Vocales & Vidéo de Trouvailles",
-    content: "Enregistrez vos mémos vocaux directement sur le terrain sans retirer vos gants et ajoutez des vidéos courtes de vos découvertes !"
-  },
-  {
-    id: "v3.1",
-    date: "Septembre 2026",
-    tag: "Mise à jour",
-    tagColor: "#64748b",
-    title: "🧭 Nouveau Menu Latéral & Synchronisation Cloud",
-    content: "Accédez rapidement aux nouvelles, à propos et aux paramètres grâce au nouveau menu latéral."
-  },
-  {
-    id: "tip-1",
-    date: "Conseil Pro",
-    tag: "Astuce Terrain",
-    tagColor: "#f59e0b",
-    title: "💡 Balayage et discrimination des ferreux",
-    content: "Pour éviter de creuser sur des clous rouillés sans manquer les petites monnaies profondes, effectuez un balayage en croix à 90° au-dessus de la cible douteuse."
-  },
-  {
-    id: "law-1",
-    date: "Législation",
-    tag: "Rappel Légal",
-    tagColor: "#64748b",
-    title: "⚖️ Autorisation du propriétaire & Code du Patrimoine",
-    content: "Rappel amical : l'accord exprès et écrit du propriétaire du terrain est obligatoire avant toute sortie de détection de loisir (Art. L. 542-1 du Code du Patrimoine)."
-  }
-];
+const NEWS_ARTICLES = [];
 
 export default function NewsModal({ isOpen, onClose, theme = "dark" }) {
   if (!isOpen) return null;
@@ -88,13 +55,13 @@ export default function NewsModal({ isOpen, onClose, theme = "dark" }) {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "22px" }}>📰</span>
+            <span style={{ fontSize: "22px" }}>🚀</span>
             <div>
               <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: textMain }}>
-                Nouvelles & Mises à jour
+                Mises à jour
               </h3>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
-                Changelog de l'app et conseils pour vos sorties
+                Changelog de l'application
               </p>
             </div>
           </div>
@@ -129,44 +96,56 @@ export default function NewsModal({ isOpen, onClose, theme = "dark" }) {
             gap: "12px"
           }}
         >
-          {NEWS_ARTICLES.map((item) => (
-            <div
-              key={item.id}
-              style={{
-                padding: "14px 16px",
-                borderRadius: "16px",
-                background: cardBg,
-                border: `1px solid ${cardBorder}`,
-                display: "flex",
-                flexDirection: "column",
-                gap: "6px"
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span
-                  style={{
-                    padding: "3px 8px",
-                    borderRadius: "6px",
-                    background: `${item.tagColor}22`,
-                    border: `1px solid ${item.tagColor}44`,
-                    color: item.tagColor,
-                    fontSize: "10px",
-                    fontWeight: "800",
-                    textTransform: "uppercase"
-                  }}
-                >
-                  {item.tag}
-                </span>
-                <span style={{ fontSize: "10px", color: textSub, fontWeight: "600" }}>{item.date}</span>
+          {NEWS_ARTICLES.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "40px 20px", color: textSub }}>
+              <div style={{ fontSize: "36px", marginBottom: "12px" }}>📋</div>
+              <div style={{ fontSize: "14px", fontWeight: "700", color: textMain, marginBottom: "4px" }}>
+                Aucune mise à jour pour le moment
               </div>
-              <div style={{ fontSize: "13px", fontWeight: "800", color: textMain, marginTop: "2px" }}>
-                {item.title}
-              </div>
-              <p style={{ margin: 0, fontSize: "12px", color: textSub, lineHeight: "1.45" }}>
-                {item.content}
+              <p style={{ margin: 0, fontSize: "12px", lineHeight: "1.5" }}>
+                Le changelog sera mis à jour au fur et à mesure du développement de l'application.
               </p>
             </div>
-          ))}
+          ) : (
+            NEWS_ARTICLES.map((item) => (
+              <div
+                key={item.id}
+                style={{
+                  padding: "14px 16px",
+                  borderRadius: "16px",
+                  background: cardBg,
+                  border: `1px solid ${cardBorder}`,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "6px"
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span
+                    style={{
+                      padding: "3px 8px",
+                      borderRadius: "6px",
+                      background: `${item.tagColor}22`,
+                      border: `1px solid ${item.tagColor}44`,
+                      color: item.tagColor,
+                      fontSize: "10px",
+                      fontWeight: "800",
+                      textTransform: "uppercase"
+                    }}
+                  >
+                    {item.tag}
+                  </span>
+                  <span style={{ fontSize: "10px", color: textSub, fontWeight: "600" }}>{item.date}</span>
+                </div>
+                <div style={{ fontSize: "13px", fontWeight: "800", color: textMain, marginTop: "2px" }}>
+                  {item.title}
+                </div>
+                <p style={{ margin: 0, fontSize: "12px", color: textSub, lineHeight: "1.45" }}>
+                  {item.content}
+                </p>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

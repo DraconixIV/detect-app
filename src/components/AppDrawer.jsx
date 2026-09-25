@@ -27,8 +27,8 @@ export default function AppDrawer({
   const menuItems = [
     {
       id: "news",
-      label: "Nouvelles & Astuces",
-      icon: "📰",
+      label: "Mises à jour",
+      icon: "🚀",
       action: () => {
         onClose();
         if (onOpenNews) onOpenNews();
@@ -45,7 +45,7 @@ export default function AppDrawer({
     },
     {
       id: "settings",
-      label: "Paramètres & Thème",
+      label: "Paramètres",
       icon: "⚙️",
       action: () => {
         onClose();
