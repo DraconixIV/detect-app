@@ -37,7 +37,7 @@ import useSortieRecorder from "./hooks/useSortieRecorder";
 import { addPendingFind, deletePendingFind } from "./services/offlineStore";
 import { importData, exportData } from "./services/backupService";
 import { addFind as createFind, toggleFavorite, normalizeDateStr, isFindInSortie } from "./services/findsService";
-import { getActiveSession, leaveTeamSession } from "./services/sessionService";
+import { getActiveSession, leaveTeamSession, normalizeSessionCode, getMyUserCode, getMyDisplayName } from "./services/sessionService";
 import { loadCategoriesData } from "./services/categoriesService";
 
 function offsetPosition(
@@ -1116,15 +1116,20 @@ function App() {
   }, [finds]);
 
   const sessionFindsCount = useMemo(() => {
-    if (workspace.mode === "session" && workspace.targetCode) {
-      const cleanTarget = normalizeSessionCode(workspace.targetCode);
-      return finds.filter((f) => {
-        const fSess = f.session_code ? normalizeSessionCode(f.session_code) : null;
-        return fSess === cleanTarget;
-      }).length;
+    if (workspace?.mode === "session" && workspace?.targetCode) {
+      try {
+        const cleanTarget = normalizeSessionCode(workspace.targetCode);
+        return (finds || []).filter((f) => {
+          if (!f) return false;
+          const fSess = f.session_code ? normalizeSessionCode(f.session_code) : null;
+          return fSess && cleanTarget && fSess === cleanTarget;
+        }).length;
+      } catch (e) {
+        return 0;
+      }
     }
     return todayFindsCount;
-  }, [workspace.mode, workspace.targetCode, finds, todayFindsCount]);
+  }, [workspace?.mode, workspace?.targetCode, finds, todayFindsCount]);
 
   const selectedDateTracks = useMemo(() => {
     if (!selectedDate) return [];
