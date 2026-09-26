@@ -7,7 +7,9 @@ export default function SortieLiveWidget({
   onStopSortie,
   zenMode = false,
   showLiveSortieTrack = true,
-  onToggleShowTrack
+  onToggleShowTrack,
+  isSimulatingGps = false,
+  onToggleGpsSimulation = null
 }) {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [collapsed, setCollapsed] = useState(false);
@@ -154,6 +156,30 @@ export default function SortieLiveWidget({
               <span style={{ fontSize: "10px" }}>
                 {showLiveSortieTrack ? "Tracé" : "Masqué"}
               </span>
+            </button>
+          )}
+
+          {/* Simulation Toggle Button inside widget */}
+          {onToggleGpsSimulation && (
+            <button
+              onClick={onToggleGpsSimulation}
+              style={{
+                padding: "6px 8px",
+                borderRadius: "10px",
+                border: isSimulatingGps ? "1px solid #10b981" : "1px solid rgba(59, 130, 246, 0.4)",
+                background: isSimulatingGps ? "rgba(16, 185, 129, 0.25)" : "rgba(59, 130, 246, 0.15)",
+                color: isSimulatingGps ? "#34d399" : "#60a5fa",
+                fontSize: "11px",
+                fontWeight: "800",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px"
+              }}
+              title="Activer/Désactiver la marche automatique de test"
+            >
+              <span>{isSimulatingGps ? "⏸️" : "🏃"}</span>
+              <span style={{ fontSize: "10px" }}>{isSimulatingGps ? "Pause" : "Simu"}</span>
             </button>
           )}
 

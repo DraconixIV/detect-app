@@ -331,16 +331,17 @@ function App() {
   const [activeSubCategory, setActiveSubCategory] = useState(null);
   const [subCategorySelectCat, setSubCategorySelectCat] = useState(null);
   const [subCatModalStep, setSubCatModalStep] = useState(1);
-  const [gpsStyle, setGpsStyle] = useState(() => localStorage.getItem("gpsStyle") || "blue-dot");
   const [zenMode, setZenMode] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
 
   const [isLocatingGps, setIsLocatingGps] = useState(false);
   const hasAutoCenteredRef = useRef(false);
   const gpsWatchIdRef = useRef(null);
+  const isSimulatingGpsRef = useRef(false);
 
   // Core Geolocation Engine: Force a fresh satellite hardware read & center map
   const requestFreshGpsFix = (shouldCenter = false, showFeedback = false) => {
+    if (isSimulatingGpsRef.current) return;
     if (!("geolocation" in navigator)) {
       if (showFeedback) {
         setToast({
@@ -354,6 +355,10 @@ function App() {
     setIsLocatingGps(true);
 
     const handleSuccess = (pos) => {
+      if (isSimulatingGpsRef.current) {
+        setIsLocatingGps(false);
+        return;
+      }
       const freshPos = [pos.coords.latitude, pos.coords.longitude];
       const accuracy = pos.coords.accuracy;
 
@@ -422,6 +427,7 @@ function App() {
 
     gpsWatchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
+        if (isSimulatingGpsRef.current) return;
         const livePos = [pos.coords.latitude, pos.coords.longitude];
         setPosition(livePos);
         localStorage.setItem("lastKnownPosition", JSON.stringify(livePos));
@@ -534,6 +540,98 @@ function App() {
     positionsRef.current = sortiePositions;
   }, [sortiePositions]);
 
+  // ==========================================
+  // SIMULATEUR DE MARCHE GPS (MODE TEST / DÉMO)
+  // ==========================================
+  const [isSimulatingGps, setIsSimulatingGps] = useState(false);
+  const simIntervalRef = useRef(null);
+  const simStateRef = useRef({
+    currentPos: null,
+    direction: 1,
+    stepsInLeg: 0
+  });
+
+  useEffect(() => {
+    isSimulatingGpsRef.current = isSimulatingGps;
+  }, [isSimulatingGps]);
+
+  const stopGpsSimulation = () => {
+    if (simIntervalRef.current) {
+      clearInterval(simIntervalRef.current);
+      simIntervalRef.current = null;
+    }
+    isSimulatingGpsRef.current = false;
+    setIsSimulatingGps(false);
+  };
+
+  const startGpsSimulation = () => {
+    if (isSimulatingGps) {
+      stopGpsSimulation();
+      setToast({
+        message: "Simulation de marche GPS arrêtée.",
+        type: "info"
+      });
+      return;
+    }
+
+    const baseLat = (position && typeof position[0] === "number") ? position[0] : 47.3941;
+    const baseLng = (position && typeof position[1] === "number") ? position[1] : 0.6848;
+    const startPos = [baseLat, baseLng];
+
+    if (!isRecordingSortie) {
+      startSortieRaw(startPos);
+      setToast({
+        message: "🧪 Sortie démarrée avec simulation de marche GPS en direct !",
+        type: "success"
+      });
+    }
+
+    isSimulatingGpsRef.current = true;
+    setIsSimulatingGps(true);
+    setFollowGps(true);
+    setZoomTarget({ position: startPos, zoom: 18 });
+
+    simStateRef.current = {
+      currentPos: startPos,
+      direction: 1,
+      stepsInLeg: 0
+    };
+
+    if (simIntervalRef.current) clearInterval(simIntervalRef.current);
+
+    simIntervalRef.current = setInterval(() => {
+      const state = simStateRef.current;
+      state.stepsInLeg += 1;
+
+      // Realistic sweep pattern (~6-7m per step)
+      const latNoise = (Math.random() - 0.5) * 0.000010;
+      const lngStep = state.direction * (0.000085 + (Math.random() - 0.5) * 0.000010);
+
+      let newLat = state.currentPos[0] + latNoise;
+      let newLng = state.currentPos[1] + lngStep;
+
+      // Every 8 steps (~50m sweep), advance North ~12m and reverse sweep direction
+      if (state.stepsInLeg >= 8) {
+        state.stepsInLeg = 0;
+        state.direction = -state.direction;
+        newLat += 0.00011;
+      }
+
+      const nextPos = [newLat, newLng];
+      state.currentPos = nextPos;
+
+      setPosition(nextPos);
+      setGpsAccuracy(2.5);
+      recordNewPosition(nextPos, 2.5);
+    }, 750);
+  };
+
+  useEffect(() => {
+    if (!isRecordingSortie && isSimulatingGps) {
+      stopGpsSimulation();
+    }
+  }, [isRecordingSortie]);
+
   const startSortie = () => {
     requestFreshGpsFix(true, false);
     startContinuousGpsWatch();
@@ -548,6 +646,7 @@ function App() {
   const submitOutingName = async () => {
     const name = outingNameInput.trim() || `Sortie du ${new Date().toLocaleDateString("fr-FR")}`;
     setShowOutingNameModal(false);
+    stopGpsSimulation();
     await saveSortie(tempSortiePositions, name);
     setTempSortiePositions([]);
   };
@@ -1237,7 +1336,6 @@ function App() {
         setOpenPopupFind={setOpenPopupFind}
         activePopupId={activePopupId}
         setActivePopupId={setActivePopupId}
-        gpsStyle={gpsStyle}
         useClustering={useClustering}
         baseMap={baseMap}
         mapStyle={mapStyle}
@@ -1299,7 +1397,52 @@ function App() {
           zenMode={zenMode}
           showLiveSortieTrack={showLiveSortieTrack}
           onToggleShowTrack={toggleLiveSortieTrack}
+          isSimulatingGps={isSimulatingGps}
+          onToggleGpsSimulation={startGpsSimulation}
         />
+      )}
+
+      {/* BOUTON TEST TEMPORAIRE : SIMULATEUR DE PARCOURS GPS */}
+      {activeTab === "map" && !zenMode && (
+        <div
+          style={{
+            position: "fixed",
+            top: "58px",
+            right: "12px",
+            zIndex: 4900,
+            display: "flex",
+            alignItems: "center",
+            gap: "6px"
+          }}
+        >
+          <button
+            type="button"
+            onClick={startGpsSimulation}
+            style={{
+              padding: "7px 12px",
+              borderRadius: "12px",
+              border: isSimulatingGps ? "1.5px solid #10b981" : "1px solid rgba(59, 130, 246, 0.4)",
+              background: isSimulatingGps ? "rgba(16, 185, 129, 0.25)" : "rgba(15, 23, 42, 0.88)",
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
+              color: isSimulatingGps ? "#34d399" : "#60a5fa",
+              fontSize: "11px",
+              fontWeight: "800",
+              cursor: "pointer",
+              boxShadow: isSimulatingGps ? "0 0 16px rgba(16, 185, 129, 0.4)" : "0 4px 14px rgba(0,0,0,0.5)",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              transition: "all 0.2s ease"
+            }}
+            title="Simulateur de marche GPS pour tester le tracé sans sortir"
+          >
+            <span style={{ fontSize: "14px" }}>
+              {isSimulatingGps ? "⏸️" : "🧪"}
+            </span>
+            <span>{isSimulatingGps ? "Arrêter simulation" : "🧪 Tester tracé (Simulateur GPS)"}</span>
+          </button>
+        </div>
       )}
 
       {/* ADD FIND BOTTOM SHEET MODAL */}

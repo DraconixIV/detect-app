@@ -219,7 +219,6 @@ export default function MainMap({
   setOpenPopupFind,
   activePopupId,
   setActivePopupId,
-  gpsStyle,
   useClustering,
   baseMap = "satellite",
   mapStyle,
@@ -476,7 +475,6 @@ export default function MainMap({
 
       <GpsMarker
         position={position}
-        gpsStyle={gpsStyle}
       />
 
       {/* TEAMMATES LIVE GPS CURSORS */}
