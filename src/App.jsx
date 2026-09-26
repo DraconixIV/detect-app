@@ -1269,70 +1269,117 @@ function App() {
         </div>
       )}
 
-      {/* FLOATING ACTIVE TEAM SESSION BANNER */}
-      {workspace.mode === "session" && activeTab === "map" && !zenMode && !selectedDate && (
+      {/* UNIFIED FLOATING ACTIVE TEAM SESSION & CONSULTATION BANNER */}
+      {workspace && workspace.mode !== "personal" && activeTab === "map" && !zenMode && !selectedDate && (
         <div
           style={{
             position: "fixed",
-            top: "calc(env(safe-area-inset-top, 0px) + 54px)",
+            top: "calc(env(safe-area-inset-top, 0px) + 52px)",
             left: "50%",
             transform: "translateX(-50%)",
             zIndex: 4900,
-            background: "rgba(11, 19, 41, 0.94)",
+            background: workspace.mode === "session" ? "rgba(11, 19, 41, 0.94)" : "rgba(15, 23, 42, 0.94)",
             backdropFilter: "blur(16px)",
             WebkitBackdropFilter: "blur(16px)",
             color: "#ffffff",
-            padding: "6px 14px",
-            borderRadius: "14px",
+            padding: "8px 14px",
+            borderRadius: "16px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             gap: "10px",
-            boxShadow: "0 8px 30px rgba(0, 0, 0, 0.45), 0 0 16px rgba(16, 185, 129, 0.2)",
+            boxShadow: workspace.mode === "session"
+              ? "0 8px 30px rgba(0, 0, 0, 0.45), 0 0 16px rgba(16, 185, 129, 0.2)"
+              : "0 8px 30px rgba(0, 0, 0, 0.45), 0 0 16px rgba(59, 130, 246, 0.2)",
             fontFamily: "system-ui, -apple-system, sans-serif",
             fontSize: "12px",
             fontWeight: "700",
-            border: "1.5px solid rgba(16, 185, 129, 0.5)",
+            border: workspace.mode === "session"
+              ? "1.5px solid rgba(16, 185, 129, 0.5)"
+              : "1.5px solid rgba(59, 130, 246, 0.5)",
             maxWidth: "480px",
             width: "calc(100% - 24px)",
             boxSizing: "border-box",
             animation: "fadeIn 0.25s ease"
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
             <span
               style={{
                 width: "8px",
                 height: "8px",
                 borderRadius: "50%",
-                background: "#10b981",
-                boxShadow: "0 0 10px #10b981",
-                animation: "pulse 1.5s infinite",
+                background: workspace.mode === "session" ? "#10b981" : "#38bdf8",
+                boxShadow: workspace.mode === "session" ? "0 0 10px #10b981" : "0 0 10px #38bdf8",
+                animation: workspace.mode === "session" ? "pulse 1.5s infinite" : "none",
                 flexShrink: 0
               }}
             />
             <div style={{ minWidth: 0 }}>
-              <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontSize: "12px", fontWeight: "800", color: "#34d399" }}>
-                👥 Session : {workspace.sessionName || workspace.targetCode}
+              <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontSize: "12px", fontWeight: "800", color: workspace.mode === "session" ? "#34d399" : "#38bdf8" }}>
+                {workspace.mode === "session"
+                  ? `👥 Session : ${workspace.sessionName || workspace.targetCode}`
+                  : `👁️ Consultation : ${workspace.targetCode}`}
               </div>
-              <div style={{ fontSize: "10.5px", color: "#94a3b8", fontWeight: "600", display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                <span>🟢 <strong>{teammates.length + 1}</strong> en direct</span>
-                <span>•</span>
-                <span>🏆 <strong>{sessionFindsCount}</strong> trouvaille{sessionFindsCount > 1 ? "s" : ""} groupe</span>
+              <div style={{ fontSize: "10.5px", color: "#94a3b8", fontWeight: "600", display: "flex", gap: "6px", flexWrap: "wrap", alignItems: "center" }}>
+                {workspace.mode === "session" ? (
+                  <>
+                    <span style={{ color: "#6ee7b7" }}>{workspace.targetCode}</span>
+                    <span>•</span>
+                    <span>🟢 <strong>{teammates.length + 1}</strong> en direct</span>
+                    <span>•</span>
+                    <span>🏆 <strong>{sessionFindsCount}</strong> cible{sessionFindsCount > 1 ? "s" : ""}</span>
+                  </>
+                ) : (
+                  <span>Mode lecture seule</span>
+                )}
               </div>
             </div>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+            {workspace.mode === "session" && (
+              <button
+                type="button"
+                onClick={() => setShowTeamSessionModal(true)}
+                style={{
+                  background: "rgba(16, 185, 129, 0.2)",
+                  border: "1px solid rgba(16, 185, 129, 0.4)",
+                  color: "#34d399",
+                  borderRadius: "8px",
+                  padding: "5px 9px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  cursor: "pointer",
+                  fontSize: "11px",
+                  fontWeight: "800"
+                }}
+                title="Gérer la session d'équipe"
+              >
+                <span>👥</span>
+                <span>Gérer</span>
+              </button>
+            )}
+
             <button
               type="button"
-              onClick={() => setShowTeamSessionModal(true)}
+              onClick={() => {
+                if (workspace.mode === "session") {
+                  leaveTeamSession();
+                }
+                setWorkspace({ mode: "personal", targetCode: null, sessionName: null });
+                setToast({
+                  message: workspace.mode === "session" ? "🚪 Vous avez quitté la session." : "Mode consultation fermé.",
+                  type: "info"
+                });
+              }}
               style={{
-                background: "rgba(16, 185, 129, 0.2)",
-                border: "1px solid rgba(16, 185, 129, 0.4)",
-                color: "#34d399",
+                background: "rgba(239, 68, 68, 0.2)",
+                border: "1px solid rgba(239, 68, 68, 0.4)",
+                color: "#f87171",
                 borderRadius: "8px",
-                padding: "4px 8px",
+                padding: "5px 9px",
                 display: "flex",
                 alignItems: "center",
                 gap: "4px",
@@ -1340,10 +1387,10 @@ function App() {
                 fontSize: "11px",
                 fontWeight: "800"
               }}
-              title="Gérer la session d'équipe"
+              title={workspace.mode === "session" ? "Quitter la session" : "Fermer la consultation"}
             >
-              <span>👥</span>
-              <span>Gérer</span>
+              <span>✕</span>
+              <span>{workspace.mode === "session" ? "Quitter" : "Fermer"}</span>
             </button>
           </div>
         </div>
@@ -1520,49 +1567,6 @@ function App() {
           isSimulatingGps={isSimulatingGps}
           onToggleGpsSimulation={startGpsSimulation}
         />
-      )}
-
-      {/* BOUTON TEST TEMPORAIRE : SIMULATEUR DE PARCOURS GPS */}
-      {activeTab === "map" && !zenMode && (
-        <div
-          style={{
-            position: "fixed",
-            top: "58px",
-            right: "12px",
-            zIndex: 4900,
-            display: "flex",
-            alignItems: "center",
-            gap: "6px"
-          }}
-        >
-          <button
-            type="button"
-            onClick={startGpsSimulation}
-            style={{
-              padding: "7px 12px",
-              borderRadius: "12px",
-              border: isSimulatingGps ? "1.5px solid #10b981" : "1px solid rgba(59, 130, 246, 0.4)",
-              background: isSimulatingGps ? "rgba(16, 185, 129, 0.25)" : "rgba(15, 23, 42, 0.88)",
-              backdropFilter: "blur(16px)",
-              WebkitBackdropFilter: "blur(16px)",
-              color: isSimulatingGps ? "#34d399" : "#60a5fa",
-              fontSize: "11px",
-              fontWeight: "800",
-              cursor: "pointer",
-              boxShadow: isSimulatingGps ? "0 0 16px rgba(16, 185, 129, 0.4)" : "0 4px 14px rgba(0,0,0,0.5)",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              transition: "all 0.2s ease"
-            }}
-            title="Simulateur de marche GPS pour tester le tracé sans sortir"
-          >
-            <span style={{ fontSize: "14px" }}>
-              {isSimulatingGps ? "⏸️" : "🧪"}
-            </span>
-            <span>{isSimulatingGps ? "Arrêter simulation" : "🧪 Tester tracé (Simulateur GPS)"}</span>
-          </button>
-        </div>
       )}
 
       {/* ADD FIND BOTTOM SHEET MODAL */}
