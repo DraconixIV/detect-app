@@ -208,6 +208,7 @@ function App() {
     teammates,
     broadcastFind,
     broadcastDeleteFind,
+    broadcastSaveSortie,
     isHost,
     isLocked,
     bannedList,
@@ -645,6 +646,73 @@ function App() {
     }
   }, [isRecordingSortie]);
 
+  // Auto-start sortie recording when entering a shared team session
+  useEffect(() => {
+    if (workspace?.mode === "session" && workspace?.targetCode) {
+      setShowLiveSortieTrack(true);
+      localStorage.setItem("showLiveSortieTrack", "true");
+      if (!isRecordingRef.current) {
+        requestFreshGpsFix(true, false);
+        startContinuousGpsWatch();
+        setFollowGps(true);
+        startSortieRaw(position);
+        setToast({
+          message: `👥 Session d'équipe rejointe ! Tracé GPS en direct activé.`,
+          type: "success"
+        });
+      }
+    }
+  }, [workspace?.mode, workspace?.targetCode]);
+
+  // Synchronized Team Sortie Saving: Teammates auto-save their track when host saves the sortie
+  useEffect(() => {
+    const handleTeamSortieSaved = async (e) => {
+      const payload = e.detail;
+      if (!payload) return;
+      const curPositions = positionsRef.current || [];
+      const sessionName = payload.sessionName || (workspace?.sessionName ? `Session ${workspace.sessionName}` : "Sortie d'équipe");
+      const sessionCode = payload.sessionCode || workspace?.targetCode;
+
+      if (curPositions.length >= 2) {
+        await saveSortie(curPositions, sessionName, sessionCode);
+      } else {
+        cancelSortie();
+      }
+      setToast({
+        message: `🏁 L'hôte a terminé la sortie commune "${sessionName}". Tracé sauvegardé dans votre journal !`,
+        type: "success"
+      });
+    };
+
+    window.addEventListener("geoprospect-team-sortie-saved", handleTeamSortieSaved);
+    return () => {
+      window.removeEventListener("geoprospect-team-sortie-saved", handleTeamSortieSaved);
+    };
+  }, [workspace?.targetCode, workspace?.sessionName, saveSortie, cancelSortie, setToast]);
+
+  const handleLeaveSessionWithSave = async () => {
+    const curPositions = positionsRef.current || [];
+    const sessionCode = workspace?.targetCode;
+    const sessionName = workspace?.sessionName || "Sortie d'équipe";
+
+    if (curPositions.length >= 2) {
+      const name = `${sessionName} (partielle)`;
+      await saveSortie(curPositions, name, sessionCode);
+      setToast({
+        message: "🚪 Session quittée. Votre tracé a été sauvegardé dans votre journal !",
+        type: "info"
+      });
+    } else {
+      cancelSortie();
+      setToast({
+        message: "🚪 Vous avez quitté la session.",
+        type: "info"
+      });
+    }
+    leaveTeamSession();
+    setWorkspace({ mode: "personal", targetCode: null, sessionName: null });
+  };
+
   const startSortie = () => {
     setShowLiveSortieTrack(true);
     localStorage.setItem("showLiveSortieTrack", "true");
@@ -659,11 +727,29 @@ function App() {
   };
 
   const submitOutingName = async () => {
-    const name = outingNameInput.trim() || `Sortie du ${new Date().toLocaleDateString("fr-FR")}`;
+    const defaultName = workspace?.mode === "session"
+      ? (workspace.sessionName ? `Session ${workspace.sessionName}` : `Session d'équipe ${workspace.targetCode || ""}`)
+      : `Sortie du ${new Date().toLocaleDateString("fr-FR")}`;
+    const name = outingNameInput.trim() || defaultName;
     setShowOutingNameModal(false);
     stopGpsSimulation();
-    await saveSortie(tempSortiePositions, name);
+
+    const sessionCode = workspace?.mode === "session" ? workspace.targetCode : null;
+    await saveSortie(tempSortiePositions, name, sessionCode);
+
+    if (workspace?.mode === "session" && broadcastSaveSortie) {
+      broadcastSaveSortie({
+        sessionName: name,
+        sessionCode: sessionCode,
+        timestamp: Date.now()
+      });
+    }
+
     setTempSortiePositions([]);
+    setToast({
+      message: "💾 Sortie enregistrée avec succès dans votre journal !",
+      type: "success"
+    });
   };
 
   const stopSortie = async () => {
@@ -682,7 +768,10 @@ function App() {
     }
 
     setTempSortiePositions(sortiePositions);
-    setOutingNameInput(`Sortie du ${new Date().toLocaleDateString("fr-FR")}`);
+    const defaultName = workspace?.mode === "session"
+      ? (workspace.sessionName ? `Session ${workspace.sessionName}` : `Session d'équipe ${workspace.targetCode || ""}`)
+      : `Sortie du ${new Date().toLocaleDateString("fr-FR")}`;
+    setOutingNameInput(defaultName);
     setShowOutingNameModal(true);
   };
   
@@ -1269,8 +1358,8 @@ function App() {
         </div>
       )}
 
-      {/* UNIFIED FLOATING ACTIVE TEAM SESSION & CONSULTATION BANNER */}
-      {workspace && workspace.mode !== "personal" && activeTab === "map" && !zenMode && !selectedDate && (
+      {/* FLOATING CONSULTATION MODE BANNER */}
+      {workspace && workspace.mode === "consultation" && activeTab === "map" && !zenMode && !selectedDate && (
         <div
           style={{
             position: "fixed",
@@ -1278,7 +1367,7 @@ function App() {
             left: "50%",
             transform: "translateX(-50%)",
             zIndex: 4900,
-            background: workspace.mode === "session" ? "rgba(11, 19, 41, 0.94)" : "rgba(15, 23, 42, 0.94)",
+            background: "rgba(15, 23, 42, 0.94)",
             backdropFilter: "blur(16px)",
             WebkitBackdropFilter: "blur(16px)",
             color: "#ffffff",
@@ -1288,15 +1377,11 @@ function App() {
             alignItems: "center",
             justifyContent: "space-between",
             gap: "10px",
-            boxShadow: workspace.mode === "session"
-              ? "0 8px 30px rgba(0, 0, 0, 0.45), 0 0 16px rgba(16, 185, 129, 0.2)"
-              : "0 8px 30px rgba(0, 0, 0, 0.45), 0 0 16px rgba(59, 130, 246, 0.2)",
+            boxShadow: "0 8px 30px rgba(0, 0, 0, 0.45), 0 0 16px rgba(59, 130, 246, 0.2)",
             fontFamily: "system-ui, -apple-system, sans-serif",
             fontSize: "12px",
             fontWeight: "700",
-            border: workspace.mode === "session"
-              ? "1.5px solid rgba(16, 185, 129, 0.5)"
-              : "1.5px solid rgba(59, 130, 246, 0.5)",
+            border: "1.5px solid rgba(59, 130, 246, 0.5)",
             maxWidth: "480px",
             width: "calc(100% - 24px)",
             boxSizing: "border-box",
@@ -1309,90 +1394,48 @@ function App() {
                 width: "8px",
                 height: "8px",
                 borderRadius: "50%",
-                background: workspace.mode === "session" ? "#10b981" : "#38bdf8",
-                boxShadow: workspace.mode === "session" ? "0 0 10px #10b981" : "0 0 10px #38bdf8",
-                animation: workspace.mode === "session" ? "pulse 1.5s infinite" : "none",
+                background: "#38bdf8",
+                boxShadow: "0 0 10px #38bdf8",
                 flexShrink: 0
               }}
             />
             <div style={{ minWidth: 0 }}>
-              <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontSize: "12px", fontWeight: "800", color: workspace.mode === "session" ? "#34d399" : "#38bdf8" }}>
-                {workspace.mode === "session"
-                  ? `👥 Session : ${workspace.sessionName || workspace.targetCode}`
-                  : `👁️ Consultation : ${workspace.targetCode}`}
+              <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontSize: "12px", fontWeight: "800", color: "#38bdf8" }}>
+                👁️ Consultation : {workspace.targetCode}
               </div>
-              <div style={{ fontSize: "10.5px", color: "#94a3b8", fontWeight: "600", display: "flex", gap: "6px", flexWrap: "wrap", alignItems: "center" }}>
-                {workspace.mode === "session" ? (
-                  <>
-                    <span style={{ color: "#6ee7b7" }}>{workspace.targetCode}</span>
-                    <span>•</span>
-                    <span>🟢 <strong>{teammates.length + 1}</strong> en direct</span>
-                    <span>•</span>
-                    <span>🏆 <strong>{sessionFindsCount}</strong> cible{sessionFindsCount > 1 ? "s" : ""}</span>
-                  </>
-                ) : (
-                  <span>Mode lecture seule</span>
-                )}
+              <div style={{ fontSize: "10.5px", color: "#94a3b8", fontWeight: "600" }}>
+                Mode lecture seule
               </div>
             </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
-            {workspace.mode === "session" && (
-              <button
-                type="button"
-                onClick={() => setShowTeamSessionModal(true)}
-                style={{
-                  background: "rgba(16, 185, 129, 0.2)",
-                  border: "1px solid rgba(16, 185, 129, 0.4)",
-                  color: "#34d399",
-                  borderRadius: "8px",
-                  padding: "5px 9px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  cursor: "pointer",
-                  fontSize: "11px",
-                  fontWeight: "800"
-                }}
-                title="Gérer la session d'équipe"
-              >
-                <span>👥</span>
-                <span>Gérer</span>
-              </button>
-            )}
-
-            <button
-              type="button"
-              onClick={() => {
-                if (workspace.mode === "session") {
-                  leaveTeamSession();
-                }
-                setWorkspace({ mode: "personal", targetCode: null, sessionName: null });
-                setToast({
-                  message: workspace.mode === "session" ? "🚪 Vous avez quitté la session." : "Mode consultation fermé.",
-                  type: "info"
-                });
-              }}
-              style={{
-                background: "rgba(239, 68, 68, 0.2)",
-                border: "1px solid rgba(239, 68, 68, 0.4)",
-                color: "#f87171",
-                borderRadius: "8px",
-                padding: "5px 9px",
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-                cursor: "pointer",
-                fontSize: "11px",
-                fontWeight: "800"
-              }}
-              title={workspace.mode === "session" ? "Quitter la session" : "Fermer la consultation"}
-            >
-              <span>✕</span>
-              <span>{workspace.mode === "session" ? "Quitter" : "Fermer"}</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setWorkspace({ mode: "personal", targetCode: null, sessionName: null });
+              setToast({
+                message: "Mode consultation fermé.",
+                type: "info"
+              });
+            }}
+            style={{
+              background: "rgba(239, 68, 68, 0.2)",
+              border: "1px solid rgba(239, 68, 68, 0.4)",
+              color: "#f87171",
+              borderRadius: "8px",
+              padding: "5px 9px",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              cursor: "pointer",
+              fontSize: "11px",
+              fontWeight: "800"
+            }}
+            title="Fermer la consultation"
+          >
+            <span>✕</span>
+            <span>Fermer</span>
+          </button>
         </div>
       )}
 
@@ -1656,6 +1699,8 @@ function App() {
         requestMapConsultation={requestMapConsultation}
         activeViewers={activeViewers}
         revokeViewerAccess={revokeViewerAccess}
+        onRedirectHome={() => setActiveTab("map")}
+        onLeaveSession={handleLeaveSessionWithSave}
       />
 
       {/* Real-time incoming map consultation permission request modal */}

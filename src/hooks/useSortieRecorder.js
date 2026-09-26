@@ -173,8 +173,8 @@ export default function useSortieRecorder() {
     localStorage.removeItem("sortieElapsedSeconds");
   };
 
-  const saveSortie = async (positions, name) => {
-    const success = await saveTrack(positions, name);
+  const saveSortie = async (positions, name, sessionCode = null) => {
+    const success = await saveTrack(positions, name, sessionCode);
     if (success) {
       await loadTracksList();
     }

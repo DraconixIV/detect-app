@@ -55,17 +55,17 @@ export async function loadTracks() {
   }
 }
 
-export async function saveTrack(track, sessionName) {
+export async function saveTrack(track, sessionName, sessionCode = null) {
   if (!track || track.length < 2) {
-    alert("Pas assez de points GPS pour enregistrer un tracé.");
     return false;
   }
 
   const cleanName = (sessionName || "").trim() || `Sortie du ${new Date().toLocaleDateString("fr-FR")}`;
   const newTrack = {
-    id: `local-track-${Date.now()}`,
+    id: `local-track-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
     session_name: cleanName,
     positions: track,
+    session_code: sessionCode || null,
     created_at: new Date().toISOString()
   };
 
@@ -91,6 +91,5 @@ export async function saveTrack(track, sessionName) {
     console.warn("Cloud sync error for track, saved locally:", err);
   }
 
-  alert("Tracé de sortie enregistré avec succès ! 🗺️✅");
   return true;
 }

@@ -30,7 +30,9 @@ export default function TeamSessionModal({
   toggleSessionLock,
   requestMapConsultation,
   activeViewers = [],
-  revokeViewerAccess
+  revokeViewerAccess,
+  onRedirectHome,
+  onLeaveSession
 }) {
   const [tab, setTab] = useState("session"); // "session" | "my-code" | "consult"
   const [myCode, setMyCode] = useState(() => getMyUserCode());
@@ -168,6 +170,9 @@ export default function TeamSessionModal({
       targetCode: session.code,
       sessionName: session.name
     });
+    if (onRedirectHome) {
+      onRedirectHome();
+    }
     onClose();
   };
 
@@ -199,6 +204,9 @@ export default function TeamSessionModal({
         targetCode: session.code,
         sessionName: session.name
       });
+      if (onRedirectHome) {
+        onRedirectHome();
+      }
       onClose();
     } catch (err) {
       setJoinError(err.message || "Erreur lors de la connexion à la session.");
@@ -206,13 +214,17 @@ export default function TeamSessionModal({
   };
 
   const handleLeaveSession = () => {
-    leaveTeamSession();
-    setActiveSessionState(null);
-    setWorkspace({
-      mode: "personal",
-      targetCode: null,
-      sessionName: null
-    });
+    if (onLeaveSession) {
+      onLeaveSession();
+    } else {
+      leaveTeamSession();
+      setActiveSessionState(null);
+      setWorkspace({
+        mode: "personal",
+        targetCode: null,
+        sessionName: null
+      });
+    }
     onClose();
   };
 

@@ -220,6 +220,11 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
       window.dispatchEvent(new CustomEvent("geoprospect-team-find-deleted", { detail: payload.id }));
     });
 
+    channel.on("broadcast", { event: "team_sortie_saved" }, ({ payload }) => {
+      if (!payload) return;
+      window.dispatchEvent(new CustomEvent("geoprospect-team-sortie-saved", { detail: payload }));
+    });
+
     // 4. Moderation Broadcast listeners (Kick, Ban, Lock)
     channel.on("broadcast", { event: "kick_member" }, ({ payload }) => {
       if (!payload) return;
@@ -368,6 +373,25 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
     }
   };
 
+  const broadcastSaveSortie = (trackPayload) => {
+    if (channelRef.current && workspace?.mode === "session" && workspace?.targetCode) {
+      const myCode = normalizeSessionCode(getMyUserCode());
+      const myName = getMyDisplayName() || `Détecteuriste ${myCode.slice(-4)}`;
+      channelRef.current.send({
+        type: "broadcast",
+        event: "team_sortie_saved",
+        payload: {
+          ...trackPayload,
+          sessionCode: normalizeSessionCode(workspace.targetCode),
+          savedBy: myName,
+          savedByUserCode: myCode
+        }
+      }).catch((err) => {
+        console.warn("Save team sortie broadcast error:", err);
+      });
+    }
+  };
+
   // Host moderation actions
   const kickTeammate = (targetUserCode, targetUserName = "") => {
     if (!channelRef.current || !workspace?.targetCode) return;
@@ -467,6 +491,7 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
     teammates,
     broadcastFind,
     broadcastDeleteFind,
+    broadcastSaveSortie,
     isHost,
     isLocked,
     bannedList,

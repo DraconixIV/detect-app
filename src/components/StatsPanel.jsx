@@ -767,8 +767,15 @@ export default function StatsPanel({
                 {dayTracks.length > 0 ? (
                   <div style={{ color: textSub, fontSize: "11px", display: "flex", flexDirection: "column", gap: "3px", borderTop: `1px solid ${cardBorder}`, paddingTop: "4px", marginTop: "4px" }}>
                     {dayTracks.map((t, i) => (
-                      <div key={i} style={{ display: "flex", justifyContent: "space-between" }}>
-                        <span>🚶 {t.session_name || `Parcours ${i + 1}`}</span>
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <span>🚶 {t.session_name || `Parcours ${i + 1}`}</span>
+                          {t.session_code && (
+                            <span style={{ fontSize: "9px", background: "rgba(16, 185, 129, 0.2)", color: "#10b981", padding: "1px 5px", borderRadius: "4px", fontWeight: "700" }}>
+                              👥 Équipe
+                            </span>
+                          )}
+                        </span>
                         <span>📏 <strong>{getDistanceOfTrack(t.positions).toFixed(2)}</strong> km</span>
                       </div>
                     ))}
