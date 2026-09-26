@@ -230,6 +230,7 @@ function App() {
     isRecordingSortie,
     isSortiePaused,
     sortieDistance,
+    sortieElapsedSeconds,
     sortiePositions,
     savedTracks,
     startSortie: startSortieRaw,
@@ -492,6 +493,7 @@ function App() {
   }, [activeTab, showAlbum]);
 
   const isRecordingRef = useRef(isRecordingSortie);
+  const isSortiePausedRef = useRef(isSortiePaused);
   const positionsRef = useRef(sortiePositions);
   const quickAddInputRef = useRef(null);
 
@@ -537,6 +539,10 @@ function App() {
   useEffect(() => {
     isRecordingRef.current = isRecordingSortie;
   }, [isRecordingSortie]);
+
+  useEffect(() => {
+    isSortiePausedRef.current = isSortiePaused;
+  }, [isSortiePaused]);
 
   useEffect(() => {
     positionsRef.current = sortiePositions;
@@ -605,6 +611,8 @@ function App() {
     if (simIntervalRef.current) clearInterval(simIntervalRef.current);
 
     simIntervalRef.current = setInterval(() => {
+      if (isSortiePausedRef.current) return;
+
       const state = simStateRef.current;
       state.stepsInLeg += 1;
 
@@ -812,7 +820,7 @@ function App() {
 
         alert("Trouvaille sauvegardée localement (Hors-ligne) ! Elle sera synchronisée dès le retour d'internet. 💾");
       } else {
-        await createFind({
+        const createdFind = await createFind({
           position: finalPosition,
           newTitle: titleVal,
           newDescription: descVal,
@@ -828,6 +836,7 @@ function App() {
 
         if (workspace.mode === "session" && broadcastFind) {
           broadcastFind({
+            id: createdFind?.id,
             title: titleVal,
             description: descVal,
             category: catVal,
@@ -835,6 +844,11 @@ function App() {
             position: finalPosition,
             latitude: finalPosition[0],
             longitude: finalPosition[1],
+            image_url: createdFind?.image_url || null,
+            thumbnail_url: createdFind?.thumbnail_url || createdFind?.image_url || null,
+            audio_url: createdFind?.audio_url || null,
+            audio_duration: createdFind?.audio_duration || null,
+            video_url: createdFind?.video_url || null,
             date: dateVal || new Date().toLocaleString()
           });
         }
@@ -1101,6 +1115,17 @@ function App() {
     }).length;
   }, [finds]);
 
+  const sessionFindsCount = useMemo(() => {
+    if (workspace.mode === "session" && workspace.targetCode) {
+      const cleanTarget = normalizeSessionCode(workspace.targetCode);
+      return finds.filter((f) => {
+        const fSess = f.session_code ? normalizeSessionCode(f.session_code) : null;
+        return fSess === cleanTarget;
+      }).length;
+    }
+    return todayFindsCount;
+  }, [workspace.mode, workspace.targetCode, finds, todayFindsCount]);
+
   const selectedDateTracks = useMemo(() => {
     if (!selectedDate) return [];
     return savedTracks.filter((track) => {
@@ -1236,6 +1261,86 @@ function App() {
             <span>✕</span>
             <span>Fermer</span>
           </button>
+        </div>
+      )}
+
+      {/* FLOATING ACTIVE TEAM SESSION BANNER */}
+      {workspace.mode === "session" && activeTab === "map" && !zenMode && !selectedDate && (
+        <div
+          style={{
+            position: "fixed",
+            top: "calc(env(safe-area-inset-top, 0px) + 54px)",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 4900,
+            background: "rgba(11, 19, 41, 0.94)",
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
+            color: "#ffffff",
+            padding: "6px 14px",
+            borderRadius: "14px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "10px",
+            boxShadow: "0 8px 30px rgba(0, 0, 0, 0.45), 0 0 16px rgba(16, 185, 129, 0.2)",
+            fontFamily: "system-ui, -apple-system, sans-serif",
+            fontSize: "12px",
+            fontWeight: "700",
+            border: "1.5px solid rgba(16, 185, 129, 0.5)",
+            maxWidth: "480px",
+            width: "calc(100% - 24px)",
+            boxSizing: "border-box",
+            animation: "fadeIn 0.25s ease"
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+            <span
+              style={{
+                width: "8px",
+                height: "8px",
+                borderRadius: "50%",
+                background: "#10b981",
+                boxShadow: "0 0 10px #10b981",
+                animation: "pulse 1.5s infinite",
+                flexShrink: 0
+              }}
+            />
+            <div style={{ minWidth: 0 }}>
+              <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontSize: "12px", fontWeight: "800", color: "#34d399" }}>
+                👥 Session : {workspace.sessionName || workspace.targetCode}
+              </div>
+              <div style={{ fontSize: "10.5px", color: "#94a3b8", fontWeight: "600", display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                <span>🟢 <strong>{teammates.length + 1}</strong> en direct</span>
+                <span>•</span>
+                <span>🏆 <strong>{sessionFindsCount}</strong> trouvaille{sessionFindsCount > 1 ? "s" : ""} groupe</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+            <button
+              type="button"
+              onClick={() => setShowTeamSessionModal(true)}
+              style={{
+                background: "rgba(16, 185, 129, 0.2)",
+                border: "1px solid rgba(16, 185, 129, 0.4)",
+                color: "#34d399",
+                borderRadius: "8px",
+                padding: "4px 8px",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                cursor: "pointer",
+                fontSize: "11px",
+                fontWeight: "800"
+              }}
+              title="Gérer la session d'équipe"
+            >
+              <span>👥</span>
+              <span>Gérer</span>
+            </button>
+          </div>
         </div>
       )}
 
@@ -1401,7 +1506,8 @@ function App() {
           isSortiePaused={isSortiePaused}
           onTogglePauseSortie={togglePauseSortie}
           sortieDistance={sortieDistance}
-          todayFindsCount={todayFindsCount}
+          elapsedSeconds={sortieElapsedSeconds}
+          todayFindsCount={workspace.mode === "session" ? sessionFindsCount : todayFindsCount}
           onStopSortie={stopSortie}
           zenMode={zenMode}
           showLiveSortieTrack={showLiveSortieTrack}

@@ -28,6 +28,10 @@ export default function useSortieRecorder() {
     const val = localStorage.getItem("sortieDistance");
     return val ? Number(val) : 0;
   });
+  const [sortieElapsedSeconds, setSortieElapsedSeconds] = useState(() => {
+    const val = localStorage.getItem("sortieElapsedSeconds");
+    return val ? Number(val) : 0;
+  });
   const [sortiePositions, setSortiePositions] = useState(() => {
     const val = localStorage.getItem("sortiePositions");
     return val ? JSON.parse(val) : [];
@@ -47,8 +51,25 @@ export default function useSortieRecorder() {
   }, [sortieDistance]);
 
   useEffect(() => {
+    localStorage.setItem("sortieElapsedSeconds", sortieElapsedSeconds);
+  }, [sortieElapsedSeconds]);
+
+  useEffect(() => {
     localStorage.setItem("sortiePositions", JSON.stringify(sortiePositions));
   }, [sortiePositions]);
+
+  // Synchronized timer: increments ONLY when actively recording and NOT paused
+  useEffect(() => {
+    let timer = null;
+    if (isRecordingSortie && !isSortiePaused) {
+      timer = setInterval(() => {
+        setSortieElapsedSeconds((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [isRecordingSortie, isSortiePaused]);
 
   // Keep screen awake using W3C Wake Lock API when recording is active
   useEffect(() => {
@@ -112,6 +133,7 @@ export default function useSortieRecorder() {
     setIsRecordingSortie(true);
     setIsSortiePaused(false);
     setSortieDistance(0);
+    setSortieElapsedSeconds(0);
     setSortiePositions(initialPosition ? [initialPosition] : []);
   };
 
@@ -146,7 +168,9 @@ export default function useSortieRecorder() {
     setIsRecordingSortie(false);
     setIsSortiePaused(false);
     setSortieDistance(0);
+    setSortieElapsedSeconds(0);
     setSortiePositions([]);
+    localStorage.removeItem("sortieElapsedSeconds");
   };
 
   const saveSortie = async (positions, name) => {
@@ -157,7 +181,9 @@ export default function useSortieRecorder() {
     setIsRecordingSortie(false);
     setIsSortiePaused(false);
     setSortieDistance(0);
+    setSortieElapsedSeconds(0);
     setSortiePositions([]);
+    localStorage.removeItem("sortieElapsedSeconds");
     return success;
   };
 
@@ -165,6 +191,7 @@ export default function useSortieRecorder() {
     isRecordingSortie,
     isSortiePaused,
     sortieDistance,
+    sortieElapsedSeconds,
     sortiePositions,
     savedTracks,
     startSortie,

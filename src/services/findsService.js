@@ -585,8 +585,8 @@ export async function addFind({
     }
 
     // 3. Process Photo if provided
+    let finalPhotoUrl = null;
     if (newPhoto) {
-      let finalPhotoUrl = null;
       if (typeof newPhoto === "string" && newPhoto.startsWith("http")) {
         finalPhotoUrl = newPhoto;
         try {
@@ -678,8 +678,13 @@ export async function addFind({
 
     return {
       ...insertedFind,
+      image_url: finalPhotoUrl || insertedFind.image_url || null,
+      thumbnail_url: finalPhotoUrl || insertedFind.thumbnail_url || null,
       video_url: finalVideoUrl,
-      video: finalVideoUrl
+      video: finalVideoUrl,
+      user_code: finalUserCode,
+      finder_name: finalFinderName,
+      session_code: finalSessionCode
     };
 
   } catch (error) {

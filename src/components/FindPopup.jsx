@@ -122,7 +122,20 @@ export default function FindPopup({
       return;
     }
 
-    const fetchedPhotos = data || [];
+    let fetchedPhotos = data || [];
+    const primaryImg = find.image_url || find.thumbnail_url;
+    if (primaryImg && !fetchedPhotos.some((p) => p.type === "discovery" && !isVideoFile(p.image_url))) {
+      fetchedPhotos = [
+        {
+          id: `primary-${find.id}`,
+          find_id: find.id,
+          image_url: primaryImg,
+          type: "discovery"
+        },
+        ...fetchedPhotos
+      ];
+    }
+
     window.findPhotosCache[find.id] = fetchedPhotos;
     setPhotos(fetchedPhotos);
 
@@ -588,7 +601,11 @@ export default function FindPopup({
     url.match(/\.(mp4|mov|webm|m4v|ogg)(\?.*)?$/i) ||
     url.includes("/video-")
   );
-  const discoveryPhotos = photos.filter((p) => p.type === "discovery" && !isVideoFile(p.image_url) && p.type !== "video");
+  const primaryImg = find.image_url || find.thumbnail_url || null;
+  const filteredDiscovery = photos.filter((p) => (p.type === "discovery" || !p.type) && !isVideoFile(p.image_url) && p.type !== "video");
+  const discoveryPhotos = filteredDiscovery.length > 0
+    ? filteredDiscovery
+    : (primaryImg && !isVideoFile(primaryImg) ? [{ id: `fallback-${find.id}`, image_url: primaryImg, type: "discovery" }] : []);
   const cleanPhotos = photos.filter((p) => (p.type === "clean" || p.type === "avers" || p.type === "revers") && !isVideoFile(p.image_url) && p.type !== "video");
   const photoVideoUrl = photos.find((p) => p.type === "video" || isVideoFile(p.image_url))?.image_url;
   const effectiveVideoUrl = videoUrl || find.video_url || find.video || decodeMetadata(find)?.video_url || photoVideoUrl || null;
@@ -618,7 +635,7 @@ export default function FindPopup({
   };
 
   const validPhotoList = photos.filter((p) => !isVideoFile(p.image_url) && p.type !== "video");
-  const coverPhoto = validPhotoList.length > 0 ? validPhotoList[0].image_url : (find.thumbnail_url || find.image_url || null);
+  const coverPhoto = validPhotoList.length > 0 ? validPhotoList[0].image_url : (find.image_url || find.thumbnail_url || null);
   const isReadOnly = workspace?.mode === "consultation";
   const myCode = getMyUserCode();
   const myName = getMyDisplayName();

@@ -5,6 +5,7 @@ export default function SortieLiveWidget({
   isSortiePaused = false,
   onTogglePauseSortie = null,
   sortieDistance = 0,
+  elapsedSeconds = 0,
   todayFindsCount = 0,
   onStopSortie,
   zenMode = false,
@@ -13,20 +14,7 @@ export default function SortieLiveWidget({
   isSimulatingGps = false,
   onToggleGpsSimulation = null
 }) {
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [collapsed, setCollapsed] = useState(false);
-
-  useEffect(() => {
-    let timer = null;
-    if (isRecordingSortie && !isSortiePaused) {
-      timer = setInterval(() => {
-        setElapsedSeconds((prev) => prev + 1);
-      }, 1000);
-    }
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [isRecordingSortie, isSortiePaused]);
 
   if (!isRecordingSortie || zenMode) return null;
 
