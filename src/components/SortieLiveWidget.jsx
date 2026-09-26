@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 
 export default function SortieLiveWidget({
   isRecordingSortie,
+  isSortiePaused = false,
+  onTogglePauseSortie = null,
   sortieDistance = 0,
   todayFindsCount = 0,
   onStopSortie,
@@ -16,17 +18,15 @@ export default function SortieLiveWidget({
 
   useEffect(() => {
     let timer = null;
-    if (isRecordingSortie) {
+    if (isRecordingSortie && !isSortiePaused) {
       timer = setInterval(() => {
         setElapsedSeconds((prev) => prev + 1);
       }, 1000);
-    } else {
-      setElapsedSeconds(0);
     }
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [isRecordingSortie]);
+  }, [isRecordingSortie, isSortiePaused]);
 
   if (!isRecordingSortie || zenMode) return null;
 
@@ -50,13 +50,15 @@ export default function SortieLiveWidget({
         bottom: "84px",
         left: "14px",
         zIndex: 5100,
-        background: "rgba(11, 19, 41, 0.88)",
+        background: "rgba(11, 19, 41, 0.92)",
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
-        border: "1px solid rgba(239, 68, 68, 0.35)",
+        border: isSortiePaused ? "1px solid rgba(245, 158, 11, 0.45)" : "1px solid rgba(239, 68, 68, 0.35)",
         borderRadius: "18px",
         padding: collapsed ? "8px 12px" : "10px 14px",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(239, 68, 68, 0.2)",
+        boxShadow: isSortiePaused 
+          ? "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(245, 158, 11, 0.2)"
+          : "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(239, 68, 68, 0.2)",
         display: "flex",
         alignItems: "center",
         gap: "12px",
@@ -65,7 +67,7 @@ export default function SortieLiveWidget({
         transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
       }}
     >
-      {/* Recording Pulsing Indicator */}
+      {/* Recording Pulsing / Pause Indicator */}
       <div
         onClick={() => setCollapsed(!collapsed)}
         style={{
@@ -81,9 +83,9 @@ export default function SortieLiveWidget({
             width: "10px",
             height: "10px",
             borderRadius: "50%",
-            background: "#ef4444",
-            boxShadow: "0 0 10px #ef4444",
-            animation: "pulse 1.2s infinite"
+            background: isSortiePaused ? "#f59e0b" : "#ef4444",
+            boxShadow: isSortiePaused ? "0 0 10px #f59e0b" : "0 0 10px #ef4444",
+            animation: isSortiePaused ? "none" : "pulse 1.2s infinite"
           }}
         />
         <span
@@ -91,12 +93,28 @@ export default function SortieLiveWidget({
             fontSize: "12px",
             fontWeight: "900",
             fontFamily: "monospace",
-            color: "#f87171",
+            color: isSortiePaused ? "#fbbf24" : "#f87171",
             letterSpacing: "0.5px"
           }}
         >
           {formatTime(elapsedSeconds)}
         </span>
+        {isSortiePaused && (
+          <span
+            style={{
+              fontSize: "9px",
+              fontWeight: "900",
+              background: "rgba(245, 158, 11, 0.25)",
+              color: "#fbbf24",
+              padding: "1px 5px",
+              borderRadius: "6px",
+              border: "1px solid rgba(245, 158, 11, 0.4)",
+              textTransform: "uppercase"
+            }}
+          >
+            Pause
+          </span>
+        )}
       </div>
 
       {!collapsed && (
@@ -180,6 +198,40 @@ export default function SortieLiveWidget({
             >
               <span>{isSimulatingGps ? "⏸️" : "🏃"}</span>
               <span style={{ fontSize: "10px" }}>{isSimulatingGps ? "Pause" : "Simu"}</span>
+            </button>
+          )}
+
+          {/* Pause / Resume Button */}
+          {onTogglePauseSortie && (
+            <button
+              type="button"
+              onClick={onTogglePauseSortie}
+              style={{
+                padding: "6px 9px",
+                borderRadius: "10px",
+                border: isSortiePaused
+                  ? "1px solid rgba(16, 185, 129, 0.6)"
+                  : "1px solid rgba(245, 158, 11, 0.4)",
+                background: isSortiePaused
+                  ? "rgba(16, 185, 129, 0.22)"
+                  : "rgba(245, 158, 11, 0.16)",
+                color: isSortiePaused ? "#34d399" : "#fbbf24",
+                fontSize: "11px",
+                fontWeight: "800",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                transition: "all 0.15s ease"
+              }}
+              title={isSortiePaused ? "Reprendre l'enregistrement de la sortie" : "Mettre en pause la sortie"}
+            >
+              <span style={{ fontSize: "12px" }}>
+                {isSortiePaused ? "▶️" : "⏸️"}
+              </span>
+              <span style={{ fontSize: "10px" }}>
+                {isSortiePaused ? "Reprendre" : "Pause"}
+              </span>
             </button>
           )}
 

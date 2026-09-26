@@ -21,6 +21,9 @@ export default function useSortieRecorder() {
   const [isRecordingSortie, setIsRecordingSortie] = useState(() => {
     return localStorage.getItem("isRecordingSortie") === "true";
   });
+  const [isSortiePaused, setIsSortiePaused] = useState(() => {
+    return localStorage.getItem("isSortiePaused") === "true";
+  });
   const [sortieDistance, setSortieDistance] = useState(() => {
     const val = localStorage.getItem("sortieDistance");
     return val ? Number(val) : 0;
@@ -34,6 +37,10 @@ export default function useSortieRecorder() {
   useEffect(() => {
     localStorage.setItem("isRecordingSortie", isRecordingSortie);
   }, [isRecordingSortie]);
+
+  useEffect(() => {
+    localStorage.setItem("isSortiePaused", isSortiePaused);
+  }, [isSortiePaused]);
 
   useEffect(() => {
     localStorage.setItem("sortieDistance", sortieDistance);
@@ -103,11 +110,17 @@ export default function useSortieRecorder() {
 
   const startSortie = (initialPosition) => {
     setIsRecordingSortie(true);
+    setIsSortiePaused(false);
     setSortieDistance(0);
     setSortiePositions(initialPosition ? [initialPosition] : []);
   };
 
+  const togglePauseSortie = () => {
+    setIsSortiePaused((prev) => !prev);
+  };
+
   const recordNewPosition = (newPosition, accuracy = null) => {
+    if (isSortiePaused) return;
     if (!newPosition || typeof newPosition[0] !== "number" || typeof newPosition[1] !== "number") return;
     
     // Ignore updates with poor accuracy (> 35m) to avoid erratic spikes
@@ -131,6 +144,7 @@ export default function useSortieRecorder() {
 
   const cancelSortie = () => {
     setIsRecordingSortie(false);
+    setIsSortiePaused(false);
     setSortieDistance(0);
     setSortiePositions([]);
   };
@@ -141,6 +155,7 @@ export default function useSortieRecorder() {
       await loadTracksList();
     }
     setIsRecordingSortie(false);
+    setIsSortiePaused(false);
     setSortieDistance(0);
     setSortiePositions([]);
     return success;
@@ -148,10 +163,12 @@ export default function useSortieRecorder() {
 
   return {
     isRecordingSortie,
+    isSortiePaused,
     sortieDistance,
     sortiePositions,
     savedTracks,
     startSortie,
+    togglePauseSortie,
     recordNewPosition,
     cancelSortie,
     saveSortie,

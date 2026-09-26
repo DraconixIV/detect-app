@@ -228,10 +228,12 @@ function App() {
 
   const {
     isRecordingSortie,
+    isSortiePaused,
     sortieDistance,
     sortiePositions,
     savedTracks,
     startSortie: startSortieRaw,
+    togglePauseSortie,
     recordNewPosition,
     cancelSortie,
     saveSortie,
@@ -578,6 +580,9 @@ function App() {
     const baseLng = (position && typeof position[1] === "number") ? position[1] : 0.6848;
     const startPos = [baseLat, baseLng];
 
+    setShowLiveSortieTrack(true);
+    localStorage.setItem("showLiveSortieTrack", "true");
+
     if (!isRecordingSortie) {
       startSortieRaw(startPos);
       setToast({
@@ -633,6 +638,8 @@ function App() {
   }, [isRecordingSortie]);
 
   const startSortie = () => {
+    setShowLiveSortieTrack(true);
+    localStorage.setItem("showLiveSortieTrack", "true");
     requestFreshGpsFix(true, false);
     startContinuousGpsWatch();
     setFollowGps(true);
@@ -1391,6 +1398,8 @@ function App() {
       {activeTab === "map" && (
         <SortieLiveWidget
           isRecordingSortie={isRecordingSortie}
+          isSortiePaused={isSortiePaused}
+          onTogglePauseSortie={togglePauseSortie}
           sortieDistance={sortieDistance}
           todayFindsCount={todayFindsCount}
           onStopSortie={stopSortie}
