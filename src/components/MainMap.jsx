@@ -243,6 +243,7 @@ export default function MainMap({
   setWorkspace,
   onOpenTeamSession,
   isRecordingSortie = false,
+  showLiveSortieTrack = true,
   sortiePositions = [],
   savedTracks = [],
   markerSize = "medium",
@@ -436,10 +437,13 @@ export default function MainMap({
       ))}
 
       {/* LIVE ACTIVE SORTIE TRACK (Direct Leaflet Canvas/SVG Layer) */}
-      <LiveSortieTrack positions={sortiePositions} isRecording={isRecordingSortie} />
+      <LiveSortieTrack
+        positions={showLiveSortieTrack ? sortiePositions : []}
+        isRecording={isRecordingSortie && showLiveSortieTrack}
+      />
 
       {/* START SORTIE PIN */}
-      {isRecordingSortie && sortiePositions && sortiePositions.length > 0 && (
+      {isRecordingSortie && showLiveSortieTrack && sortiePositions && sortiePositions.length > 0 && (
         <Marker
           position={sortiePositions[0]}
           icon={L.divIcon({

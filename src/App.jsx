@@ -276,6 +276,21 @@ function App() {
   const [zoomTarget, setZoomTarget] = useState(null);
   const [openPopupFind, setOpenPopupFind] = useState(null);
   const [activePopupId, setActivePopupId] = useState(null);
+  const [showLiveSortieTrack, setShowLiveSortieTrack] = useState(() => {
+    return localStorage.getItem("showLiveSortieTrack") !== "false";
+  });
+
+  const toggleLiveSortieTrack = () => {
+    setShowLiveSortieTrack((prev) => {
+      const next = !prev;
+      localStorage.setItem("showLiveSortieTrack", String(next));
+      setToast({
+        message: next ? "👁️ Tracé GPS affiché sur la carte" : "🙈 Tracé GPS masqué",
+        type: "info"
+      });
+      return next;
+    });
+  };
 
   // Auto-close popup if the opened find is deleted or removed
   useEffect(() => {
@@ -1246,6 +1261,7 @@ function App() {
         setWorkspace={setWorkspace}
         onOpenTeamSession={() => setShowTeamSessionModal(true)}
         isRecordingSortie={isRecordingSortie}
+        showLiveSortieTrack={showLiveSortieTrack}
         sortiePositions={sortiePositions}
         savedTracks={savedTracks}
         markerSize={markerSize}
@@ -1281,6 +1297,8 @@ function App() {
           todayFindsCount={todayFindsCount}
           onStopSortie={stopSortie}
           zenMode={zenMode}
+          showLiveSortieTrack={showLiveSortieTrack}
+          onToggleShowTrack={toggleLiveSortieTrack}
         />
       )}
 

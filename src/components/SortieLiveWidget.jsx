@@ -5,7 +5,9 @@ export default function SortieLiveWidget({
   sortieDistance = 0,
   todayFindsCount = 0,
   onStopSortie,
-  zenMode = false
+  zenMode = false,
+  showLiveSortieTrack = true,
+  onToggleShowTrack
 }) {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [collapsed, setCollapsed] = useState(false);
@@ -120,6 +122,40 @@ export default function SortieLiveWidget({
               </div>
             </div>
           </div>
+
+          {/* Toggle Live Track Visibility Button */}
+          {onToggleShowTrack && (
+            <button
+              type="button"
+              onClick={onToggleShowTrack}
+              style={{
+                padding: "6px 8px",
+                borderRadius: "10px",
+                border: showLiveSortieTrack
+                  ? "1px solid rgba(6, 182, 212, 0.45)"
+                  : "1px solid rgba(148, 163, 184, 0.2)",
+                background: showLiveSortieTrack
+                  ? "rgba(6, 182, 212, 0.15)"
+                  : "rgba(15, 23, 42, 0.65)",
+                color: showLiveSortieTrack ? "#22d3ee" : "#94a3b8",
+                fontSize: "11px",
+                fontWeight: "800",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                transition: "all 0.15s ease"
+              }}
+              title={showLiveSortieTrack ? "Masquer mon tracé sur la carte" : "Afficher mon tracé sur la carte"}
+            >
+              <span style={{ fontSize: "12px" }}>
+                {showLiveSortieTrack ? "👁️" : "🙈"}
+              </span>
+              <span style={{ fontSize: "10px" }}>
+                {showLiveSortieTrack ? "Tracé" : "Masqué"}
+              </span>
+            </button>
+          )}
 
           {/* Stop Button */}
           <button
