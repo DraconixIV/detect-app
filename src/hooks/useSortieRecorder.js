@@ -19,22 +19,46 @@ function distanceBetween(point1, point2) {
 
 export default function useSortieRecorder() {
   const [isRecordingSortie, setIsRecordingSortie] = useState(() => {
-    return localStorage.getItem("isRecordingSortie") === "true";
+    try {
+      return localStorage.getItem("isRecordingSortie") === "true";
+    } catch {
+      return false;
+    }
   });
   const [isSortiePaused, setIsSortiePaused] = useState(() => {
-    return localStorage.getItem("isSortiePaused") === "true";
+    try {
+      return localStorage.getItem("isSortiePaused") === "true";
+    } catch {
+      return false;
+    }
   });
   const [sortieDistance, setSortieDistance] = useState(() => {
-    const val = localStorage.getItem("sortieDistance");
-    return val ? Number(val) : 0;
+    try {
+      const val = localStorage.getItem("sortieDistance");
+      return val ? Number(val) : 0;
+    } catch {
+      return 0;
+    }
   });
   const [sortieElapsedSeconds, setSortieElapsedSeconds] = useState(() => {
-    const val = localStorage.getItem("sortieElapsedSeconds");
-    return val ? Number(val) : 0;
+    try {
+      const val = localStorage.getItem("sortieElapsedSeconds");
+      return val ? Number(val) : 0;
+    } catch {
+      return 0;
+    }
   });
   const [sortiePositions, setSortiePositions] = useState(() => {
-    const val = localStorage.getItem("sortiePositions");
-    return val ? JSON.parse(val) : [];
+    try {
+      const val = localStorage.getItem("sortiePositions");
+      if (val) {
+        const parsed = JSON.parse(val);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {
+      console.warn("Corrupted sortiePositions in storage:", e);
+    }
+    return [];
   });
   const [savedTracks, setSavedTracks] = useState([]);
 

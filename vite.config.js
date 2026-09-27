@@ -16,6 +16,9 @@ export default defineConfig({
       ],
 
       workbox: {
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/data\.geopf\.fr\/wmts.*/,
