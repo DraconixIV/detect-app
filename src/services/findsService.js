@@ -513,11 +513,12 @@ export async function uploadPhotoFile(photo) {
     }
 
     if (!photoBlob || !(photoBlob instanceof Blob || photoBlob instanceof File)) {
+      console.warn("uploadPhotoFile: invalid photoBlob", photoBlob);
       return null;
     }
 
     let fileToUpload = photoBlob;
-    // Attempt compression with fallback to canvas
+    // 1. Try browser-image-compression with canvas fallback
     try {
       fileToUpload = await imageCompression(photoBlob, {
         maxSizeMB: 0.5,
@@ -547,22 +548,21 @@ export async function uploadPhotoFile(photo) {
 
     if (uploadError) {
       console.error("Storage photo upload error, attempting raw retry:", uploadError);
-      if (fileToUpload !== photoBlob) {
-        const retryName = generateSafeFileName(photoBlob, "photo");
-        const { error: retryErr } = await supabase.storage
+      const fallbackBlob = await convertBlobToJpegBlob(photoBlob);
+      const retryName = generateSafeFileName(photoBlob, "photo");
+      const { error: retryErr } = await supabase.storage
+        .from("find-photos")
+        .upload(retryName, fallbackBlob || photoBlob, {
+          contentType: "image/jpeg",
+          upsert: false
+        });
+      if (!retryErr) {
+        const { data: { publicUrl } } = supabase.storage
           .from("find-photos")
-          .upload(retryName, photoBlob, {
-            contentType: photoBlob.type || "image/jpeg",
-            upsert: false
-          });
-        if (!retryErr) {
-          const { data: { publicUrl } } = supabase.storage
-            .from("find-photos")
-            .getPublicUrl(retryName);
-          return publicUrl;
-        }
+          .getPublicUrl(retryName);
+        return publicUrl;
       }
-      return null;
+      throw new Error("Erreur Supabase Storage : " + (retryErr.message || uploadError.message));
     }
 
     const { data: { publicUrl } } = supabase.storage
@@ -572,7 +572,7 @@ export async function uploadPhotoFile(photo) {
     return publicUrl;
   } catch (err) {
     console.error("uploadPhotoFile exception:", err);
-    return null;
+    throw err;
   }
 }
 
