@@ -13,14 +13,17 @@ export default function MapFloatingControls({
   setHideAllFinds,
   useClustering = false,
   setUseClustering,
-  onAddFindClick
+  onAddFindClick,
+  isRecordingSortie = false
 }) {
+  const bottomPos = zenMode ? "20px" : (isRecordingSortie ? "148px" : "84px");
+
   return (
     <div
       style={{
         position: "fixed",
         right: "14px",
-        bottom: zenMode ? "20px" : "84px",
+        bottom: bottomPos,
         zIndex: 5100,
         display: "flex",
         flexDirection: zenMode ? "row" : "column",

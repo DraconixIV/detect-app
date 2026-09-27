@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 export default function SortieLiveWidget({
   isRecordingSortie,
@@ -10,9 +10,7 @@ export default function SortieLiveWidget({
   onStopSortie,
   zenMode = false,
   showLiveSortieTrack = true,
-  onToggleShowTrack,
-  isSimulatingGps = false,
-  onToggleGpsSimulation = null
+  onToggleShowTrack
 }) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -36,22 +34,27 @@ export default function SortieLiveWidget({
       style={{
         position: "fixed",
         bottom: "84px",
-        left: "14px",
+        left: "50%",
+        transform: "translateX(-50%)",
         zIndex: 5100,
-        background: "rgba(11, 19, 41, 0.92)",
+        background: "rgba(11, 19, 41, 0.94)",
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
-        border: isSortiePaused ? "1px solid rgba(245, 158, 11, 0.45)" : "1px solid rgba(239, 68, 68, 0.35)",
+        border: isSortiePaused ? "1px solid rgba(245, 158, 11, 0.55)" : "1px solid rgba(239, 68, 68, 0.4)",
         borderRadius: "18px",
-        padding: collapsed ? "8px 12px" : "10px 14px",
+        padding: collapsed ? "6px 12px" : "8px 10px",
         boxShadow: isSortiePaused 
-          ? "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(245, 158, 11, 0.2)"
-          : "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(239, 68, 68, 0.2)",
+          ? "0 8px 32px rgba(0, 0, 0, 0.55), 0 0 20px rgba(245, 158, 11, 0.25)"
+          : "0 8px 32px rgba(0, 0, 0, 0.55), 0 0 20px rgba(239, 68, 68, 0.25)",
         display: "flex",
         alignItems: "center",
-        gap: "12px",
+        justifyContent: "center",
+        gap: "8px",
         fontFamily: "system-ui, -apple-system, sans-serif",
         userSelect: "none",
+        width: "max-content",
+        maxWidth: "calc(100vw - 20px)",
+        boxSizing: "border-box",
         transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
       }}
     >
@@ -61,24 +64,26 @@ export default function SortieLiveWidget({
         style={{
           display: "flex",
           alignItems: "center",
-          gap: "6px",
-          cursor: "pointer"
+          gap: "5px",
+          cursor: "pointer",
+          flexShrink: 0
         }}
         title={collapsed ? "Agrandir le widget" : "Réduire le widget"}
       >
         <span
           style={{
-            width: "10px",
-            height: "10px",
+            width: "9px",
+            height: "9px",
             borderRadius: "50%",
             background: isSortiePaused ? "#f59e0b" : "#ef4444",
             boxShadow: isSortiePaused ? "0 0 10px #f59e0b" : "0 0 10px #ef4444",
-            animation: isSortiePaused ? "none" : "pulse 1.2s infinite"
+            animation: isSortiePaused ? "none" : "pulse 1.2s infinite",
+            flexShrink: 0
           }}
         />
         <span
           style={{
-            fontSize: "12px",
+            fontSize: "11.5px",
             fontWeight: "900",
             fontFamily: "monospace",
             color: isSortiePaused ? "#fbbf24" : "#f87171",
@@ -90,12 +95,12 @@ export default function SortieLiveWidget({
         {isSortiePaused && (
           <span
             style={{
-              fontSize: "9px",
+              fontSize: "8.5px",
               fontWeight: "900",
               background: "rgba(245, 158, 11, 0.25)",
               color: "#fbbf24",
-              padding: "1px 5px",
-              borderRadius: "6px",
+              padding: "1px 4px",
+              borderRadius: "5px",
               border: "1px solid rgba(245, 158, 11, 0.4)",
               textTransform: "uppercase"
             }}
@@ -108,24 +113,24 @@ export default function SortieLiveWidget({
       {!collapsed && (
         <>
           {/* Divider */}
-          <div style={{ width: "1px", height: "24px", background: "rgba(255, 255, 255, 0.15)" }} />
+          <div style={{ width: "1px", height: "20px", background: "rgba(255, 255, 255, 0.15)", flexShrink: 0 }} />
 
           {/* Metrics : Distance & Finds */}
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
             <div>
-              <div style={{ fontSize: "8px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>
+              <div style={{ fontSize: "7.5px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase", lineHeight: "1" }}>
                 Distance
               </div>
-              <div style={{ fontSize: "12px", fontWeight: "800", color: "#38bdf8", fontFamily: "monospace" }}>
+              <div style={{ fontSize: "11px", fontWeight: "800", color: "#38bdf8", fontFamily: "monospace", marginTop: "1px" }}>
                 {formatDistance(sortieDistance)}
               </div>
             </div>
 
             <div>
-              <div style={{ fontSize: "8px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>
+              <div style={{ fontSize: "7.5px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase", lineHeight: "1" }}>
                 Cibles
               </div>
-              <div style={{ fontSize: "12px", fontWeight: "800", color: "#fbbf24", fontFamily: "monospace" }}>
+              <div style={{ fontSize: "11px", fontWeight: "800", color: "#fbbf24", fontFamily: "monospace", marginTop: "1px" }}>
                 {todayFindsCount}
               </div>
             </div>
@@ -137,8 +142,8 @@ export default function SortieLiveWidget({
               type="button"
               onClick={onToggleShowTrack}
               style={{
-                padding: "6px 8px",
-                borderRadius: "10px",
+                padding: "5px 7px",
+                borderRadius: "9px",
                 border: showLiveSortieTrack
                   ? "1px solid rgba(6, 182, 212, 0.45)"
                   : "1px solid rgba(148, 163, 184, 0.2)",
@@ -146,46 +151,23 @@ export default function SortieLiveWidget({
                   ? "rgba(6, 182, 212, 0.15)"
                   : "rgba(15, 23, 42, 0.65)",
                 color: showLiveSortieTrack ? "#22d3ee" : "#94a3b8",
-                fontSize: "11px",
+                fontSize: "10.5px",
                 fontWeight: "800",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                gap: "4px",
+                gap: "3px",
+                flexShrink: 0,
                 transition: "all 0.15s ease"
               }}
               title={showLiveSortieTrack ? "Masquer mon tracé sur la carte" : "Afficher mon tracé sur la carte"}
             >
-              <span style={{ fontSize: "12px" }}>
+              <span style={{ fontSize: "11px" }}>
                 {showLiveSortieTrack ? "👁️" : "🙈"}
               </span>
-              <span style={{ fontSize: "10px" }}>
+              <span style={{ fontSize: "9.5px" }}>
                 {showLiveSortieTrack ? "Tracé" : "Masqué"}
               </span>
-            </button>
-          )}
-
-          {/* Simulation Toggle Button inside widget */}
-          {onToggleGpsSimulation && (
-            <button
-              onClick={onToggleGpsSimulation}
-              style={{
-                padding: "6px 8px",
-                borderRadius: "10px",
-                border: isSimulatingGps ? "1px solid #10b981" : "1px solid rgba(59, 130, 246, 0.4)",
-                background: isSimulatingGps ? "rgba(16, 185, 129, 0.25)" : "rgba(59, 130, 246, 0.15)",
-                color: isSimulatingGps ? "#34d399" : "#60a5fa",
-                fontSize: "11px",
-                fontWeight: "800",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: "4px"
-              }}
-              title="Activer/Désactiver la marche automatique de test"
-            >
-              <span>{isSimulatingGps ? "⏸️" : "🏃"}</span>
-              <span style={{ fontSize: "10px" }}>{isSimulatingGps ? "Pause" : "Simu"}</span>
             </button>
           )}
 
@@ -195,8 +177,8 @@ export default function SortieLiveWidget({
               type="button"
               onClick={onTogglePauseSortie}
               style={{
-                padding: "6px 9px",
-                borderRadius: "10px",
+                padding: "5px 8px",
+                borderRadius: "9px",
                 border: isSortiePaused
                   ? "1px solid rgba(16, 185, 129, 0.6)"
                   : "1px solid rgba(245, 158, 11, 0.4)",
@@ -204,20 +186,21 @@ export default function SortieLiveWidget({
                   ? "rgba(16, 185, 129, 0.22)"
                   : "rgba(245, 158, 11, 0.16)",
                 color: isSortiePaused ? "#34d399" : "#fbbf24",
-                fontSize: "11px",
+                fontSize: "10.5px",
                 fontWeight: "800",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                gap: "4px",
+                gap: "3px",
+                flexShrink: 0,
                 transition: "all 0.15s ease"
               }}
               title={isSortiePaused ? "Reprendre l'enregistrement de la sortie" : "Mettre en pause la sortie"}
             >
-              <span style={{ fontSize: "12px" }}>
+              <span style={{ fontSize: "11px" }}>
                 {isSortiePaused ? "▶️" : "⏸️"}
               </span>
-              <span style={{ fontSize: "10px" }}>
+              <span style={{ fontSize: "9.5px" }}>
                 {isSortiePaused ? "Reprendre" : "Pause"}
               </span>
             </button>
@@ -227,17 +210,18 @@ export default function SortieLiveWidget({
           <button
             onClick={onStopSortie}
             style={{
-              padding: "6px 10px",
-              borderRadius: "10px",
+              padding: "5px 9px",
+              borderRadius: "9px",
               border: "1px solid rgba(239, 68, 68, 0.5)",
               background: "rgba(239, 68, 68, 0.2)",
               color: "#fca5a5",
-              fontSize: "11px",
+              fontSize: "10.5px",
               fontWeight: "800",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
-              gap: "4px",
+              gap: "3px",
+              flexShrink: 0,
               transition: "all 0.15s ease"
             }}
             title="Terminer et enregistrer la sortie"

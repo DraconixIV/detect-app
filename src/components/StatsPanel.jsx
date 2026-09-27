@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { categoriesWithSub, defaultCategoryColors, PRESET_CATEGORY_COLORS } from "../subCategories";
 import { loadCategoriesData } from "../services/categoriesService";
 import { normalizeDateStr } from "../services/findsService";
+import ConfirmModal from "./ConfirmModal";
 
 function getDistance(p1, p2) {
   const R = 6371e3; // metres
@@ -38,11 +39,13 @@ export default function StatsPanel({
   onClose,
   isFullTab = false,
   theme = "dark",
-  onOpenCategoryManager
+  onOpenCategoryManager,
+  onDeleteTrack
 }) {
   const { emojis: categoryEmojis, categories: customCategories, colors: categoryColors = {} } = loadCategoriesData();
   const [chartType, setChartType] = useState("donut"); // 'donut' | 'bar' | 'radar'
   const [expandedCats, setExpandedCats] = useState({});
+  const [confirmTrackToDelete, setConfirmTrackToDelete] = useState(null);
 
   const isLight = theme === "light";
   const bgPanel = isFullTab ? "transparent" : (isLight ? "#ffffff" : "rgba(15, 23, 42, 0.95)");
@@ -767,16 +770,45 @@ export default function StatsPanel({
                 {dayTracks.length > 0 ? (
                   <div style={{ color: textSub, fontSize: "11px", display: "flex", flexDirection: "column", gap: "3px", borderTop: `1px solid ${cardBorder}`, paddingTop: "4px", marginTop: "4px" }}>
                     {dayTracks.map((t, i) => (
-                      <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                          <span>🚶 {t.session_name || `Parcours ${i + 1}`}</span>
+                      <div key={t.id || i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "6px" }}>
+                        <span style={{ display: "flex", alignItems: "center", gap: "4px", minWidth: 0, overflow: "hidden" }}>
+                          <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            🚶 {t.session_name || `Parcours ${i + 1}`}
+                          </span>
                           {t.session_code && (
-                            <span style={{ fontSize: "9px", background: "rgba(16, 185, 129, 0.2)", color: "#10b981", padding: "1px 5px", borderRadius: "4px", fontWeight: "700" }}>
+                            <span style={{ fontSize: "9px", background: "rgba(16, 185, 129, 0.2)", color: "#10b981", padding: "1px 5px", borderRadius: "4px", fontWeight: "700", flexShrink: 0 }}>
                               👥 Équipe
                             </span>
                           )}
                         </span>
-                        <span>📏 <strong>{getDistanceOfTrack(t.positions).toFixed(2)}</strong> km</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+                          <span>📏 <strong>{getDistanceOfTrack(t.positions).toFixed(2)}</strong> km</span>
+                          {onDeleteTrack && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setConfirmTrackToDelete(t);
+                              }}
+                              title="Supprimer cette sortie"
+                              style={{
+                                background: "rgba(239, 68, 68, 0.15)",
+                                border: "1px solid rgba(239, 68, 68, 0.35)",
+                                color: "#f87171",
+                                borderRadius: "6px",
+                                padding: "2px 5px",
+                                fontSize: "11px",
+                                cursor: "pointer",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                lineHeight: "1"
+                              }}
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -831,6 +863,21 @@ export default function StatsPanel({
           📥 Importer (Restauration)
         </button>
       </div>
+
+      {/* CONFIRM DELETE TRACK MODAL */}
+      {confirmTrackToDelete && (
+        <ConfirmModal
+          message={`Voulez-vous vraiment supprimer définitivement la sortie "${confirmTrackToDelete.session_name || "cette sortie"}" du journal ?`}
+          onConfirm={async () => {
+            const trackId = confirmTrackToDelete.id;
+            setConfirmTrackToDelete(null);
+            if (onDeleteTrack) {
+              await onDeleteTrack(trackId);
+            }
+          }}
+          onCancel={() => setConfirmTrackToDelete(null)}
+        />
+      )}
     </div>
   );
 }

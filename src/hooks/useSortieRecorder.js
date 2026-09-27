@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { loadTracks, saveTrack } from "../services/tracksService";
+import { loadTracks, saveTrack, deleteTrack } from "../services/tracksService";
 
 function distanceBetween(point1, point2) {
   const R = 6371000;
@@ -187,6 +187,14 @@ export default function useSortieRecorder() {
     return success;
   };
 
+  const deleteSortieTrack = async (trackId) => {
+    const success = await deleteTrack(trackId);
+    if (success) {
+      await loadTracksList();
+    }
+    return success;
+  };
+
   return {
     isRecordingSortie,
     isSortiePaused,
@@ -199,6 +207,7 @@ export default function useSortieRecorder() {
     recordNewPosition,
     cancelSortie,
     saveSortie,
+    deleteSortieTrack,
     loadTracksList
   };
 }

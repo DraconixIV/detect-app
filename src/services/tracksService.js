@@ -93,3 +93,33 @@ export async function saveTrack(track, sessionName, sessionCode = null) {
 
   return true;
 }
+
+export async function deleteTrack(trackId) {
+  if (!trackId) return false;
+
+  // 1. Delete from local storage
+  try {
+    const existing = getLocalTracks();
+    const updated = existing.filter((t) => t.id !== trackId);
+    localStorage.setItem(LOCAL_TRACKS_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.warn("Error deleting local track:", e);
+  }
+
+  // 2. Delete from Supabase
+  try {
+    if (typeof trackId === "number" || !String(trackId).startsWith("local-track-")) {
+      const { error } = await supabase
+        .from("gps_tracks")
+        .delete()
+        .eq("id", trackId);
+      if (error) {
+        console.warn("Supabase gps_tracks delete warning:", error.message);
+      }
+    }
+  } catch (err) {
+    console.warn("Cloud delete track error:", err);
+  }
+
+  return true;
+}

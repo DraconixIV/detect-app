@@ -239,6 +239,7 @@ function App() {
     recordNewPosition,
     cancelSortie,
     saveSortie,
+    deleteSortieTrack,
     loadTracksList
   } = useSortieRecorder();
 
@@ -341,11 +342,9 @@ function App() {
   const [isLocatingGps, setIsLocatingGps] = useState(false);
   const hasAutoCenteredRef = useRef(false);
   const gpsWatchIdRef = useRef(null);
-  const isSimulatingGpsRef = useRef(false);
 
   // Core Geolocation Engine: Force a fresh satellite hardware read & center map
   const requestFreshGpsFix = (shouldCenter = false, showFeedback = false) => {
-    if (isSimulatingGpsRef.current) return;
     if (!("geolocation" in navigator)) {
       if (showFeedback) {
         setToast({
@@ -359,10 +358,6 @@ function App() {
     setIsLocatingGps(true);
 
     const handleSuccess = (pos) => {
-      if (isSimulatingGpsRef.current) {
-        setIsLocatingGps(false);
-        return;
-      }
       const freshPos = [pos.coords.latitude, pos.coords.longitude];
       const accuracy = pos.coords.accuracy;
 
@@ -431,7 +426,6 @@ function App() {
 
     gpsWatchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
-        if (isSimulatingGpsRef.current) return;
         const livePos = [pos.coords.latitude, pos.coords.longitude];
         setPosition(livePos);
         localStorage.setItem("lastKnownPosition", JSON.stringify(livePos));
@@ -549,102 +543,7 @@ function App() {
     positionsRef.current = sortiePositions;
   }, [sortiePositions]);
 
-  // ==========================================
-  // SIMULATEUR DE MARCHE GPS (MODE TEST / DÉMO)
-  // ==========================================
-  const [isSimulatingGps, setIsSimulatingGps] = useState(false);
-  const simIntervalRef = useRef(null);
-  const simStateRef = useRef({
-    currentPos: null,
-    direction: 1,
-    stepsInLeg: 0
-  });
 
-  useEffect(() => {
-    isSimulatingGpsRef.current = isSimulatingGps;
-  }, [isSimulatingGps]);
-
-  const stopGpsSimulation = () => {
-    if (simIntervalRef.current) {
-      clearInterval(simIntervalRef.current);
-      simIntervalRef.current = null;
-    }
-    isSimulatingGpsRef.current = false;
-    setIsSimulatingGps(false);
-  };
-
-  const startGpsSimulation = () => {
-    if (isSimulatingGps) {
-      stopGpsSimulation();
-      setToast({
-        message: "Simulation de marche GPS arrêtée.",
-        type: "info"
-      });
-      return;
-    }
-
-    const baseLat = (position && typeof position[0] === "number") ? position[0] : 47.3941;
-    const baseLng = (position && typeof position[1] === "number") ? position[1] : 0.6848;
-    const startPos = [baseLat, baseLng];
-
-    setShowLiveSortieTrack(true);
-    localStorage.setItem("showLiveSortieTrack", "true");
-
-    if (!isRecordingSortie) {
-      startSortieRaw(startPos);
-      setToast({
-        message: "🧪 Sortie démarrée avec simulation de marche GPS en direct !",
-        type: "success"
-      });
-    }
-
-    isSimulatingGpsRef.current = true;
-    setIsSimulatingGps(true);
-    setFollowGps(true);
-    setZoomTarget({ position: startPos, zoom: 18 });
-
-    simStateRef.current = {
-      currentPos: startPos,
-      direction: 1,
-      stepsInLeg: 0
-    };
-
-    if (simIntervalRef.current) clearInterval(simIntervalRef.current);
-
-    simIntervalRef.current = setInterval(() => {
-      if (isSortiePausedRef.current) return;
-
-      const state = simStateRef.current;
-      state.stepsInLeg += 1;
-
-      // Realistic sweep pattern (~6-7m per step)
-      const latNoise = (Math.random() - 0.5) * 0.000010;
-      const lngStep = state.direction * (0.000085 + (Math.random() - 0.5) * 0.000010);
-
-      let newLat = state.currentPos[0] + latNoise;
-      let newLng = state.currentPos[1] + lngStep;
-
-      // Every 8 steps (~50m sweep), advance North ~12m and reverse sweep direction
-      if (state.stepsInLeg >= 8) {
-        state.stepsInLeg = 0;
-        state.direction = -state.direction;
-        newLat += 0.00011;
-      }
-
-      const nextPos = [newLat, newLng];
-      state.currentPos = nextPos;
-
-      setPosition(nextPos);
-      setGpsAccuracy(2.5);
-      recordNewPosition(nextPos, 2.5);
-    }, 750);
-  };
-
-  useEffect(() => {
-    if (!isRecordingSortie && isSimulatingGps) {
-      stopGpsSimulation();
-    }
-  }, [isRecordingSortie]);
 
   // Auto-start sortie recording when entering a shared team session
   useEffect(() => {
@@ -732,7 +631,6 @@ function App() {
       : `Sortie du ${new Date().toLocaleDateString("fr-FR")}`;
     const name = outingNameInput.trim() || defaultName;
     setShowOutingNameModal(false);
-    stopGpsSimulation();
 
     const sessionCode = workspace?.mode === "session" ? workspace.targetCode : null;
     await saveSortie(tempSortiePositions, name, sessionCode);
@@ -1512,6 +1410,7 @@ function App() {
             setActiveTab("map");
           }}
           onClose={() => setActiveTab("map")}
+          onDeleteTrack={deleteSortieTrack}
         />
       )}
 
@@ -1591,6 +1490,7 @@ function App() {
           useClustering={useClustering}
           setUseClustering={setUseClustering}
           onAddFindClick={() => setShowForm(true)}
+          isRecordingSortie={isRecordingSortie}
         />
       )}
 
@@ -1607,8 +1507,6 @@ function App() {
           zenMode={zenMode}
           showLiveSortieTrack={showLiveSortieTrack}
           onToggleShowTrack={toggleLiveSortieTrack}
-          isSimulatingGps={isSimulatingGps}
-          onToggleGpsSimulation={startGpsSimulation}
         />
       )}
 
