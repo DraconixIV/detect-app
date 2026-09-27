@@ -272,8 +272,11 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
               };
 
               setFinds((currentFinds) => {
-                if (currentFinds.some((f) => f.id === formatted.id || (f.title === formatted.title && f.date === formatted.date))) {
-                  return currentFinds;
+                const existingIdx = currentFinds.findIndex((f) => f.id === formatted.id || (f.title === formatted.title && f.date === formatted.date));
+                if (existingIdx !== -1) {
+                  const updated = [...currentFinds];
+                  updated[existingIdx] = { ...updated[existingIdx], ...formatted };
+                  return updated;
                 }
                 if (setToast) {
                   setToast({
@@ -285,6 +288,7 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
               });
             }
             loadFinds();
+            loadPhotosForAlbum();
           })
           .subscribe();
       }
@@ -294,6 +298,7 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
       pingPongInterval = setInterval(() => {
         if (document.visibilityState === "visible" && navigator.onLine) {
           loadFinds();
+          loadPhotosForAlbum();
         }
       }, pollRate);
     }
@@ -338,13 +343,19 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
         };
 
         setFinds((currentFinds) => {
-          if (currentFinds.some((f) => f.id === formatted.id || (f.title === formatted.title && f.date === formatted.date))) {
-            return currentFinds;
+          const existingIdx = currentFinds.findIndex((f) => f.id === formatted.id || (f.title === formatted.title && f.date === formatted.date));
+          if (existingIdx !== -1) {
+            const updated = [...currentFinds];
+            updated[existingIdx] = { ...updated[existingIdx], ...formatted };
+            return updated;
           }
           return [formatted, ...currentFinds];
         });
       }
-      setTimeout(() => loadFinds(), 800);
+      setTimeout(() => {
+        loadFinds();
+        loadPhotosForAlbum();
+      }, 500);
     };
 
     const handleTeamFindDeleted = (e) => {

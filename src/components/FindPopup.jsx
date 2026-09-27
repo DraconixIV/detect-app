@@ -7,7 +7,7 @@ import ConfirmModal from "./ConfirmModal";
 import { materials, materialEmojis } from "../subCategories";
 import { loadCategoriesData } from "../services/categoriesService";
 import { loadMaterialsData } from "../services/materialsService";
-import { encodeMetadata, decodeMetadata, fileToDataUrl } from "../services/findsService";
+import { encodeMetadata, decodeMetadata, fileToDataUrl, generateSafeFileName } from "../services/findsService";
 import { getMyUserCode, getMyDisplayName, normalizeSessionCode } from "../services/sessionService";
 import AudioNotePlayer from "./AudioNotePlayer";
 
@@ -400,26 +400,30 @@ export default function FindPopup({
 
       try {
         for (const file of files) {
-          const compressedFile = await imageCompression(file, {
-            maxSizeMB: 0.3,
-            maxWidthOrHeight: 1600,
-            useWebWorker: true
-          });
+          let compressedFile = file;
+          try {
+            compressedFile = await imageCompression(file, {
+              maxSizeMB: 0.4,
+              maxWidthOrHeight: 1600,
+              useWebWorker: false
+            });
+          } catch (compErr) {
+            console.warn("Image compression fallback to raw:", compErr);
+            compressedFile = file;
+          }
 
-          const cleanName = file.name
-            .replaceAll(" ", "-")
-            .replaceAll("é", "e")
-            .replaceAll("è", "e")
-            .replaceAll("à", "a");
-
-          const fileName = `${Date.now()}-${cleanName}`;
+          const fileName = generateSafeFileName(file, "photo");
+          const contentType = compressedFile.type || "image/jpeg";
 
           const { error: uploadError } = await supabase.storage
             .from("find-photos")
-            .upload(fileName, compressedFile, { upsert: false });
+            .upload(fileName, compressedFile, {
+              contentType,
+              upsert: true
+            });
 
           if (uploadError) {
-            console.error(uploadError);
+            console.error("Upload error for find photo:", uploadError);
             continue;
           }
 

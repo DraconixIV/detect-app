@@ -415,6 +415,81 @@ export async function loadFinds(options = {}) {
   }
 }
 
+export function generateSafeFileName(fileOrBlob, prefix = "photo") {
+  const rawName = fileOrBlob?.name || "";
+  let ext = "jpg";
+  if (rawName.includes(".")) {
+    ext = rawName.split(".").pop().toLowerCase().replace(/[^a-z0-9]/gi, "") || "jpg";
+  } else if (fileOrBlob?.type) {
+    if (fileOrBlob.type.includes("png")) ext = "png";
+    else if (fileOrBlob.type.includes("webp")) ext = "webp";
+    else if (fileOrBlob.type.includes("gif")) ext = "gif";
+  }
+  if (ext === "jpeg") ext = "jpg";
+  const uniqueId = Math.random().toString(36).substring(2, 9);
+  return `${prefix}-${Date.now()}-${uniqueId}.${ext}`;
+}
+
+export async function uploadPhotoFile(photo) {
+  if (!photo) return null;
+  if (typeof photo === "string" && photo.startsWith("http")) return photo;
+
+  try {
+    let photoBlob = photo;
+    if (typeof photo === "string" && (photo.startsWith("data:") || photo.startsWith("blob:"))) {
+      try {
+        const res = await fetch(photo);
+        if (res.ok) photoBlob = await res.blob();
+        else photoBlob = null;
+      } catch (fErr) {
+        console.warn("fetch photo data failed:", fErr);
+        photoBlob = null;
+      }
+    }
+
+    if (!photoBlob || !(photoBlob instanceof Blob || photoBlob instanceof File)) {
+      return null;
+    }
+
+    let fileToUpload = photoBlob;
+    // Attempt compression with fallback
+    try {
+      fileToUpload = await imageCompression(photoBlob, {
+        maxSizeMB: 0.4,
+        maxWidthOrHeight: 1600,
+        useWebWorker: false // Safe on mobile / PWA WebViews
+      });
+    } catch (compErr) {
+      console.warn("Image compression fallback to raw:", compErr);
+      fileToUpload = photoBlob;
+    }
+
+    const fileName = generateSafeFileName(photoBlob, "photo");
+    const contentType = fileToUpload.type || "image/jpeg";
+
+    const { error: uploadError } = await supabase.storage
+      .from("find-photos")
+      .upload(fileName, fileToUpload, {
+        contentType,
+        upsert: true
+      });
+
+    if (uploadError) {
+      console.error("Storage photo upload error:", uploadError);
+      return null;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from("find-photos")
+      .getPublicUrl(fileName);
+
+    return publicUrl;
+  } catch (err) {
+    console.error("uploadPhotoFile exception:", err);
+    return null;
+  }
+}
+
 export async function addFind({
   position,
   newTitle,
@@ -489,7 +564,7 @@ export async function addFind({
               .from("find-photos")
               .upload(videoFileName, videoBlob, {
                 contentType: contentType,
-                upsert: false
+                upsert: true
               });
 
             if (!vErr) {
@@ -529,7 +604,7 @@ export async function addFind({
               .from("find-photos")
               .upload(audioFileName, audioBlob, {
                 contentType: audioBlob.type || "audio/webm",
-                upsert: false
+                upsert: true
               });
 
             if (!aErr) {
@@ -547,12 +622,19 @@ export async function addFind({
       }
     }
 
+    // 3. Process Photo BEFORE inserting into database (ensures atomic presence with photo)
+    let finalPhotoUrl = null;
+    if (newPhoto) {
+      finalPhotoUrl = await uploadPhotoFile(newPhoto);
+    }
+
+    // 4. Encode description with metadata (including photo thumbnail and media URLs)
     const encodedDesc = encodeMetadata(
       newDescription,
       finalUserCode,
       finalFinderName,
       finalSessionCode,
-      null,
+      finalPhotoUrl,
       {
         audio_url: finalAudioUrl,
         audio_duration: audioDuration,
@@ -567,6 +649,7 @@ export async function addFind({
       sub_category: newSubCategory || null,
       latitude: lat,
       longitude: lng,
+      image_url: finalPhotoUrl || null,
       date: customDate || new Date().toLocaleString()
     };
 
@@ -584,84 +667,22 @@ export async function addFind({
       throw insertError;
     }
 
-    // 3. Process Photo if provided
-    let finalPhotoUrl = null;
-    if (newPhoto) {
-      if (typeof newPhoto === "string" && newPhoto.startsWith("http")) {
-        finalPhotoUrl = newPhoto;
-        try {
-          await supabase.from("finds").update({ image_url: finalPhotoUrl }).eq("id", insertedFind.id);
-          await supabase.from("find_photos").insert([{ find_id: insertedFind.id, image_url: finalPhotoUrl, type: "discovery" }]);
-        } catch (err) {
-          console.warn("Photo record link error:", err);
-        }
-      } else {
-        try {
-          let photoBlob = newPhoto;
-          if (typeof newPhoto === "string" && (newPhoto.startsWith("data:") || newPhoto.startsWith("blob:"))) {
-            try {
-              const res = await fetch(newPhoto);
-              if (res.ok) photoBlob = await res.blob();
-              else photoBlob = null;
-            } catch {
-              photoBlob = null;
-            }
+    // 5. Save Discovery Photo into find_photos table for Gallery/Album
+    if (finalPhotoUrl && insertedFind && insertedFind.id) {
+      try {
+        await supabase.from("find_photos").insert([
+          {
+            find_id: insertedFind.id,
+            image_url: finalPhotoUrl,
+            type: "discovery"
           }
-
-          if (photoBlob && (photoBlob instanceof Blob || photoBlob instanceof File)) {
-            let compressedFile = photoBlob;
-            try {
-              compressedFile = await imageCompression(photoBlob, {
-                maxSizeMB: 0.3,
-                maxWidthOrHeight: 1600,
-                useWebWorker: true
-              });
-            } catch (compErr) {
-              console.warn("Image compression warning, uploading raw:", compErr);
-            }
-
-            const rawName = photoBlob.name || `photo-${Date.now()}.jpg`;
-            const cleanName = rawName
-              .replaceAll(" ", "-")
-              .replaceAll("é", "e")
-              .replaceAll("è", "e")
-              .replaceAll("à", "a");
-
-            const fileName = `${Date.now()}-${cleanName}`;
-
-            const { error: uploadError } = await supabase.storage
-              .from("find-photos")
-              .upload(fileName, compressedFile, { upsert: false });
-
-            if (!uploadError) {
-              const { data: { publicUrl } } = supabase.storage
-                .from("find-photos")
-                .getPublicUrl(fileName);
-              finalPhotoUrl = publicUrl;
-
-              await supabase
-                .from("finds")
-                .update({ image_url: finalPhotoUrl })
-                .eq("id", insertedFind.id);
-
-              await supabase.from("find_photos").insert([
-                {
-                  find_id: insertedFind.id,
-                  image_url: finalPhotoUrl,
-                  type: "discovery"
-                }
-              ]);
-            } else {
-              console.warn("Storage photo upload warning:", uploadError);
-            }
-          }
-        } catch (photoErr) {
-          console.warn("Photo upload warning:", photoErr);
-        }
+        ]);
+      } catch (photoDbErr) {
+        console.warn("find_photos insert warning:", photoDbErr);
       }
     }
 
-    // 4. Save Video into find_photos table (guaranteed persistence)
+    // 6. Save Video into find_photos table
     if (finalVideoUrl && insertedFind && insertedFind.id) {
       try {
         await supabase.from("find_photos").insert([
@@ -682,9 +703,12 @@ export async function addFind({
       thumbnail_url: finalPhotoUrl || insertedFind.thumbnail_url || null,
       video_url: finalVideoUrl,
       video: finalVideoUrl,
+      audio_url: finalAudioUrl,
+      audio_duration: audioDuration,
       user_code: finalUserCode,
       finder_name: finalFinderName,
-      session_code: finalSessionCode
+      session_code: finalSessionCode,
+      position: [lat, lng]
     };
 
   } catch (error) {
