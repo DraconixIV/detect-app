@@ -1,12 +1,40 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = "https://ogldlzjfjilpavazbini.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nbGRsempmamlscGF2YXpiaW5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MTc1MzYsImV4cCI6MjA5NDA5MzUzNn0.p96F0nQbzNZys4cS9TaQ2TAo3j6O7DoeoqVCLTRDkpI";
+export const supabaseUrl = "https://ogldlzjfjilpavazbini.supabase.co";
+export const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nbGRsempmamlscGF2YXpiaW5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MTc1MzYsImV4cCI6MjA5NDA5MzUzNn0.p96F0nQbzNZys4cS9TaQ2TAo3j6O7DoeoqVCLTRDkpI";
 
 export const supabase = createClient(
   supabaseUrl,
-  supabaseKey
+  supabaseKey,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false
+    }
+  }
 );
+
+export async function directUploadStorage(bucketName, fileName, fileOrBlob, contentType = "image/jpeg") {
+  const url = `${supabaseUrl}/storage/v1/object/${bucketName}/${fileName}`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "apikey": supabaseKey,
+      "Authorization": `Bearer ${supabaseKey}`,
+      "Content-Type": contentType,
+      "x-upsert": "false"
+    },
+    body: fileOrBlob
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Storage upload failed (${response.status}): ${errorText}`);
+  }
+
+  return `${supabaseUrl}/storage/v1/object/public/${bucketName}/${fileName}`;
+}
 
 export async function initAnonymousAuth() {
   // Pure anon key access (no session disruption)

@@ -1,6 +1,6 @@
 import imageCompression from "browser-image-compression";
 
-import { supabase } from "../supabase.js";
+import { supabase, directUploadStorage } from "../supabase.js";
 import { getMyUserCode, getMyDisplayName, getActiveSession, getMyJoinedSessions, normalizeSessionCode } from "./sessionService.js";
 
 const LEGACY_CLAIMED_FLAG = "geoprospect_legacy_finds_claimed_v3";
@@ -517,7 +517,6 @@ export async function uploadPhotoFile(photo) {
       return null;
     }
 
-    // Ensure it's a File object with a proper name and type
     let safeFile = photoBlob;
     if (photoBlob instanceof Blob && !(photoBlob instanceof File)) {
       try {
@@ -533,17 +532,15 @@ export async function uploadPhotoFile(photo) {
     let fileToUpload = safeFile;
     // 1. Try browser-image-compression with canvas fallback
     try {
-      fileToUpload = await imageCompression(safeFile, {
-        maxSizeMB: 0.5,
-        maxWidthOrHeight: 1600,
-        useWebWorker: false // Safe on mobile / PWA WebViews
-      });
-    } catch (compErr) {
-      console.warn("Image compression fallback to canvas:", compErr);
+      fileToUpload = await convertBlobToJpegBlob(safeFile);
+    } catch (canvasErr) {
       try {
-        fileToUpload = await convertBlobToJpegBlob(safeFile);
-      } catch (canvasErr) {
-        console.warn("Canvas conversion fallback to raw:", canvasErr);
+        fileToUpload = await imageCompression(safeFile, {
+          maxSizeMB: 0.5,
+          maxWidthOrHeight: 1600,
+          useWebWorker: false
+        });
+      } catch (compErr) {
         fileToUpload = safeFile;
       }
     }
@@ -552,38 +549,16 @@ export async function uploadPhotoFile(photo) {
     const rawType = fileToUpload?.type || "";
     const contentType = rawType.includes("image") ? rawType : "image/jpeg";
 
-    const { error: uploadError } = await supabase.storage
-      .from("find-photos")
-      .upload(fileName, fileToUpload, {
-        contentType,
-        upsert: false
-      });
-
-    if (uploadError) {
-      console.error("Storage photo upload error, attempting raw canvas retry:", uploadError);
+    try {
+      const publicUrl = await directUploadStorage("find-photos", fileName, fileToUpload, contentType);
+      return publicUrl;
+    } catch (directErr) {
+      console.warn("Direct upload 1st attempt failed, trying fallback blob:", directErr);
       const fallbackBlob = await convertBlobToJpegBlob(safeFile);
       const retryName = generateSafeFileName(safeFile, "photo");
-      const { error: retryErr } = await supabase.storage
-        .from("find-photos")
-        .upload(retryName, fallbackBlob || safeFile, {
-          contentType: "image/jpeg",
-          upsert: false
-        });
-      if (!retryErr) {
-        const { data: { publicUrl } } = supabase.storage
-          .from("find-photos")
-          .getPublicUrl(retryName);
-        return publicUrl;
-      }
-      console.warn("All storage upload attempts failed:", retryErr || uploadError);
-      return null;
+      const fallbackUrl = await directUploadStorage("find-photos", retryName, fallbackBlob || safeFile, "image/jpeg");
+      return fallbackUrl;
     }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from("find-photos")
-      .getPublicUrl(fileName);
-
-    return publicUrl;
   } catch (err) {
     console.error("uploadPhotoFile exception:", err);
     return null;
@@ -660,19 +635,9 @@ export async function addFind({
             let contentType = videoBlob.type || (ext === "mov" ? "video/quicktime" : (ext === "webm" ? "video/webm" : "video/mp4"));
             const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext || "mp4"}`;
 
-            const { error: vErr } = await supabase.storage
-              .from("find-photos")
-              .upload(videoFileName, videoBlob, {
-                contentType: contentType,
-                upsert: false
-              });
-
-            if (!vErr) {
-              const { data: { publicUrl } } = supabase.storage
-                .from("find-photos")
-                .getPublicUrl(videoFileName);
-              finalVideoUrl = publicUrl;
-            } else {
+            try {
+              finalVideoUrl = await directUploadStorage("find-photos", videoFileName, videoBlob, contentType);
+            } catch (vErr) {
               console.warn("Storage video upload warning:", vErr);
             }
           }
@@ -700,19 +665,9 @@ export async function addFind({
           }
           if (audioBlob && (audioBlob instanceof Blob || audioBlob instanceof File)) {
             const audioFileName = `audio-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.webm`;
-            const { error: aErr } = await supabase.storage
-              .from("find-photos")
-              .upload(audioFileName, audioBlob, {
-                contentType: audioBlob.type || "audio/webm",
-                upsert: false
-              });
-
-            if (!aErr) {
-              const { data: { publicUrl } } = supabase.storage
-                .from("find-photos")
-                .getPublicUrl(audioFileName);
-              finalAudioUrl = publicUrl;
-            } else {
+            try {
+              finalAudioUrl = await directUploadStorage("find-photos", audioFileName, audioBlob, audioBlob.type || "audio/webm");
+            } catch (aErr) {
               console.warn("Audio storage upload fallback:", aErr);
             }
           }

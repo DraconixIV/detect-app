@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { supabase } from "../supabase";
+import { supabase, directUploadStorage } from "../supabase";
 import imageCompression from "browser-image-compression";
 import CropperModal from "./CropperModal";
 import ConfirmModal from "./ConfirmModal";
@@ -250,23 +250,15 @@ export default function FindPopup({
         let contentType = file.type || (ext === "mov" ? "video/quicktime" : (ext === "webm" ? "video/webm" : "video/mp4"));
 
         const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
-        const { error: vErr } = await supabase.storage
-          .from("find-photos")
-          .upload(videoFileName, file, {
-            contentType: contentType,
-            upsert: false
-          });
-
-        if (vErr) {
+        let publicUrl;
+        try {
+          publicUrl = await directUploadStorage("find-photos", videoFileName, file, contentType);
+        } catch (vErr) {
           console.error("Storage upload error:", vErr);
           alert("Erreur lors du téléchargement de la vidéo : " + (vErr.message || "Serveur indisponible"));
           setUploading(false);
           return;
         }
-
-        const { data: { publicUrl } } = supabase.storage
-          .from("find-photos")
-          .getPublicUrl(videoFileName);
 
         // Update find metadata and state
         find.video_url = publicUrl;
@@ -420,21 +412,13 @@ export default function FindPopup({
           const fileName = generateSafeFileName(file, "photo");
           const contentType = compressedFile.type || "image/jpeg";
 
-          const { error: uploadError } = await supabase.storage
-            .from("find-photos")
-            .upload(fileName, compressedFile, {
-              contentType,
-              upsert: false
-            });
-
-          if (uploadError) {
+          let publicUrl;
+          try {
+            publicUrl = await directUploadStorage("find-photos", fileName, compressedFile, contentType);
+          } catch (uploadError) {
             console.error("Upload error for find photo:", uploadError);
             continue;
           }
-
-          const { data: { publicUrl } } = supabase.storage
-            .from("find-photos")
-            .getPublicUrl(fileName);
 
           await supabase.from("find_photos").insert([
             {
@@ -493,20 +477,7 @@ export default function FindPopup({
         }
 
         const beforeNewName = `${timestamp}-cropped-before.jpg`;
-        const { error: errorBefore } = await supabase.storage
-          .from("find-photos")
-          .upload(beforeNewName, beforeFile, {
-            contentType: "image/jpeg",
-            upsert: false
-          });
-
-        if (errorBefore) {
-          throw new Error(`Erreur de téléversement 'Avant' : ${errorBefore.message}`);
-        }
-
-        const { data: { publicUrl: beforeUrl } } = supabase.storage
-          .from("find-photos")
-          .getPublicUrl(beforeNewName);
+        const beforeUrl = await directUploadStorage("find-photos", beforeNewName, beforeFile, "image/jpeg");
 
         const { error: dbErrorBefore } = await supabase
           .from("find_photos")
@@ -529,20 +500,7 @@ export default function FindPopup({
         }
 
         const afterNewName = `${timestamp}-cropped-after.jpg`;
-        const { error: errorAfter } = await supabase.storage
-          .from("find-photos")
-          .upload(afterNewName, afterFile, {
-            contentType: "image/jpeg",
-            upsert: false
-          });
-
-        if (errorAfter) {
-          throw new Error(`Erreur de téléversement 'Après' : ${errorAfter.message}`);
-        }
-
-        const { data: { publicUrl: afterUrl } } = supabase.storage
-          .from("find-photos")
-          .getPublicUrl(afterNewName);
+        const afterUrl = await directUploadStorage("find-photos", afterNewName, afterFile, "image/jpeg");
 
         const { error: dbErrorAfter } = await supabase
           .from("find_photos")
