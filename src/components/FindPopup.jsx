@@ -104,54 +104,59 @@ export default function FindPopup({
       return;
     }
 
-    // Check memory cache to avoid multiple network calls on map refresh
+    // Check memory cache ONLY if it contains valid items
     window.findPhotosCache = window.findPhotosCache || {};
-    if (window.findPhotosCache[find.id]) {
+    if (window.findPhotosCache[find.id] && window.findPhotosCache[find.id].length > 0) {
       setPhotos(window.findPhotosCache[find.id]);
       return;
     }
 
-    const { data, error } = await supabase
-      .from("find_photos")
-      .select("*")
-      .eq("find_id", find.id)
-      .order("id", { ascending: true });
+    try {
+      const { data, error } = await supabase
+        .from("find_photos")
+        .select("*")
+        .eq("find_id", find.id)
+        .order("id", { ascending: true });
 
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    let fetchedPhotos = data || [];
-    const primaryImg = find.image_url || find.thumbnail_url;
-    if (primaryImg && !fetchedPhotos.some((p) => p.type === "discovery" && !isVideoFile(p.image_url))) {
-      fetchedPhotos = [
-        {
-          id: `primary-${find.id}`,
-          find_id: find.id,
-          image_url: primaryImg,
-          type: "discovery"
-        },
-        ...fetchedPhotos
-      ];
-    }
-
-    window.findPhotosCache[find.id] = fetchedPhotos;
-    setPhotos(fetchedPhotos);
-
-    // Auto-detect video if present in find_photos
-    const foundVid = fetchedPhotos.find((p) => p.type === "video" || (typeof p.image_url === "string" && p.image_url.match(/\.(mp4|mov|webm|m4v|ogg)(\?.*)?$/i)));
-    if (foundVid?.image_url) {
-      setVideoUrl((prev) => prev || foundVid.image_url);
-    }
-
-    // Preload image source
-    fetchedPhotos.forEach((photo) => {
-      if (photo.image_url && !photo.image_url.match(/\.(mp4|mov|webm|m4v|ogg)(\?.*)?$/i)) {
-        const img = new Image();
-        img.src = photo.image_url;
+      if (error) {
+        console.warn("loadPhotos Supabase error:", error);
       }
-    });
+
+      let fetchedPhotos = data || [];
+      const primaryImg = find.image_url || find.thumbnail_url || decodeMetadata(find)?.thumbnail_url || decodeMetadata(find)?.image_url;
+      if (primaryImg && !fetchedPhotos.some((p) => p.image_url === primaryImg)) {
+        fetchedPhotos = [
+          {
+            id: `primary-${find.id}`,
+            find_id: find.id,
+            image_url: primaryImg,
+            type: "discovery"
+          },
+          ...fetchedPhotos
+        ];
+      }
+
+      if (fetchedPhotos.length > 0) {
+        window.findPhotosCache[find.id] = fetchedPhotos;
+      }
+      setPhotos(fetchedPhotos);
+
+      // Auto-detect video if present in find_photos
+      const foundVid = fetchedPhotos.find((p) => p.type === "video" || (typeof p.image_url === "string" && p.image_url.match(/\.(mp4|mov|webm|m4v|ogg)(\?.*)?$/i)));
+      if (foundVid?.image_url) {
+        setVideoUrl((prev) => prev || foundVid.image_url);
+      }
+
+      // Preload image source
+      fetchedPhotos.forEach((photo) => {
+        if (photo.image_url && !photo.image_url.match(/\.(mp4|mov|webm|m4v|ogg)(\?.*)?$/i)) {
+          const img = new Image();
+          img.src = photo.image_url;
+        }
+      });
+    } catch (err) {
+      console.warn("loadPhotos exception:", err);
+    }
   };
 
   const handleCategoryChange = (e) => {
@@ -605,7 +610,7 @@ export default function FindPopup({
     url.match(/\.(mp4|mov|webm|m4v|ogg)(\?.*)?$/i) ||
     url.includes("/video-")
   );
-  const primaryImg = find.image_url || find.thumbnail_url || null;
+  const primaryImg = find.image_url || find.thumbnail_url || decodeMetadata(find)?.thumbnail_url || decodeMetadata(find)?.image_url || null;
   const filteredDiscovery = photos.filter((p) => (p.type === "discovery" || !p.type) && !isVideoFile(p.image_url) && p.type !== "video");
   const discoveryPhotos = filteredDiscovery.length > 0
     ? filteredDiscovery
@@ -639,7 +644,7 @@ export default function FindPopup({
   };
 
   const validPhotoList = photos.filter((p) => !isVideoFile(p.image_url) && p.type !== "video");
-  const coverPhoto = validPhotoList.length > 0 ? validPhotoList[0].image_url : (find.image_url || find.thumbnail_url || null);
+  const coverPhoto = validPhotoList.length > 0 ? validPhotoList[0].image_url : primaryImg;
   const isReadOnly = workspace?.mode === "consultation";
   const myCode = getMyUserCode();
   const myName = getMyDisplayName();

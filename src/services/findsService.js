@@ -65,13 +65,16 @@ export function decodeMetadata(find) {
     // fallback
   }
 
+  const resolvedImg = find.image_url || thumbnail_url || null;
+
   return {
     ...find,
     description: cleanDesc,
     user_code,
     finder_name,
     session_code,
-    thumbnail_url: thumbnail_url || find.image_url,
+    image_url: resolvedImg,
+    thumbnail_url: resolvedImg,
     audio_url,
     audio_duration,
     video_url
@@ -357,23 +360,28 @@ export async function loadFinds(options = {}) {
       return [];
     }
 
-    // Fetch videos from find_photos to attach directly to finds
+    // Fetch photos and videos from find_photos to attach directly to finds
+    let photoMap = {};
     let videoMap = {};
     try {
-      const { data: videoPhotos } = await supabase
+      const { data: allDbPhotos } = await supabase
         .from("find_photos")
         .select("find_id, image_url, type")
-        .eq("type", "video");
+        .order("id", { ascending: true });
 
-      if (videoPhotos) {
-        videoPhotos.forEach((vp) => {
-          if (vp.find_id && vp.image_url) {
-            videoMap[vp.find_id] = vp.image_url;
+      if (allDbPhotos) {
+        allDbPhotos.forEach((p) => {
+          if (p.find_id && p.image_url) {
+            if (p.type === "video" || typeof p.image_url === "string" && p.image_url.includes("/video-")) {
+              videoMap[p.find_id] = p.image_url;
+            } else if (!photoMap[p.find_id]) {
+              photoMap[p.find_id] = p.image_url;
+            }
           }
         });
       }
-    } catch (vMapErr) {
-      console.warn("Could not load video map:", vMapErr);
+    } catch (pMapErr) {
+      console.warn("Could not load photos/videos map:", pMapErr);
     }
 
     const allFinds = data || [];
@@ -398,9 +406,12 @@ export async function loadFinds(options = {}) {
 
     return filteredFinds.map((find) => {
       const normalizedFind = normalizeCategoryAndSub(find);
+      const resolvedImg = normalizedFind.image_url || photoMap[normalizedFind.id] || null;
       const resolvedVideo = normalizedFind.video_url || videoMap[normalizedFind.id] || null;
       return {
         ...normalizedFind,
+        image_url: resolvedImg,
+        thumbnail_url: resolvedImg,
         video_url: resolvedVideo,
         position: [
           normalizedFind.latitude,

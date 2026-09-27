@@ -824,6 +824,7 @@ export default function AddFindForm({
           if (setNewVideo && activeVideo !== newVideo) setNewVideo(activeVideo);
           if (setNewAudioDuration && recordingTime > 0) setNewAudioDuration(recordingTime);
           addFind({
+            newPhoto: newPhoto,
             audio: activeAudio,
             audioDuration: recordingTime,
             video: activeVideo
