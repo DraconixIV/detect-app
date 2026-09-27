@@ -847,7 +847,7 @@ export default function AddFindForm({
         }}
       >
         {addingFind
-          ? (activeVideo ? "🎥 Téléversement vidéo et enregistrement..." : "Enregistrement en cours...")
+          ? (activeVideo ? "🎥 Téléversement vidéo et enregistrement..." : (newPhoto ? "📸 Envoi de la photo et enregistrement..." : "Enregistrement en cours..."))
           : "✅ Enregistrer la trouvaille"}
       </button>
     </div>

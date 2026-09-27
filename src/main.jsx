@@ -6,10 +6,19 @@ import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { registerSW } from 'virtual:pwa-register'
 
 try {
+  let refreshing = false;
+  if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
+  }
+
   const updateSW = registerSW({
     immediate: true,
     onNeedRefresh() {
-      // Auto-update to latest assets cleanly
       updateSW(true);
     },
     onOfflineReady() {

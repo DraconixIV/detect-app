@@ -426,6 +426,60 @@ export async function loadFinds(options = {}) {
   }
 }
 
+export async function convertBlobToJpegBlob(blobOrFile) {
+  return new Promise((resolve) => {
+    try {
+      if (typeof window === "undefined" || !window.createImageBitmap && !window.Image) {
+        return resolve(blobOrFile);
+      }
+      const img = new Image();
+      const url = URL.createObjectURL(blobOrFile);
+      img.onload = () => {
+        try {
+          URL.revokeObjectURL(url);
+          const canvas = document.createElement("canvas");
+          const maxDim = 1600;
+          let width = img.naturalWidth || img.width || 800;
+          let height = img.naturalHeight || img.height || 600;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                resolve(blob);
+              } else {
+                resolve(blobOrFile);
+              }
+            },
+            "image/jpeg",
+            0.85
+          );
+        } catch {
+          resolve(blobOrFile);
+        }
+      };
+      img.onerror = () => {
+        try { URL.revokeObjectURL(url); } catch {}
+        resolve(blobOrFile);
+      };
+      img.src = url;
+    } catch {
+      resolve(blobOrFile);
+    }
+  });
+}
+
 export function generateSafeFileName(fileOrBlob, prefix = "photo") {
   const rawName = fileOrBlob?.name || "";
   let ext = "jpg";
@@ -436,7 +490,7 @@ export function generateSafeFileName(fileOrBlob, prefix = "photo") {
     else if (fileOrBlob.type.includes("webp")) ext = "webp";
     else if (fileOrBlob.type.includes("gif")) ext = "gif";
   }
-  if (ext === "jpeg") ext = "jpg";
+  if (ext === "jpeg" || ext === "heic" || ext === "heif") ext = "jpg";
   const uniqueId = Math.random().toString(36).substring(2, 9);
   return `${prefix}-${Date.now()}-${uniqueId}.${ext}`;
 }
@@ -463,20 +517,26 @@ export async function uploadPhotoFile(photo) {
     }
 
     let fileToUpload = photoBlob;
-    // Attempt compression with fallback
+    // Attempt compression with fallback to canvas
     try {
       fileToUpload = await imageCompression(photoBlob, {
-        maxSizeMB: 0.4,
+        maxSizeMB: 0.5,
         maxWidthOrHeight: 1600,
         useWebWorker: false // Safe on mobile / PWA WebViews
       });
     } catch (compErr) {
-      console.warn("Image compression fallback to raw:", compErr);
-      fileToUpload = photoBlob;
+      console.warn("Image compression fallback to canvas:", compErr);
+      try {
+        fileToUpload = await convertBlobToJpegBlob(photoBlob);
+      } catch (canvasErr) {
+        console.warn("Canvas conversion fallback to raw:", canvasErr);
+        fileToUpload = photoBlob;
+      }
     }
 
-    const fileName = generateSafeFileName(photoBlob, "photo");
-    const contentType = fileToUpload.type || "image/jpeg";
+    const fileName = generateSafeFileName(fileToUpload || photoBlob, "photo");
+    const rawType = fileToUpload?.type || "";
+    const contentType = rawType.includes("image") ? rawType : "image/jpeg";
 
     const { error: uploadError } = await supabase.storage
       .from("find-photos")
@@ -486,7 +546,22 @@ export async function uploadPhotoFile(photo) {
       });
 
     if (uploadError) {
-      console.error("Storage photo upload error:", uploadError);
+      console.error("Storage photo upload error, attempting raw retry:", uploadError);
+      if (fileToUpload !== photoBlob) {
+        const retryName = generateSafeFileName(photoBlob, "photo");
+        const { error: retryErr } = await supabase.storage
+          .from("find-photos")
+          .upload(retryName, photoBlob, {
+            contentType: photoBlob.type || "image/jpeg",
+            upsert: false
+          });
+        if (!retryErr) {
+          const { data: { publicUrl } } = supabase.storage
+            .from("find-photos")
+            .getPublicUrl(retryName);
+          return publicUrl;
+        }
+      }
       return null;
     }
 
