@@ -517,10 +517,23 @@ export async function uploadPhotoFile(photo) {
       return null;
     }
 
-    let fileToUpload = photoBlob;
+    // Ensure it's a File object with a proper name and type
+    let safeFile = photoBlob;
+    if (photoBlob instanceof Blob && !(photoBlob instanceof File)) {
+      try {
+        const ext = photoBlob.type?.includes("png") ? "png" : "jpg";
+        safeFile = new File([photoBlob], `photo-${Date.now()}.${ext}`, {
+          type: photoBlob.type || "image/jpeg"
+        });
+      } catch (fileWrapErr) {
+        safeFile = photoBlob;
+      }
+    }
+
+    let fileToUpload = safeFile;
     // 1. Try browser-image-compression with canvas fallback
     try {
-      fileToUpload = await imageCompression(photoBlob, {
+      fileToUpload = await imageCompression(safeFile, {
         maxSizeMB: 0.5,
         maxWidthOrHeight: 1600,
         useWebWorker: false // Safe on mobile / PWA WebViews
@@ -528,14 +541,14 @@ export async function uploadPhotoFile(photo) {
     } catch (compErr) {
       console.warn("Image compression fallback to canvas:", compErr);
       try {
-        fileToUpload = await convertBlobToJpegBlob(photoBlob);
+        fileToUpload = await convertBlobToJpegBlob(safeFile);
       } catch (canvasErr) {
         console.warn("Canvas conversion fallback to raw:", canvasErr);
-        fileToUpload = photoBlob;
+        fileToUpload = safeFile;
       }
     }
 
-    const fileName = generateSafeFileName(fileToUpload || photoBlob, "photo");
+    const fileName = generateSafeFileName(fileToUpload || safeFile, "photo");
     const rawType = fileToUpload?.type || "";
     const contentType = rawType.includes("image") ? rawType : "image/jpeg";
 
@@ -547,12 +560,12 @@ export async function uploadPhotoFile(photo) {
       });
 
     if (uploadError) {
-      console.error("Storage photo upload error, attempting raw retry:", uploadError);
-      const fallbackBlob = await convertBlobToJpegBlob(photoBlob);
-      const retryName = generateSafeFileName(photoBlob, "photo");
+      console.error("Storage photo upload error, attempting raw canvas retry:", uploadError);
+      const fallbackBlob = await convertBlobToJpegBlob(safeFile);
+      const retryName = generateSafeFileName(safeFile, "photo");
       const { error: retryErr } = await supabase.storage
         .from("find-photos")
-        .upload(retryName, fallbackBlob || photoBlob, {
+        .upload(retryName, fallbackBlob || safeFile, {
           contentType: "image/jpeg",
           upsert: false
         });
@@ -562,7 +575,8 @@ export async function uploadPhotoFile(photo) {
           .getPublicUrl(retryName);
         return publicUrl;
       }
-      throw new Error("Erreur Supabase Storage : " + (retryErr.message || uploadError.message));
+      console.warn("All storage upload attempts failed:", retryErr || uploadError);
+      return null;
     }
 
     const { data: { publicUrl } } = supabase.storage
@@ -572,7 +586,7 @@ export async function uploadPhotoFile(photo) {
     return publicUrl;
   } catch (err) {
     console.error("uploadPhotoFile exception:", err);
-    throw err;
+    return null;
   }
 }
 

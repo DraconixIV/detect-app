@@ -79,14 +79,17 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
     }
   };
 
+  const isSyncingRef = useRef(false);
+
   const syncOfflineFinds = async () => {
+    if (isSyncingRef.current) return;
     try {
       const offlineFinds = await getPendingFinds();
       if (offlineFinds.length === 0) return;
 
+      isSyncingRef.current = true;
       setSyncing(true);
       let syncedCount = 0;
-      let failedCount = 0;
 
       for (const f of offlineFinds) {
         try {
@@ -109,14 +112,28 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
           syncedCount++;
         } catch (singleErr) {
           console.error(`Failed to sync find id ${f.id}:`, singleErr);
-          // If unrecoverable after retry, remove from offline queue to avoid infinite failure loop
-          const count = (f.retryCount || 0) + 1;
-          f.retryCount = count;
-          if (count >= 2) {
-            console.warn(`Purging unrecoverable offline find ${f.id}`);
+          // Retry without photo as fallback to prevent blocking
+          try {
+            await createFind({
+              position: f.position,
+              newTitle: f.newTitle || "Trouvaille de terrain",
+              newDescription: f.newDescription || "Indéterminé",
+              newCategory: f.newCategory || "Autre",
+              newSubCategory: f.newSubCategory || null,
+              newPhoto: null,
+              customDate: f.customDate || f.createdAt,
+              userCode: f.userCode,
+              finderName: f.finderName,
+              sessionCode: f.sessionCode,
+              audio: f.audio,
+              audioDuration: f.audioDuration,
+              video: f.video
+            });
             await deletePendingFind(f.id);
+            syncedCount++;
+          } catch (fallbackErr) {
+            console.error("Critical fallback sync error:", fallbackErr);
           }
-          failedCount++;
         }
       }
 
@@ -128,18 +145,11 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
           });
         }
         await loadFinds();
-      } else if (failedCount > 0) {
-        const remaining = await getPendingFinds();
-        if (remaining.length > 0 && setToast) {
-          setToast({
-            message: `⚠️ Synchronisation : 1 trouvaille en attente de réseau stable.`,
-            type: "warning"
-          });
-        }
       }
     } catch (err) {
       console.error("Synchro error:", err);
     } finally {
+      isSyncingRef.current = false;
       setSyncing(false);
     }
   };
