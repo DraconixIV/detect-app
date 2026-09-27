@@ -601,89 +601,96 @@ export async function addFind({
     if (isNaN(lat) || lat === null) lat = 0;
     if (isNaN(lng) || lng === null) lng = 0;
 
-    // 1. Process Video if provided (Direct streaming storage upload)
+    // 1. Process Photo, Video, and Audio IN PARALLEL for maximum speed
+    const uploadTasks = [];
+
+    // Task A: Photo upload
+    let finalPhotoUrl = null;
+    if (newPhoto) {
+      uploadTasks.push(
+        uploadPhotoFile(newPhoto).then((url) => {
+          finalPhotoUrl = url;
+        }).catch((err) => {
+          console.warn("Parallel photo upload warning:", err);
+        })
+      );
+    }
+
+    // Task B: Video upload
     let finalVideoUrl = null;
     if (video) {
       if (typeof video === "string" && video.startsWith("http")) {
         finalVideoUrl = video;
       } else {
-        try {
-          let videoBlob = video;
-          let ext = "mp4";
-          if (typeof video === "string" && (video.startsWith("data:") || video.startsWith("blob:"))) {
+        uploadTasks.push(
+          (async () => {
             try {
-              const res = await fetch(video);
-              if (res.ok) {
-                videoBlob = await res.blob();
-              } else {
-                videoBlob = null;
+              let videoBlob = video;
+              let ext = "mp4";
+              if (typeof video === "string" && (video.startsWith("data:") || video.startsWith("blob:"))) {
+                try {
+                  const res = await fetch(video);
+                  if (res.ok) videoBlob = await res.blob();
+                  else videoBlob = null;
+                } catch {
+                  videoBlob = null;
+                }
               }
-            } catch (fetchErr) {
-              console.warn("Could not fetch video blob/data URL:", fetchErr);
-              videoBlob = null;
-            }
-          }
 
-          if (videoBlob && (videoBlob instanceof Blob || videoBlob instanceof File)) {
-            if (videoBlob.type && videoBlob.type.includes("webm")) ext = "webm";
-            else if (videoBlob.type && (videoBlob.type.includes("quicktime") || videoBlob.type.includes("mov"))) ext = "mov";
-            else if (videoBlob.name) {
-              ext = (videoBlob.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/gi, "");
-              if (ext === "quicktime") ext = "mov";
-            }
+              if (videoBlob && (videoBlob instanceof Blob || videoBlob instanceof File)) {
+                if (videoBlob.type && videoBlob.type.includes("webm")) ext = "webm";
+                else if (videoBlob.type && (videoBlob.type.includes("quicktime") || videoBlob.type.includes("mov"))) ext = "mov";
+                else if (videoBlob.name) {
+                  ext = (videoBlob.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/gi, "");
+                  if (ext === "quicktime") ext = "mov";
+                }
 
-            let contentType = videoBlob.type || (ext === "mov" ? "video/quicktime" : (ext === "webm" ? "video/webm" : "video/mp4"));
-            const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext || "mp4"}`;
-
-            try {
-              finalVideoUrl = await directUploadStorage("find-photos", videoFileName, videoBlob, contentType);
-            } catch (vErr) {
-              console.warn("Storage video upload warning:", vErr);
+                const contentType = videoBlob.type || (ext === "mov" ? "video/quicktime" : (ext === "webm" ? "video/webm" : "video/mp4"));
+                const videoFileName = `video-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext || "mp4"}`;
+                finalVideoUrl = await directUploadStorage("find-photos", videoFileName, videoBlob, contentType);
+              }
+            } catch (vEx) {
+              console.warn("Parallel video upload warning:", vEx);
             }
-          }
-        } catch (vEx) {
-          console.warn("Video upload exception:", vEx);
-        }
+          })()
+        );
       }
     }
 
-    // 2. Process Audio Note if provided
+    // Task C: Audio Note upload
     let finalAudioUrl = null;
     if (audio) {
       if (typeof audio === "string" && audio.startsWith("http")) {
         finalAudioUrl = audio;
       } else {
-        try {
-          let audioBlob = audio;
-          if (typeof audio === "string" && (audio.startsWith("data:") || audio.startsWith("blob:"))) {
+        uploadTasks.push(
+          (async () => {
             try {
-              const res = await fetch(audio);
-              if (res.ok) audioBlob = await res.blob();
-            } catch {
-              // fallback
+              let audioBlob = audio;
+              if (typeof audio === "string" && (audio.startsWith("data:") || audio.startsWith("blob:"))) {
+                try {
+                  const res = await fetch(audio);
+                  if (res.ok) audioBlob = await res.blob();
+                } catch {}
+              }
+              if (audioBlob && (audioBlob instanceof Blob || audioBlob instanceof File)) {
+                const audioFileName = `audio-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.webm`;
+                finalAudioUrl = await directUploadStorage("find-photos", audioFileName, audioBlob, audioBlob.type || "audio/webm");
+              }
+            } catch (aEx) {
+              console.warn("Parallel audio upload warning:", aEx);
             }
-          }
-          if (audioBlob && (audioBlob instanceof Blob || audioBlob instanceof File)) {
-            const audioFileName = `audio-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.webm`;
-            try {
-              finalAudioUrl = await directUploadStorage("find-photos", audioFileName, audioBlob, audioBlob.type || "audio/webm");
-            } catch (aErr) {
-              console.warn("Audio storage upload fallback:", aErr);
-            }
-          }
-        } catch (aEx) {
-          console.warn("Audio upload exception:", aEx);
-        }
+          })()
+        );
       }
     }
 
-    // 3. Process Photo BEFORE inserting into database (ensures atomic presence with photo)
-    let finalPhotoUrl = null;
-    if (newPhoto) {
-      finalPhotoUrl = await uploadPhotoFile(newPhoto);
+    // Await all media uploads simultaneously in parallel
+    if (uploadTasks.length > 0) {
+      await Promise.all(uploadTasks);
     }
 
-    // 4. Encode description with metadata (including photo thumbnail and media URLs)
+    // 2. Encode description with metadata (including photo thumbnail and media URLs)
     const encodedDesc = encodeMetadata(
       newDescription,
       finalUserCode,
@@ -722,33 +729,28 @@ export async function addFind({
       throw insertError;
     }
 
-    // 5. Save Discovery Photo into find_photos table for Gallery/Album
+    // 3. Batch Save Discovery Photo & Video into find_photos table in a single request
+    const mediaToInsert = [];
     if (finalPhotoUrl && insertedFind && insertedFind.id) {
-      try {
-        await supabase.from("find_photos").insert([
-          {
-            find_id: insertedFind.id,
-            image_url: finalPhotoUrl,
-            type: "discovery"
-          }
-        ]);
-      } catch (photoDbErr) {
-        console.warn("find_photos insert warning:", photoDbErr);
-      }
+      mediaToInsert.push({
+        find_id: insertedFind.id,
+        image_url: finalPhotoUrl,
+        type: "discovery"
+      });
+    }
+    if (finalVideoUrl && insertedFind && insertedFind.id) {
+      mediaToInsert.push({
+        find_id: insertedFind.id,
+        image_url: finalVideoUrl,
+        type: "video"
+      });
     }
 
-    // 6. Save Video into find_photos table
-    if (finalVideoUrl && insertedFind && insertedFind.id) {
+    if (mediaToInsert.length > 0) {
       try {
-        await supabase.from("find_photos").insert([
-          {
-            find_id: insertedFind.id,
-            image_url: finalVideoUrl,
-            type: "video"
-          }
-        ]);
-      } catch (videoDbErr) {
-        console.warn("find_photos video insert error:", videoDbErr);
+        await supabase.from("find_photos").insert(mediaToInsert);
+      } catch (photoDbErr) {
+        console.warn("find_photos batch insert warning:", photoDbErr);
       }
     }
 
