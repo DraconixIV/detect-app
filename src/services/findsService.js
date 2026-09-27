@@ -482,7 +482,7 @@ export async function uploadPhotoFile(photo) {
       .from("find-photos")
       .upload(fileName, fileToUpload, {
         contentType,
-        upsert: true
+        upsert: false
       });
 
     if (uploadError) {
@@ -575,7 +575,7 @@ export async function addFind({
               .from("find-photos")
               .upload(videoFileName, videoBlob, {
                 contentType: contentType,
-                upsert: true
+                upsert: false
               });
 
             if (!vErr) {
@@ -615,7 +615,7 @@ export async function addFind({
               .from("find-photos")
               .upload(audioFileName, audioBlob, {
                 contentType: audioBlob.type || "audio/webm",
-                upsert: true
+                upsert: false
               });
 
             if (!aErr) {

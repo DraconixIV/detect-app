@@ -424,7 +424,7 @@ export default function FindPopup({
             .from("find-photos")
             .upload(fileName, compressedFile, {
               contentType,
-              upsert: true
+              upsert: false
             });
 
           if (uploadError) {
@@ -495,7 +495,10 @@ export default function FindPopup({
         const beforeNewName = `${timestamp}-cropped-before.jpg`;
         const { error: errorBefore } = await supabase.storage
           .from("find-photos")
-          .upload(beforeNewName, beforeFile);
+          .upload(beforeNewName, beforeFile, {
+            contentType: "image/jpeg",
+            upsert: false
+          });
 
         if (errorBefore) {
           throw new Error(`Erreur de téléversement 'Avant' : ${errorBefore.message}`);
@@ -528,7 +531,10 @@ export default function FindPopup({
         const afterNewName = `${timestamp}-cropped-after.jpg`;
         const { error: errorAfter } = await supabase.storage
           .from("find-photos")
-          .upload(afterNewName, afterFile);
+          .upload(afterNewName, afterFile, {
+            contentType: "image/jpeg",
+            upsert: false
+          });
 
         if (errorAfter) {
           throw new Error(`Erreur de téléversement 'Après' : ${errorAfter.message}`);
