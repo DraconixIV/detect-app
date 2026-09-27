@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { categoryEmojis } from "./subCategories";
 
 import LoadingScreen from "./components/LoadingScreen";
@@ -244,8 +244,21 @@ function App() {
   } = useSortieRecorder();
 
   const [showSplash, setShowSplash] = useState(() => {
-    return !sessionStorage.getItem("geoprospect_splash_seen");
+    try {
+      return !sessionStorage.getItem("geoprospect_splash_seen");
+    } catch {
+      return false;
+    }
   });
+
+  const handleFinishSplash = useCallback(() => {
+    setShowSplash(false);
+    try {
+      sessionStorage.setItem("geoprospect_splash_seen", "true");
+    } catch (e) {
+      console.warn("Storage error:", e);
+    }
+  }, []);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return localStorage.getItem("geoprospect_onboarding_completed_v3") !== "true" && localStorage.getItem("rdl_onboarding_completed_v3") !== "true";
   });
@@ -2100,11 +2113,8 @@ function App() {
       {/* Animated Luminous White Splash Screen */}
       {showSplash && (
         <SplashScreen
-          onFinish={() => {
-            setShowSplash(false);
-            sessionStorage.setItem("geoprospect_splash_seen", "true");
-          }}
-          duration={2200}
+          onFinish={handleFinishSplash}
+          duration={1400}
         />
       )}
     </div>

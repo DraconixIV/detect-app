@@ -1,32 +1,55 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
-export default function SplashScreen({ onFinish, duration = 2200 }) {
+export default function SplashScreen({ onFinish, duration = 1400 }) {
   const [isFadingOut, setIsFadingOut] = useState(false);
+  const onFinishRef = useRef(onFinish);
+  onFinishRef.current = onFinish;
+  const hasFinishedRef = useRef(false);
+
+  const handleDismiss = useCallback(() => {
+    if (hasFinishedRef.current) return;
+    hasFinishedRef.current = true;
+    setIsFadingOut(true);
+    setTimeout(() => {
+      onFinishRef.current?.();
+    }, 180);
+  }, []);
 
   useEffect(() => {
     // Start fade out slightly before completion
     const fadeTimer = setTimeout(() => {
       setIsFadingOut(true);
-    }, Math.max(duration - 400, 500));
+    }, Math.max(duration - 350, 400));
 
     const endTimer = setTimeout(() => {
-      if (onFinish) onFinish();
+      if (!hasFinishedRef.current) {
+        hasFinishedRef.current = true;
+        onFinishRef.current?.();
+      }
     }, duration);
+
+    // Hard fallback failsafe: maximum 2.5s under any circumstance
+    const failsafeTimer = setTimeout(() => {
+      if (!hasFinishedRef.current) {
+        hasFinishedRef.current = true;
+        onFinishRef.current?.();
+      }
+    }, 2500);
 
     return () => {
       clearTimeout(fadeTimer);
       clearTimeout(endTimer);
+      clearTimeout(failsafeTimer);
     };
-  }, [duration, onFinish]);
+  }, [duration]);
 
   return (
     <div
-      onClick={() => {
-        setIsFadingOut(true);
-        setTimeout(() => {
-          if (onFinish) onFinish();
-        }, 300);
-      }}
+      onClick={handleDismiss}
+      onTouchStart={handleDismiss}
+      onPointerDown={handleDismiss}
+      role="button"
+      tabIndex={0}
       style={{
         position: "fixed",
         inset: 0,
@@ -40,10 +63,11 @@ export default function SplashScreen({ onFinish, duration = 2200 }) {
         fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         opacity: isFadingOut ? 0 : 1,
         transform: isFadingOut ? "scale(1.04)" : "scale(1)",
-        transition: "opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+        transition: "opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
         pointerEvents: isFadingOut ? "none" : "auto",
         cursor: "pointer",
-        userSelect: "none"
+        userSelect: "none",
+        touchAction: "manipulation"
       }}
     >
       <style>{`
