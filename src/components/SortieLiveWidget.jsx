@@ -41,21 +41,22 @@ export default function SortieLiveWidget({
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
         border: isSortiePaused ? "1px solid rgba(245, 158, 11, 0.55)" : "1px solid rgba(239, 68, 68, 0.4)",
-        borderRadius: "18px",
-        padding: collapsed ? "6px 12px" : "8px 10px",
+        borderRadius: "16px",
+        padding: collapsed ? "6px 12px" : "6px 8px",
         boxShadow: isSortiePaused 
           ? "0 8px 32px rgba(0, 0, 0, 0.55), 0 0 20px rgba(245, 158, 11, 0.25)"
           : "0 8px 32px rgba(0, 0, 0, 0.55), 0 0 20px rgba(239, 68, 68, 0.25)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        gap: "8px",
+        gap: "5px",
         fontFamily: "system-ui, -apple-system, sans-serif",
         userSelect: "none",
         width: "max-content",
-        maxWidth: "calc(100vw - 20px)",
+        maxWidth: "calc(100vw - 12px)",
         boxSizing: "border-box",
-        transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
+        whiteSpace: "nowrap",
+        transition: "border 0.25s ease, box-shadow 0.25s ease"
       }}
     >
       {/* Recording Pulsing / Pause Indicator */}
@@ -64,73 +65,57 @@ export default function SortieLiveWidget({
         style={{
           display: "flex",
           alignItems: "center",
-          gap: "5px",
+          gap: "4px",
           cursor: "pointer",
           flexShrink: 0
         }}
-        title={collapsed ? "Agrandir le widget" : "Réduire le widget"}
+        title={collapsed ? "Agrandir le bandeau" : "Réduire le bandeau"}
       >
         <span
           style={{
-            width: "9px",
-            height: "9px",
+            width: "8px",
+            height: "8px",
             borderRadius: "50%",
             background: isSortiePaused ? "#f59e0b" : "#ef4444",
-            boxShadow: isSortiePaused ? "0 0 10px #f59e0b" : "0 0 10px #ef4444",
+            boxShadow: isSortiePaused ? "0 0 8px #f59e0b" : "0 0 8px #ef4444",
             animation: isSortiePaused ? "none" : "pulse 1.2s infinite",
             flexShrink: 0
           }}
         />
         <span
           style={{
-            fontSize: "11.5px",
+            fontSize: "11px",
             fontWeight: "900",
             fontFamily: "monospace",
             color: isSortiePaused ? "#fbbf24" : "#f87171",
-            letterSpacing: "0.5px"
+            letterSpacing: "0.3px"
           }}
         >
           {formatTime(elapsedSeconds)}
         </span>
-        {isSortiePaused && (
-          <span
-            style={{
-              fontSize: "8.5px",
-              fontWeight: "900",
-              background: "rgba(245, 158, 11, 0.25)",
-              color: "#fbbf24",
-              padding: "1px 4px",
-              borderRadius: "5px",
-              border: "1px solid rgba(245, 158, 11, 0.4)",
-              textTransform: "uppercase"
-            }}
-          >
-            Pause
-          </span>
-        )}
       </div>
 
       {!collapsed && (
         <>
           {/* Divider */}
-          <div style={{ width: "1px", height: "20px", background: "rgba(255, 255, 255, 0.15)", flexShrink: 0 }} />
+          <div style={{ width: "1px", height: "16px", background: "rgba(255, 255, 255, 0.15)", flexShrink: 0 }} />
 
           {/* Metrics : Distance & Finds */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
             <div>
-              <div style={{ fontSize: "7.5px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase", lineHeight: "1" }}>
+              <div style={{ fontSize: "7px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase", lineHeight: "1" }}>
                 Distance
               </div>
-              <div style={{ fontSize: "11px", fontWeight: "800", color: "#38bdf8", fontFamily: "monospace", marginTop: "1px" }}>
+              <div style={{ fontSize: "10.5px", fontWeight: "800", color: "#38bdf8", fontFamily: "monospace", marginTop: "1px" }}>
                 {formatDistance(sortieDistance)}
               </div>
             </div>
 
             <div>
-              <div style={{ fontSize: "7.5px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase", lineHeight: "1" }}>
+              <div style={{ fontSize: "7px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase", lineHeight: "1" }}>
                 Cibles
               </div>
-              <div style={{ fontSize: "11px", fontWeight: "800", color: "#fbbf24", fontFamily: "monospace", marginTop: "1px" }}>
+              <div style={{ fontSize: "10.5px", fontWeight: "800", color: "#fbbf24", fontFamily: "monospace", marginTop: "1px" }}>
                 {todayFindsCount}
               </div>
             </div>
@@ -142,8 +127,8 @@ export default function SortieLiveWidget({
               type="button"
               onClick={onToggleShowTrack}
               style={{
-                padding: "5px 7px",
-                borderRadius: "9px",
+                padding: "4px 6px",
+                borderRadius: "8px",
                 border: showLiveSortieTrack
                   ? "1px solid rgba(6, 182, 212, 0.45)"
                   : "1px solid rgba(148, 163, 184, 0.2)",
@@ -151,7 +136,7 @@ export default function SortieLiveWidget({
                   ? "rgba(6, 182, 212, 0.15)"
                   : "rgba(15, 23, 42, 0.65)",
                 color: showLiveSortieTrack ? "#22d3ee" : "#94a3b8",
-                fontSize: "10.5px",
+                fontSize: "10px",
                 fontWeight: "800",
                 cursor: "pointer",
                 display: "flex",
@@ -165,7 +150,7 @@ export default function SortieLiveWidget({
               <span style={{ fontSize: "11px" }}>
                 {showLiveSortieTrack ? "👁️" : "🙈"}
               </span>
-              <span style={{ fontSize: "9.5px" }}>
+              <span style={{ fontSize: "9px" }}>
                 {showLiveSortieTrack ? "Tracé" : "Masqué"}
               </span>
             </button>
@@ -177,8 +162,9 @@ export default function SortieLiveWidget({
               type="button"
               onClick={onTogglePauseSortie}
               style={{
-                padding: "5px 8px",
-                borderRadius: "9px",
+                padding: "4px 6px",
+                minWidth: "64px",
+                borderRadius: "8px",
                 border: isSortiePaused
                   ? "1px solid rgba(16, 185, 129, 0.6)"
                   : "1px solid rgba(245, 158, 11, 0.4)",
@@ -186,11 +172,12 @@ export default function SortieLiveWidget({
                   ? "rgba(16, 185, 129, 0.22)"
                   : "rgba(245, 158, 11, 0.16)",
                 color: isSortiePaused ? "#34d399" : "#fbbf24",
-                fontSize: "10.5px",
+                fontSize: "10px",
                 fontWeight: "800",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "center",
                 gap: "3px",
                 flexShrink: 0,
                 transition: "all 0.15s ease"
@@ -200,7 +187,7 @@ export default function SortieLiveWidget({
               <span style={{ fontSize: "11px" }}>
                 {isSortiePaused ? "▶️" : "⏸️"}
               </span>
-              <span style={{ fontSize: "9.5px" }}>
+              <span style={{ fontSize: "9px" }}>
                 {isSortiePaused ? "Reprendre" : "Pause"}
               </span>
             </button>
@@ -208,14 +195,15 @@ export default function SortieLiveWidget({
 
           {/* Stop Button */}
           <button
+            type="button"
             onClick={onStopSortie}
             style={{
-              padding: "5px 9px",
-              borderRadius: "9px",
+              padding: "4px 7px",
+              borderRadius: "8px",
               border: "1px solid rgba(239, 68, 68, 0.5)",
               background: "rgba(239, 68, 68, 0.2)",
               color: "#fca5a5",
-              fontSize: "10.5px",
+              fontSize: "10px",
               fontWeight: "800",
               cursor: "pointer",
               display: "flex",
@@ -227,7 +215,7 @@ export default function SortieLiveWidget({
             title="Terminer et enregistrer la sortie"
           >
             <span>⏹</span>
-            <span>Fin</span>
+            <span style={{ fontSize: "9px" }}>Fin</span>
           </button>
         </>
       )}
