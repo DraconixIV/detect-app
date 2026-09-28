@@ -5,6 +5,7 @@ import { defaultCategoryColors } from "../subCategories";
 import { getMyUserCode, getMyDisplayName } from "../services/sessionService";
 import { purgeAllUserDataAndAccount } from "../services/findsService";
 import AuthForm from "./AuthForm";
+import ConfirmModal from "./ConfirmModal";
 
 const DONATION_LINKS = {
   kofi: "https://ko-fi.com/geoprospect",
@@ -28,6 +29,7 @@ export default function SettingsPanel({
   const [user, setUser] = useState(null);
   const [showAuthBox, setShowAuthBox] = useState(false);
   const [newCatName, setNewCatName] = useState("");
+  const [confirmCatToDelete, setConfirmCatToDelete] = useState(null);
   const [newCatEmoji, setNewCatEmoji] = useState("🪙");
   const [selectedCatForSub, setSelectedCatForSub] = useState("");
   const [newSubName, setNewSubName] = useState("");
@@ -484,11 +486,7 @@ export default function SettingsPanel({
                           + Sous-catégorie
                         </button>
                         <button
-                          onClick={() => {
-                            if (window.confirm(`Supprimer la catégorie "${cat}" ?`)) {
-                              removeCategory(cat);
-                            }
-                          }}
+                          onClick={() => setConfirmCatToDelete(cat)}
                           style={{ padding: "3px 8px", borderRadius: "8px", border: "none", background: "rgba(239, 68, 68, 0.15)", color: "#ef4444", fontSize: "10px", cursor: "pointer" }}
                         >
                           🗑️
@@ -999,6 +997,22 @@ export default function SettingsPanel({
             )}
           </div>
         </div>
+      )}
+
+      {confirmCatToDelete && (
+        <ConfirmModal
+          title="Supprimer la catégorie"
+          icon="🏷️"
+          confirmColor="#ef4444"
+          message={`Voulez-vous vraiment supprimer la catégorie "${confirmCatToDelete}" ?`}
+          confirmText="Supprimer"
+          cancelText="Annuler"
+          onConfirm={() => {
+            removeCategory(confirmCatToDelete);
+            setConfirmCatToDelete(null);
+          }}
+          onCancel={() => setConfirmCatToDelete(null)}
+        />
       )}
     </div>
   );

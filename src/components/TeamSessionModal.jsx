@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ConfirmModal from "./ConfirmModal";
 import {
   getMyUserCode,
   getMyDisplayName,
@@ -41,6 +42,7 @@ export default function TeamSessionModal({
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedSessionCode, setCopiedSessionCode] = useState(false);
   const [pseudoRequiredError, setPseudoRequiredError] = useState("");
+  const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
 
   // Consultation request flow state
   const [consultCodeInput, setConsultCodeInput] = useState("");
@@ -59,11 +61,14 @@ export default function TeamSessionModal({
   }, [workspace?.mode, workspace?.targetCode, isOpen]);
 
   const handleRegenerateCode = () => {
-    if (window.confirm("Voulez-vous générer un nouveau code détecteur ? Votre profil repartira avec une carte 100% vierge.")) {
-      const fresh = resetAndGenerateNewUserCode();
-      setMyCode(fresh);
-      window.location.reload();
-    }
+    setShowRegenerateConfirm(true);
+  };
+
+  const handleConfirmRegenerate = () => {
+    setShowRegenerateConfirm(false);
+    const fresh = resetAndGenerateNewUserCode();
+    setMyCode(fresh);
+    window.location.reload();
   };
 
   if (!isOpen) return null;
@@ -1318,6 +1323,19 @@ export default function TeamSessionModal({
           </div>
         )}
       </div>
+
+      {showRegenerateConfirm && (
+        <ConfirmModal
+          title="Nouveau code détecteur"
+          icon="🔄"
+          confirmColor="#2563eb"
+          message="Voulez-vous générer un nouveau code détecteur ? Votre profil repartira avec une carte 100% vierge."
+          confirmText="Générer un code"
+          cancelText="Annuler"
+          onConfirm={handleConfirmRegenerate}
+          onCancel={() => setShowRegenerateConfirm(false)}
+        />
+      )}
     </div>
   );
 }

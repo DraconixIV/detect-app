@@ -320,60 +320,63 @@ export default function FindPopup({
     input.click();
   };
 
-  const deleteVideo = async () => {
-    if (!confirm("Voulez-vous supprimer cette vidéo ?")) return;
-    setUploading(true);
-    try {
-      const targetVid = effectiveVideoUrl;
-      if (targetVid && targetVid.includes("/find-photos/")) {
-        const fileName = targetVid.split("/").pop();
-        if (fileName) {
-          await supabase.storage.from("find-photos").remove([fileName]);
+  const deleteVideo = () => {
+    setConfirmConfig({
+      message: "Voulez-vous supprimer cette vidéo ?",
+      onConfirm: async () => {
+        setUploading(true);
+        try {
+          const targetVid = effectiveVideoUrl;
+          if (targetVid && targetVid.includes("/find-photos/")) {
+            const fileName = targetVid.split("/").pop();
+            if (fileName) {
+              await supabase.storage.from("find-photos").remove([fileName]);
+            }
+          }
+          try {
+            await supabase.from("find_photos").delete().eq("find_id", find.id).eq("type", "video");
+          } catch (pErr) {
+            console.warn("find_photos delete warning:", pErr);
+          }
+          find.video_url = null;
+          find.video = null;
+          setVideoUrl(null);
+
+          const myCode = getMyUserCode();
+          const myName = getMyDisplayName();
+          const isMyFind = !find.user_code || normalizeSessionCode(find.user_code) === normalizeSessionCode(myCode);
+          const activeUserCode = isMyFind ? (myCode || find.user_code) : find.user_code;
+          const activeFinderName = isMyFind ? (myName || find.finder_name || "Détecteuriste") : find.finder_name;
+
+          const encodedDesc = encodeMetadata(
+            material || "Indéterminé",
+            activeUserCode,
+            activeFinderName,
+            find.session_code,
+            find.thumbnail_url,
+            {
+              audio_url: find.audio_url || find.audio,
+              audio_duration: find.audio_duration,
+              video_url: null
+            }
+          );
+
+          await supabase
+            .from("finds")
+            .update({ description: encodedDesc })
+            .eq("id", find.id);
+
+          if (window.findPhotosCache) {
+            delete window.findPhotosCache[find.id];
+          }
+          await loadPhotos();
+          if (onUpdate) onUpdate();
+        } catch (err) {
+          console.error("Delete video error:", err);
         }
+        setUploading(false);
       }
-      try {
-        await supabase.from("find_photos").delete().eq("find_id", find.id).eq("type", "video");
-      } catch (pErr) {
-        console.warn("find_photos delete warning:", pErr);
-      }
-      find.video_url = null;
-      find.video = null;
-      setVideoUrl(null);
-
-      const myCode = getMyUserCode();
-      const myName = getMyDisplayName();
-      const isMyFind = !find.user_code || normalizeSessionCode(find.user_code) === normalizeSessionCode(myCode);
-      const activeUserCode = isMyFind ? (myCode || find.user_code) : find.user_code;
-      const activeFinderName = isMyFind ? (myName || find.finder_name || "Détecteuriste") : find.finder_name;
-
-      const encodedDesc = encodeMetadata(
-        material || "Indéterminé",
-        activeUserCode,
-        activeFinderName,
-        find.session_code,
-        find.thumbnail_url,
-        {
-          audio_url: find.audio_url || find.audio,
-          audio_duration: find.audio_duration,
-          video_url: null
-        }
-      );
-
-      await supabase
-        .from("finds")
-        .update({ description: encodedDesc })
-        .eq("id", find.id);
-
-      if (window.findPhotosCache) {
-        delete window.findPhotosCache[find.id];
-      }
-      await loadPhotos();
-      alert("Vidéo supprimée ✅");
-      if (onUpdate) onUpdate();
-    } catch (err) {
-      console.error("Delete video error:", err);
-    }
-    setUploading(false);
+    });
   };
 
   const uploadPhoto = async (type, useCamera = false) => {

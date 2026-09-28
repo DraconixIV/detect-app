@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ConfirmModal from "./ConfirmModal";
 import {
   loadCategoriesData,
   addCategory,
@@ -45,6 +46,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
   const [selectedCatForSub, setSelectedCatForSub] = useState("");
   const [newSubName, setNewSubName] = useState("");
   const [expandedCat, setExpandedCat] = useState(null);
+  const [confirmCatToDelete, setConfirmCatToDelete] = useState(null);
 
   const [newMetalName, setNewMetalName] = useState("");
   const [newMetalEmoji, setNewMetalEmoji] = useState("🪙");
@@ -449,9 +451,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
-                              if (window.confirm(`Supprimer la catégorie "${catName}" et tous ses sous-types ?`)) {
-                                removeCategory(catName);
-                              }
+                              setConfirmCatToDelete(catName);
                             }}
                             style={{
                               background: "transparent",
@@ -848,10 +848,26 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
               cursor: "pointer"
             }}
           >
-            Terminer ✅
-          </button>
+              Terminer ✅
+            </button>
+          </div>
         </div>
+
+        {confirmCatToDelete && (
+          <ConfirmModal
+            title="Supprimer la catégorie"
+            icon="🏷️"
+            confirmColor="#ef4444"
+            message={`Voulez-vous vraiment supprimer la catégorie "${confirmCatToDelete}" et tous ses sous-types ?`}
+            confirmText="Supprimer"
+            cancelText="Annuler"
+            onConfirm={() => {
+              removeCategory(confirmCatToDelete);
+              setConfirmCatToDelete(null);
+            }}
+            onCancel={() => setConfirmCatToDelete(null)}
+          />
+        )}
       </div>
-    </div>
-  );
-}
+    );
+  }

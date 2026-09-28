@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
+import ConfirmModal from "./ConfirmModal";
 
 export default function FlipCoinModal({
   isOpen,
@@ -14,6 +15,7 @@ export default function FlipCoinModal({
   const [aversUrl, setAversUrl] = useState(currentFlipCoin?.aversUrl || "");
   const [reversUrl, setReversUrl] = useState(currentFlipCoin?.reversUrl || "");
   const [isFlipped, setIsFlipped] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const aversCameraRef = useRef(null);
   const aversGalleryRef = useRef(null);
@@ -25,6 +27,7 @@ export default function FlipCoinModal({
       setAversUrl(currentFlipCoin?.aversUrl || "");
       setReversUrl(currentFlipCoin?.reversUrl || "");
       setIsFlipped(false);
+      setShowDeleteConfirm(false);
     }
   }, [isOpen, currentFlipCoin]);
 
@@ -57,10 +60,13 @@ export default function FlipCoinModal({
   };
 
   const handleDelete = () => {
-    if (window.confirm("Supprimer la vue 3D Flip Coin pour cette trouvaille ?")) {
-      onDeleteFlipCoin(find.id);
-      onClose();
-    }
+    setShowDeleteConfirm(true);
+  };
+
+  const handleConfirmDelete = () => {
+    setShowDeleteConfirm(false);
+    onDeleteFlipCoin(find.id);
+    onClose();
   };
 
   // Collect all available photo URLs for this find
@@ -550,6 +556,19 @@ export default function FlipCoinModal({
           )}
         </div>
       </div>
+
+      {showDeleteConfirm && (
+        <ConfirmModal
+          title="Supprimer la vue 3D"
+          icon="🪙"
+          confirmColor="#ef4444"
+          message="Voulez-vous supprimer la vue 3D Flip Coin pour cette trouvaille ?"
+          confirmText="Supprimer"
+          cancelText="Annuler"
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setShowDeleteConfirm(false)}
+        />
+      )}
     </div>,
     document.body
   );
