@@ -651,7 +651,7 @@ export default function SettingsPanel({
             <span>☕</span> Soutenir le Projet (Dons)
           </div>
           <p style={{ margin: "0 0 14px 0", fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
-            L'outil est 100% libre, vous offrant un accès direct à toutes les fonctionnalités présentes, aucune publicité ne finance le projet et vos données restent strictement privées et ne font l'objet d'aucune exploitation commerciale. Si l'application vous plaît et vous est utile lors de vos sorties, un petit don encourage les futures améliorations !
+            L'outil est 100% libre et développé sur mon temps libre avec l'aide de l'IA comme assistante pour concevoir un carnet de bord moderne et fluide. Aucune publicité ne finance le projet et vos données restent strictement privées et ne font l'objet d'aucune exploitation commerciale. Si l'application vous plaît et vous est utile lors de vos sorties, un petit don encourage les futures améliorations !
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
