@@ -1435,7 +1435,13 @@ function App() {
           onExportBackup={handleExport}
           onImportBackup={handleImport}
           onOpenCategoryManager={() => setShowCategoryManagerModal(true)}
-          onRestartOnboarding={() => setShowOnboarding(true)}
+          onRestartOnboarding={() => {
+            try {
+              sessionStorage.removeItem("geoprospect_onboarding_step");
+              sessionStorage.removeItem("geoprospect_onboarding_oauth_pending");
+            } catch {}
+            setShowOnboarding(true);
+          }}
           workspace={workspace}
           setWorkspace={setWorkspace}
           onOpenTeamSession={() => setShowTeamSessionModal(true)}

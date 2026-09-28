@@ -31,16 +31,58 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
   // Step 4: Votre Classification (Catégories et Métaux)
   // Step 5: Configuration Initiale (Carte, Thème)
   // Step 6: Message Personnel du Créateur
-  const [step, setStep] = useState(1);
+  const [step, setStepState] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem("geoprospect_onboarding_step");
+      if (saved) {
+        const num = parseInt(saved, 10);
+        if (num >= 1 && num <= 6) return num;
+      }
+    } catch {}
+    return 1;
+  });
+
+  const setStep = (newStep) => {
+    setStepState(newStep);
+    try {
+      sessionStorage.setItem("geoprospect_onboarding_step", String(newStep));
+    } catch {}
+  };
+
   const [step4Tab, setStep4Tab] = useState("categories"); // 'categories' | 'metals'
   const [user, setUser] = useState(null);
 
-  // Legal Checkboxes state
-  const [checkOwner, setCheckOwner] = useState(false);
-  const [checkHeritage, setCheckHeritage] = useState(false);
-  const [checkDeclaration, setCheckDeclaration] = useState(false);
-  const [checkNature, setCheckNature] = useState(false);
-  const [checkCgu, setCheckCgu] = useState(false);
+  // Legal Checkboxes state (restored if previously accepted or returning from OAuth)
+  const [checkOwner, setCheckOwner] = useState(() => {
+    try {
+      const s = parseInt(sessionStorage.getItem("geoprospect_onboarding_step") || "1", 10);
+      return s >= 3 || localStorage.getItem("geoprospect_cgu_accepted") === "true";
+    } catch { return false; }
+  });
+  const [checkHeritage, setCheckHeritage] = useState(() => {
+    try {
+      const s = parseInt(sessionStorage.getItem("geoprospect_onboarding_step") || "1", 10);
+      return s >= 3 || localStorage.getItem("geoprospect_cgu_accepted") === "true";
+    } catch { return false; }
+  });
+  const [checkDeclaration, setCheckDeclaration] = useState(() => {
+    try {
+      const s = parseInt(sessionStorage.getItem("geoprospect_onboarding_step") || "1", 10);
+      return s >= 3 || localStorage.getItem("geoprospect_cgu_accepted") === "true";
+    } catch { return false; }
+  });
+  const [checkNature, setCheckNature] = useState(() => {
+    try {
+      const s = parseInt(sessionStorage.getItem("geoprospect_onboarding_step") || "1", 10);
+      return s >= 3 || localStorage.getItem("geoprospect_cgu_accepted") === "true";
+    } catch { return false; }
+  });
+  const [checkCgu, setCheckCgu] = useState(() => {
+    try {
+      const s = parseInt(sessionStorage.getItem("geoprospect_onboarding_step") || "1", 10);
+      return s >= 3 || localStorage.getItem("geoprospect_cgu_accepted") === "true";
+    } catch { return false; }
+  });
 
   // Categories configuration state
   const [categories, setCategories] = useState(() => {
@@ -99,11 +141,27 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
-      setUser(data?.user || null);
+      const u = data?.user || null;
+      setUser(u);
+      if (u) {
+        const oauthPending = sessionStorage.getItem("geoprospect_onboarding_oauth_pending");
+        if (oauthPending === "true") {
+          sessionStorage.removeItem("geoprospect_onboarding_oauth_pending");
+          setStep(4);
+        }
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
+      const u = session?.user || null;
+      setUser(u);
+      if (u) {
+        const oauthPending = sessionStorage.getItem("geoprospect_onboarding_oauth_pending");
+        if (oauthPending === "true") {
+          sessionStorage.removeItem("geoprospect_onboarding_oauth_pending");
+          setStep(4);
+        }
+      }
     });
 
     return () => subscription?.unsubscribe();
@@ -223,6 +281,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
   };
 
   const handleFinish = () => {
+    try {
+      sessionStorage.removeItem("geoprospect_onboarding_step");
+      sessionStorage.removeItem("geoprospect_onboarding_oauth_pending");
+    } catch {}
     saveCategoriesData(categories, emojis, colors);
     saveMaterialsData(materials, materialEmojis);
     localStorage.setItem("geoprospect_onboarding_completed_v3", "true");

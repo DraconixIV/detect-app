@@ -96,6 +96,13 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
     setErrorMsg("");
     setGoogleLoading(true);
     try {
+      try {
+        sessionStorage.setItem("geoprospect_onboarding_oauth_pending", "true");
+        sessionStorage.setItem("geoprospect_onboarding_step", "4");
+      } catch (storageErr) {
+        console.warn("Session storage error before Google auth:", storageErr);
+      }
+
       // Clean origin URL without trailing slashes to match Supabase Redirect URLs whitelist exactly
       const currentRedirectUrl = typeof window !== "undefined"
         ? window.location.origin.replace(/\/+$/, "")
