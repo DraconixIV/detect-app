@@ -553,7 +553,7 @@ export default function SettingsPanel({
 
         <div style={cardStyle}>
           <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
-            <span>👤</span> Synchronisation et Données
+            <span>👤</span> DONNÉES
           </div>
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: showAuthBox ? "14px" : "12px" }}>
@@ -651,7 +651,7 @@ export default function SettingsPanel({
             <span>☕</span> Soutenir le Projet (Dons)
           </div>
           <p style={{ margin: "0 0 14px 0", fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
-            Développé avec passion pour offrir un outil 100 % libre, sans publicité et respectueux de vos données. Si l'application vous plaît et vous est utile lors de vos sorties, un petit don encourage les futures améliorations !
+            L'outil est 100% libre, vous offrant un accès direct à toutes les fonctionnalités présentes, aucune publicité ne finance le projet et vos données sont conservées sans aucune fin commerciale. Si l'application vous plaît et vous est utile lors de vos sorties, un petit don encourage les futures améliorations !
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -722,14 +722,14 @@ export default function SettingsPanel({
         </div>
 
         {/* ============================================================ */}
-        {/* GROUPE 5 : MENTIONS LÉGALES ET CONFIDENTIALITÉ                */}
+        {/* GROUPE 5 : MENTIONS LÉGALES                                  */}
         {/* ============================================================ */}
-        {renderGroupHeader("⚖️", "Mentions Légales et Confidentialité", isLight ? "#000000" : "#ffffff")}
+        {renderGroupHeader("⚖️", "Mentions Légales", isLight ? "#000000" : "#ffffff")}
 
         <div style={cardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff", marginBottom: 0 }}>
-              <span>⚖️</span> Cadre réglementaire et CGU
+              <span>⚖️</span> Mentions Légales
             </div>
             <button
               onClick={() => setShowLegal(!showLegal)}
@@ -742,10 +742,7 @@ export default function SettingsPanel({
           {showLegal && (
             <div style={{ marginTop: "12px", fontSize: "11px", color: textSub, lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "8px" }}>
               <p style={{ margin: 0 }}>
-                Cette application est un carnet de bord numérique d'enregistrement personnel pour la détection de loisir et la recherche d'objets métalliques.
-              </p>
-              <p style={{ margin: 0 }}>
-                L'utilisateur est seul responsable de sa pratique et s'engage à respecter scrupuleusement l'article L. 542-1 du Code du patrimoine, à obtenir l'autorisation expresse des propriétaires des parcelles prospectées et à déclarer toute découverte fortuite.
+                Cette application est un carnet de bord numérique d'enregistrement personnel pour la détection de loisir. L'utilisateur est seul responsable de sa pratique et s'engage à respecter scrupuleusement l'article L.542-1 du code du patrimoine, obtenir l'autorisation expresse des propriétaires des parcelles prospectées et à déclarer toute découverte fortuite.
               </p>
               {onRestartOnboarding && (
                 <button

@@ -363,7 +363,7 @@ export default function TeamSessionModal({
               position: "relative"
             }}
           >
-            <span>Session Live</span>
+            <span>Sessions</span>
             {workspace.mode === "session" && (
               <span
                 style={{
