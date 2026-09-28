@@ -273,7 +273,7 @@ export default function TeamSessionModal({
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
           <div>
             <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "800", letterSpacing: "-0.3px", color: isLight ? "#000000" : "#ffffff" }}>
-              Sessions & Partages
+              Sessions
             </h2>
           </div>
           <button
@@ -363,7 +363,7 @@ export default function TeamSessionModal({
               position: "relative"
             }}
           >
-            <span>Sessions</span>
+            <span>Session Live</span>
             {workspace.mode === "session" && (
               <span
                 style={{
