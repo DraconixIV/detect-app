@@ -555,7 +555,9 @@ export default function SettingsPanel({
         {/* ============================================================ */}
         {/* GROUPE 3 : COMPTE                                            */}
         {/* ============================================================ */}
-        {renderGroupHeader("👤", "Compte", isLight ? "#000000" : "#ffffff")}
+        <div id="compte-section-anchor">
+          {renderGroupHeader("👤", "Compte", isLight ? "#000000" : "#ffffff")}
+        </div>
 
         <div style={cardStyle}>
           <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
@@ -810,31 +812,37 @@ export default function SettingsPanel({
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {user && (
-              <button
-                type="button"
-                onClick={() => setShowLogoutConfirm(true)}
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  borderRadius: "12px",
-                  border: isLight ? "1.5px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.18)",
-                  background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
-                  color: textMain,
-                  fontSize: "13px",
-                  fontWeight: "700",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px",
-                  transition: "background 0.2s ease"
-                }}
-              >
-                <span>🚪</span>
-                <span>Se déconnecter (changer de compte)</span>
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => {
+                if (user) {
+                  setShowLogoutConfirm(true);
+                } else {
+                  setShowAuthBox(true);
+                  const el = document.getElementById("compte-section-anchor");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              style={{
+                width: "100%",
+                padding: "12px 16px",
+                borderRadius: "12px",
+                border: isLight ? "1.5px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.18)",
+                background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
+                color: textMain,
+                fontSize: "13px",
+                fontWeight: "700",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                transition: "background 0.2s ease"
+              }}
+            >
+              <span>🚪</span>
+              <span>{user ? `Se déconnecter (${user.email})` : "Se déconnecter / Changer de compte"}</span>
+            </button>
 
             <button
               type="button"
@@ -1005,28 +1013,32 @@ export default function SettingsPanel({
                     Annuler
                   </button>
 
-                  {user && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowDeleteConfirm(false);
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowDeleteConfirm(false);
+                      if (user) {
                         setShowLogoutConfirm(true);
-                      }}
-                      style={{
-                        flex: 1.2,
-                        padding: "12px",
-                        borderRadius: "12px",
-                        border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                        background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
-                        color: textMain,
-                        fontSize: "12px",
-                        fontWeight: "700",
-                        cursor: "pointer"
-                      }}
-                    >
-                      🚪 Déconnexion seule
-                    </button>
-                  )}
+                      } else {
+                        setShowAuthBox(true);
+                        const el = document.getElementById("compte-section-anchor");
+                        if (el) el.scrollIntoView({ behavior: "smooth" });
+                      }
+                    }}
+                    style={{
+                      flex: 1.2,
+                      padding: "12px",
+                      borderRadius: "12px",
+                      border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
+                      background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
+                      color: textMain,
+                      fontSize: "12px",
+                      fontWeight: "700",
+                      cursor: "pointer"
+                    }}
+                  >
+                    🚪 {user ? "Déconnexion seule" : "Changer de compte"}
+                  </button>
 
                   <button
                     type="button"
