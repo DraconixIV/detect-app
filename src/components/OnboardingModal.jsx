@@ -196,20 +196,6 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
     setNewSubText("");
   };
 
-  const handleAddStarter = (name) => {
-    const starter = SUGGESTED_STARTER_CATEGORIES[name];
-    if (!starter) return;
-
-    const updatedCats = { ...categories, [name]: [...starter.subCategories] };
-    const updatedEmojis = { ...emojis, [name]: starter.emoji };
-    const updatedColors = { ...colors, [name]: starter.color };
-
-    setCategories(updatedCats);
-    setEmojis(updatedEmojis);
-    setColors(updatedColors);
-    saveCategoriesData(updatedCats, updatedEmojis, updatedColors);
-  };
-
   const handleRemoveCategory = (name) => {
     const updatedCats = { ...categories };
     delete updatedCats[name];
@@ -222,6 +208,24 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
     setEmojis(updatedEmojis);
     setColors(updatedColors);
     saveCategoriesData(updatedCats, updatedEmojis, updatedColors);
+  };
+
+  const handleToggleStarter = (name) => {
+    if (categories[name]) {
+      handleRemoveCategory(name);
+    } else {
+      const starter = SUGGESTED_STARTER_CATEGORIES[name];
+      if (!starter) return;
+
+      const updatedCats = { ...categories, [name]: [...starter.subCategories] };
+      const updatedEmojis = { ...emojis, [name]: starter.emoji };
+      const updatedColors = { ...colors, [name]: starter.color };
+
+      setCategories(updatedCats);
+      setEmojis(updatedEmojis);
+      setColors(updatedColors);
+      saveCategoriesData(updatedCats, updatedEmojis, updatedColors);
+    }
   };
 
   const handleAddSubInline = (catName) => {
@@ -371,7 +375,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 Bienvenue sur GeoProspect 🧭
               </h1>
               <p style={{ margin: 0, fontSize: "14px", color: textSub, lineHeight: "1.5" }}>
-                Votre compagnon tout-en-un pour la détection de loisir, le repérage cartographique et l'inventaire de vos trouvailles.
+                Votre compagnon tout-en-un pour la détection de loisir.
               </p>
             </div>
 
@@ -486,7 +490,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                     Sessions en Équipe et Sauvegarde
                   </div>
                   <div style={{ fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
-                    Rejoignez une session collective en direct avec vos amis ou prospectez en mode 100% hors-ligne sécurisé.
+                    Rejoignez une session collective en direct avec vos amis ou prospectez en mode local sécurisé.
                   </div>
                 </div>
               </div>
@@ -518,13 +522,13 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
         )}
 
         {/* ========================================================= */}
-        {/* ÉTAPE 2 : CADRE LÉGAL ET CHARTE DÉONTOLOGIQUE */}
+        {/* ÉTAPE 2 : CADRE LÉGAL */}
         {/* ========================================================= */}
         {step === 2 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
               <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
-                Cadre Légal et Charte Éthique ⚖️
+                Cadre légal
               </h1>
               <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
                 La détection de métaux en France est encadrée pour protéger le patrimoine et respecter la propriété privée.
@@ -845,7 +849,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                     onMouseEnter={(e) => (e.currentTarget.style.color = textMain)}
                     onMouseLeave={(e) => (e.currentTarget.style.color = textSub)}
                   >
-                    Continuer vers l'étape 4 (Mode 100% hors-ligne) →
+                    Continuer vers l'étape 4 (mode local) →
                   </button>
                 </div>
               </div>
@@ -938,9 +942,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
             </div>
 
             {/* TAB 1: FAMILLES D'OBJETS */}
+            {/* TAB 1: FAMILLES D'OBJETS */}
             {step4Tab === "categories" && (
               <>
-                {/* Quick 1-click Suggestion Chips */}
+                {/* Quick 1-click Suggestion Chips (Toggleables) */}
                 <div
                   style={{
                     background: cardBg,
@@ -950,7 +955,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   }}
                 >
                   <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
-                    💡 Suggestions en 1 clic (optionnel) :
+                    💡 Suggestions en 1 clic (cliquez pour activer / désactiver) :
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                     {Object.keys(SUGGESTED_STARTER_CATEGORIES).map((starterName) => {
@@ -960,23 +965,23 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                         <button
                           key={starterName}
                           type="button"
-                          onClick={() => handleAddStarter(starterName)}
+                          onClick={() => handleToggleStarter(starterName)}
                           style={{
                             padding: "6px 10px",
                             borderRadius: "10px",
                             border: isAlreadyAdded ? `1.5px solid ${item.color}` : `1px solid ${cardBorder}`,
                             background: isAlreadyAdded ? (isDark ? "rgba(37,99,235,0.25)" : "#eff6ff") : (isDark ? "#1e293b" : "#ffffff"),
-                            color: isAlreadyAdded ? (isDark ? "#93c5fd" : "#1e3a8a") : textMain,
+                            color: isAlreadyAdded ? (isDark ? "#93c5fd" : "#1e3a8a") : textSub,
                             fontSize: "12px",
                             fontWeight: isAlreadyAdded ? "700" : "500",
                             cursor: "pointer",
                             display: "flex",
                             alignItems: "center",
-                            gap: "5px",
+                            gap: "6px",
                             transition: "all 0.15s ease",
-                            boxShadow: "0 1px 3px rgba(0,0,0,0.04)"
+                            boxShadow: isAlreadyAdded ? "0 1px 4px rgba(37,99,235,0.2)" : "0 1px 3px rgba(0,0,0,0.04)"
                           }}
-                          title={isAlreadyAdded ? "Catégorie déjà ajoutée" : `Ajouter la suggestion ${starterName}`}
+                          title={isAlreadyAdded ? `Cliquer pour retirer la catégorie ${starterName}` : `Cliquer pour ajouter la catégorie ${starterName}`}
                         >
                           <span
                             style={{
@@ -984,11 +989,20 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                               height: "8px",
                               borderRadius: "50%",
                               background: item.color,
-                              display: "inline-block"
+                              display: "inline-block",
+                              opacity: isAlreadyAdded ? 1 : 0.6
                             }}
                           />
                           <span>{item.emoji} {starterName}</span>
-                          {isAlreadyAdded && <span style={{ color: "#10b981", fontWeight: "900", fontSize: "11px" }}>✓</span>}
+                          <span
+                            style={{
+                              color: isAlreadyAdded ? "#10b981" : (isDark ? "#64748b" : "#94a3b8"),
+                              fontWeight: "900",
+                              fontSize: "11px"
+                            }}
+                          >
+                            {isAlreadyAdded ? "✓" : "+"}
+                          </span>
                         </button>
                       );
                     })}
@@ -1015,7 +1029,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   {/* Nom */}
                   <input
                     type="text"
-                    placeholder="Nom"
+                    placeholder="Ex : Objets militaires, Déchets ferreux, Fibules..."
                     value={newCatName}
                     onChange={(e) => setNewCatName(e.target.value)}
                     style={{
@@ -1080,10 +1094,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                     </div>
                   </div>
 
-                  {/* Sous-catégories avec libellé et placeholder visible */}
+                  {/* Sous-catégories avec libellé et placeholder harmonisé */}
                   <div>
                     <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "4px" }}>
-                      Sous-catégories (séparées par des virgules) :
+                      Sous-catégories :
                     </div>
                     <input
                       type="text"
@@ -1194,11 +1208,12 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                       </div>
                     </div>
                   ) : (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "220px", overflowY: "auto" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "300px", overflowY: "auto", paddingRight: "2px" }}>
                       {Object.entries(categories).map(([catName, subCats]) => {
                         const em = emojis[catName] || "🏷️";
                         const col = colors[catName] || "#3b82f6";
                         const isExpanded = expandedCat === catName;
+                        const safeSubCats = Array.isArray(subCats) ? subCats : [];
 
                         return (
                           <div
@@ -1207,7 +1222,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                               background: isDark ? "#1e293b" : "#f8fafc",
                               border: `1px solid ${cardBorder}`,
                               borderRadius: "12px",
-                              overflow: "hidden"
+                              overflow: "hidden",
+                              flexShrink: 0,
+                              minHeight: "44px",
+                              boxSizing: "border-box"
                             }}
                           >
                             <div
@@ -1218,10 +1236,12 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                                 alignItems: "center",
                                 justifyContent: "space-between",
                                 cursor: "pointer",
-                                userSelect: "none"
+                                userSelect: "none",
+                                minHeight: "44px",
+                                boxSizing: "border-box"
                               }}
                             >
-                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, minWidth: 0 }}>
                                 <span
                                   style={{
                                     width: "14px",
@@ -1229,19 +1249,20 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                                     borderRadius: "50%",
                                     background: col,
                                     boxShadow: `0 0 4px ${col}88`,
-                                    display: "inline-block"
+                                    display: "inline-block",
+                                    flexShrink: 0
                                   }}
                                 />
-                                <span style={{ fontSize: "16px" }}>{em}</span>
-                                <span style={{ fontSize: "13px", fontWeight: "700", color: textMain }}>
+                                <span style={{ fontSize: "16px", flexShrink: 0 }}>{em}</span>
+                                <span style={{ fontSize: "13px", fontWeight: "700", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                   {catName}
                                 </span>
-                                <span style={{ fontSize: "10px", fontWeight: "700", padding: "2px 6px", borderRadius: "8px", background: isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0", color: textSub }}>
-                                  {subCats.length} sous-types
+                                <span style={{ fontSize: "10px", fontWeight: "700", padding: "2px 6px", borderRadius: "8px", background: isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0", color: textSub, flexShrink: 0 }}>
+                                  {safeSubCats.length} sous-types
                                 </span>
                               </div>
 
-                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
                                 <button
                                   type="button"
                                   onClick={(e) => {
@@ -1252,9 +1273,9 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                                     background: "transparent",
                                     border: "none",
                                     color: "#ef4444",
-                                    fontSize: "13px",
+                                    fontSize: "14px",
                                     cursor: "pointer",
-                                    padding: "2px"
+                                    padding: "4px"
                                   }}
                                   title="Supprimer la catégorie"
                                 >
@@ -1276,7 +1297,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                                 }}
                               >
                                 <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginBottom: "8px" }}>
-                                  {subCats.map((sub) => (
+                                  {safeSubCats.map((sub) => (
                                     <span
                                       key={sub}
                                       style={{
@@ -1306,7 +1327,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                                 <div style={{ display: "flex", gap: "6px" }}>
                                   <input
                                     type="text"
-                                    placeholder={`Ajouter un sous-type à ${catName}...`}
+                                    placeholder={`Ajouter une sous-catégorie à ${catName}...`}
                                     value={inlineSubInput}
                                     onChange={(e) => setInlineSubInput(e.target.value)}
                                     onKeyDown={(e) => {
@@ -1330,7 +1351,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                                     type="button"
                                     onClick={() => handleAddSubInline(catName)}
                                     style={{
-                                      padding: "6px 10px",
+                                      padding: "6px 12px",
                                       borderRadius: "8px",
                                       border: "none",
                                       background: "#3b82f6",
@@ -1340,7 +1361,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                                       cursor: "pointer"
                                     }}
                                   >
-                                    +
+                                    + Ajouter
                                   </button>
                                 </div>
                               </div>
@@ -1834,7 +1855,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
               }}
             >
               <p style={{ margin: 0 }}>
-                Cette application est 100 % gratuite et toujours en phase de test. Il se peut que vous rencontriez de nombreux bugs et failles de développement à mesure de son utilisation.
+                Cette application est 100 % gratuite et toujours en phase de test. Il se peut que vous rencontriez de nouveaux bugs à mesure de son utilisation.
               </p>
               <p style={{ margin: 0 }}>
                 On parle d'un projet développé seul par un étudiant de 19 ans passionné de détection, qui s'appuie sur l'IA comme assistante de développement pour concevoir et enrichir ce carnet de bord. Proposer un outil de poche moderne et fluide est ma manière de contribuer à la communauté.

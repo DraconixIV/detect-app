@@ -83,9 +83,9 @@ export function loadCategoriesData() {
     const userEmojis = storedEmojis ? JSON.parse(storedEmojis) : null;
     const userColors = storedColors ? JSON.parse(storedColors) : null;
 
-    const categories = { ...defaultCategoriesWithSub, ...(userCats || {}) };
-    const emojis = { ...defaultCategoryEmojis, ...(userEmojis || {}) };
-    const colors = { ...defaultCategoryColors, ...(userColors || {}) };
+    const categories = userCats !== null ? userCats : { ...defaultCategoriesWithSub };
+    const emojis = userEmojis !== null ? userEmojis : { ...defaultCategoryEmojis };
+    const colors = userColors !== null ? userColors : { ...defaultCategoryColors };
 
     return { categories, emojis, colors };
   } catch (err) {
@@ -101,9 +101,9 @@ export function loadCategoriesData() {
 export function saveCategoriesData(categories, emojis, colors) {
   try {
     const current = loadCategoriesData();
-    const finalCategories = categories || current.categories;
-    const finalEmojis = emojis || current.emojis;
-    const finalColors = colors || current.colors;
+    const finalCategories = categories !== undefined ? categories : current.categories;
+    const finalEmojis = emojis !== undefined ? emojis : current.emojis;
+    const finalColors = colors !== undefined ? colors : current.colors;
 
     localStorage.setItem(STORAGE_CATEGORIES_KEY, JSON.stringify(finalCategories));
     localStorage.setItem(STORAGE_EMOJIS_KEY, JSON.stringify(finalEmojis));
