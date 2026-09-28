@@ -102,6 +102,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
   const [newCatEmoji, setNewCatEmoji] = useState("🪙");
   const [newCatColor, setNewCatColor] = useState("#facc15");
   const [newSubText, setNewSubText] = useState("");
+  const [targetCategoryForSub, setTargetCategoryForSub] = useState("");
   const [expandedCat, setExpandedCat] = useState(null);
   const [inlineSubInput, setInlineSubInput] = useState("");
 
@@ -194,6 +195,43 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
 
     setNewCatName("");
     setNewSubText("");
+  };
+
+  const handleAddCustomSubCategory = (e) => {
+    e?.preventDefault();
+    const subsToAdd = newSubText
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (subsToAdd.length === 0) return;
+
+    const catList = Object.keys(categories);
+    if (catList.length === 0) return;
+
+    let targetCat = "";
+    const trimmedCatInput = newCatName.trim();
+    if (trimmedCatInput && categories[trimmedCatInput]) {
+      targetCat = trimmedCatInput;
+    } else if (targetCategoryForSub && categories[targetCategoryForSub]) {
+      targetCat = targetCategoryForSub;
+    } else if (expandedCat && categories[expandedCat]) {
+      targetCat = expandedCat;
+    } else {
+      targetCat = catList[0];
+    }
+
+    const currentSubs = Array.isArray(categories[targetCat]) ? [...categories[targetCat]] : [];
+    subsToAdd.forEach((s) => {
+      if (!currentSubs.includes(s)) {
+        currentSubs.push(s);
+      }
+    });
+
+    const updatedCats = { ...categories, [targetCat]: currentSubs };
+    setCategories(updatedCats);
+    saveCategoriesData(updatedCats, emojis, colors);
+    setNewSubText("");
+    setExpandedCat(targetCat);
   };
 
   const handleRemoveCategory = (name) => {
@@ -1096,8 +1134,36 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
 
                   {/* Sous-catégories avec libellé et placeholder harmonisé */}
                   <div>
-                    <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "4px" }}>
-                      Sous-catégories :
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                      <div style={{ fontSize: "11px", fontWeight: "700", color: textSub }}>
+                        Sous-catégories :
+                      </div>
+                      {Object.keys(categories).length > 0 && (
+                        <div style={{ fontSize: "11px", color: textSub, display: "flex", alignItems: "center", gap: "4px" }}>
+                          <span>associer à :</span>
+                          <select
+                            value={targetCategoryForSub || (expandedCat && categories[expandedCat] ? expandedCat : Object.keys(categories)[0])}
+                            onChange={(e) => setTargetCategoryForSub(e.target.value)}
+                            style={{
+                              padding: "2px 6px",
+                              borderRadius: "6px",
+                              border: `1px solid ${inputBorder}`,
+                              background: inputBg,
+                              color: textMain,
+                              fontSize: "11px",
+                              fontWeight: "700",
+                              outline: "none",
+                              cursor: "pointer"
+                            }}
+                          >
+                            {Object.keys(categories).map((c) => (
+                              <option key={c} value={c} style={{ background: isDark ? "#0f172a" : "#ffffff", color: textMain }}>
+                                {emojis[c] || "📦"} {c}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
                     </div>
                     <input
                       type="text"
@@ -1171,6 +1237,25 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                     }}
                   >
                     + Ajouter cette catégorie
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleAddCustomSubCategory}
+                    disabled={!newSubText.trim() || Object.keys(categories).length === 0}
+                    style={{
+                      padding: "10px",
+                      borderRadius: "10px",
+                      border: `1px solid ${newSubText.trim() && Object.keys(categories).length > 0 ? "#3b82f6" : cardBorder}`,
+                      background: newSubText.trim() && Object.keys(categories).length > 0 ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : (isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9"),
+                      color: newSubText.trim() && Object.keys(categories).length > 0 ? (isDark ? "#93c5fd" : "#1d4ed8") : (isDark ? "rgba(255,255,255,0.3)" : "#94a3b8"),
+                      fontSize: "13px",
+                      fontWeight: "700",
+                      cursor: newSubText.trim() && Object.keys(categories).length > 0 ? "pointer" : "not-allowed",
+                      transition: "all 0.2s ease"
+                    }}
+                  >
+                    + Ajouter cette sous-catégorie
                   </button>
                 </form>
 
