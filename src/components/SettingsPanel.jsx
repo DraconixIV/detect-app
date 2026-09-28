@@ -3,7 +3,7 @@ import { supabase } from "../supabase";
 import { loadCategoriesData, addCategory, removeCategory, addSubCategory, removeSubCategory } from "../services/categoriesService";
 import { defaultCategoryColors } from "../subCategories";
 import { getMyUserCode, getMyDisplayName } from "../services/sessionService";
-import { purgeAllUserDataAndAccount } from "../services/findsService";
+import { purgeAllUserDataAndAccount, logoutAndResetSession } from "../services/findsService";
 import AuthForm from "./AuthForm";
 import ConfirmModal from "./ConfirmModal";
 
@@ -65,7 +65,7 @@ export default function SettingsPanel({
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      await logoutAndResetSession();
       setUser(null);
       window.location.reload();
     } catch (err) {
@@ -814,15 +814,7 @@ export default function SettingsPanel({
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             <button
               type="button"
-              onClick={() => {
-                if (user) {
-                  setShowLogoutConfirm(true);
-                } else {
-                  setShowAuthBox(true);
-                  const el = document.getElementById("compte-section-anchor");
-                  if (el) el.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
+              onClick={() => setShowLogoutConfirm(true)}
               style={{
                 width: "100%",
                 padding: "12px 16px",
@@ -1017,13 +1009,7 @@ export default function SettingsPanel({
                     type="button"
                     onClick={() => {
                       setShowDeleteConfirm(false);
-                      if (user) {
-                        setShowLogoutConfirm(true);
-                      } else {
-                        setShowAuthBox(true);
-                        const el = document.getElementById("compte-section-anchor");
-                        if (el) el.scrollIntoView({ behavior: "smooth" });
-                      }
+                      setShowLogoutConfirm(true);
                     }}
                     style={{
                       flex: 1.2,
@@ -1097,10 +1083,14 @@ export default function SettingsPanel({
 
       {showLogoutConfirm && (
         <ConfirmModal
-          title="Déconnexion"
+          title={user ? "Déconnexion" : "Changer de compte"}
           icon="🚪"
           confirmColor="#2563eb"
-          message={user ? `Voulez-vous vous déconnecter du compte ${user.email} ? Vos données synchronisées resteront enregistrées en toute sécurité sur votre compte.` : "Voulez-vous vous déconnecter pour changer de compte ?"}
+          message={
+            user
+              ? `Voulez-vous vous déconnecter du compte ${user.email} ? Vos données synchronisées resteront conservées en toute sécurité sur votre compte dans le Cloud. Vous serez redirigé vers l'onboarding pour vous reconnecter avec un autre compte ou continuer en mode local.`
+              : "Voulez-vous réinitialiser la session actuelle pour changer de compte ou recommencer la configuration ? Vos données distantes restent intactes."
+          }
           confirmText="Me déconnecter"
           cancelText="Annuler"
           onConfirm={() => {

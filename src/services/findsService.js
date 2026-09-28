@@ -293,6 +293,7 @@ export async function purgeAllUserDataAndAccount(myCode = null) {
       "geoprospect_session_locked_v1",
       "geoprospect_approved_viewers_v1",
       "geoprospect_onboarding_completed_v3",
+      "rdl_onboarding_completed_v3",
       "geoprospect_cgu_accepted",
       "geoprospect_categories_v1",
       "geoprospect_materials_v1",
@@ -311,8 +312,60 @@ export async function purgeAllUserDataAndAccount(myCode = null) {
         localStorage.removeItem(key);
       }
     });
+
+    sessionStorage.removeItem("geoprospect_onboarding_step");
+    sessionStorage.removeItem("geoprospect_onboarding_oauth_pending");
   } catch (storageErr) {
     console.warn("Local storage wipe warning:", storageErr);
+  }
+
+  return true;
+}
+
+/**
+ * Safely signs out of Supabase and resets local user state (user code, display name, onboarding flag)
+ * WITHOUT deleting cloud finds or cloud account data.
+ * Redirects the app to the onboarding flow upon reload.
+ */
+export async function logoutAndResetSession() {
+  // 1. Supabase Auth Sign Out
+  try {
+    await supabase.auth.signOut();
+  } catch (authErr) {
+    console.warn("Auth signout warning:", authErr);
+  }
+
+  // 2. Clear memory caches
+  if (typeof window !== "undefined" && window.findPhotosCache) {
+    window.findPhotosCache = {};
+  }
+
+  // 3. Clear local storage session & onboarding keys
+  try {
+    const sessionKeysToRemove = [
+      "geoprospect_user_code_v1",
+      "geoprospect_user_display_name_v1",
+      "geoprospect_active_session_v1",
+      "geoprospect_joined_sessions_history_v1",
+      "geoprospect_session_blacklist_v1",
+      "geoprospect_user_banned_sessions_v1",
+      "geoprospect_session_locked_v1",
+      "geoprospect_approved_viewers_v1",
+      "geoprospect_onboarding_completed_v3",
+      "rdl_onboarding_completed_v3",
+      "geoprospect_cgu_accepted",
+      "geoprospect_offline_pending_finds_v1",
+      "geoprospect_legacy_finds_claimed_v3"
+    ];
+
+    sessionKeysToRemove.forEach((key) => {
+      localStorage.removeItem(key);
+    });
+
+    sessionStorage.removeItem("geoprospect_onboarding_step");
+    sessionStorage.removeItem("geoprospect_onboarding_oauth_pending");
+  } catch (storageErr) {
+    console.warn("Local storage reset warning:", storageErr);
   }
 
   return true;
