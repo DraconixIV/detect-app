@@ -15,7 +15,7 @@ export default class ErrorBoundary extends React.Component {
   }
 
   handleReload = () => {
-    window.location.reload();
+    window.location.href = window.location.origin + window.location.pathname + "?v=" + Date.now();
   };
 
   handleResetStorage = () => {
@@ -37,11 +37,12 @@ export default class ErrorBoundary extends React.Component {
       localStorage.removeItem("sortieElapsedSeconds");
       localStorage.removeItem("sortiePositions");
       localStorage.removeItem("geoprospect_active_session_v1");
+      sessionStorage.clear();
     } catch (e) {
       console.warn("Storage reset error:", e);
     }
     setTimeout(() => {
-      window.location.href = window.location.origin + "?cache_bust=" + Date.now();
+      window.location.href = window.location.origin + window.location.pathname + "?cache_bust=" + Date.now();
     }, 200);
   };
 

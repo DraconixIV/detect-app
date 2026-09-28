@@ -239,6 +239,8 @@ function App() {
     recordNewPosition,
     cancelSortie,
     saveSortie,
+    deleteSortieTrack,
+    loadTracksList
   } = useSortieRecorder(workspace);
 
   useEffect(() => {
