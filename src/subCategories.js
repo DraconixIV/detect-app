@@ -21,104 +21,47 @@ export const SUGGESTED_STARTER_CATEGORIES = {
   "Monnaie": {
     emoji: "🪙",
     color: "#facc15",
-    subCategories: [
-      "Gauloise",
-      "Romaine",
-      "Royale",
-      "Révolution",
-      "Empire",
-      "Moderne",
-      "Jeton",
-      "Savo",
-      "Indéterminée"
-    ]
+    subCategories: []
   },
   "Bijou": {
     emoji: "💍",
     color: "#ec4899",
-    subCategories: [
-      "Bague / Anneau",
-      "Broche / Fibule",
-      "Pendentif",
-      "Boucle d'oreille",
-      "Bracelet",
-      "Indéterminé"
-    ]
+    subCategories: []
   },
   "Boucle": {
     emoji: "🥨",
     color: "#8b5cf6",
-    subCategories: [
-      "Romaine / Médiévale",
-      "Double fenêtre (XVIe-XVIIe)",
-      "Chaussure (XVIIIe)",
-      "Ceinture",
-      "Militaire",
-      "Indéterminée"
-    ]
+    subCategories: []
   },
   "Bouton": {
     emoji: "🔘",
     color: "#10b981",
-    subCategories: [
-      "Civil plat (XVIIIe-XIXe)",
-      "Civil décoré",
-      "Militaire",
-      "Double face",
-      "Indéterminé"
-    ]
+    subCategories: []
   },
   "Militaria": {
     emoji: "🎖️",
     color: "#ef4444",
-    subCategories: [
-      "Insigne / Médaille",
-      "Cartouche / Douille",
-      "Balle de plomb",
-      "Bouton d'uniforme",
-      "Boucle militaire",
-      "Indéterminée"
-    ]
+    subCategories: []
   },
   "Outil": {
     emoji: "🛠️",
     color: "#f97316",
-    subCategories: [
-      "Dé à coudre",
-      "Poids monétaire / balance",
-      "Clé / Serrure",
-      "Outil agricole",
-      "Indéterminé"
-    ]
+    subCategories: []
   },
   "Religieux": {
     emoji: "✝️",
     color: "#d97706",
-    subCategories: [
-      "Croix / Crucifix",
-      "Médaille de pèlerin",
-      "Statuelle / Objet de culte",
-      "Indéterminé"
-    ]
+    subCategories: []
   },
   "Plomb": {
     emoji: "⚓",
     color: "#6b7280",
-    subCategories: [
-      "Plomb de sac / Scellé",
-      "Lest de filet / Poids",
-      "Indéterminé"
-    ]
+    subCategories: []
   },
   "Autre": {
     emoji: "📦",
     color: "#334155",
-    subCategories: [
-      "Objet utilitaire",
-      "Plaque d'identité",
-      "Déchet / Reste de fonderie",
-      "Indéterminé"
-    ]
+    subCategories: []
   }
 };
 
@@ -135,7 +78,7 @@ export const categoriesWithSub = Object.fromEntries(
 );
 
 // Retro-compatibility
-export const monnaieSubCategories = SUGGESTED_STARTER_CATEGORIES["Monnaie"].subCategories;
+export const monnaieSubCategories = [];
 
 export const RECOMMENDED_METALS = [
   { name: "Or", emoji: "🪙" },

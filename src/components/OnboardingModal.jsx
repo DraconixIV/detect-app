@@ -181,7 +181,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
       .map((s) => s.trim())
       .filter(Boolean);
 
-    const finalSubs = parsedSubs.length > 0 ? parsedSubs : ["Indéterminé"];
+    const finalSubs = parsedSubs;
 
     const updatedCats = { ...categories, [trimmed]: finalSubs };
     const updatedEmojis = { ...emojis, [trimmed]: newCatEmoji || "🏷️" };
@@ -702,7 +702,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                   onChange={(e) => setCheckCgu(e.target.checked)}
                   style={{ width: "16px", height: "16px", marginTop: "2px", accentColor: "#2563eb", cursor: "pointer" }}
                 />
-                <span>J'accepte les <strong>Conditions Générales d'Utilisation</strong> et la charte éthique.</span>
+                <span>J'accepte les <strong>Conditions d'Utilisation</strong> et m'engage à respecter les règles de détection énoncées ci-dessus.</span>
               </label>
             </div>
 

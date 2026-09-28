@@ -117,12 +117,12 @@ export function saveCategoriesData(categories, emojis, colors) {
   }
 }
 
-export function addCategory(name, emoji = "📦", subCategories = ["Indéterminé"], color = "#3b82f6") {
+export function addCategory(name, emoji = "📦", subCategories = [], color = "#3b82f6") {
   const trimmedName = name.trim();
   if (!trimmedName) return false;
   
   const { categories, emojis, colors } = loadCategoriesData();
-  categories[trimmedName] = subCategories && subCategories.length > 0 ? subCategories : ["Indéterminé"];
+  categories[trimmedName] = Array.isArray(subCategories) ? subCategories : [];
   emojis[trimmedName] = emoji || "📦";
   colors[trimmedName] = color || "#3b82f6";
   
