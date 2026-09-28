@@ -37,6 +37,7 @@ export default function SettingsPanel({
   const [showLegal, setShowLegal] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const myCode = getMyUserCode();
@@ -63,9 +64,14 @@ export default function SettingsPanel({
   }, []);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    alert("Déconnexion réussie.");
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      window.location.reload();
+    } catch (err) {
+      console.error("Logout error:", err);
+      window.location.reload();
+    }
   };
 
   const handleAddCategory = () => {
@@ -568,10 +574,24 @@ export default function SettingsPanel({
 
             {user ? (
               <button
-                onClick={handleLogout}
-                style={{ padding: "6px 12px", borderRadius: "10px", border: "none", background: "#ef4444", color: "white", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}
+                type="button"
+                onClick={() => setShowLogoutConfirm(true)}
+                style={{
+                  padding: "7px 14px",
+                  borderRadius: "10px",
+                  border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
+                  background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
+                  color: isLight ? "#0f172a" : "#ffffff",
+                  fontSize: "11px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "5px"
+                }}
               >
-                Déconnexion
+                <span>🚪</span>
+                <span>Déconnexion</span>
               </button>
             ) : (
               <button
@@ -789,30 +809,58 @@ export default function SettingsPanel({
             Cette action effacera irréversiblement votre profil ({myCode}), votre pseudonyme ({myName || "Non défini"}) ainsi que <strong>l'ensemble de vos trouvailles, photos HD, vidéos et notes vocales</strong> de nos serveurs et de votre appareil.
           </p>
 
-          <button
-            type="button"
-            onClick={() => setShowDeleteConfirm(true)}
-            style={{
-              width: "100%",
-              padding: "12px 16px",
-              borderRadius: "12px",
-              border: "none",
-              background: "#ef4444",
-              color: "#ffffff",
-              fontSize: "13px",
-              fontWeight: "800",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-              boxShadow: "0 4px 14px rgba(239, 68, 68, 0.3)",
-              transition: "background 0.2s ease"
-            }}
-          >
-            <span>🗑️</span>
-            <span>Supprimer définitivement mon compte et mes données</span>
-          </button>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            {user && (
+              <button
+                type="button"
+                onClick={() => setShowLogoutConfirm(true)}
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: isLight ? "1.5px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.18)",
+                  background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
+                  color: textMain,
+                  fontSize: "13px",
+                  fontWeight: "700",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                  transition: "background 0.2s ease"
+                }}
+              >
+                <span>🚪</span>
+                <span>Se déconnecter (changer de compte)</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setShowDeleteConfirm(true)}
+              style={{
+                width: "100%",
+                padding: "12px 16px",
+                borderRadius: "12px",
+                border: "none",
+                background: "#ef4444",
+                color: "#ffffff",
+                fontSize: "13px",
+                fontWeight: "800",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                boxShadow: "0 4px 14px rgba(239, 68, 68, 0.3)",
+                transition: "background 0.2s ease"
+              }}
+            >
+              <span>🗑️</span>
+              <span>Supprimer définitivement mon compte et mes données</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -938,7 +986,7 @@ export default function SettingsPanel({
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
+                <div style={{ display: "flex", gap: "8px", marginTop: "4px", flexWrap: "wrap" }}>
                   <button
                     type="button"
                     onClick={() => setShowDeleteConfirm(false)}
@@ -956,6 +1004,29 @@ export default function SettingsPanel({
                   >
                     Annuler
                   </button>
+
+                  {user && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowDeleteConfirm(false);
+                        setShowLogoutConfirm(true);
+                      }}
+                      style={{
+                        flex: 1.2,
+                        padding: "12px",
+                        borderRadius: "12px",
+                        border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
+                        background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
+                        color: textMain,
+                        fontSize: "12px",
+                        fontWeight: "700",
+                        cursor: "pointer"
+                      }}
+                    >
+                      🚪 Déconnexion seule
+                    </button>
+                  )}
 
                   <button
                     type="button"
@@ -1009,6 +1080,22 @@ export default function SettingsPanel({
             setConfirmCatToDelete(null);
           }}
           onCancel={() => setConfirmCatToDelete(null)}
+        />
+      )}
+
+      {showLogoutConfirm && (
+        <ConfirmModal
+          title="Déconnexion"
+          icon="🚪"
+          confirmColor="#2563eb"
+          message={user ? `Voulez-vous vous déconnecter du compte ${user.email} ? Vos données synchronisées resteront enregistrées en toute sécurité sur votre compte.` : "Voulez-vous vous déconnecter pour changer de compte ?"}
+          confirmText="Me déconnecter"
+          cancelText="Annuler"
+          onConfirm={() => {
+            setShowLogoutConfirm(false);
+            handleLogout();
+          }}
+          onCancel={() => setShowLogoutConfirm(false)}
         />
       )}
     </div>
