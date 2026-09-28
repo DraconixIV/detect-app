@@ -618,14 +618,14 @@ export default function SettingsPanel({
           {!user && showAuthBox && (
             <div
               style={{
-                background: isLight ? "#f1f5f9" : "rgba(0,0,0,0.25)",
+                background: isLight ? "#f8fafc" : "rgba(0,0,0,0.35)",
                 borderRadius: "14px",
-                padding: "14px",
+                padding: "16px",
                 marginBottom: "14px",
-                border: `1px solid ${cardBorder}`
+                border: isLight ? "1px solid #e2e8f0" : "1px solid rgba(255, 255, 255, 0.12)"
               }}
             >
-              <AuthForm onAuthSuccess={() => setShowAuthBox(false)} />
+              <AuthForm theme={theme} onAuthSuccess={() => setShowAuthBox(false)} />
             </div>
           )}
 

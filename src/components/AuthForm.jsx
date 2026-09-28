@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../supabase";
 
-export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme = "light" }) {
+export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme = "dark" }) {
   // Mode par défaut : "signup" (Créer un compte à gauche)
   const [mode, setMode] = useState("signup"); // "signup" | "login" | "reset"
   const [email, setEmail] = useState("");
@@ -145,10 +145,10 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.05)",
-          padding: "3px",
+          background: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.08)",
+          padding: "4px",
           borderRadius: "12px",
-          border: isLight ? "1px solid #e2e8f0" : "1px solid rgba(255, 255, 255, 0.08)"
+          border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.14)"
         }}
       >
         <button
@@ -163,7 +163,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
             borderRadius: "9px",
             border: "none",
             background: mode === "signup" ? "#2563eb" : "transparent",
-            color: mode === "signup" ? "#ffffff" : (isLight ? "#64748b" : "#94a3b8"),
+            color: mode === "signup" ? "#ffffff" : (isLight ? "#475569" : "#cbd5e1"),
             fontWeight: mode === "signup" ? "700" : "600",
             fontSize: "12px",
             letterSpacing: "0.2px",
@@ -187,7 +187,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
             borderRadius: "9px",
             border: "none",
             background: mode === "login" ? "#2563eb" : "transparent",
-            color: mode === "login" ? "#ffffff" : (isLight ? "#64748b" : "#94a3b8"),
+            color: mode === "login" ? "#ffffff" : (isLight ? "#475569" : "#cbd5e1"),
             fontWeight: mode === "login" ? "700" : "600",
             fontSize: "12px",
             letterSpacing: "0.2px",
@@ -211,9 +211,9 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
               width: "100%",
               padding: "11px 16px",
               borderRadius: "12px",
-              border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
-              background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)",
-              color: isLight ? "#000000" : "#f8fafc",
+              border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.2)",
+              background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
+              color: isLight ? "#0f172a" : "#ffffff",
               fontSize: "13px",
               fontWeight: "600",
               cursor: googleLoading ? "wait" : "pointer",
@@ -224,18 +224,18 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
               gap: "10px",
               transition: "all 0.2s ease",
               boxSizing: "border-box",
-              boxShadow: isLight ? "0 1px 3px rgba(0,0,0,0.06)" : "none"
+              boxShadow: isLight ? "0 1px 3px rgba(0,0,0,0.06)" : "0 2px 6px rgba(0,0,0,0.2)"
             }}
             onMouseEnter={(e) => {
               if (!googleLoading) {
-                e.currentTarget.style.background = isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.08)";
-                e.currentTarget.style.borderColor = isLight ? "#94a3b8" : "rgba(255, 255, 255, 0.2)";
+                e.currentTarget.style.background = isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.14)";
+                e.currentTarget.style.borderColor = isLight ? "#94a3b8" : "rgba(255, 255, 255, 0.3)";
               }
             }}
             onMouseLeave={(e) => {
               if (!googleLoading) {
-                e.currentTarget.style.background = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)";
-                e.currentTarget.style.borderColor = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
+                e.currentTarget.style.background = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)";
+                e.currentTarget.style.borderColor = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.2)";
               }
             }}
           >
@@ -262,11 +262,11 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
           </button>
 
           <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "14px 0 2px 0" }}>
-            <div style={{ flex: 1, height: "1px", background: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.08)" }} />
-            <span style={{ fontSize: "11px", color: isLight ? "#1e293b" : "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", fontWeight: "700" }}>
+            <div style={{ flex: 1, height: "1px", background: isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.16)" }} />
+            <span style={{ fontSize: "11px", color: isLight ? "#64748b" : "#cbd5e1", textTransform: "uppercase", letterSpacing: "0.5px", fontWeight: "700" }}>
               ou par email
             </span>
-            <div style={{ flex: 1, height: "1px", background: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.08)" }} />
+            <div style={{ flex: 1, height: "1px", background: isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.16)" }} />
           </div>
         </div>
       )}
@@ -274,7 +274,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
       {/* Form Fields */}
       <form onSubmit={handleEmailAuth} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         <div>
-          <label style={{ fontSize: "11px", fontWeight: "700", color: isLight ? "#000000" : "#94a3b8", marginBottom: "6px", display: "block" }}>
+          <label style={{ fontSize: "12px", fontWeight: "700", color: isLight ? "#0f172a" : "#ffffff", marginBottom: "6px", display: "block" }}>
             Adresse e-mail
           </label>
           <input
@@ -287,23 +287,23 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
               width: "100%",
               padding: "11px 14px",
               borderRadius: "10px",
-              border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
-              background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)",
-              color: isLight ? "#000000" : "#f8fafc",
+              border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.2)",
+              background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
+              color: isLight ? "#0f172a" : "#ffffff",
               fontSize: "13px",
               outline: "none",
               boxSizing: "border-box",
-              transition: "border-color 0.2s"
+              transition: "border-color 0.2s, box-shadow 0.2s"
             }}
             onFocus={(e) => {
-              e.currentTarget.style.borderColor = "#2563eb";
-              e.currentTarget.style.boxShadow = "0 0 0 3px rgba(37, 99, 235, 0.15)";
-              if (isLight) e.currentTarget.style.background = "#ffffff";
+              e.currentTarget.style.borderColor = "#3b82f6";
+              e.currentTarget.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.25)";
+              e.currentTarget.style.background = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.12)";
             }}
             onBlur={(e) => {
-              e.currentTarget.style.borderColor = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
+              e.currentTarget.style.borderColor = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.2)";
               e.currentTarget.style.boxShadow = "none";
-              if (isLight) e.currentTarget.style.background = "#f8fafc";
+              e.currentTarget.style.background = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)";
             }}
           />
         </div>
@@ -311,7 +311,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
         {mode !== "reset" && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-              <label style={{ fontSize: "11px", fontWeight: "700", color: isLight ? "#000000" : "#94a3b8" }}>
+              <label style={{ fontSize: "12px", fontWeight: "700", color: isLight ? "#0f172a" : "#ffffff" }}>
                 Mot de passe
               </label>
               {mode === "login" && (
@@ -327,7 +327,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
                     border: "none",
                     padding: 0,
                     fontSize: "11px",
-                    color: "#2563eb",
+                    color: isLight ? "#2563eb" : "#60a5fa",
                     fontWeight: "600",
                     cursor: "pointer"
                   }}
@@ -346,23 +346,23 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
                 width: "100%",
                 padding: "11px 14px",
                 borderRadius: "10px",
-                border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
-                background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)",
-                color: isLight ? "#000000" : "#f8fafc",
+                border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.2)",
+                background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
+                color: isLight ? "#0f172a" : "#ffffff",
                 fontSize: "13px",
                 outline: "none",
                 boxSizing: "border-box",
-                transition: "border-color 0.2s"
+                transition: "border-color 0.2s, box-shadow 0.2s"
               }}
               onFocus={(e) => {
-                e.currentTarget.style.borderColor = "#2563eb";
-                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(37, 99, 235, 0.15)";
-                if (isLight) e.currentTarget.style.background = "#ffffff";
+                e.currentTarget.style.borderColor = "#3b82f6";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.25)";
+                e.currentTarget.style.background = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.12)";
               }}
               onBlur={(e) => {
-                e.currentTarget.style.borderColor = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
+                e.currentTarget.style.borderColor = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.2)";
                 e.currentTarget.style.boxShadow = "none";
-                if (isLight) e.currentTarget.style.background = "#f8fafc";
+                e.currentTarget.style.background = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)";
               }}
             />
           </div>
@@ -374,11 +374,12 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
             style={{
               padding: "10px 14px",
               borderRadius: "10px",
-              background: isLight ? "#fef2f2" : "rgba(239, 68, 68, 0.1)",
-              border: isLight ? "1px solid #fecaca" : "1px solid rgba(239, 68, 68, 0.25)",
+              background: isLight ? "#fef2f2" : "rgba(239, 68, 68, 0.18)",
+              border: isLight ? "1px solid #fecaca" : "1px solid rgba(239, 68, 68, 0.4)",
               color: isLight ? "#b91c1c" : "#fca5a5",
               fontSize: "12px",
-              lineHeight: "1.4"
+              lineHeight: "1.4",
+              fontWeight: "500"
             }}
           >
             {errorMsg}
@@ -390,11 +391,12 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
             style={{
               padding: "10px 14px",
               borderRadius: "10px",
-              background: isLight ? "#ecfdf5" : "rgba(16, 185, 129, 0.1)",
-              border: isLight ? "1px solid #a7f3d0" : "1px solid rgba(16, 185, 129, 0.25)",
+              background: isLight ? "#ecfdf5" : "rgba(16, 185, 129, 0.18)",
+              border: isLight ? "1px solid #a7f3d0" : "1px solid rgba(16, 185, 129, 0.4)",
               color: isLight ? "#047857" : "#86efac",
               fontSize: "12px",
-              lineHeight: "1.4"
+              lineHeight: "1.4",
+              fontWeight: "500"
             }}
           >
             {successMsg}
@@ -446,7 +448,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
             style={{
               background: "transparent",
               border: "none",
-              color: isLight ? "#64748b" : "#94a3b8",
+              color: isLight ? "#475569" : "#cbd5e1",
               fontSize: "12px",
               cursor: "pointer",
               padding: "4px"
