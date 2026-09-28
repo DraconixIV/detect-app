@@ -2,6 +2,8 @@ import imageCompression from "browser-image-compression";
 
 import { supabase, directUploadStorage } from "../supabase.js";
 import { getMyUserCode, getMyDisplayName, getActiveSession, getMyJoinedSessions, normalizeSessionCode } from "./sessionService.js";
+import { clearAllPendingFinds } from "./offlineStore.js";
+import { clearAllLocalTracks, decodeTrackMetadata } from "./tracksService.js";
 
 const LEGACY_CLAIMED_FLAG = "geoprospect_legacy_finds_claimed_v3";
 
@@ -133,73 +135,15 @@ export function getRawMetadata(findOrDesc) {
 }
 
 /**
- * Ensures existing historical finds in Supabase (from the single-user era or previous sessions)
- * are permanently attributed to the primary creator's personal detector code and unified pseudonym.
+ * Ensures user finds are strictly isolated.
+ * (Deprecated legacy re-attribution disabled to prevent multi-user cross-contamination)
  */
-export async function ensureLegacyFindsClaimed(myCode) {
-  try {
-    if (!myCode) return;
-    const cleanMyCode = normalizeSessionCode(myCode);
-    const myName = getMyDisplayName();
-    if (!myName && !cleanMyCode) return;
-
-    const claimKey = `geoprospect_harmonized_v4_${cleanMyCode}_${myName || "anon"}`;
-    const alreadyClaimed = localStorage.getItem(claimKey);
-    if (alreadyClaimed === "true") return;
-
-    const { data: allFinds, error } = await supabase
-      .from("finds")
-      .select("id, description, image_url");
-
-    if (error || !allFinds) return;
-
-    let updatedCount = 0;
-    for (const row of allFinds) {
-      const rawMeta = getRawMetadata(row.description);
-      const cleanDesc = (row.description || "").replace(/<!--GP_META:[\s\S]*?-->/g, "").trim();
-      const rawUser = rawMeta.u ? normalizeSessionCode(rawMeta.u) : null;
-      const rawFinder = rawMeta.f || null;
-
-      // Belongs to current user if untagged or matching user code
-      const isMine = !rawUser || rawUser === cleanMyCode;
-
-      if (isMine) {
-        const needsUserCodeUpdate = !rawUser || rawUser !== cleanMyCode;
-        const needsFinderNameUpdate = myName && rawFinder !== myName;
-
-        if (needsUserCodeUpdate || needsFinderNameUpdate) {
-          const updatedDesc = encodeMetadata(
-            cleanDesc,
-            cleanMyCode,
-            myName || rawFinder || "Détecteuriste",
-            rawMeta.s,
-            rawMeta.t || row.image_url,
-            {
-              audio_url: rawMeta.a,
-              audio_duration: rawMeta.ad,
-              video_url: rawMeta.v
-            }
-          );
-          await supabase
-            .from("finds")
-            .update({ description: updatedDesc })
-            .eq("id", row.id);
-          updatedCount++;
-        }
-      }
-    }
-
-    localStorage.setItem(claimKey, "true");
-    if (updatedCount > 0) {
-      console.log(`[GeoProspect] Harmonized and updated ${updatedCount} finds in database for ${cleanMyCode} (${myName})`);
-    }
-  } catch (err) {
-    console.warn("Legacy finds harmonization error:", err);
-  }
+export async function ensureLegacyFindsClaimed() {
+  return;
 }
 
 /**
- * Permanently deletes all user data from Supabase (finds, storage images/videos/audio, photos records)
+ * Permanently deletes all user data from Supabase (finds, storage images/videos/audio, photos records, tracks)
  * and completely purges all local storage and session data.
  */
 export async function purgeAllUserDataAndAccount(myCode = null) {
@@ -215,7 +159,7 @@ export async function purgeAllUserDataAndAccount(myCode = null) {
       const userFinds = allFinds.filter((row) => {
         const rawMeta = getRawMetadata(row.description);
         const rawUser = rawMeta.u ? normalizeSessionCode(rawMeta.u) : null;
-        return !rawUser || rawUser === targetCode;
+        return rawUser === targetCode;
       });
 
       for (const find of userFinds) {
@@ -269,52 +213,50 @@ export async function purgeAllUserDataAndAccount(myCode = null) {
     console.error("Error purging database finds:", err);
   }
 
-  // 2. Clear memory caches
-  if (window.findPhotosCache) {
-    window.findPhotosCache = {};
+  // 2. Purge user tracks from Supabase
+  try {
+    const { data: allTracks } = await supabase.from("gps_tracks").select("id, session_name");
+    if (allTracks && allTracks.length > 0) {
+      const userTracks = allTracks.filter((t) => {
+        const decoded = decodeTrackMetadata(t);
+        return decoded.user_code === targetCode;
+      });
+      for (const ut of userTracks) {
+        await supabase.from("gps_tracks").delete().eq("id", ut.id);
+      }
+    }
+  } catch (trackErr) {
+    console.warn("Error purging user tracks:", trackErr);
   }
 
-  // 3. Supabase Auth Sign Out
+  // 3. Clear memory caches & local pending finds & local tracks
+  if (typeof window !== "undefined" && window.findPhotosCache) {
+    window.findPhotosCache = {};
+  }
+  try {
+    await clearAllPendingFinds();
+  } catch (e) {
+    console.warn("Error clearing offline finds on purge:", e);
+  }
+  clearAllLocalTracks();
+
+  // 4. Supabase Auth Sign Out
   try {
     await supabase.auth.signOut();
   } catch (authErr) {
     console.warn("Auth signout warning:", authErr);
   }
 
-  // 4. Wipe all GeoProspect localStorage keys
+  // 5. Wipe all GeoProspect localStorage keys
   try {
-    const keysToRemove = [
-      "geoprospect_user_code_v1",
-      "geoprospect_user_display_name_v1",
-      "geoprospect_active_session_v1",
-      "geoprospect_joined_sessions_history_v1",
-      "geoprospect_session_blacklist_v1",
-      "geoprospect_user_banned_sessions_v1",
-      "geoprospect_session_locked_v1",
-      "geoprospect_approved_viewers_v1",
-      "geoprospect_onboarding_completed_v3",
-      "rdl_onboarding_completed_v3",
-      "geoprospect_cgu_accepted",
-      "geoprospect_categories_v1",
-      "geoprospect_materials_v1",
-      "geoprospect_offline_pending_finds_v1",
-      "geoprospect_legacy_finds_claimed_v3",
-      "app_theme",
-      "app_design_theme",
-      "mapStyle",
-      "gpsStyle",
-      "marker_size"
-    ];
-
     const allKeys = Object.keys(localStorage);
     allKeys.forEach((key) => {
-      if (key.startsWith("geoprospect_") || keysToRemove.includes(key)) {
+      if (key.startsWith("geoprospect_") || key.startsWith("rdl_") || key.startsWith("sortie") || key.startsWith("isRecordingSortie") || key.startsWith("isSortiePaused") || key === "metal_detector_offline_backup") {
         localStorage.removeItem(key);
       }
     });
 
-    sessionStorage.removeItem("geoprospect_onboarding_step");
-    sessionStorage.removeItem("geoprospect_onboarding_oauth_pending");
+    sessionStorage.clear();
   } catch (storageErr) {
     console.warn("Local storage wipe warning:", storageErr);
   }
@@ -323,7 +265,7 @@ export async function purgeAllUserDataAndAccount(myCode = null) {
 }
 
 /**
- * Safely signs out of Supabase and resets local user state (user code, display name, onboarding flag)
+ * Safely signs out of Supabase and resets local user state (user code, display name, tracks, offline finds, onboarding flag)
  * WITHOUT deleting cloud finds or cloud account data.
  * Redirects the app to the onboarding flow upon reload.
  */
@@ -340,10 +282,19 @@ export async function logoutAndResetSession() {
     window.findPhotosCache = {};
   }
 
-  // 3. Clear local storage session & onboarding keys
+  // 3. Clear offline store & local tracks
+  try {
+    await clearAllPendingFinds();
+  } catch (e) {
+    console.warn("Error clearing offline finds on logout:", e);
+  }
+  clearAllLocalTracks();
+
+  // 4. Clear local storage session & personal data
   try {
     const sessionKeysToRemove = [
       "geoprospect_user_code_v1",
+      "rdl_user_code_v1",
       "geoprospect_user_display_name_v1",
       "geoprospect_active_session_v1",
       "geoprospect_joined_sessions_history_v1",
@@ -355,6 +306,22 @@ export async function logoutAndResetSession() {
       "rdl_onboarding_completed_v3",
       "geoprospect_cgu_accepted",
       "geoprospect_offline_pending_finds_v1",
+      "metal_detector_offline_backup",
+      "geoprospect_saved_tracks_v2",
+      "rdl_saved_tracks_v2",
+      "isRecordingSortie",
+      "isSortiePaused",
+      "sortieDistance",
+      "sortieElapsedSeconds",
+      "sortiePositions",
+      "sortieHeartbeat",
+      "geoprospect_custom_categories",
+      "geoprospect_custom_emojis",
+      "geoprospect_custom_colors",
+      "geoprospect_categories_v1",
+      "geoprospect_custom_materials",
+      "geoprospect_custom_material_emojis",
+      "geoprospect_materials_v1",
       "geoprospect_legacy_finds_claimed_v3"
     ];
 
@@ -362,8 +329,7 @@ export async function logoutAndResetSession() {
       localStorage.removeItem(key);
     });
 
-    sessionStorage.removeItem("geoprospect_onboarding_step");
-    sessionStorage.removeItem("geoprospect_onboarding_oauth_pending");
+    sessionStorage.clear();
   } catch (storageErr) {
     console.warn("Local storage reset warning:", storageErr);
   }
@@ -398,9 +364,6 @@ export async function loadFinds(options = {}) {
     const myCode = options.myUserCode || getMyUserCode();
     const activeSess = getActiveSession();
     const currentSessionCode = targetCode || activeSess?.code;
-
-    // Run safe one-time legacy attribution on launch
-    ensureLegacyFindsClaimed(myCode).catch(() => {});
 
     // Fetch finds from Supabase
     const { data, error } = await supabase

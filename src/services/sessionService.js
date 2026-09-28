@@ -65,6 +65,97 @@ export function generateRandomCode(prefix = "GEO", length = 6) {
 }
 
 /**
+/**
+ * Sync user's personal detector code and display name to Supabase user_metadata
+ */
+export async function syncUserProfileToCloud() {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+
+    const myCode = localStorage.getItem(USER_CODE_STORAGE_KEY) || getMyUserCode();
+    const myName = localStorage.getItem(USER_DISPLAY_NAME_KEY) || "";
+
+    await supabase.auth.updateUser({
+      data: {
+        geoprospect_user_code: myCode,
+        geoprospect_display_name: myName,
+        geoprospect_profile_synced_at: new Date().toISOString()
+      }
+    });
+    return true;
+  } catch (err) {
+    console.warn("Cloud user profile sync non-blocking error:", err);
+    return false;
+  }
+}
+
+/**
+ * Pull user's detector code and display name from Supabase user_metadata
+ */
+export async function pullUserProfileFromCloud(user = null) {
+  try {
+    let currentUser = user;
+    if (!currentUser) {
+      const { data } = await supabase.auth.getUser();
+      currentUser = data?.user;
+    }
+    if (!currentUser || !currentUser.user_metadata) return false;
+
+    const cloudCode = currentUser.user_metadata.geoprospect_user_code;
+    const cloudName = currentUser.user_metadata.geoprospect_display_name;
+
+    let updated = false;
+    if (cloudCode) {
+      const cleanCloudCode = normalizeSessionCode(cloudCode);
+      const currentLocal = localStorage.getItem(USER_CODE_STORAGE_KEY);
+      if (currentLocal !== cleanCloudCode) {
+        localStorage.setItem(USER_CODE_STORAGE_KEY, cleanCloudCode);
+        updated = true;
+      }
+    } else {
+      // User has account but no cloud user code saved yet: save local code up to cloud
+      syncUserProfileToCloud();
+    }
+
+    if (cloudName) {
+      const cleanCloudName = String(cloudName).trim();
+      const currentName = localStorage.getItem(USER_DISPLAY_NAME_KEY);
+      if (currentName !== cleanCloudName) {
+        localStorage.setItem(USER_DISPLAY_NAME_KEY, cleanCloudName);
+        updated = true;
+      }
+    } else if (currentUser.user_metadata.full_name || currentUser.user_metadata.name) {
+      const autoName = (currentUser.user_metadata.full_name || currentUser.user_metadata.name || "").trim();
+      if (autoName && !localStorage.getItem(USER_DISPLAY_NAME_KEY)) {
+        localStorage.setItem(USER_DISPLAY_NAME_KEY, autoName);
+        syncUserProfileToCloud();
+        updated = true;
+      }
+    }
+
+    if (updated && typeof window !== "undefined") {
+      window.dispatchEvent(new Event("geoprospect-user-synced"));
+    }
+    return true;
+  } catch (err) {
+    console.warn("Cloud user profile pull error:", err);
+    return false;
+  }
+}
+
+// Automatically sync user profile on auth state changes
+try {
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
+      pullUserProfileFromCloud(session.user);
+    }
+  });
+} catch {
+  // Ignored in non-browser env
+}
+
+/**
  * Get or generate the current user's personal detector code (always prefixed with "GEO-")
  */
 export function getMyUserCode() {
@@ -79,16 +170,6 @@ export function getMyUserCode() {
     }
     if (code && code.toUpperCase().startsWith("RDL-")) {
       code = code.replace(/^RDL-/i, "GEO-");
-    }
-
-    // Auto-migrate previous codes (GEO-ESBD, GEO-ESBD77) to the primary detector code GEO-KE9Q88
-    if (code) {
-      const pureCode = code.replace(/^GEO-/i, "").trim().toUpperCase();
-      if (pureCode === "ESBD" || pureCode === "ESBD77" || pureCode === "ESBD88") {
-        code = "GEO-KE9Q88";
-      } else if (pureCode.length < 6) {
-        code = `GEO-${pureCode}88`;
-      }
     }
 
     if (!code) {
@@ -113,6 +194,7 @@ export function resetAndGenerateNewUserCode() {
     localStorage.removeItem(USER_DISPLAY_NAME_KEY);
     localStorage.removeItem(ACTIVE_SESSION_STORAGE_KEY);
     localStorage.removeItem("geoprospect_legacy_finds_claimed_v3");
+    syncUserProfileToCloud();
     return newCode;
   } catch (e) {
     return generateRandomCode("GEO", 6);
@@ -157,8 +239,10 @@ export function setMyDisplayName(name, force = false) {
     const clean = (name || "").trim();
     if (clean) {
       localStorage.setItem(USER_DISPLAY_NAME_KEY, clean);
+      syncUserProfileToCloud();
     } else if (force) {
       localStorage.removeItem(USER_DISPLAY_NAME_KEY);
+      syncUserProfileToCloud();
     }
     return clean;
   } catch (e) {

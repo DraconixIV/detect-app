@@ -1,6 +1,7 @@
 import { supabase } from "../supabase";
 import { getMyUserCode, getMyDisplayName, normalizeSessionCode } from "./sessionService";
 import { decodeMetadata, encodeMetadata } from "./findsService";
+import { decodeTrackMetadata, encodeTrackMetadata, getLocalTracks } from "./tracksService";
 
 export async function exportData() {
   try {
@@ -16,7 +17,7 @@ export async function exportData() {
     const findsData = (allFinds || []).filter((f) => {
       const decoded = decodeMetadata(f);
       const userCodeClean = decoded.user_code ? normalizeSessionCode(decoded.user_code) : null;
-      return userCodeClean === myCode || !userCodeClean;
+      return userCodeClean === myCode;
     });
 
     const userFindIds = new Set(findsData.map((f) => f.id));
@@ -34,7 +35,16 @@ export async function exportData() {
       const { data: td } = await supabase
         .from("gps_tracks")
         .select("*");
-      tracksData = td || [];
+      const remoteFiltered = (td || [])
+        .map((t) => decodeTrackMetadata(t))
+        .filter((t) => t.user_code === myCode);
+      const localFiltered = getLocalTracks().filter((t) => t.user_code === myCode);
+      tracksData = [...remoteFiltered];
+      for (const lt of localFiltered) {
+        if (!tracksData.some((r) => r.id === lt.id || (r.session_name === lt.session_name && r.created_at === lt.created_at))) {
+          tracksData.push(lt);
+        }
+      }
     } catch (e) {
       console.warn("No gps_tracks table found:", e);
     }
@@ -135,7 +145,15 @@ export async function importData(onSuccess) {
 
       if (backup.tracks && backup.tracks.length > 0) {
         try {
-          await supabase.from("gps_tracks").insert(backup.tracks);
+          const stampedTracks = backup.tracks.map((t) => {
+            const decoded = decodeTrackMetadata(t);
+            const taggedSessionName = encodeTrackMetadata(decoded.session_name || "Sortie importée", myCode, null);
+            return {
+              session_name: taggedSessionName,
+              positions: t.positions || []
+            };
+          });
+          await supabase.from("gps_tracks").insert(stampedTracks);
         } catch (te) {
           console.warn("Tracks import error:", te);
         }

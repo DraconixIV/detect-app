@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { loadTracks, saveTrack, deleteTrack } from "../services/tracksService";
+import { getMyUserCode } from "../services/sessionService";
 
 function distanceBetween(point1, point2) {
   const R = 6371000;
@@ -17,7 +18,11 @@ function distanceBetween(point1, point2) {
   return R * c;
 }
 
-export default function useSortieRecorder() {
+export default function useSortieRecorder(workspace = { mode: "personal", targetCode: null }) {
+  const workspaceRef = useRef(workspace);
+  useEffect(() => {
+    workspaceRef.current = workspace;
+  }, [workspace]);
   const [isRecordingSortie, setIsRecordingSortie] = useState(() => {
     try {
       return localStorage.getItem("isRecordingSortie") === "true";
@@ -145,13 +150,24 @@ export default function useSortieRecorder() {
   }, [isRecordingSortie]);
 
   const loadTracksList = async () => {
-    const tracks = await loadTracks();
+    const curWs = workspaceRef.current || { mode: "personal", targetCode: null };
+    const myCode = getMyUserCode();
+    const tracks = await loadTracks({
+      mode: curWs.mode,
+      targetCode: curWs.targetCode,
+      myUserCode: myCode
+    });
     setSavedTracks(tracks || []);
   };
 
   useEffect(() => {
     loadTracksList();
-  }, []);
+    const handleUserSynced = () => loadTracksList();
+    window.addEventListener("geoprospect-user-synced", handleUserSynced);
+    return () => {
+      window.removeEventListener("geoprospect-user-synced", handleUserSynced);
+    };
+  }, [workspace.mode, workspace.targetCode]);
 
   const startSortie = (initialPosition) => {
     setIsRecordingSortie(true);

@@ -207,3 +207,26 @@ export async function deletePendingFind(id) {
     return false;
   }
 }
+
+export async function clearAllPendingFinds() {
+  try {
+    localStorage.removeItem(BACKUP_KEY);
+    localStorage.removeItem("geoprospect_offline_pending_finds_v1");
+  } catch (e) {
+    console.warn("LocalStorage clearAllPendingFinds error:", e);
+  }
+
+  try {
+    const db = await getDB();
+    return new Promise((resolve) => {
+      const transaction = db.transaction(STORE_NAME, "readwrite");
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.clear();
+      request.onsuccess = () => resolve(true);
+      request.onerror = () => resolve(false);
+    });
+  } catch (error) {
+    console.warn("IndexedDB clearAllPendingFinds error:", error);
+    return false;
+  }
+}

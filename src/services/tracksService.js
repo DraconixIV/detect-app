@@ -1,18 +1,66 @@
 import { supabase } from "../supabase";
+import { getMyUserCode, normalizeSessionCode } from "./sessionService";
 
 const LOCAL_TRACKS_KEY = "geoprospect_saved_tracks_v2";
+
+export function decodeTrackMetadata(track) {
+  if (!track) return track;
+  let session_name = track.session_name || "";
+  let user_code = track.user_code || null;
+  let session_code = track.session_code || null;
+
+  const match = session_name.match(/<!--GP_META:([\s\S]*?)-->/);
+  if (match) {
+    try {
+      const meta = JSON.parse(match[1]);
+      if (meta.u && !user_code) user_code = meta.u;
+      if (meta.s && !session_code) session_code = meta.s;
+      session_name = session_name.replace(/<!--GP_META:[\s\S]*?-->/g, "").trim();
+    } catch {
+      // Ignore parse errors
+    }
+  }
+
+  return {
+    ...track,
+    session_name,
+    user_code: user_code ? normalizeSessionCode(user_code) : null,
+    session_code: session_code ? normalizeSessionCode(session_code) : null
+  };
+}
+
+export function encodeTrackMetadata(sessionName, userCode, sessionCode) {
+  const meta = {};
+  if (userCode) meta.u = normalizeSessionCode(userCode);
+  if (sessionCode) meta.s = normalizeSessionCode(sessionCode);
+  
+  const clean = (sessionName || "").replace(/<!--GP_META:[\s\S]*?-->/g, "").trim();
+  if (Object.keys(meta).length === 0) return clean;
+  return `${clean}\n<!--GP_META:${JSON.stringify(meta)}-->`;
+}
 
 export function getLocalTracks() {
   try {
     const raw = localStorage.getItem(LOCAL_TRACKS_KEY) || localStorage.getItem("rdl_saved_tracks_v2");
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed)) {
+        return parsed.map((t) => decodeTrackMetadata(t));
+      }
     }
   } catch (e) {
     console.warn("Error reading local tracks:", e);
   }
   return [];
+}
+
+export function clearAllLocalTracks() {
+  try {
+    localStorage.removeItem(LOCAL_TRACKS_KEY);
+    localStorage.removeItem("rdl_saved_tracks_v2");
+  } catch (e) {
+    console.warn("Error clearing local tracks:", e);
+  }
 }
 
 export function saveLocalTrack(trackObject) {
@@ -27,8 +75,23 @@ export function saveLocalTrack(trackObject) {
   }
 }
 
-export async function loadTracks() {
-  const localTracks = getLocalTracks();
+export async function loadTracks(options = {}) {
+  const myCode = normalizeSessionCode(options.myUserCode || getMyUserCode());
+  const mode = options.mode || "personal";
+  const targetCode = options.targetCode ? normalizeSessionCode(options.targetCode) : null;
+
+  // 1. Get filtered local tracks
+  const localTracks = getLocalTracks().filter((t) => {
+    if (mode === "consultation" && targetCode) {
+      return t.user_code === targetCode;
+    }
+    if (mode === "session" && targetCode) {
+      return t.session_code === targetCode || t.user_code === myCode;
+    }
+    // Personal mode: strictly own tracks (or newly created offline track with matching or pending userCode)
+    return t.user_code === myCode || (!t.user_code && myCode);
+  });
+
   try {
     const { data, error } = await supabase
       .from("gps_tracks")
@@ -40,9 +103,21 @@ export async function loadTracks() {
       return localTracks;
     }
 
+    // 2. Decode and filter remote tracks strictly
+    const remote = (data || []).map((row) => decodeTrackMetadata(row));
+    const filteredRemote = remote.filter((t) => {
+      if (mode === "consultation" && targetCode) {
+        return t.user_code === targetCode;
+      }
+      if (mode === "session" && targetCode) {
+        return t.session_code === targetCode || t.user_code === myCode;
+      }
+      // Personal mode: STRICT isolation to current user code
+      return t.user_code && t.user_code === myCode;
+    });
+
     // Merge remote and local tracks without duplicates
-    const remote = data || [];
-    const merged = [...remote];
+    const merged = [...filteredRemote];
     for (const lt of localTracks) {
       if (!merged.some((r) => r.id === lt.id || (r.session_name === lt.session_name && r.created_at === lt.created_at))) {
         merged.push(lt);
@@ -60,12 +135,17 @@ export async function saveTrack(track, sessionName, sessionCode = null) {
     return false;
   }
 
-  const cleanName = (sessionName || "").trim() || `Sortie du ${new Date().toLocaleDateString("fr-FR")}`;
+  const myCode = normalizeSessionCode(getMyUserCode());
+  const cleanName = (sessionName || "").replace(/<!--GP_META:[\s\S]*?-->/g, "").trim() || `Sortie du ${new Date().toLocaleDateString("fr-FR")}`;
+  const cleanSessionCode = sessionCode ? normalizeSessionCode(sessionCode) : null;
+  const taggedSessionName = encodeTrackMetadata(cleanName, myCode, cleanSessionCode);
+
   const newTrack = {
     id: `local-track-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
     session_name: cleanName,
     positions: track,
-    session_code: sessionCode || null,
+    user_code: myCode,
+    session_code: cleanSessionCode,
     created_at: new Date().toISOString()
   };
 
@@ -73,16 +153,14 @@ export async function saveTrack(track, sessionName, sessionCode = null) {
   saveLocalTrack(newTrack);
 
   try {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("gps_tracks")
       .insert([
         {
-          session_name: cleanName,
+          session_name: taggedSessionName,
           positions: track
         }
-      ])
-      .select()
-      .single();
+      ]);
 
     if (error) {
       console.warn("Supabase gps_tracks insert error, saved locally:", error.message);
@@ -108,7 +186,7 @@ export async function deleteTrack(trackId) {
 
   // 2. Delete from Supabase
   try {
-    if (typeof trackId === "number" || !String(trackId).startsWith("local-track-")) {
+    if (typeof trackId === "number" || (!String(trackId).startsWith("local-track-") && !isNaN(Number(trackId)))) {
       const { error } = await supabase
         .from("gps_tracks")
         .delete()

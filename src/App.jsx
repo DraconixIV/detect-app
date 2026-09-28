@@ -239,9 +239,18 @@ function App() {
     recordNewPosition,
     cancelSortie,
     saveSortie,
-    deleteSortieTrack,
-    loadTracksList
-  } = useSortieRecorder();
+  } = useSortieRecorder(workspace);
+
+  useEffect(() => {
+    const handleUserSynced = () => {
+      loadFinds();
+      loadTracksList();
+    };
+    window.addEventListener("geoprospect-user-synced", handleUserSynced);
+    return () => {
+      window.removeEventListener("geoprospect-user-synced", handleUserSynced);
+    };
+  }, [loadFinds, loadTracksList]);
 
   const [showSplash, setShowSplash] = useState(() => {
     try {
