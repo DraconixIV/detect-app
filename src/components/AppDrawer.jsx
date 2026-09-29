@@ -8,6 +8,8 @@ export default function AppDrawer({
   onNavigate,
   onOpenNews,
   onOpenAbout,
+  onOpenFeaturesGuide,
+  onOpenCgu,
   user,
   isRecordingSortie,
   isOnline = true
@@ -26,6 +28,15 @@ export default function AppDrawer({
 
   const menuItems = [
     {
+      id: "features",
+      label: "Guide des fonctionnalités",
+      icon: "📖",
+      action: () => {
+        onClose();
+        if (onOpenFeaturesGuide) onOpenFeaturesGuide();
+      }
+    },
+    {
       id: "news",
       label: "Mises à jour",
       icon: "🚀",
@@ -41,6 +52,15 @@ export default function AppDrawer({
       action: () => {
         onClose();
         if (onOpenAbout) onOpenAbout();
+      }
+    },
+    {
+      id: "cgu",
+      label: "Conditions d'Utilisation (CGU)",
+      icon: "⚖️",
+      action: () => {
+        onClose();
+        if (onOpenCgu) onOpenCgu();
       }
     },
     {

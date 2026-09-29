@@ -19,6 +19,7 @@ export default function SettingsPanel({
   onImportBackup,
   onOpenCategoryManager,
   onRestartOnboarding,
+  onOpenCgu,
   workspace = { mode: "personal" },
   setWorkspace,
   onOpenTeamSession,
@@ -766,25 +767,52 @@ export default function SettingsPanel({
               <p style={{ margin: 0 }}>
                 Cette application est un carnet de bord numérique d'enregistrement personnel pour la détection de loisir. L'utilisateur est seul responsable de sa pratique et s'engage à respecter scrupuleusement l'article L.542-1 du code du patrimoine, obtenir l'autorisation expresse des propriétaires des parcelles prospectées et à déclarer toute découverte fortuite.
               </p>
-              {onRestartOnboarding && (
-                <button
-                  type="button"
-                  onClick={onRestartOnboarding}
-                  style={{
-                    marginTop: "8px",
-                    padding: "10px 14px",
-                    borderRadius: "10px",
-                    border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                    background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
-                    color: isLight ? "#0f172a" : "white",
-                    fontSize: "11px",
-                    fontWeight: "bold",
-                    cursor: "pointer"
-                  }}
-                >
-                  🔄 Relancer l'Onboarding
-                </button>
-              )}
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "8px" }}>
+                {onOpenCgu && (
+                  <button
+                    type="button"
+                    onClick={onOpenCgu}
+                    style={{
+                      padding: "10px 14px",
+                      borderRadius: "10px",
+                      border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
+                      background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
+                      color: isLight ? "#0f172a" : "white",
+                      fontSize: "11px",
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "6px"
+                    }}
+                  >
+                    <span>⚖️</span> Consulter les CGU & Confidentialité
+                  </button>
+                )}
+                {onRestartOnboarding && (
+                  <button
+                    type="button"
+                    onClick={onRestartOnboarding}
+                    style={{
+                      padding: "10px 14px",
+                      borderRadius: "10px",
+                      border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
+                      background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
+                      color: isLight ? "#0f172a" : "white",
+                      fontSize: "11px",
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "6px"
+                    }}
+                  >
+                    <span>🔄</span> Relancer l'Onboarding
+                  </button>
+                )}
+              </div>
             </div>
           )}
         </div>

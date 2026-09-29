@@ -25,6 +25,8 @@ import SplashScreen from "./components/SplashScreen";
 import AppDrawer from "./components/AppDrawer";
 import NewsModal from "./components/NewsModal";
 import AboutModal from "./components/AboutModal";
+import CguModal from "./components/CguModal";
+import FeaturesGuideModal from "./components/FeaturesGuideModal";
 import { THEMES } from "./styles/themes";
 
 import { icons } from "./icons";
@@ -157,6 +159,12 @@ function App() {
     useState(false);
 
   const [showAboutModal, setShowAboutModal] =
+    useState(false);
+
+  const [showCguModal, setShowCguModal] =
+    useState(false);
+
+  const [showFeaturesGuideModal, setShowFeaturesGuideModal] =
     useState(false);
 
   const [markerSize, setMarkerSize] =
@@ -1461,6 +1469,7 @@ function App() {
           onExportBackup={handleExport}
           onImportBackup={handleImport}
           onOpenCategoryManager={() => setShowCategoryManagerModal(true)}
+          onOpenCgu={() => setShowCguModal(true)}
           onRestartOnboarding={() => {
             try {
               sessionStorage.removeItem("geoprospect_onboarding_step");
@@ -2084,12 +2093,20 @@ function App() {
           setActiveTab(tab);
           setShowDrawer(false);
         }}
+        onOpenFeaturesGuide={() => {
+          setShowFeaturesGuideModal(true);
+          setShowDrawer(false);
+        }}
         onOpenNews={() => {
           setShowNewsModal(true);
           setShowDrawer(false);
         }}
         onOpenAbout={() => {
           setShowAboutModal(true);
+          setShowDrawer(false);
+        }}
+        onOpenCgu={() => {
+          setShowCguModal(true);
           setShowDrawer(false);
         }}
         onOpenTeamSession={() => {
@@ -2110,6 +2127,13 @@ function App() {
         isOnline={isOnline}
       />
 
+      {/* Features Guide Modal */}
+      <FeaturesGuideModal
+        isOpen={showFeaturesGuideModal}
+        onClose={() => setShowFeaturesGuideModal(false)}
+        theme={theme}
+      />
+
       {/* News & Tips Modal */}
       <NewsModal
         isOpen={showNewsModal}
@@ -2121,6 +2145,13 @@ function App() {
       <AboutModal
         isOpen={showAboutModal}
         onClose={() => setShowAboutModal(false)}
+        theme={theme}
+      />
+
+      {/* Terms of Service & Privacy Policy Modal */}
+      <CguModal
+        isOpen={showCguModal}
+        onClose={() => setShowCguModal(false)}
         theme={theme}
       />
 
