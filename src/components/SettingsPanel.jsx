@@ -782,7 +782,7 @@ export default function SettingsPanel({
                     cursor: "pointer"
                   }}
                 >
-                  🔄 Relancer l'Onboarding et Charte Légale
+                  🔄 Relancer l'Onboarding
                 </button>
               )}
             </div>
