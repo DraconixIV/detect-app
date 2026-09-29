@@ -948,3 +948,37 @@ export function isFindInSortie(find, targetDate) {
   const targetNorm = normalizeDateStr(targetDate);
   return findNorm === targetNorm && Boolean(findNorm);
 }
+
+export function getFindTimestamp(find) {
+  if (!find) return 0;
+  if (find.created_at) {
+    const t = new Date(find.created_at).getTime();
+    if (!isNaN(t) && t > 0) return t;
+  }
+  if (find.id && typeof find.id === "string") {
+    const match = find.id.match(/\d{12,14}/);
+    if (match) {
+      const num = Number(match[0]);
+      if (!isNaN(num) && num > 1600000000000 && num < 2500000000000) return num;
+    }
+  }
+  if (find.date) {
+    const parsed = Date.parse(find.date);
+    if (!isNaN(parsed) && parsed > 0) return parsed;
+    const parts = find.date.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})(?:.*?(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/);
+    if (parts) {
+      const [_, d, m, y, h, min, sec] = parts;
+      const dt = new Date(
+        Number(y),
+        Number(m) - 1,
+        Number(d),
+        h ? Number(h) : 0,
+        min ? Number(min) : 0,
+        sec ? Number(sec) : 0
+      );
+      const t = dt.getTime();
+      if (!isNaN(t) && t > 0) return t;
+    }
+  }
+  return 0;
+}

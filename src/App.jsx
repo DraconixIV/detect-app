@@ -36,7 +36,7 @@ import useConsultationRequests from "./hooks/useConsultationRequests";
 import useSortieRecorder from "./hooks/useSortieRecorder";
 import { addPendingFind, deletePendingFind } from "./services/offlineStore";
 import { importData, exportData } from "./services/backupService";
-import { addFind as createFind, toggleFavorite, normalizeDateStr, isFindInSortie } from "./services/findsService";
+import { addFind as createFind, toggleFavorite, normalizeDateStr, isFindInSortie, getFindTimestamp } from "./services/findsService";
 import { getActiveSession, leaveTeamSession, normalizeSessionCode, getMyUserCode, getMyDisplayName } from "./services/sessionService";
 import { loadCategoriesData } from "./services/categoriesService";
 
@@ -233,6 +233,7 @@ function App() {
     sortieDistance,
     sortieElapsedSeconds,
     sortiePositions,
+    sortieStartTime,
     savedTracks,
     startSortie: startSortieRaw,
     togglePauseSortie,
@@ -1142,6 +1143,20 @@ function App() {
     return todayFindsCount;
   }, [workspace?.mode, workspace?.targetCode, finds, todayFindsCount]);
 
+  const activeSortieFindsCount = useMemo(() => {
+    if (!isRecordingSortie || !sortieStartTime) return 0;
+    return (finds || []).filter((f) => {
+      if (!f) return false;
+      if (workspace?.mode === "session" && workspace?.targetCode) {
+        const cleanTarget = normalizeSessionCode(workspace.targetCode);
+        const fSess = f.session_code ? normalizeSessionCode(f.session_code) : null;
+        if (fSess && cleanTarget && fSess !== cleanTarget) return false;
+      }
+      const t = getFindTimestamp(f);
+      return t >= (sortieStartTime - 2000);
+    }).length;
+  }, [isRecordingSortie, sortieStartTime, finds, workspace?.mode, workspace?.targetCode]);
+
   const selectedDateTracks = useMemo(() => {
     if (!selectedDate) return [];
     return savedTracks.filter((track) => {
@@ -1532,6 +1547,7 @@ function App() {
           onTogglePauseSortie={togglePauseSortie}
           sortieDistance={sortieDistance}
           elapsedSeconds={sortieElapsedSeconds}
+          sortieFindsCount={activeSortieFindsCount}
           todayFindsCount={workspace.mode === "session" ? sessionFindsCount : todayFindsCount}
           onStopSortie={stopSortie}
           zenMode={zenMode}

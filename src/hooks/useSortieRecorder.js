@@ -65,6 +65,14 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
     }
     return [];
   });
+  const [sortieStartTime, setSortieStartTime] = useState(() => {
+    try {
+      const val = localStorage.getItem("sortieStartTime");
+      return val ? Number(val) : null;
+    } catch {
+      return null;
+    }
+  });
   const [savedTracks, setSavedTracks] = useState([]);
 
   useEffect(() => {
@@ -170,11 +178,16 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
   }, [workspace.mode, workspace.targetCode]);
 
   const startSortie = (initialPosition) => {
+    const now = Date.now();
     setIsRecordingSortie(true);
     setIsSortiePaused(false);
     setSortieDistance(0);
     setSortieElapsedSeconds(0);
     setSortiePositions(initialPosition ? [initialPosition] : []);
+    setSortieStartTime(now);
+    try {
+      localStorage.setItem("sortieStartTime", String(now));
+    } catch {}
   };
 
   const togglePauseSortie = () => {
@@ -210,7 +223,11 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
     setSortieDistance(0);
     setSortieElapsedSeconds(0);
     setSortiePositions([]);
-    localStorage.removeItem("sortieElapsedSeconds");
+    setSortieStartTime(null);
+    try {
+      localStorage.removeItem("sortieElapsedSeconds");
+      localStorage.removeItem("sortieStartTime");
+    } catch {}
   };
 
   const saveSortie = async (positions, name, sessionCode = null) => {
@@ -223,7 +240,11 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
     setSortieDistance(0);
     setSortieElapsedSeconds(0);
     setSortiePositions([]);
-    localStorage.removeItem("sortieElapsedSeconds");
+    setSortieStartTime(null);
+    try {
+      localStorage.removeItem("sortieElapsedSeconds");
+      localStorage.removeItem("sortieStartTime");
+    } catch {}
     return success;
   };
 
@@ -241,6 +262,7 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
     sortieDistance,
     sortieElapsedSeconds,
     sortiePositions,
+    sortieStartTime,
     savedTracks,
     startSortie,
     togglePauseSortie,

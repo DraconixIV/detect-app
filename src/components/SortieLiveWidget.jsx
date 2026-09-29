@@ -6,6 +6,7 @@ export default function SortieLiveWidget({
   onTogglePauseSortie = null,
   sortieDistance = 0,
   elapsedSeconds = 0,
+  sortieFindsCount = 0,
   todayFindsCount = 0,
   onStopSortie,
   zenMode = false,
@@ -13,6 +14,7 @@ export default function SortieLiveWidget({
   onToggleShowTrack
 }) {
   const [collapsed, setCollapsed] = useState(false);
+  const displayFindsCount = typeof sortieFindsCount === "number" ? sortieFindsCount : todayFindsCount;
 
   if (!isRecordingSortie || zenMode) return null;
 
@@ -116,7 +118,7 @@ export default function SortieLiveWidget({
                 Cibles
               </div>
               <div style={{ fontSize: "10.5px", fontWeight: "800", color: "#fbbf24", fontFamily: "monospace", marginTop: "1px" }}>
-                {todayFindsCount}
+                {displayFindsCount}
               </div>
             </div>
           </div>
