@@ -129,7 +129,7 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
               Le carnet de terrain GPS des détectoristes
             </div>
             <p style={{ margin: "4px 0 0 0", fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
-              Développé par un passionné pour offrir un outil moderne, gratuit, sans publicité et respectueux de la vie privée. Compatible avec toutes les marques de détecteurs (XP, Minelab, Garrett, Nokta...).
+              Passionné de détection comme vous, j’ai créé GeoProspect avec une idée simple : concevoir le carnet de bord dont on avait tous besoin sur le terrain. Une appli moderne, fluide, 100 % gratuite, sans la moindre pub et qui respecte totalement votre vie privée.
             </p>
           </div>
 
@@ -175,7 +175,7 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
               ☕ Soutenir le Développement
             </div>
             <p style={{ margin: 0, fontSize: "11px", color: textSub, lineHeight: "1.4" }}>
-              Un petit don aide à financer les serveurs cartographiques et encourage les futures nouveautés !
+              Un petit don encourage les futures nouveautés !
             </p>
             <div style={{ display: "flex", gap: "8px" }}>
               <a
