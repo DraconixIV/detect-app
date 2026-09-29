@@ -375,6 +375,22 @@ function App() {
   const [isLocatingGps, setIsLocatingGps] = useState(false);
   const hasAutoCenteredRef = useRef(false);
   const gpsWatchIdRef = useRef(null);
+  const lastGpsFixTimeRef = useRef(Date.now());
+  const isRecordingRef = useRef(isRecordingSortie);
+  const isSortiePausedRef = useRef(isSortiePaused);
+  const positionsRef = useRef(sortiePositions);
+
+  useEffect(() => {
+    isRecordingRef.current = isRecordingSortie;
+  }, [isRecordingSortie]);
+
+  useEffect(() => {
+    isSortiePausedRef.current = isSortiePaused;
+  }, [isSortiePaused]);
+
+  useEffect(() => {
+    positionsRef.current = sortiePositions;
+  }, [sortiePositions]);
 
   // Core Geolocation Engine: Force a fresh satellite hardware read & center map
   const requestFreshGpsFix = (shouldCenter = false, showFeedback = false) => {
@@ -391,6 +407,7 @@ function App() {
     setIsLocatingGps(true);
 
     const handleSuccess = (pos) => {
+      lastGpsFixTimeRef.current = Date.now();
       const freshPos = [pos.coords.latitude, pos.coords.longitude];
       const accuracy = pos.coords.accuracy;
 
@@ -399,7 +416,7 @@ function App() {
       setGpsAccuracy(accuracy);
       setIsLocatingGps(false);
 
-      if (isRecordingRef.current) {
+      if (isRecordingRef.current && !isSortiePausedRef.current) {
         recordNewPosition(freshPos, accuracy);
       }
 
@@ -449,70 +466,130 @@ function App() {
     navigator.geolocation.getCurrentPosition(
       handleSuccess,
       handleHighAccuracyError,
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 5000 }
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 3000 }
     );
   };
 
-  // Continuous background GPS satellite watcher
-  const startContinuousGpsWatch = () => {
-    if (!("geolocation" in navigator) || gpsWatchIdRef.current) return;
+  // Continuous background GPS satellite watcher with auto-healing
+  const startContinuousGpsWatch = (forceRestart = false) => {
+    if (!("geolocation" in navigator)) return;
 
-    gpsWatchIdRef.current = navigator.geolocation.watchPosition(
-      (pos) => {
-        const livePos = [pos.coords.latitude, pos.coords.longitude];
-        setPosition(livePos);
-        localStorage.setItem("lastKnownPosition", JSON.stringify(livePos));
-        setGpsAccuracy(pos.coords.accuracy);
+    if (gpsWatchIdRef.current) {
+      if (!forceRestart) return;
+      try {
+        navigator.geolocation.clearWatch(gpsWatchIdRef.current);
+      } catch {}
+      gpsWatchIdRef.current = null;
+    }
 
-        // Smoothly auto-center map when the first fresh satellite fix arrives on launch
-        if (!hasAutoCenteredRef.current) {
-          hasAutoCenteredRef.current = true;
-          setZoomTarget({ position: livePos, zoom: 17 });
-          setFollowGps(true);
+    try {
+      gpsWatchIdRef.current = navigator.geolocation.watchPosition(
+        (pos) => {
+          lastGpsFixTimeRef.current = Date.now();
+          const livePos = [pos.coords.latitude, pos.coords.longitude];
+          setPosition(livePos);
+          localStorage.setItem("lastKnownPosition", JSON.stringify(livePos));
+          setGpsAccuracy(pos.coords.accuracy);
+
+          // Smoothly auto-center map when the first fresh satellite fix arrives on launch
+          if (!hasAutoCenteredRef.current) {
+            hasAutoCenteredRef.current = true;
+            setZoomTarget({ position: livePos, zoom: 17 });
+            setFollowGps(true);
+          }
+
+          if (isRecordingRef.current && !isSortiePausedRef.current) {
+            recordNewPosition(livePos, pos.coords.accuracy);
+          }
+        },
+        (err) => {
+          console.warn("GPS Watch Warning:", err.message);
+          // If error happens while recording, trigger auto-recovery fix
+          if (isRecordingRef.current && !isSortiePausedRef.current) {
+            setTimeout(() => {
+              if (isRecordingRef.current && !isSortiePausedRef.current) {
+                requestFreshGpsFix(false, false);
+              }
+            }, 3000);
+          }
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 12000,
+          maximumAge: 0
         }
-
-        if (isRecordingRef.current) {
-          recordNewPosition(livePos, pos.coords.accuracy);
-        }
-      },
-      (err) => {
-        console.warn("GPS Watch Warning:", err.message);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 20000,
-        maximumAge: 0
-      }
-    );
+      );
+    } catch (e) {
+      console.warn("Could not start GPS watchPosition:", e);
+    }
   };
 
-  // Initialize GPS immediately on startup and whenever the user returns to the app
+  // Initialize GPS immediately on startup and auto-revive whenever app resumes or wakes
   useEffect(() => {
     // 1. Immediate fresh fix & initial map auto-center
     requestFreshGpsFix(true, false);
 
     // 2. Start continuous satellite watch
-    startContinuousGpsWatch();
+    startContinuousGpsWatch(false);
 
-    // 3. Auto-refresh when app resumes from background or screen unlock
+    // 3. Auto-revive GPS when app resumes from background, screen standby or focus
     const handleAppResume = () => {
       if (document.visibilityState === "visible") {
         requestFreshGpsFix(false, false);
+        startContinuousGpsWatch(true); // Force reboot zombie watch stream
       }
     };
 
     document.addEventListener("visibilitychange", handleAppResume);
     window.addEventListener("focus", handleAppResume);
+    window.addEventListener("pageshow", handleAppResume);
 
     return () => {
       if (gpsWatchIdRef.current) {
-        navigator.geolocation.clearWatch(gpsWatchIdRef.current);
+        try {
+          navigator.geolocation.clearWatch(gpsWatchIdRef.current);
+        } catch {}
         gpsWatchIdRef.current = null;
       }
       document.removeEventListener("visibilitychange", handleAppResume);
       window.removeEventListener("focus", handleAppResume);
+      window.removeEventListener("pageshow", handleAppResume);
     };
   }, []);
+
+  // Active GPS Watchdog during Sortie Recording:
+  // Prevents OS background location throttling or silent zombie streams
+  useEffect(() => {
+    let watchdogTimer = null;
+    if (isRecordingSortie && !isSortiePaused) {
+      watchdogTimer = setInterval(() => {
+        const timeSinceLastFix = Date.now() - lastGpsFixTimeRef.current;
+        if (timeSinceLastFix > 5000) {
+          // Hardware satellite nudge
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              lastGpsFixTimeRef.current = Date.now();
+              const livePos = [pos.coords.latitude, pos.coords.longitude];
+              setPosition(livePos);
+              setGpsAccuracy(pos.coords.accuracy);
+              if (isRecordingRef.current && !isSortiePausedRef.current) {
+                recordNewPosition(livePos, pos.coords.accuracy);
+              }
+            },
+            () => {},
+            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+          );
+        }
+        if (timeSinceLastFix > 12000) {
+          // Full stream reboot
+          startContinuousGpsWatch(true);
+        }
+      }, 3500);
+    }
+    return () => {
+      if (watchdogTimer) clearInterval(watchdogTimer);
+    };
+  }, [isRecordingSortie, isSortiePaused]);
 
   useEffect(() => {
     if (activeTab === "gallery" || showAlbum) {
@@ -520,9 +597,6 @@ function App() {
     }
   }, [activeTab, showAlbum]);
 
-  const isRecordingRef = useRef(isRecordingSortie);
-  const isSortiePausedRef = useRef(isSortiePaused);
-  const positionsRef = useRef(sortiePositions);
   const quickAddInputRef = useRef(null);
 
   useEffect(() => {
@@ -564,18 +638,6 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    isRecordingRef.current = isRecordingSortie;
-  }, [isRecordingSortie]);
-
-  useEffect(() => {
-    isSortiePausedRef.current = isSortiePaused;
-  }, [isSortiePaused]);
-
-  useEffect(() => {
-    positionsRef.current = sortiePositions;
-  }, [sortiePositions]);
-
 
 
   // Auto-start sortie recording when entering a shared team session
@@ -585,7 +647,7 @@ function App() {
       localStorage.setItem("showLiveSortieTrack", "true");
       if (!isRecordingRef.current) {
         requestFreshGpsFix(true, false);
-        startContinuousGpsWatch();
+        startContinuousGpsWatch(true);
         setFollowGps(true);
         startSortieRaw(position);
         setToast({
@@ -649,7 +711,7 @@ function App() {
     setShowLiveSortieTrack(true);
     localStorage.setItem("showLiveSortieTrack", "true");
     requestFreshGpsFix(true, false);
-    startContinuousGpsWatch();
+    startContinuousGpsWatch(true);
     setFollowGps(true);
     startSortieRaw(position);
     setToast({

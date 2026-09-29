@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { loadTracks, saveTrack, deleteTrack } from "../services/tracksService";
 import { getMyUserCode } from "../services/sessionService";
+import { startBackgroundKeepAlive, stopBackgroundKeepAlive } from "../services/backgroundKeepAlive";
 
 function distanceBetween(point1, point2) {
   const R = 6371000;
@@ -23,6 +24,7 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
   useEffect(() => {
     workspaceRef.current = workspace;
   }, [workspace]);
+
   const [isRecordingSortie, setIsRecordingSortie] = useState(() => {
     try {
       return localStorage.getItem("isRecordingSortie") === "true";
@@ -30,6 +32,7 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
       return false;
     }
   });
+
   const [isSortiePaused, setIsSortiePaused] = useState(() => {
     try {
       return localStorage.getItem("isSortiePaused") === "true";
@@ -37,6 +40,7 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
       return false;
     }
   });
+
   const [sortieDistance, setSortieDistance] = useState(() => {
     try {
       const val = localStorage.getItem("sortieDistance");
@@ -45,6 +49,34 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
       return 0;
     }
   });
+
+  const [sortieStartTime, setSortieStartTime] = useState(() => {
+    try {
+      const val = localStorage.getItem("sortieStartTime");
+      return val ? Number(val) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [sortieTotalPausedMs, setSortieTotalPausedMs] = useState(() => {
+    try {
+      const val = localStorage.getItem("sortieTotalPausedMs");
+      return val ? Number(val) : 0;
+    } catch {
+      return 0;
+    }
+  });
+
+  const [sortiePauseStartTime, setSortiePauseStartTime] = useState(() => {
+    try {
+      const val = localStorage.getItem("sortiePauseStartTime");
+      return val ? Number(val) : null;
+    } catch {
+      return null;
+    }
+  });
+
   const [sortieElapsedSeconds, setSortieElapsedSeconds] = useState(() => {
     try {
       const val = localStorage.getItem("sortieElapsedSeconds");
@@ -53,6 +85,7 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
       return 0;
     }
   });
+
   const [sortiePositions, setSortiePositions] = useState(() => {
     try {
       const val = localStorage.getItem("sortiePositions");
@@ -65,16 +98,10 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
     }
     return [];
   });
-  const [sortieStartTime, setSortieStartTime] = useState(() => {
-    try {
-      const val = localStorage.getItem("sortieStartTime");
-      return val ? Number(val) : null;
-    } catch {
-      return null;
-    }
-  });
+
   const [savedTracks, setSavedTracks] = useState([]);
 
+  // Persistence to localStorage
   useEffect(() => {
     localStorage.setItem("isRecordingSortie", isRecordingSortie);
   }, [isRecordingSortie]);
@@ -95,67 +122,81 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
     localStorage.setItem("sortiePositions", JSON.stringify(sortiePositions));
   }, [sortiePositions]);
 
-  // Synchronized timer: increments ONLY when actively recording and NOT paused
+  useEffect(() => {
+    if (sortieStartTime) {
+      localStorage.setItem("sortieStartTime", String(sortieStartTime));
+    } else {
+      localStorage.removeItem("sortieStartTime");
+    }
+  }, [sortieStartTime]);
+
+  useEffect(() => {
+    localStorage.setItem("sortieTotalPausedMs", String(sortieTotalPausedMs));
+  }, [sortieTotalPausedMs]);
+
+  useEffect(() => {
+    if (sortiePauseStartTime) {
+      localStorage.setItem("sortiePauseStartTime", String(sortiePauseStartTime));
+    } else {
+      localStorage.removeItem("sortiePauseStartTime");
+    }
+  }, [sortiePauseStartTime]);
+
+  // Wall-clock accurate elapsed seconds calculation
+  const syncElapsedSeconds = useCallback(() => {
+    if (!isRecordingSortie || !sortieStartTime) return;
+    
+    let totalPaused = sortieTotalPausedMs || 0;
+    if (isSortiePaused && sortiePauseStartTime) {
+      totalPaused += (Date.now() - sortiePauseStartTime);
+    }
+    
+    const elapsed = Math.max(0, Math.floor((Date.now() - sortieStartTime - totalPaused) / 1000));
+    setSortieElapsedSeconds(elapsed);
+  }, [isRecordingSortie, isSortiePaused, sortieStartTime, sortieTotalPausedMs, sortiePauseStartTime]);
+
+  // Synchronized timer with wall-clock auto-correction
   useEffect(() => {
     let timer = null;
     if (isRecordingSortie && !isSortiePaused) {
+      syncElapsedSeconds();
       timer = setInterval(() => {
-        setSortieElapsedSeconds((prev) => prev + 1);
+        syncElapsedSeconds();
       }, 1000);
     }
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [isRecordingSortie, isSortiePaused]);
+  }, [isRecordingSortie, isSortiePaused, syncElapsedSeconds]);
 
-  // Keep screen awake using W3C Wake Lock API when recording is active
+  // Auto-sync elapsed timer on visibility change / focus / wake
   useEffect(() => {
-    let wakeLock = null;
-    let heartbeatInterval = null;
-
-    const requestWakeLock = async () => {
-      if (isRecordingSortie && "wakeLock" in navigator) {
-        try {
-          wakeLock = await navigator.wakeLock.request("screen");
-          wakeLock.addEventListener("release", () => {
-            // Auto-reacquire if still recording and page is visible
-            if (isRecordingSortie && document.visibilityState === "visible") {
-              requestWakeLock();
-            }
-          });
-        } catch (err) {
-          console.warn("Wake Lock request failed:", err);
-        }
+    const handleWake = () => {
+      if (isRecordingSortie) {
+        syncElapsedSeconds();
       }
     };
-
-    const handleVisibilityChange = () => {
-      if (isRecordingSortie && document.visibilityState === "visible") {
-        requestWakeLock();
-      }
-    };
-
-    if (isRecordingSortie) {
-      requestWakeLock();
-      document.addEventListener("visibilitychange", handleVisibilityChange);
-
-      // Lightweight background heartbeat keeping the event loop alive
-      heartbeatInterval = setInterval(() => {
-        // Timestamp touch to prevent aggressive mobile task freezing
-        localStorage.setItem("sortieHeartbeat", Date.now().toString());
-      }, 5000);
-    }
-
+    document.addEventListener("visibilitychange", handleWake);
+    window.addEventListener("focus", handleWake);
+    window.addEventListener("pageshow", handleWake);
     return () => {
-      if (heartbeatInterval) clearInterval(heartbeatInterval);
-      if (wakeLock) {
-        wakeLock.release().then(() => {
-          wakeLock = null;
-        }).catch(() => {});
-      }
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener("visibilitychange", handleWake);
+      window.removeEventListener("focus", handleWake);
+      window.removeEventListener("pageshow", handleWake);
     };
-  }, [isRecordingSortie]);
+  }, [isRecordingSortie, syncElapsedSeconds]);
+
+  // Manage Background Keep-Alive (Silent Audio + WakeLock + MediaSession)
+  useEffect(() => {
+    if (isRecordingSortie && !isSortiePaused) {
+      startBackgroundKeepAlive();
+    } else {
+      stopBackgroundKeepAlive();
+    }
+    return () => {
+      stopBackgroundKeepAlive();
+    };
+  }, [isRecordingSortie, isSortiePaused]);
 
   const loadTracksList = async () => {
     const curWs = workspaceRef.current || { mode: "personal", targetCode: null };
@@ -185,20 +226,42 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
     setSortieElapsedSeconds(0);
     setSortiePositions(initialPosition ? [initialPosition] : []);
     setSortieStartTime(now);
+    setSortieTotalPausedMs(0);
+    setSortiePauseStartTime(null);
     try {
       localStorage.setItem("sortieStartTime", String(now));
+      localStorage.setItem("sortieTotalPausedMs", "0");
+      localStorage.removeItem("sortiePauseStartTime");
     } catch {}
+    startBackgroundKeepAlive();
   };
 
   const togglePauseSortie = () => {
-    setIsSortiePaused((prev) => !prev);
+    setIsSortiePaused((prev) => {
+      const nextPaused = !prev;
+      const now = Date.now();
+      if (nextPaused) {
+        // Just paused
+        setSortiePauseStartTime(now);
+        stopBackgroundKeepAlive();
+      } else {
+        // Resuming from pause
+        if (sortiePauseStartTime) {
+          const pausedDelta = now - sortiePauseStartTime;
+          setSortieTotalPausedMs((acc) => acc + pausedDelta);
+        }
+        setSortiePauseStartTime(null);
+        startBackgroundKeepAlive();
+      }
+      return nextPaused;
+    });
   };
 
   const recordNewPosition = (newPosition, accuracy = null) => {
     if (isSortiePaused) return;
     if (!newPosition || typeof newPosition[0] !== "number" || typeof newPosition[1] !== "number") return;
     
-    // Ignore updates with poor accuracy (> 35m) to avoid erratic spikes
+    // Ignore updates with poor accuracy (> 35m) to avoid erratic GPS jitter
     if (accuracy && accuracy > 35) return;
 
     setSortiePositions((prev) => {
@@ -208,12 +271,20 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
       const last = prev[prev.length - 1];
       const d = distanceBetween(last, newPosition);
       
-      // Only append if moved at least 1.5 meters, and filter out absurd GPS jumps (> 250m)
-      if (d >= 1.5 && d < 250) {
+      // Filter out sub-meter stationary GPS drift (must move >= 1.5m)
+      if (d < 1.5) {
+        return prev;
+      }
+
+      // If distance is reasonable (< 5000m = 5km walking/moving), add to distance and append
+      if (d < 5000) {
         setSortieDistance((dist) => dist + d);
         return [...prev, newPosition];
+      } else {
+        // Teleport or initial GPS fix after long gap (> 5km):
+        // Append without adding 5km jump to distance to keep distance accurate
+        return [...prev, newPosition];
       }
-      return prev;
     });
   };
 
@@ -224,9 +295,16 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
     setSortieElapsedSeconds(0);
     setSortiePositions([]);
     setSortieStartTime(null);
+    setSortieTotalPausedMs(0);
+    setSortiePauseStartTime(null);
+    stopBackgroundKeepAlive();
     try {
       localStorage.removeItem("sortieElapsedSeconds");
       localStorage.removeItem("sortieStartTime");
+      localStorage.removeItem("sortieTotalPausedMs");
+      localStorage.removeItem("sortiePauseStartTime");
+      localStorage.removeItem("sortiePositions");
+      localStorage.removeItem("sortieDistance");
     } catch {}
   };
 
@@ -241,9 +319,16 @@ export default function useSortieRecorder(workspace = { mode: "personal", target
     setSortieElapsedSeconds(0);
     setSortiePositions([]);
     setSortieStartTime(null);
+    setSortieTotalPausedMs(0);
+    setSortiePauseStartTime(null);
+    stopBackgroundKeepAlive();
     try {
       localStorage.removeItem("sortieElapsedSeconds");
       localStorage.removeItem("sortieStartTime");
+      localStorage.removeItem("sortieTotalPausedMs");
+      localStorage.removeItem("sortiePauseStartTime");
+      localStorage.removeItem("sortiePositions");
+      localStorage.removeItem("sortieDistance");
     } catch {}
     return success;
   };
