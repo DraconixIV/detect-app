@@ -747,9 +747,7 @@ export default function SettingsPanel({
         {/* ============================================================ */}
         {/* GROUPE 5 : MENTIONS LÉGALES                                  */}
         {/* ============================================================ */}
-        {renderGroupHeader("⚖️", "Mentions Légales", isLight ? "#000000" : "#ffffff")}
-
-        <div style={cardStyle}>
+        <div style={{ ...cardStyle, marginTop: "16px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff", marginBottom: 0 }}>
               <span>⚖️</span> Mentions Légales
