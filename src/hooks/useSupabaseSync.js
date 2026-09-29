@@ -15,13 +15,23 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
     workspaceRef.current = workspace;
   }, [workspace]);
 
-  const loadPhotosForAlbum = async () => {
+  const loadPhotosForAlbum = async (findIds = null) => {
     try {
-      const { data: photoData } = await supabase
+      let query = supabase
         .from("find_photos")
         .select("id, find_id, image_url, type")
         .neq("type", "video")
         .order("id", { ascending: true });
+
+      if (Array.isArray(findIds)) {
+        if (findIds.length === 0) {
+          setAllPhotos([]);
+          return;
+        }
+        query = query.in("find_id", findIds);
+      }
+
+      const { data: photoData } = await query;
       if (photoData) {
         setAllPhotos(photoData);
       }
@@ -33,15 +43,15 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
   const loadFinds = async () => {
     const currentWs = workspaceRef.current || { mode: "personal", targetCode: null };
     const myCode = getMyUserCode();
-    
-    // Always fetch photos in parallel to populate album
-    loadPhotosForAlbum();
 
     const data = await fetchFinds({
       mode: currentWs.mode,
       targetCode: currentWs.targetCode,
       myUserCode: myCode
     });
+
+    const realFindIds = (data || []).map((f) => f.id).filter((id) => typeof id === "number" || !String(id).startsWith("offline-"));
+    loadPhotosForAlbum(realFindIds);
 
     try {
       // In personal mode, also display offline pending finds

@@ -1,5 +1,6 @@
 const DB_NAME = "metal_detector_offline";
 const STORE_NAME = "pending_finds";
+const TRACKS_STORE = "offline_tracks";
 const BACKUP_KEY = "metal_detector_offline_backup";
 
 function getDB() {
@@ -9,11 +10,14 @@ function getDB() {
         reject(new Error("IndexedDB not supported"));
         return;
       }
-      const request = indexedDB.open(DB_NAME, 1);
+      const request = indexedDB.open(DB_NAME, 2);
       request.onupgradeneeded = (e) => {
         const db = e.target.result;
         if (!db.objectStoreNames.contains(STORE_NAME)) {
           db.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+        }
+        if (!db.objectStoreNames.contains(TRACKS_STORE)) {
+          db.createObjectStore(TRACKS_STORE, { keyPath: "id" });
         }
       };
       request.onsuccess = (e) => resolve(e.target.result);
@@ -227,6 +231,74 @@ export async function clearAllPendingFinds() {
     });
   } catch (error) {
     console.warn("IndexedDB clearAllPendingFinds error:", error);
+    return false;
+  }
+}
+
+export async function saveOfflineTrack(trackRecord) {
+  try {
+    const db = await getDB();
+    await new Promise((resolve, reject) => {
+      const transaction = db.transaction(TRACKS_STORE, "readwrite");
+      const store = transaction.objectStore(TRACKS_STORE);
+      const request = store.put(trackRecord);
+      request.onsuccess = () => resolve(true);
+      request.onerror = (e) => reject(e.target.error);
+    });
+    return true;
+  } catch (err) {
+    console.warn("IndexedDB saveOfflineTrack fallback:", err);
+    return false;
+  }
+}
+
+export async function getOfflineTracks() {
+  try {
+    const db = await getDB();
+    const idbTracks = await new Promise((resolve, reject) => {
+      const transaction = db.transaction(TRACKS_STORE, "readonly");
+      const store = transaction.objectStore(TRACKS_STORE);
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = (e) => reject(e.target.error);
+    });
+    return idbTracks;
+  } catch (err) {
+    console.warn("IndexedDB getOfflineTracks error:", err);
+    return [];
+  }
+}
+
+export async function deleteOfflineTrack(trackId) {
+  try {
+    const db = await getDB();
+    await new Promise((resolve, reject) => {
+      const transaction = db.transaction(TRACKS_STORE, "readwrite");
+      const store = transaction.objectStore(TRACKS_STORE);
+      const request = store.delete(trackId);
+      request.onsuccess = () => resolve(true);
+      request.onerror = (e) => reject(e.target.error);
+    });
+    return true;
+  } catch (err) {
+    console.warn("IndexedDB deleteOfflineTrack error:", err);
+    return false;
+  }
+}
+
+export async function clearAllOfflineTracks() {
+  try {
+    const db = await getDB();
+    await new Promise((resolve) => {
+      const transaction = db.transaction(TRACKS_STORE, "readwrite");
+      const store = transaction.objectStore(TRACKS_STORE);
+      const request = store.clear();
+      request.onsuccess = () => resolve(true);
+      request.onerror = () => resolve(false);
+    });
+    return true;
+  } catch (err) {
+    console.warn("IndexedDB clearAllOfflineTracks error:", err);
     return false;
   }
 }

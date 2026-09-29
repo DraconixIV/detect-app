@@ -365,45 +365,36 @@ export async function loadFinds(options = {}) {
     const activeSess = getActiveSession();
     const currentSessionCode = targetCode || activeSess?.code;
 
-    // Fetch finds from Supabase
-    const { data, error } = await supabase
+    const cleanCurrentSess = currentSessionCode ? normalizeSessionCode(currentSessionCode) : null;
+    const cleanMyCode = myCode ? normalizeSessionCode(myCode) : null;
+    const cleanTargetCode = targetCode ? normalizeSessionCode(targetCode) : null;
+
+    // Fetch finds from Supabase with server-side scoped filtering
+    let query = supabase
       .from("finds")
       .select("*")
       .order("id", { ascending: false });
+
+    if (mode === "consultation" && cleanTargetCode) {
+      query = query.ilike("description", `%<!--GP_META:%"u":"${cleanTargetCode}"%-->%`);
+    } else if (mode === "session" && cleanCurrentSess) {
+      if (cleanMyCode) {
+        query = query.or(`description.ilike.%<!--GP_META:%"s":"${cleanCurrentSess}"%-->%,description.ilike.%<!--GP_META:%"u":"${cleanMyCode}"%-->%`);
+      } else {
+        query = query.ilike("description", `%<!--GP_META:%"s":"${cleanCurrentSess}"%-->%`);
+      }
+    } else if (cleanMyCode) {
+      query = query.ilike("description", `%<!--GP_META:%"u":"${cleanMyCode}"%-->%`);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.error("loadFinds error:", error);
       return [];
     }
 
-    // Fetch photos and videos from find_photos to attach directly to finds
-    let photoMap = {};
-    let videoMap = {};
-    try {
-      const { data: allDbPhotos } = await supabase
-        .from("find_photos")
-        .select("find_id, image_url, type")
-        .order("id", { ascending: true });
-
-      if (allDbPhotos) {
-        allDbPhotos.forEach((p) => {
-          if (p.find_id && p.image_url) {
-            if (p.type === "video" || typeof p.image_url === "string" && p.image_url.includes("/video-")) {
-              videoMap[p.find_id] = p.image_url;
-            } else if (!photoMap[p.find_id]) {
-              photoMap[p.find_id] = p.image_url;
-            }
-          }
-        });
-      }
-    } catch (pMapErr) {
-      console.warn("Could not load photos/videos map:", pMapErr);
-    }
-
     const allFinds = data || [];
-    const cleanCurrentSess = currentSessionCode ? normalizeSessionCode(currentSessionCode) : null;
-    const cleanMyCode = myCode ? normalizeSessionCode(myCode) : null;
-    const cleanTargetCode = targetCode ? normalizeSessionCode(targetCode) : null;
 
     const filteredFinds = allFinds.filter((rawFind) => {
       const find = decodeMetadata(rawFind);
@@ -419,6 +410,35 @@ export async function loadFinds(options = {}) {
       // Mode personnel: STRICT FILTER to current user's private finds
       return findUser === cleanMyCode;
     });
+
+    // Fetch photos and videos ONLY for the filtered find IDs
+    let photoMap = {};
+    let videoMap = {};
+    const findIds = filteredFinds.map((f) => f.id).filter(Boolean);
+
+    if (findIds.length > 0) {
+      try {
+        const { data: matchedPhotos } = await supabase
+          .from("find_photos")
+          .select("find_id, image_url, type")
+          .in("find_id", findIds)
+          .order("id", { ascending: true });
+
+        if (matchedPhotos) {
+          matchedPhotos.forEach((p) => {
+            if (p.find_id && p.image_url) {
+              if (p.type === "video" || (typeof p.image_url === "string" && p.image_url.includes("/video-"))) {
+                videoMap[p.find_id] = p.image_url;
+              } else if (!photoMap[p.find_id]) {
+                photoMap[p.find_id] = p.image_url;
+              }
+            }
+          });
+        }
+      } catch (pMapErr) {
+        console.warn("Could not load photos/videos map:", pMapErr);
+      }
+    }
 
     return filteredFinds.map((find) => {
       const normalizedFind = normalizeCategoryAndSub(find);

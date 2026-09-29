@@ -1,5 +1,6 @@
 import { supabase } from "../supabase";
 import { getMyUserCode, normalizeSessionCode } from "./sessionService";
+import { saveOfflineTrack, getOfflineTracks, deleteOfflineTrack, clearAllOfflineTracks } from "./offlineStore";
 
 const LOCAL_TRACKS_KEY = "geoprospect_saved_tracks_v2";
 
@@ -54,10 +55,27 @@ export function getLocalTracks() {
   return [];
 }
 
-export function clearAllLocalTracks() {
+export async function getLocalTracksAsync() {
+  try {
+    const idbTracks = await getOfflineTracks();
+    const localTracks = getLocalTracks();
+    const merged = [...(idbTracks || []).map((t) => decodeTrackMetadata(t))];
+    for (const lt of localTracks) {
+      if (!merged.some((m) => m.id === lt.id)) {
+        merged.push(lt);
+      }
+    }
+    return merged;
+  } catch (e) {
+    return getLocalTracks();
+  }
+}
+
+export async function clearAllLocalTracks() {
   try {
     localStorage.removeItem(LOCAL_TRACKS_KEY);
     localStorage.removeItem("rdl_saved_tracks_v2");
+    await clearAllOfflineTracks();
   } catch (e) {
     console.warn("Error clearing local tracks:", e);
   }
@@ -68,9 +86,11 @@ export function saveLocalTrack(trackObject) {
     const existing = getLocalTracks();
     const updated = [trackObject, ...existing];
     localStorage.setItem(LOCAL_TRACKS_KEY, JSON.stringify(updated));
+    saveOfflineTrack(trackObject).catch(() => {});
     return updated;
   } catch (e) {
     console.warn("Error saving local track:", e);
+    saveOfflineTrack(trackObject).catch(() => {});
     return [];
   }
 }
@@ -80,8 +100,9 @@ export async function loadTracks(options = {}) {
   const mode = options.mode || "personal";
   const targetCode = options.targetCode ? normalizeSessionCode(options.targetCode) : null;
 
-  // 1. Get filtered local tracks
-  const localTracks = getLocalTracks().filter((t) => {
+  // 1. Get filtered local tracks (with IndexedDB fallback)
+  const allLocal = await getLocalTracksAsync();
+  const localTracks = allLocal.filter((t) => {
     if (mode === "consultation" && targetCode) {
       return t.user_code === targetCode;
     }
@@ -93,10 +114,24 @@ export async function loadTracks(options = {}) {
   });
 
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from("gps_tracks")
       .select("*")
       .order("id", { ascending: false });
+
+    if (mode === "consultation" && targetCode) {
+      query = query.ilike("session_name", `%<!--GP_META:%"u":"${targetCode}"%-->%`);
+    } else if (mode === "session" && targetCode) {
+      if (myCode) {
+        query = query.or(`session_name.ilike.%<!--GP_META:%"s":"${targetCode}"%-->%,session_name.ilike.%<!--GP_META:%"u":"${myCode}"%-->%`);
+      } else {
+        query = query.ilike("session_name", `%<!--GP_META:%"s":"${targetCode}"%-->%`);
+      }
+    } else if (myCode) {
+      query = query.ilike("session_name", `%<!--GP_META:%"u":"${myCode}"%-->%`);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.warn("Supabase loadTracks warning, using local tracks:", error.message);
@@ -175,11 +210,12 @@ export async function saveTrack(track, sessionName, sessionCode = null) {
 export async function deleteTrack(trackId) {
   if (!trackId) return false;
 
-  // 1. Delete from local storage
+  // 1. Delete from local storage & IndexedDB
   try {
     const existing = getLocalTracks();
     const updated = existing.filter((t) => t.id !== trackId);
     localStorage.setItem(LOCAL_TRACKS_KEY, JSON.stringify(updated));
+    deleteOfflineTrack(trackId).catch(() => {});
   } catch (e) {
     console.warn("Error deleting local track:", e);
   }
