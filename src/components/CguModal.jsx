@@ -46,7 +46,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
         {/* Header */}
         <div
           style={{
-            padding: "16px 20px",
+            padding: "18px 20px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -59,7 +59,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
               <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: textMain }}>
                 Conditions Générales d'Utilisation
               </h3>
-              <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
+              <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: textSub }}>
                 Mentions Légales & Confidentialité des Données (RGPD)
               </p>
             </div>
@@ -88,46 +88,46 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
         {/* Content */}
         <div
           style={{
-            padding: "20px",
+            padding: "20px 18px",
             overflowY: "auto",
             display: "flex",
             flexDirection: "column",
             gap: "14px",
-            fontSize: "12px",
+            fontSize: "12.5px",
             lineHeight: "1.6",
             color: isLight ? "#334155" : "#cbd5e1"
           }}
         >
-          {/* Article 1 */}
+          {/* Section 1 : Nature du service */}
           <div
             style={{
-              padding: "14px 16px",
+              padding: "16px 18px",
               borderRadius: "16px",
               background: cardBg,
               border: `1px solid ${cardBorder}`
             }}
           >
-            <div style={{ fontSize: "13px", fontWeight: "800", color: accentColor, marginBottom: "6px" }}>
-              Article 1 — Objet & Nature du Service
+            <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
+              Nature du service
             </div>
             <p style={{ margin: 0 }}>
               <strong>GeoProspect</strong> est une application web progressive (PWA) conçue bénévolement et mise à disposition à titre gratuit. Elle constitue un <strong>carnet de bord numérique personnel</strong> permettant aux passionnés de détection de loisir d'enregistrer leurs trouvailles, de visualiser des fonds de cartes géographiques et de suivre leurs parcours GPS.
             </p>
           </div>
 
-          {/* Article 2 */}
+          {/* Section 2 : Cadre Légal & Responsabilité */}
           <div
             style={{
-              padding: "14px 16px",
+              padding: "16px 18px",
               borderRadius: "16px",
               background: cardBg,
               border: `1px solid ${cardBorder}`
             }}
           >
-            <div style={{ fontSize: "13px", fontWeight: "800", color: accentColor, marginBottom: "6px" }}>
-              Article 2 — Cadre Légal & Responsabilité de l'Utilisateur
+            <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
+              Cadre légal & Responsabilité
             </div>
-            <p style={{ margin: "0 0 8px 0" }}>
+            <p style={{ margin: "0 0 10px 0" }}>
               L'utilisateur est <strong>seul et unique responsable</strong> de sa pratique de la détection sur le terrain et de l'usage qu'il fait des informations cartographiques. L'application GeoProspect rappelle et impose le respect strict des réglementations en vigueur :
             </p>
             <ul style={{ margin: 0, paddingLeft: "18px", display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -146,19 +146,19 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             </ul>
           </div>
 
-          {/* Article 3 */}
+          {/* Section 3 : Données Personnelles (RGPD) */}
           <div
             style={{
-              padding: "14px 16px",
+              padding: "16px 18px",
               borderRadius: "16px",
               background: cardBg,
               border: `1px solid ${cardBorder}`
             }}
           >
-            <div style={{ fontSize: "13px", fontWeight: "800", color: accentColor, marginBottom: "6px" }}>
-              Article 3 — Données Personnelles & Confidentialité (RGPD)
+            <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
+              Données personnelles & Confidentialité (RGPD)
             </div>
-            <p style={{ margin: "0 0 8px 0" }}>
+            <p style={{ margin: "0 0 10px 0" }}>
               GeoProspect respecte scrupuleusement votre vie privée et applique le principe de minimisation des données :
             </p>
             <ul style={{ margin: 0, paddingLeft: "18px", display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -166,59 +166,59 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
                 <strong>Données collectées :</strong> Adresse email (si création de compte), pseudonyme de prospecteur, coordonnées GPS et photographies de vos trouvailles.
               </li>
               <li>
-                <strong>Usage strict :</strong> Vos données ne sont utilisées <em>que</em> pour assurer le fonctionnement de votre carnet de bord et la synchronisation entre vos appareils.
+                <strong>Usage strict :</strong> Vos données ne sont utilisées que pour assurer le fonctionnement de votre carnet de bord et la synchronisation entre vos appareils.
               </li>
               <li>
-                <strong>Aucune Revente :</strong> Aucune donnée personnelle, coordonnée GPS ou image n'est vendue, louée, cédée ou partagée à des régies publicitaires ou tiers commerciaux.
+                <strong>Aucune revente :</strong> Aucune donnée personnelle, coordonnée GPS ou image n'est vendue, louée, cédée ou partagée à des régies publicitaires ou tiers commerciaux.
               </li>
             </ul>
           </div>
 
-          {/* Article 4 */}
+          {/* Section 4 : Absence de Cookies Publicitaires */}
           <div
             style={{
-              padding: "14px 16px",
+              padding: "16px 18px",
               borderRadius: "16px",
               background: cardBg,
               border: `1px solid ${cardBorder}`
             }}
           >
-            <div style={{ fontSize: "13px", fontWeight: "800", color: accentColor, marginBottom: "6px" }}>
-              Article 4 — Absence de Cookies Publicitaires & Traçage
+            <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
+              Absence de cookies publicitaires & Traçage
             </div>
             <p style={{ margin: 0 }}>
-              GeoProspect n'utilise <strong>aucun cookie publicitaire, aucun outil d'analyse comportementale tierce</strong> (Google Analytics, Facebook Pixel, etc.). Les technologies de stockage local du navigateur (<code>IndexedDB</code> et <code>localStorage</code>) sont exclusivement réservées au fonctionnement technique du carnet de bord (mémorisation de votre thème, stockage hors-ligne de vos tracés et session d'authentification).
+              GeoProspect n'utilise <strong>aucun cookie publicitaire, aucun outil d'analyse comportementale tierce</strong> (Google Analytics, Facebook Pixel, etc.). Les technologies de stockage local du navigateur (IndexedDB et localStorage) sont exclusivement réservées au fonctionnement technique du carnet de bord (mémorisation de votre thème, stockage hors-ligne de vos tracés et session d'authentification).
             </p>
           </div>
 
-          {/* Article 5 */}
+          {/* Section 5 : Droit à l'Oubli & Suppression */}
           <div
             style={{
-              padding: "14px 16px",
+              padding: "16px 18px",
               borderRadius: "16px",
               background: cardBg,
               border: `1px solid ${cardBorder}`
             }}
           >
-            <div style={{ fontSize: "13px", fontWeight: "800", color: accentColor, marginBottom: "6px" }}>
-              Article 5 — Droit à l'Oubli & Suppression Totale
+            <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
+              Droit à l'oubli & Suppression totale
             </div>
             <p style={{ margin: 0 }}>
               Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification et d'effacement total de vos données. L'option <strong>« Suppression définitive du compte »</strong> accessible dans les Paramètres (Zone de danger) permet de détruire immédiatement, intégralement et de façon irréversible l'ensemble de votre compte, de vos coordonnées, photos, notes vocales et tracés de nos serveurs.
             </p>
           </div>
 
-          {/* Article 6 */}
+          {/* Section 6 : Gratuité & Disponibilité */}
           <div
             style={{
-              padding: "14px 16px",
+              padding: "16px 18px",
               borderRadius: "16px",
               background: cardBg,
               border: `1px solid ${cardBorder}`
             }}
           >
-            <div style={{ fontSize: "13px", fontWeight: "800", color: accentColor, marginBottom: "6px" }}>
-              Article 6 — Gratuité & Disponibilité du Service
+            <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
+              Gratuité & Disponibilité du service
             </div>
             <p style={{ margin: 0 }}>
               L'application est proposée 100 % gratuitement et sans publicité. Le développeur bénévole met en œuvre tous les moyens raisonnables pour assurer la continuité et la sécurité du service, sans garantie d'absence totale d'interruption temporaire ou de bugs. L'utilisateur est invité à exporter régulièrement des sauvegardes locales de son journal.
@@ -229,7 +229,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
         {/* Footer */}
         <div
           style={{
-            padding: "12px 20px",
+            padding: "14px 20px",
             borderTop: `1px solid ${cardBorder}`,
             display: "flex",
             justifyContent: "flex-end"
@@ -239,14 +239,15 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             type="button"
             onClick={onClose}
             style={{
-              padding: "10px 20px",
+              padding: "10px 22px",
               borderRadius: "12px",
               border: "none",
               background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
               color: "white",
               fontSize: "13px",
               fontWeight: "700",
-              cursor: "pointer"
+              cursor: "pointer",
+              boxShadow: "0 2px 10px rgba(37, 99, 235, 0.25)"
             }}
           >
             Fermer
