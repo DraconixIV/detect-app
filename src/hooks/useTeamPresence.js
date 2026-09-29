@@ -29,6 +29,7 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
   const knownMembersRef = useRef(new Set());
   const isInitialSyncRef = useRef(true);
   const teammatesMapRef = useRef(new Map());
+  const lastBroadcastTimeRef = useRef(0);
 
   const activeSession = getActiveSession();
   const isHost = workspace?.mode === "session" && isSessionHost(activeSession);
@@ -49,9 +50,15 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
     }
   }, [workspace?.mode, workspace?.targetCode]);
 
-  // Push live position updates via Realtime Broadcast whenever current user coordinates update
+  // Push live position updates via Realtime Broadcast whenever current user coordinates update (throttled to 1200ms)
   useEffect(() => {
     if (!position || !channelRef.current || workspace?.mode !== "session" || !workspace?.targetCode) return;
+
+    const now = Date.now();
+    if (now - lastBroadcastTimeRef.current < 1200) {
+      return;
+    }
+    lastBroadcastTimeRef.current = now;
 
     const myCode = normalizeSessionCode(getMyUserCode());
     const myName = getMyDisplayName() || `Détecteuriste ${myCode.slice(-4)}`;
@@ -63,7 +70,7 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
         userCode: myCode,
         userName: myName,
         position: position,
-        timestamp: Date.now()
+        timestamp: now
       }
     }).catch((err) => {
       console.warn("Realtime broadcast GPS error:", err);
