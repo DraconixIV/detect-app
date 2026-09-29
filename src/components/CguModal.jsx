@@ -108,7 +108,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
-              Nature du service
+              1 — Nature du service
             </div>
             <p style={{ margin: 0 }}>
               <strong>GeoProspect</strong> est une application web progressive (PWA) conçue bénévolement et mise à disposition à titre gratuit. Elle constitue un <strong>carnet de bord numérique personnel</strong> permettant aux passionnés de détection de loisir d'enregistrer leurs trouvailles, de visualiser des fonds de cartes géographiques et de suivre leurs parcours GPS.
@@ -125,14 +125,14 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
-              Cadre légal & Responsabilité
+              2 — Cadre légal & Responsabilité
             </div>
             <p style={{ margin: "0 0 10px 0" }}>
               L'utilisateur est <strong>seul et unique responsable</strong> de sa pratique de la détection sur le terrain et de l'usage qu'il fait des informations cartographiques. L'application GeoProspect rappelle et impose le respect strict des réglementations en vigueur :
             </p>
             <ul style={{ margin: 0, paddingLeft: "18px", display: "flex", flexDirection: "column", gap: "6px" }}>
               <li>
-                <strong>Propriété privée (Art. 544 et 552 du Code civil) :</strong> Toute prospection sur un terrain privé nécessite impérativement l'autorisation préalable du propriétaire du sol.
+                <strong>Propriété privée (Art. 544 et 552 du Code civil) :</strong> Toute prospection sur un terrain privé nécessite impérativement l'accord préalable du propriétaire du sol.
               </li>
               <li>
                 <strong>Code du patrimoine (Art. L. 542-1) :</strong> Nul ne peut utiliser du matériel de détection d'objets métalliques à l'effet de recherches de monuments ou d'objets pouvant intéresser la préhistoire, l'histoire, l'art ou l'archéologie sans autorisation préfectorale préalable.
@@ -156,7 +156,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
-              Données personnelles & Confidentialité (RGPD)
+              3 — Données personnelles & Confidentialité (RGPD)
             </div>
             <p style={{ margin: "0 0 10px 0" }}>
               GeoProspect respecte scrupuleusement votre vie privée et applique le principe de minimisation des données :
@@ -184,7 +184,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
-              Absence de cookies publicitaires & Traçage
+              4 — Absence de cookies publicitaires & Traçage
             </div>
             <p style={{ margin: 0 }}>
               GeoProspect n'utilise <strong>aucun cookie publicitaire, aucun outil d'analyse comportementale tierce</strong> (Google Analytics, Facebook Pixel, etc.). Les technologies de stockage local du navigateur (IndexedDB et localStorage) sont exclusivement réservées au fonctionnement technique du carnet de bord (mémorisation de votre thème, stockage hors-ligne de vos tracés et session d'authentification).
@@ -201,7 +201,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
-              Droit à l'oubli & Suppression totale
+              5 — Droit à l'oubli & Suppression totale
             </div>
             <p style={{ margin: 0 }}>
               Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification et d'effacement total de vos données. L'option <strong>« Suppression définitive du compte »</strong> accessible dans les Paramètres (Zone de danger) permet de détruire immédiatement, intégralement et de façon irréversible l'ensemble de votre compte, de vos coordonnées, photos, notes vocales et tracés de nos serveurs.
@@ -218,10 +218,27 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
-              Gratuité & Disponibilité du service
+              6 — Gratuité & Disponibilité du service
             </div>
             <p style={{ margin: 0 }}>
               L'application est proposée 100 % gratuitement et sans publicité. Le développeur bénévole met en œuvre tous les moyens raisonnables pour assurer la continuité et la sécurité du service, sans garantie d'absence totale d'interruption temporaire ou de bugs. L'utilisateur est invité à exporter régulièrement des sauvegardes locales de son journal.
+            </p>
+          </div>
+
+          {/* Section 7 : Hébergement & Sécurité */}
+          <div
+            style={{
+              padding: "16px 18px",
+              borderRadius: "16px",
+              background: cardBg,
+              border: `1px solid ${cardBorder}`
+            }}
+          >
+            <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
+              7 — Hébergement & Sécurité des données
+            </div>
+            <p style={{ margin: 0 }}>
+              Les données cloud synchronisées sont hébergées au sein de l'Union Européenne sur les infrastructures sécurisées de <strong>Supabase</strong> (PostgreSQL avec chiffrement des échanges en transit via protocole sécurisé HTTPS / TLS 1.3). L'interface utilisateur est distribuée sur le réseau mondial de <strong>Vercel</strong>.
             </p>
           </div>
         </div>
