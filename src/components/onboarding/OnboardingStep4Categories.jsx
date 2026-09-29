@@ -104,7 +104,7 @@ export default function OnboardingStep4Categories({
             transition: "all 0.15s ease"
           }}
         >
-          Catégories d'objets ({Object.keys(categories).length})
+          Catégorie ({Object.keys(categories).length})
         </button>
         <button
           type="button"
@@ -490,7 +490,7 @@ export default function OnboardingStep4Categories({
                             {catName}
                           </span>
                           <span style={{ fontSize: "10px", fontWeight: "700", padding: "2px 6px", borderRadius: "8px", background: isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0", color: textSub, flexShrink: 0 }}>
-                            {safeSubCats.length} sous-types
+                            {safeSubCats.length} sous-catégories
                           </span>
                         </div>
 

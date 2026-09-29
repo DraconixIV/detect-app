@@ -163,7 +163,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
               </h2>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
                 {modalTab === "categories"
-                  ? "Personnalisez vos catégories d'objets, repères et sous-types"
+                  ? "Personnalisez vos catégories, repères et sous-catégories"
                   : "Activez et personnalisez les métaux pour vos trouvailles"}
               </p>
             </div>
@@ -218,7 +218,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
               transition: "all 0.15s ease"
             }}
           >
-            Catégories d'objets ({Object.keys(categoriesData.categories || {}).length})
+            Catégorie ({Object.keys(categoriesData.categories || {}).length})
           </button>
           <button
             type="button"
@@ -442,7 +442,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                             {catName}
                           </span>
                           <span style={{ fontSize: "11px", color: textSub }}>
-                            ({subCats.length} sous-types)
+                            ({subCats.length} sous-catégories)
                           </span>
                         </div>
 
@@ -560,7 +560,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                           >
                             <input
                               type="text"
-                              placeholder={`Ajouter un sous-type à ${catName}...`}
+                              placeholder={`Ajouter une sous-catégorie à ${catName}...`}
                               value={selectedCatForSub === catName ? newSubName : ""}
                               onFocus={() => setSelectedCatForSub(catName)}
                               onChange={(e) => {
@@ -858,7 +858,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
             title="Supprimer la catégorie"
             icon="🏷️"
             confirmColor="#ef4444"
-            message={`Voulez-vous vraiment supprimer la catégorie "${confirmCatToDelete}" et tous ses sous-types ?`}
+            message={`Voulez-vous vraiment supprimer la catégorie "${confirmCatToDelete}" et toutes ses sous-catégories ?`}
             confirmText="Supprimer"
             cancelText="Annuler"
             onConfirm={() => {
