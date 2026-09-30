@@ -24,7 +24,7 @@ export default function OnboardingStep2Legal({
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       <div>
         <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
-          Cadre légal
+          ⚖️ Cadre légal
         </h1>
         <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
           La détection de métaux en France est encadrée pour protéger le patrimoine et respecter la propriété privée.
@@ -66,7 +66,7 @@ export default function OnboardingStep2Legal({
 
         <div style={{ borderTop: `1px solid ${cardBorder}`, paddingTop: "8px" }}>
           <div style={{ fontWeight: "800", color: textMain, marginBottom: "3px" }}>
-            Découvertes fortuites (Art. L. 531-14)
+            Article L. 531-14 du Code du patrimoine
           </div>
           <div style={{ color: textSub, fontSize: "11px" }}>
             Toute découverte fortuite d'intérêt historique ou archéologique doit être immédiatement déclarée auprès de la mairie et du Service Régional de l'Archéologie (DRAC).
@@ -148,7 +148,7 @@ export default function OnboardingStep2Legal({
             onChange={(e) => setCheckDeclaration(e.target.checked)}
             style={{ width: "16px", height: "16px", marginTop: "2px", accentColor: "#2563eb", cursor: "pointer" }}
           />
-          <span>Je m'engage à <strong>déclarer sans délai toute découverte fortuite</strong> en mairie et à la DRAC (Art. L. 531-14).</span>
+          <span>Je m'engage à <strong>déclarer sans délai toute découverte fortuite</strong> en mairie et à la DRAC (Art. L. 531-14 du Code du patrimoine).</span>
         </label>
 
         <label

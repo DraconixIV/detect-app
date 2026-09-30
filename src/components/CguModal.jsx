@@ -132,16 +132,16 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             </p>
             <ul style={{ margin: 0, paddingLeft: "18px", display: "flex", flexDirection: "column", gap: "6px" }}>
               <li>
-                <strong>Propriété privée (Art. 544 et 552 du Code civil) :</strong> Toute prospection sur un terrain privé nécessite impérativement l'accord préalable du propriétaire du sol.
+                <strong>Propriété privée (Articles 544 et 552 du Code civil) :</strong> Toute prospection sur un terrain privé nécessite impérativement l'accord préalable du propriétaire du sol.
               </li>
               <li>
-                <strong>Code du patrimoine (Art. L. 542-1) :</strong> Nul ne peut utiliser du matériel de détection d'objets métalliques à l'effet de recherches de monuments ou d'objets pouvant intéresser la préhistoire, l'histoire, l'art ou l'archéologie sans autorisation préfectorale préalable.
+                <strong>Code du patrimoine (Article L. 542-1) :</strong> Nul ne peut utiliser du matériel de détection d'objets métalliques à l'effet de recherches de monuments ou d'objets pouvant intéresser la préhistoire, l'histoire, l'art ou l'archéologie sans autorisation préfectorale préalable.
               </li>
               <li>
-                <strong>Découvertes fortuites (Art. L. 531-14) :</strong> Tout objet ou vestige d'intérêt historique découvert de façon fortuite doit être immédiatement déclaré auprès de la mairie et du Service Régional de l'Archéologie (DRAC).
+                <strong>Découvertes fortuites (Article L. 531-14 du Code du patrimoine) :</strong> Tout objet ou vestige d'intérêt historique découvert de façon fortuite doit être immédiatement déclaré auprès de la mairie et du Service Régional de l'Archéologie (DRAC).
               </li>
               <li>
-                <strong>Éthique & Environnement :</strong> L'utilisateur s'engage à reboucher systématiquement tous ses trous de prospection et à ramasser les déchets métalliques polluants.
+                <strong>Éthique et environnement :</strong> L'utilisateur s'engage à reboucher systématiquement tous ses trous de prospection et à ramasser les déchets métalliques polluants.
               </li>
             </ul>
           </div>
