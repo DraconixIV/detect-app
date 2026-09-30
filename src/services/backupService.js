@@ -2,6 +2,7 @@ import { supabase } from "../supabase";
 import { getMyUserCode, getMyDisplayName, normalizeSessionCode } from "./sessionService";
 import { decodeMetadata, encodeMetadata } from "./findsService";
 import { decodeTrackMetadata, encodeTrackMetadata, getLocalTracks } from "./tracksService";
+import { loadCategoriesData } from "./categoriesService";
 
 export async function exportData() {
   try {
@@ -49,16 +50,19 @@ export async function exportData() {
       console.warn("No gps_tracks table found:", e);
     }
 
+    const categoriesData = loadCategoriesData();
+
     const backup = {
       exportDate: new Date().toISOString(),
       userCode: myCode,
-      version: "3.0",
+      version: "3.1",
       findsCount: findsData.length,
       photosCount: photosData.length,
       tracksCount: tracksData.length,
       finds: findsData,
       photos: photosData,
-      tracks: tracksData
+      tracks: tracksData,
+      categories: categoriesData
     };
 
     const blob = new Blob([JSON.stringify(backup, null, 2)], {
@@ -143,6 +147,7 @@ export async function importData(onSuccess) {
         }
       }
 
+      let importedTracks = 0;
       if (backup.tracks && backup.tracks.length > 0) {
         try {
           const stampedTracks = backup.tracks.map((t) => {
@@ -153,13 +158,33 @@ export async function importData(onSuccess) {
               positions: t.positions || []
             };
           });
-          await supabase.from("gps_tracks").insert(stampedTracks);
+          const { error: trkErr } = await supabase.from("gps_tracks").insert(stampedTracks);
+          if (!trkErr) {
+            importedTracks = stampedTracks.length;
+          }
         } catch (te) {
           console.warn("Tracks import error:", te);
         }
       }
 
-      alert(`✅ Sauvegarde restaurée avec succès !\n• ${importedFinds} trouvaille(s) importée(s) et attribuée(s) à votre code (${myCode})`);
+      if (backup.categories && typeof backup.categories === "object") {
+        try {
+          if (backup.categories.categories) {
+            localStorage.setItem("geoprospect_custom_categories", JSON.stringify(backup.categories.categories));
+          }
+          if (backup.categories.emojis) {
+            localStorage.setItem("geoprospect_custom_emojis", JSON.stringify(backup.categories.emojis));
+          }
+          if (backup.categories.colors) {
+            localStorage.setItem("geoprospect_custom_colors", JSON.stringify(backup.categories.colors));
+          }
+          window.dispatchEvent(new Event("categories-updated"));
+        } catch (catErr) {
+          console.warn("Categories import error:", catErr);
+        }
+      }
+
+      alert(`✅ Sauvegarde restaurée avec succès !\n• ${importedFinds} trouvaille(s) importée(s)\n• ${importedPhotos} photo(s)\n• ${importedTracks} sortie(s) & tracé(s) GPS\nAttribuées à votre code (${myCode})`);
       if (onSuccess) onSuccess();
     } catch (err) {
       console.error("Import failed:", err);
