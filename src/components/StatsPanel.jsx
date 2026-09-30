@@ -90,17 +90,35 @@ export default function StatsPanel({
     return parseDate(b) - parseDate(a);
   });
 
-  // Calculate category stats
-  const categoryData = Object.entries(
-    finds.reduce((acc, find) => {
-      const cat = find.category || "Autre";
-      acc[cat] = (acc[cat] || 0) + 1;
-      return acc;
-    }, {})
-  ).sort((a, b) => b[1] - a[1]);
+  // Group find counts by category
+  const categoryCounts = finds.reduce((acc, find) => {
+    const cat = find.category || "Autre";
+    acc[cat] = (acc[cat] || 0) + 1;
+    return acc;
+  }, {});
+
+  // All defined categories (from custom categories or default starter set + any existing in finds)
+  const sourceCategories = (customCategories && Object.keys(customCategories).length > 0)
+    ? customCategories
+    : (defaultCategoriesWithSub || {});
+
+  const allKnownCategoryNames = Array.from(
+    new Set([...Object.keys(sourceCategories), ...Object.keys(categoryCounts)])
+  );
+
+  // Full category list sorted by count (highest first), then alphabetically
+  const categoryData = allKnownCategoryNames
+    .map((cat) => [cat, categoryCounts[cat] || 0])
+    .sort((a, b) => {
+      if (b[1] !== a[1]) return b[1] - a[1];
+      return a[0].localeCompare(b[0], "fr");
+    });
+
+  // Filtered categories with finds > 0 for charts
+  const activeCategoryData = categoryData.filter(([_, count]) => count > 0);
 
   const totalFinds = finds.length;
-  const maxCount = categoryData.length > 0 ? Math.max(...categoryData.map((d) => d[1])) : 1;
+  const maxCount = categoryData.length > 0 ? Math.max(...categoryData.map((d) => d[1]), 1) : 1;
 
   const getCategoryColor = (cat, idx) => {
     if (categoryColors && categoryColors[cat]) {
@@ -134,7 +152,7 @@ export default function StatsPanel({
   const donutSegments = [];
   let accumulatedLength = 0;
 
-  categoryData.forEach(([category, count], idx) => {
+  activeCategoryData.forEach(([category, count], idx) => {
     const pct = count / (totalFinds || 1);
     const len = circ * pct;
     const offset = -accumulatedLength;
@@ -533,46 +551,44 @@ export default function StatsPanel({
           marginBottom: "16px"
         }}
       >
-        <div style={{ textAlign: "center", marginBottom: "12px" }}>
+        <div style={{ textAlign: "center", marginBottom: "14px" }}>
           <h3 style={{ margin: 0, fontSize: "13.5px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px", color: isLight ? "#0f172a" : "#ffffff", display: "inline-flex", alignItems: "center", gap: "6px" }}>
             <span>📂</span> Détails par sous-sections
           </h3>
           <p style={{ margin: "4px 0 10px 0", fontSize: "11px", color: textSub }}>
             Touchez une catégorie pour déplier ou replier ses sous-catégories
           </p>
-          {categoryData.length > 0 && (
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              {(() => {
-                const allExpanded = categoryData.length > 0 && categoryData.every(([cat]) => !!expandedCats[cat]);
-                return (
-                  <button
-                    type="button"
-                    onClick={() => toggleAllCategories(!allExpanded)}
-                    style={{
-                      padding: "5px 14px",
-                      borderRadius: "10px",
-                      border: `1px solid ${cardBorder}`,
-                      background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.08)",
-                      color: textMain,
-                      fontSize: "11px",
-                      fontWeight: "700",
-                      cursor: "pointer",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "6px",
-                      whiteSpace: "nowrap",
-                      boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
-                      transition: "all 0.15s ease"
-                    }}
-                  >
-                    <span>{allExpanded ? "▲" : "▼"}</span>
-                    <span>{allExpanded ? "Replier tout" : "Déplier tout"}</span>
-                  </button>
-                );
-              })()}
-            </div>
-          )}
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            {(() => {
+              const allExpanded = categoryData.length > 0 && categoryData.every(([cat]) => !!expandedCats[cat]);
+              return (
+                <button
+                  type="button"
+                  onClick={() => toggleAllCategories(!allExpanded)}
+                  style={{
+                    padding: "6px 16px",
+                    borderRadius: "10px",
+                    border: `1px solid ${cardBorder}`,
+                    background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.08)",
+                    color: textMain,
+                    fontSize: "11px",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "6px",
+                    whiteSpace: "nowrap",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+                    transition: "all 0.15s ease"
+                  }}
+                >
+                  <span>{allExpanded ? "▲" : "▼"}</span>
+                  <span>{allExpanded ? "Replier tout" : "Déplier tout"}</span>
+                </button>
+              );
+            })()}
+          </div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -581,19 +597,24 @@ export default function StatsPanel({
             const color = getCategoryColor(category, idx);
             const pct = Math.round((count / (totalFinds || 1)) * 100);
 
-            // Sub-category counts for this category
+            // Defined sub-categories for this family
+            const definedSubCats = (customCategories && customCategories[category]) || defaultCategoriesWithSub[category] || [];
+
+            // Sub-category counts for this category from actual finds
             const subCatCounts = Object.entries(
               finds
                 .filter((f) => f.category === category && f.sub_category)
                 .reduce((acc, f) => {
                   const matchingSubCat =
-                    ((customCategories && customCategories[category]) || []).find(
+                    definedSubCats.find(
                       (sub) => sub.toLowerCase() === f.sub_category.toLowerCase()
                     ) || f.sub_category;
                   acc[matchingSubCat] = (acc[matchingSubCat] || 0) + 1;
                   return acc;
                 }, {})
             ).sort((a, b) => b[1] - a[1]);
+
+            const subCatsCount = definedSubCats.length > 0 ? definedSubCats.length : subCatCounts.length;
 
             return (
               <div
@@ -642,7 +663,7 @@ export default function StatsPanel({
                         color: textSub
                       }}
                     >
-                      {subCatCounts.length} sous-catégories
+                      {subCatsCount} sous-catégories
                     </span>
                     <span
                       style={{
@@ -669,11 +690,7 @@ export default function StatsPanel({
                       gap: "6px"
                     }}
                   >
-                    {subCatCounts.length === 0 ? (
-                      <div style={{ fontSize: "11px", color: textSub, fontStyle: "italic", padding: "4px 0" }}>
-                        Aucune sous-catégorie spécifiée pour cette famille.
-                      </div>
-                    ) : (
+                    {subCatCounts.length > 0 ? (
                       subCatCounts.map(([subCat, subCount]) => {
                         const subPct = Math.round((subCount / count) * 100);
                         const subBarWidth = Math.max((subCount / count) * 100, 10);
@@ -697,6 +714,33 @@ export default function StatsPanel({
                           </div>
                         );
                       })
+                    ) : definedSubCats.length > 0 ? (
+                      <div>
+                        <div style={{ fontSize: "10.5px", color: textSub, marginBottom: "6px", fontStyle: "italic" }}>
+                          Sous-catégories disponibles (0 trouvaille enregistrée) :
+                        </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                          {definedSubCats.map((sub) => (
+                            <span
+                              key={sub}
+                              style={{
+                                fontSize: "10px",
+                                padding: "2px 7px",
+                                borderRadius: "6px",
+                                background: isLight ? "#ffffff" : "rgba(255,255,255,0.08)",
+                                color: textSub,
+                                border: `1px solid ${cardBorder}`
+                              }}
+                            >
+                              {sub}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: "11px", color: textSub, fontStyle: "italic", padding: "4px 0" }}>
+                        Aucune sous-catégorie configurée pour cette famille.
+                      </div>
                     )}
                   </div>
                 )}
