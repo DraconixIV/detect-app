@@ -529,45 +529,50 @@ export default function StatsPanel({
           border: `1px solid ${cardBorder}`,
           boxShadow: cardShadow,
           borderRadius: "16px",
-          padding: "14px",
+          padding: "16px 14px",
           marginBottom: "16px"
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-          <div>
-            <h3 style={{ margin: 0, fontSize: "13px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px", color: isLight ? "#0f172a" : "#ffffff" }}>
-              📂 Détails par sous-sections
-            </h3>
-            <p style={{ margin: "2px 0 0 0", fontSize: "10px", color: textSub }}>
-              Touchez une catégorie pour déplier ou replier ses sous-catégories
-            </p>
-          </div>
-          <div>
-            {(() => {
-              const allExpanded = categoryData.length > 0 && categoryData.every(([cat]) => !!expandedCats[cat]);
-              return (
-                <button
-                  onClick={() => toggleAllCategories(!allExpanded)}
-                  style={{
-                    padding: "4px 10px",
-                    borderRadius: "8px",
-                    border: `1px solid ${cardBorder}`,
-                    background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.08)",
-                    color: textMain,
-                    fontSize: "11px",
-                    fontWeight: "700",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                    transition: "all 0.15s ease"
-                  }}
-                >
-                  {allExpanded ? "▲ Replier tout" : "▼ Déplier tout"}
-                </button>
-              );
-            })()}
-          </div>
+        <div style={{ textAlign: "center", marginBottom: "12px" }}>
+          <h3 style={{ margin: 0, fontSize: "13.5px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px", color: isLight ? "#0f172a" : "#ffffff", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            <span>📂</span> Détails par sous-sections
+          </h3>
+          <p style={{ margin: "4px 0 10px 0", fontSize: "11px", color: textSub }}>
+            Touchez une catégorie pour déplier ou replier ses sous-catégories
+          </p>
+          {categoryData.length > 0 && (
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              {(() => {
+                const allExpanded = categoryData.length > 0 && categoryData.every(([cat]) => !!expandedCats[cat]);
+                return (
+                  <button
+                    type="button"
+                    onClick={() => toggleAllCategories(!allExpanded)}
+                    style={{
+                      padding: "5px 14px",
+                      borderRadius: "10px",
+                      border: `1px solid ${cardBorder}`,
+                      background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.08)",
+                      color: textMain,
+                      fontSize: "11px",
+                      fontWeight: "700",
+                      cursor: "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "6px",
+                      whiteSpace: "nowrap",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+                      transition: "all 0.15s ease"
+                    }}
+                  >
+                    <span>{allExpanded ? "▲" : "▼"}</span>
+                    <span>{allExpanded ? "Replier tout" : "Déplier tout"}</span>
+                  </button>
+                );
+              })()}
+            </div>
+          )}
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>

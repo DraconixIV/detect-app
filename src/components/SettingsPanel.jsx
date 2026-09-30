@@ -785,7 +785,7 @@ export default function SettingsPanel({
                       gap: "6px"
                     }}
                   >
-                    <span>⚖️</span> Consulter les CGU & Confidentialité
+                    <span>⚖️</span> Consulter les CGU
                   </button>
                 )}
                 {onRestartOnboarding && (
