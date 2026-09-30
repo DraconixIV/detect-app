@@ -533,27 +533,6 @@ export default function AlbumPanel({
           </div>
           
           <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-            {onOpenCategoryManager && (
-              <button
-                onClick={onOpenCategoryManager}
-                style={{
-                  background: isLight ? "#ffffff" : "rgba(255,255,255,0.08)",
-                  border: `1px solid ${cardBorder}`,
-                  borderRadius: "10px",
-                  padding: "6px 10px",
-                  color: textMain,
-                  cursor: "pointer",
-                  fontSize: "11px",
-                  fontWeight: "bold",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px"
-                }}
-              >
-                ⚙️ Catégories
-              </button>
-            )}
-
             {!isTab && onClose && (
               <button
                 onClick={onClose}

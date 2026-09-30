@@ -60,7 +60,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
                 Conditions Générales d'Utilisation
               </h3>
               <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: textSub }}>
-                Mentions Légales & Confidentialité des Données (RGPD)
+                Mentions légales et confidentialité (RGPD)
               </p>
             </div>
           </div>
@@ -115,7 +115,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             </p>
           </div>
 
-          {/* Section 2 : Cadre Légal & Responsabilité */}
+          {/* Section 2 : Responsabilité de l'utilisateur */}
           <div
             style={{
               padding: "16px 18px",
@@ -125,7 +125,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
-              2 — Cadre légal & Responsabilité
+              2 — Responsabilité de l'utilisateur
             </div>
             <p style={{ margin: "0 0 10px 0" }}>
               L'utilisateur est <strong>seul et unique responsable</strong> de sa pratique de la détection sur le terrain et de l'usage qu'il fait des informations cartographiques. L'application GeoProspect rappelle et impose le respect strict des réglementations en vigueur :
@@ -146,7 +146,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             </ul>
           </div>
 
-          {/* Section 3 : Données Personnelles (RGPD) */}
+          {/* Section 3 : Données personnelles et confidentialité */}
           <div
             style={{
               padding: "16px 18px",
@@ -156,7 +156,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
-              3 — Données personnelles & Confidentialité (RGPD)
+              3 — Données personnelles et confidentialité
             </div>
             <p style={{ margin: "0 0 10px 0" }}>
               GeoProspect respecte scrupuleusement votre vie privée et applique le principe de minimisation des données :
@@ -174,7 +174,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             </ul>
           </div>
 
-          {/* Section 4 : Absence de Cookies Publicitaires */}
+          {/* Section 4 : Traceurs et cookies publicitaires */}
           <div
             style={{
               padding: "16px 18px",
@@ -184,14 +184,14 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
-              4 — Absence de cookies publicitaires & Traçage
+              4 — Traceurs et cookies publicitaires
             </div>
             <p style={{ margin: 0 }}>
               GeoProspect n'utilise <strong>aucun cookie publicitaire, aucun outil d'analyse comportementale tierce</strong> (Google Analytics, Facebook Pixel, etc.). Les technologies de stockage local du navigateur (IndexedDB et localStorage) sont exclusivement réservées au fonctionnement technique du carnet de bord (mémorisation de votre thème, stockage hors-ligne de vos tracés et session d'authentification).
             </p>
           </div>
 
-          {/* Section 5 : Droit à l'Oubli & Suppression */}
+          {/* Section 5 : Droit à l'oubli et suppression */}
           <div
             style={{
               padding: "16px 18px",
@@ -201,14 +201,14 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
-              5 — Droit à l'oubli & Suppression totale
+              5 — Droit à l'oubli et suppression
             </div>
             <p style={{ margin: 0 }}>
               Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification et d'effacement total de vos données. L'option <strong>« Suppression définitive du compte »</strong> accessible dans les Paramètres (Zone de danger) permet de détruire immédiatement, intégralement et de façon irréversible l'ensemble de votre compte, de vos coordonnées, photos, notes vocales et tracés de nos serveurs.
             </p>
           </div>
 
-          {/* Section 6 : Gratuité & Disponibilité */}
+          {/* Section 6 : Fonctionnement et gratuité du service */}
           <div
             style={{
               padding: "16px 18px",
@@ -218,14 +218,14 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
-              6 — Gratuité & Disponibilité du service
+              6 — Fonctionnement et gratuité du service
             </div>
             <p style={{ margin: 0 }}>
               L'application est proposée 100 % gratuitement et sans publicité. Le développeur bénévole met en œuvre tous les moyens raisonnables pour assurer la continuité et la sécurité du service, sans garantie d'absence totale d'interruption temporaire ou de bugs. L'utilisateur est invité à exporter régulièrement des sauvegardes locales de son journal.
             </p>
           </div>
 
-          {/* Section 7 : Hébergement & Sécurité */}
+          {/* Section 7 : Hébergement et sécurité des données */}
           <div
             style={{
               padding: "16px 18px",
@@ -235,7 +235,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "13.5px", fontWeight: "800", color: accentColor, marginBottom: "8px" }}>
-              7 — Hébergement & Sécurité des données
+              7 — Hébergement et sécurité des données
             </div>
             <p style={{ margin: 0 }}>
               Les données cloud synchronisées sont hébergées au sein de l'Union Européenne sur les infrastructures sécurisées de <strong>Supabase</strong> (PostgreSQL avec chiffrement des échanges en transit via protocole sécurisé HTTPS / TLS 1.3). L'interface utilisateur est distribuée sur le réseau mondial de <strong>Vercel</strong>.
