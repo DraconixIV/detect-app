@@ -126,10 +126,10 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
             </div>
             <div style={{ fontSize: "16px", fontWeight: "900", color: textMain }}>GeoProspect</div>
             <div style={{ fontSize: "11px", fontWeight: "700", color: textSub }}>
-              Le carnet de terrain GPS des détectoristes
+              Le carnet de détection GPS des détectoristes
             </div>
             <p style={{ margin: "4px 0 0 0", fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
-              Passionné de détection comme vous, j’ai créé GeoProspect avec une idée simple : concevoir le carnet de bord dont on avait tous besoin sur le terrain. Une appli moderne, fluide, 100 % gratuite, sans la moindre pub et qui respecte totalement votre vie privée.
+              Passionné de détection comme vous, j’ai créé GeoProspect avec une idée simple : concevoir le carnet de détection dont on avait tous besoin sur le terrain. Une appli moderne, fluide, 100 % gratuite, sans la moindre pub et qui respecte totalement votre vie privée.
             </p>
           </div>
 

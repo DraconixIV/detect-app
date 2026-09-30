@@ -41,7 +41,7 @@ export default function OnboardingStep6Letter({
           Cette application est 100 % gratuite et toujours en phase de test. Il se peut que vous rencontriez de nouveaux bugs à mesure de son utilisation.
         </p>
         <p style={{ margin: 0 }}>
-          On parle d'un projet développé seul par un étudiant de 19 ans passionné de détection, qui s'appuie sur l'IA comme assistante de développement pour concevoir et enrichir ce carnet de bord. Proposer un outil de poche moderne et fluide est ma manière de contribuer à la communauté.
+          On parle d'un projet développé seul par un étudiant de 19 ans passionné de détection, qui s'appuie sur l'IA comme assistante de développement pour concevoir et enrichir ce carnet de détection. Proposer un outil de poche moderne et fluide est ma manière de contribuer à la communauté.
         </p>
         <p style={{ margin: 0 }}>
           Tous vos retours seront votre manière de remercier mon travail, un simple compte-rendu de votre expérience suffira amplement à contribuer à l'amélioration constante de GeoProspect.

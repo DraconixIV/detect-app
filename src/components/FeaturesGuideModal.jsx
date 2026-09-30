@@ -165,7 +165,7 @@ const FEATURES_DATA = [
         icon: "🔄",
         badge: "Auto",
         badgeColor: "#2563eb",
-        description: "Dès que votre téléphone capte à nouveau une connexion Internet, vos trouvailles en attente sont transmises à votre carnet cloud."
+        description: "Dès que votre téléphone capte à nouveau une connexion Internet, vos trouvailles en attente sont transmises à votre carnet de détection cloud."
       },
       {
         title: "Sauvegardes Complètes JSON (Export / Import)",
@@ -293,7 +293,7 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
                 Guide des Fonctionnalités
               </h3>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
-                Toutes les capacités de votre carnet GeoProspect
+                Toutes les capacités de votre carnet de détection GeoProspect
               </p>
             </div>
           </div>

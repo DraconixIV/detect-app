@@ -111,7 +111,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
               1 — Nature du service
             </div>
             <p style={{ margin: 0 }}>
-              <strong>GeoProspect</strong> est une application web progressive (PWA) conçue bénévolement et mise à disposition à titre gratuit. Elle constitue un <strong>carnet de bord numérique personnel</strong> permettant aux passionnés de détection de loisir d'enregistrer leurs trouvailles, de visualiser des fonds de cartes géographiques et de suivre leurs parcours GPS.
+              <strong>GeoProspect</strong> est une application web progressive (PWA) conçue bénévolement et mise à disposition à titre gratuit. Elle constitue un <strong>carnet de détection numérique personnel</strong> permettant aux passionnés de détection de loisir d'enregistrer leurs trouvailles, de visualiser des fonds de cartes géographiques et de suivre leurs parcours GPS.
             </p>
           </div>
 
@@ -166,7 +166,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
                 <strong>Données collectées :</strong> Adresse email (si création de compte), pseudonyme de prospecteur, coordonnées GPS et photographies de vos trouvailles.
               </li>
               <li>
-                <strong>Usage strict :</strong> Vos données ne sont utilisées que pour assurer le fonctionnement de votre carnet de bord et la synchronisation entre vos appareils.
+                <strong>Usage strict :</strong> Vos données ne sont utilisées que pour assurer le fonctionnement de votre carnet de détection et la synchronisation entre vos appareils.
               </li>
               <li>
                 <strong>Aucune revente :</strong> Aucune donnée personnelle, coordonnée GPS ou image n'est vendue, louée, cédée ou partagée à des régies publicitaires ou tiers commerciaux.
@@ -187,7 +187,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
               4 — Traceurs et cookies publicitaires
             </div>
             <p style={{ margin: 0 }}>
-              GeoProspect n'utilise <strong>aucun cookie publicitaire, aucun outil d'analyse comportementale tierce</strong> (Google Analytics, Facebook Pixel, etc.). Les technologies de stockage local du navigateur (IndexedDB et localStorage) sont exclusivement réservées au fonctionnement technique du carnet de bord (mémorisation de votre thème, stockage hors-ligne de vos tracés et session d'authentification).
+              GeoProspect n'utilise <strong>aucun cookie publicitaire, aucun outil d'analyse comportementale tierce</strong> (Google Analytics, Facebook Pixel, etc.). Les technologies de stockage local du navigateur (IndexedDB et localStorage) sont exclusivement réservées au fonctionnement technique du carnet de détection (mémorisation de votre thème, stockage hors-ligne de vos tracés et session d'authentification).
             </p>
           </div>
 

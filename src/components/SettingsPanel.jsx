@@ -674,7 +674,7 @@ export default function SettingsPanel({
             <span>☕</span> Soutenir le Projet (Dons)
           </div>
           <p style={{ margin: "0 0 14px 0", fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
-            L'outil est 100% libre et développé sur mon temps libre avec l'aide de l'IA comme assistante pour concevoir un carnet de bord moderne et fluide. Aucune publicité ne finance le projet et vos données restent strictement privées et ne font l'objet d'aucune exploitation commerciale. Si l'application vous plaît et vous est utile lors de vos sorties, un petit don encourage les futures améliorations !
+            L'outil est 100% libre et développé sur mon temps libre avec l'aide de l'IA comme assistante pour concevoir un carnet de détection moderne et fluide. Aucune publicité ne finance le projet et vos données restent strictement privées et ne font l'objet d'aucune exploitation commerciale. Si l'application vous plaît et vous est utile lors de vos sorties, un petit don encourage les futures améliorations !
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -763,7 +763,7 @@ export default function SettingsPanel({
           {showLegal && (
             <div style={{ marginTop: "12px", fontSize: "11px", color: textSub, lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "8px" }}>
               <p style={{ margin: 0 }}>
-                Cette application est un carnet de bord numérique d'enregistrement personnel pour la détection de loisir. L'utilisateur est seul responsable de sa pratique et s'engage à respecter scrupuleusement l'article L.542-1 du code du patrimoine, obtenir l'autorisation expresse des propriétaires des parcelles prospectées et à déclarer toute découverte fortuite.
+                Cette application est un carnet de détection d'enregistrement personnel pour la pratique de loisir. L'utilisateur est seul responsable de sa pratique et s'engage à respecter scrupuleusement l'article L.542-1 du code du patrimoine, obtenir l'autorisation expresse des propriétaires des parcelles prospectées et à déclarer toute découverte fortuite.
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "8px" }}>
                 {onOpenCgu && (
