@@ -27,6 +27,7 @@ import NewsModal from "./components/NewsModal";
 import AboutModal from "./components/AboutModal";
 import CguModal from "./components/CguModal";
 import FeaturesGuideModal from "./components/FeaturesGuideModal";
+import InAppBrowserBanner from "./components/InAppBrowserBanner";
 import { THEMES } from "./styles/themes";
 
 import { icons } from "./icons";
@@ -71,7 +72,7 @@ function App() {
     } catch (e) {
       console.error("Error reading cached position", e);
     }
-    return [43.273, 3.173]; // Position par défaut
+    return [46.603354, 1.888334]; // Centre géographique de la France (neutre)
   });
 
 
@@ -448,12 +449,12 @@ function App() {
           if (showFeedback) {
             if (finalErr.code === 1) {
               setToast({
-                message: "⚠️ Accès GPS refusé. Veuillez autoriser la localisation dans les paramètres.",
+                message: "⚠️ Accès GPS refusé. Veuillez autoriser la localisation ou ouvrir dans Chrome/Safari (⋮).",
                 type: "error"
               });
             } else {
               setToast({
-                message: "⚠️ Signal GPS indisponible. Vérifiez que la localisation est activée.",
+                message: "⚠️ Signal GPS indisponible. Vérifiez vos paramètres ou ouvrez dans Chrome/Safari (⋮).",
                 type: "error"
               });
             }
@@ -1291,6 +1292,9 @@ function App() {
         width: "100%"
       }}
     >
+      {/* IN-APP BROWSER (FACEBOOK, INSTAGRAM, ETC.) DETECTION BANNER */}
+      <InAppBrowserBanner />
+
       {/* FLOATING SORTIE HIGHLIGHT BANNER */}
       {selectedDate && (
         <div
