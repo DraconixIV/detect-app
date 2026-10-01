@@ -28,6 +28,7 @@ import AboutModal from "./components/AboutModal";
 import CguModal from "./components/CguModal";
 import FeaturesGuideModal from "./components/FeaturesGuideModal";
 import InAppBrowserBanner from "./components/InAppBrowserBanner";
+import AdminDashboard from "./components/AdminDashboard";
 import { THEMES } from "./styles/themes";
 
 import { icons } from "./icons";
@@ -42,6 +43,7 @@ import { importData, exportData } from "./services/backupService";
 import { addFind as createFind, toggleFavorite, normalizeDateStr, isFindInSortie, getFindTimestamp } from "./services/findsService";
 import { getActiveSession, leaveTeamSession, normalizeSessionCode, getMyUserCode, getMyDisplayName } from "./services/sessionService";
 import { loadCategoriesData } from "./services/categoriesService";
+import { trackVisitEvent } from "./services/analyticsService";
 
 function offsetPosition(
   position,
@@ -76,6 +78,36 @@ function App() {
   });
 
 
+
+  const [showAdminDashboard, setShowAdminDashboard] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const path = window.location.pathname.toLowerCase();
+    const search = window.location.search.toLowerCase();
+    const hash = window.location.hash.toLowerCase();
+    return path.includes("/admin") || search.includes("admin") || hash.includes("admin");
+  });
+
+  useEffect(() => {
+    const checkAdminRoute = () => {
+      const path = window.location.pathname.toLowerCase();
+      const search = window.location.search.toLowerCase();
+      const hash = window.location.hash.toLowerCase();
+      setShowAdminDashboard(path.includes("/admin") || search.includes("admin") || hash.includes("admin"));
+    };
+
+    window.addEventListener("popstate", checkAdminRoute);
+    window.addEventListener("hashchange", checkAdminRoute);
+    return () => {
+      window.removeEventListener("popstate", checkAdminRoute);
+      window.removeEventListener("hashchange", checkAdminRoute);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!showAdminDashboard) {
+      trackVisitEvent();
+    }
+  }, [showAdminDashboard]);
 
   const [search, setSearch] =
     useState("");
@@ -1280,6 +1312,17 @@ function App() {
       }
     }
   }, [zoomToDate, finds, savedTracks]);
+
+  if (showAdminDashboard) {
+    return (
+      <AdminDashboard
+        onExit={() => {
+          setShowAdminDashboard(false);
+          window.history.pushState(null, "", "/");
+        }}
+      />
+    );
+  }
 
   if (!position) {
     return <LoadingScreen />;

@@ -888,6 +888,33 @@ export default function SettingsPanel({
             </button>
           </div>
         </div>
+
+        {/* DEVELOPER CONSOLE LINK (DISCREET) */}
+        <div style={{ marginTop: "24px", textAlign: "center" }}>
+          <button
+            type="button"
+            onClick={() => {
+              window.history.pushState(null, "", "/admin");
+              window.dispatchEvent(new Event("popstate"));
+            }}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: isLight ? "#94a3b8" : "#475569",
+              fontSize: "11px",
+              fontWeight: "600",
+              cursor: "pointer",
+              padding: "6px 12px",
+              borderRadius: "8px",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              transition: "all 0.2s"
+            }}
+          >
+            <span>🔒</span> Console Développeur (PIN)
+          </button>
+        </div>
       </div>
 
       {/* MODAL DE CONFIRMATION DE SUPPRESSION DE COMPTE */}
