@@ -214,7 +214,22 @@ export default function MapTopBar({
             />
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", flexShrink: 0 }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", flexShrink: 0, cursor: "pointer", userSelect: "none" }}
+            onClick={() => {
+              window.__geoAdminTaps = (window.__geoAdminTaps || 0) + 1;
+              if (window.__geoAdminTimeout) clearTimeout(window.__geoAdminTimeout);
+              if (window.__geoAdminTaps >= 4) {
+                window.__geoAdminTaps = 0;
+                window.history.pushState(null, "", "/admin");
+                window.dispatchEvent(new Event("popstate"));
+              } else {
+                window.__geoAdminTimeout = setTimeout(() => {
+                  window.__geoAdminTaps = 0;
+                }, 1500);
+              }
+            }}
+          >
             <span
               style={{
                 fontSize: "12px",
