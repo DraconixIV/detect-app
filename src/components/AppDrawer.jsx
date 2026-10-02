@@ -125,23 +125,7 @@ export default function AppDrawer({
                   alignItems: "center",
                   justifyContent: "center",
                   fontSize: "20px",
-                  color: "#ffffff",
-                  cursor: "pointer",
-                  userSelect: "none"
-                }}
-                onClick={() => {
-                  window.__geoAdminTaps = (window.__geoAdminTaps || 0) + 1;
-                  if (window.__geoAdminTimeout) clearTimeout(window.__geoAdminTimeout);
-                  if (window.__geoAdminTaps >= 4) {
-                    window.__geoAdminTaps = 0;
-                    onClose();
-                    window.history.pushState(null, "", "/admin");
-                    window.dispatchEvent(new Event("popstate"));
-                  } else {
-                    window.__geoAdminTimeout = setTimeout(() => {
-                      window.__geoAdminTaps = 0;
-                    }, 1500);
-                  }
+                  color: "#ffffff"
                 }}
               >
                 🧭

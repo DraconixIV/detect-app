@@ -37,7 +37,7 @@ export default function AdminDashboard({ onExit }) {
 
   const handlePinSubmit = (e) => {
     e?.preventDefault();
-    if (pinInput === MASTER_PIN) {
+    if (pinInput.trim() === MASTER_PIN) {
       try {
         sessionStorage.setItem(AUTH_STORAGE_KEY, "true");
       } catch {}
