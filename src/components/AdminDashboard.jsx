@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { fetchAnalyticsReport } from "../services/analyticsService.js";
+import {
+  fetchAnalyticsReport,
+  setDeveloperDevice,
+  isDeveloperDevice,
+  purgeAnalyticsData
+} from "../services/analyticsService.js";
 
 const MASTER_PIN = "25802580";
 const AUTH_STORAGE_KEY = "geoprospect_admin_auth_token_v1";
@@ -18,6 +23,9 @@ export default function AdminDashboard({ onExit }) {
   const [data, setData] = useState(null);
   const [lastRefreshed, setLastRefreshed] = useState(null);
   const [copiedSql, setCopiedSql] = useState(false);
+  const [showPurgeModal, setShowPurgeModal] = useState(false);
+  const [isPurging, setIsPurging] = useState(false);
+  const [devDeviceActive, setDevDeviceActive] = useState(() => isDeveloperDevice());
 
   const loadData = async () => {
     setLoading(true);
@@ -29,6 +37,9 @@ export default function AdminDashboard({ onExit }) {
 
   useEffect(() => {
     if (isAuthenticated) {
+      // Automatically flag this browser/device as developer device
+      setDeveloperDevice(true);
+      setDevDeviceActive(true);
       loadData();
       const interval = setInterval(loadData, 20000); // Auto-refresh every 20s
       return () => clearInterval(interval);
@@ -41,11 +52,25 @@ export default function AdminDashboard({ onExit }) {
       try {
         sessionStorage.setItem(AUTH_STORAGE_KEY, "true");
       } catch {}
+      setDeveloperDevice(true);
+      setDevDeviceActive(true);
       setIsAuthenticated(true);
       setPinError(false);
     } else {
       setPinError(true);
       setPinInput("");
+    }
+  };
+
+  const handlePurge = async () => {
+    setIsPurging(true);
+    const success = await purgeAnalyticsData();
+    setIsPurging(false);
+    setShowPurgeModal(false);
+    if (success) {
+      await loadData();
+    } else {
+      alert("Erreur lors de la réinitialisation des statistiques.");
     }
   };
 
@@ -326,6 +351,54 @@ CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USI
           </div>
         </div>
 
+        {/* DEVELOPER DEVICE EXCLUSION & PURGE BAR */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: "linear-gradient(135deg, rgba(37, 99, 235, 0.12) 0%, rgba(56, 189, 248, 0.08) 100%)",
+            border: "1px solid rgba(56, 189, 248, 0.3)",
+            padding: "12px 16px",
+            borderRadius: "16px",
+            marginBottom: "20px",
+            flexWrap: "wrap",
+            gap: "12px"
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "12px" }}>
+            <span style={{ fontSize: "20px" }}>🛡️</span>
+            <div>
+              <div style={{ fontWeight: "900", color: "#38bdf8", letterSpacing: "-0.2px" }}>
+                Mode Développeur Actif sur cet appareil
+              </div>
+              <div style={{ fontSize: "11px", color: "#cbd5e1", marginTop: "2px" }}>
+                Vos visites et tests depuis ce {/iPhone|iPad|Android/i.test(navigator.userAgent || "") ? "smartphone" : "PC"} ne sont <strong>plus comptabilisés</strong>.
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setShowPurgeModal(true)}
+            style={{
+              padding: "7px 12px",
+              borderRadius: "10px",
+              background: "rgba(239, 68, 68, 0.16)",
+              border: "1px solid rgba(239, 68, 68, 0.4)",
+              color: "#fca5a5",
+              fontSize: "11px",
+              fontWeight: "800",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              transition: "all 0.2s"
+            }}
+          >
+            <span>🗑️</span> Remettre les clics à zéro
+          </button>
+        </div>
+
         {/* Database notice if table needs creating */}
         {data && !data.tableReady && (
           <div
@@ -530,6 +603,83 @@ CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USI
             </div>
           )}
         </div>
+
+        {/* PURGE CONFIRMATION MODAL */}
+        {showPurgeModal && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 99999,
+              background: "rgba(0, 0, 0, 0.8)",
+              backdropFilter: "blur(8px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px"
+            }}
+            onClick={() => !isPurging && setShowPurgeModal(false)}
+          >
+            <div
+              style={{
+                width: "100%",
+                maxWidth: "400px",
+                background: "#0f172a",
+                border: "1px solid rgba(239, 68, 68, 0.4)",
+                borderRadius: "20px",
+                padding: "24px",
+                boxShadow: "0 25px 50px rgba(0,0,0,0.8)",
+                color: "#ffffff"
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{ fontSize: "28px", textAlign: "center", marginBottom: "12px" }}>🗑️</div>
+              <h3 style={{ margin: "0 0 8px 0", fontSize: "16px", fontWeight: "900", textAlign: "center" }}>
+                Remettre les clics à zéro ?
+              </h3>
+              <p style={{ margin: "0 0 20px 0", fontSize: "12px", color: "#94a3b8", lineHeight: "1.5", textAlign: "center" }}>
+                Cette action va effacer l'historique des visites de test enregistrées jusqu'ici dans la table analytique. Vos trouvailles et sorties ne seront pas affectées.
+              </p>
+
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  onClick={() => setShowPurgeModal(false)}
+                  disabled={isPurging}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    borderRadius: "10px",
+                    background: "rgba(255, 255, 255, 0.08)",
+                    border: "1px solid rgba(255, 255, 255, 0.15)",
+                    color: "#ffffff",
+                    fontSize: "12px",
+                    fontWeight: "700",
+                    cursor: "pointer"
+                  }}
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handlePurge}
+                  disabled={isPurging}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    borderRadius: "10px",
+                    background: "#ef4444",
+                    border: "none",
+                    color: "#ffffff",
+                    fontSize: "12px",
+                    fontWeight: "800",
+                    cursor: "pointer"
+                  }}
+                >
+                  {isPurging ? "Effacement..." : "Confirmer l'effacement"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -61,11 +61,61 @@ function getTrafficSource() {
   return "Accès Direct / PWA";
 }
 
+export const DEV_DEVICE_STORAGE_KEY = "geoprospect_is_developer_device_v1";
+
+export function isDeveloperDevice() {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem(DEV_DEVICE_STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+export function setDeveloperDevice(enabled = true) {
+  if (typeof window === "undefined") return;
+  try {
+    if (enabled) {
+      localStorage.setItem(DEV_DEVICE_STORAGE_KEY, "true");
+    } else {
+      localStorage.removeItem(DEV_DEVICE_STORAGE_KEY);
+    }
+  } catch {}
+}
+
+/**
+ * Purge / Reset all visits and analytics records from Supabase
+ */
+export async function purgeAnalyticsData() {
+  try {
+    // Delete all records from app_analytics table
+    const { error } = await supabase
+      .from("app_analytics")
+      .delete()
+      .neq("created_at", "1970-01-01T00:00:00Z");
+
+    if (error) {
+      console.warn("Purge error:", error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("Purge exception:", err);
+    return false;
+  }
+}
+
 /**
  * Tracks an anonymous page view / visit. Throttled to 1 call per 30 minutes per browser session.
+ * Excludes developer devices automatically.
  */
 export async function trackVisitEvent() {
   try {
+    // 1. Immediately ignore developer's own devices (PC, smartphone)
+    if (isDeveloperDevice()) {
+      return;
+    }
+
     const lastTrackTime = sessionStorage.getItem(ANALYTICS_SESSION_KEY);
     const now = Date.now();
     if (lastTrackTime && now - parseInt(lastTrackTime, 10) < 30 * 60 * 1000) {
