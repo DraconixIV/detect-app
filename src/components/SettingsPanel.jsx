@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../supabase";
 import { loadCategoriesData, addCategory, removeCategory, addSubCategory, removeSubCategory } from "../services/categoriesService";
 import { defaultCategoryColors } from "../subCategories";
-import { getMyUserCode, getMyDisplayName } from "../services/sessionService";
+import { getMyUserCode, getMyDisplayName, setMyUserCode } from "../services/sessionService";
 import { purgeAllUserDataAndAccount, logoutAndResetSession } from "../services/findsService";
 import AuthForm from "./AuthForm";
 import ConfirmModal from "./ConfirmModal";
@@ -41,8 +41,40 @@ export default function SettingsPanel({
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
-  const myCode = getMyUserCode();
+  const [activeCode, setActiveCode] = useState(() => getMyUserCode());
+  const [showRestoreCode, setShowRestoreCode] = useState(false);
+  const [restoreCodeInput, setRestoreCodeInput] = useState("");
+  const [restoreSuccessMsg, setRestoreSuccessMsg] = useState("");
+  const [restoreErrorMsg, setRestoreErrorMsg] = useState("");
+  const myCode = activeCode;
   const myName = getMyDisplayName();
+
+  useEffect(() => {
+    const handleSync = () => setActiveCode(getMyUserCode());
+    window.addEventListener("geoprospect-user-synced", handleSync);
+    return () => window.removeEventListener("geoprospect-user-synced", handleSync);
+  }, []);
+
+  const handleRestoreExistingCode = (e) => {
+    if (e) e.preventDefault();
+    setRestoreErrorMsg("");
+    setRestoreSuccessMsg("");
+    const clean = (restoreCodeInput || "").trim().toUpperCase();
+    if (!clean || clean.length < 3) {
+      setRestoreErrorMsg("Veuillez saisir un code valide (ex: GEO-KE9Q88).");
+      return;
+    }
+    const updated = setMyUserCode(clean, "GeoProspect");
+    if (updated) {
+      setActiveCode(updated);
+      setRestoreSuccessMsg(`Code ${updated} activé avec succès ! Vos trouvailles sont rechargées.`);
+      setShowRestoreCode(false);
+      setRestoreCodeInput("");
+      setTimeout(() => setRestoreSuccessMsg(""), 5000);
+    } else {
+      setRestoreErrorMsg("Code invalide.");
+    }
+  };
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -244,6 +276,121 @@ export default function SettingsPanel({
             >
               {copiedCode ? "Copié ✅" : "Copier"}
             </button>
+          </div>
+
+          {/* Code Restore Accordion / Trigger */}
+          <div style={{ marginBottom: "12px" }}>
+            {restoreSuccessMsg && (
+              <div
+                style={{
+                  background: "rgba(16, 185, 129, 0.15)",
+                  border: "1px solid rgba(16, 185, 129, 0.3)",
+                  color: "#10b981",
+                  padding: "8px 12px",
+                  borderRadius: "10px",
+                  fontSize: "12px",
+                  fontWeight: "700",
+                  marginBottom: "8px"
+                }}
+              >
+                ✅ {restoreSuccessMsg}
+              </div>
+            )}
+
+            {!showRestoreCode ? (
+              <button
+                type="button"
+                onClick={() => setShowRestoreCode(true)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: isLight ? "#2563eb" : "#60a5fa",
+                  fontSize: "11px",
+                  fontWeight: "700",
+                  cursor: "pointer",
+                  padding: "4px 0",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px"
+                }}
+              >
+                <span>🔑</span>
+                <span>Restaurer ou changer de code détecteur</span>
+              </button>
+            ) : (
+              <form
+                onSubmit={handleRestoreExistingCode}
+                style={{
+                  background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.05)",
+                  border: `1px solid ${cardBorder}`,
+                  borderRadius: "12px",
+                  padding: "10px 12px"
+                }}
+              >
+                <div style={{ fontSize: "11px", color: textSub, marginBottom: "8px", fontWeight: "600" }}>
+                  Saisissez votre ancien code (ex: <strong>GEO-KE9Q88</strong>) pour recharger instantanément toutes vos trouvailles :
+                </div>
+
+                {restoreErrorMsg && (
+                  <div style={{ color: "#ef4444", fontSize: "11px", fontWeight: "700", marginBottom: "6px" }}>
+                    ⚠️ {restoreErrorMsg}
+                  </div>
+                )}
+
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <input
+                    type="text"
+                    value={restoreCodeInput}
+                    onChange={(e) => setRestoreCodeInput(e.target.value)}
+                    placeholder="Ex: GEO-KE9Q88"
+                    style={{
+                      flex: 1,
+                      padding: "8px 10px",
+                      borderRadius: "8px",
+                      border: `1px solid ${inputBorder}`,
+                      background: inputBg,
+                      color: textMain,
+                      fontSize: "12px",
+                      fontWeight: "700",
+                      textTransform: "uppercase"
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    style={{
+                      background: "#3b82f6",
+                      color: "#ffffff",
+                      border: "none",
+                      borderRadius: "8px",
+                      padding: "8px 14px",
+                      fontSize: "11px",
+                      fontWeight: "800",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Activer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowRestoreCode(false);
+                      setRestoreErrorMsg("");
+                    }}
+                    style={{
+                      background: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.1)",
+                      color: textSub,
+                      border: "none",
+                      borderRadius: "8px",
+                      padding: "8px 10px",
+                      fontSize: "11px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
 
           {onOpenTeamSession && (

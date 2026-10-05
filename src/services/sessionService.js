@@ -184,6 +184,25 @@ export function getMyUserCode() {
   }
 }
 
+export function setMyUserCode(code, name = null) {
+  try {
+    const clean = normalizeSessionCode(code);
+    if (!clean) return null;
+    localStorage.setItem(USER_CODE_STORAGE_KEY, clean);
+    if (name && typeof name === "string" && name.trim()) {
+      localStorage.setItem(USER_DISPLAY_NAME_KEY, name.trim());
+    }
+    syncUserProfileToCloud();
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("geoprospect-user-synced"));
+    }
+    return clean;
+  } catch (e) {
+    console.warn("Storage error in setMyUserCode:", e);
+    return null;
+  }
+}
+
 /**
  * Reset and generate a completely fresh, random 6-character user detector code (blank map & new account)
  */
