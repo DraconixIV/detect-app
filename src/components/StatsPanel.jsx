@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { categoriesWithSub, defaultCategoryColors, PRESET_CATEGORY_COLORS } from "../subCategories";
+import { categoriesWithSub, categoriesWithSub as defaultCategoriesWithSub, defaultCategoryColors, PRESET_CATEGORY_COLORS } from "../subCategories";
 import { loadCategoriesData } from "../services/categoriesService";
 import { normalizeDateStr } from "../services/findsService";
 import ConfirmModal from "./ConfirmModal";
 
 function getDistance(p1, p2) {
+  if (!p1 || !p2 || !Array.isArray(p1) || !Array.isArray(p2)) return 0;
   const R = 6371e3; // metres
   const phi1 = (p1[0] * Math.PI) / 180;
   const phi2 = (p2[0] * Math.PI) / 180;
@@ -21,10 +22,12 @@ function getDistance(p1, p2) {
 }
 
 function getDistanceOfTrack(positions) {
-  if (!positions || positions.length < 2) return 0;
+  if (!positions || !Array.isArray(positions) || positions.length < 2) return 0;
   let dist = 0;
   for (let i = 0; i < positions.length - 1; i++) {
-    dist += getDistance(positions[i], positions[i + 1]);
+    if (positions[i] && positions[i + 1]) {
+      dist += getDistance(positions[i], positions[i + 1]);
+    }
   }
   return dist / 1000; // in km
 }
@@ -57,35 +60,42 @@ export default function StatsPanel({
   const subBg = isLight ? "#f1f5f9" : "rgba(0, 0, 0, 0.25)";
 
   // Group finds by clean normalized date
-  const findsByDate = finds.reduce((acc, find) => {
+  const findsByDate = (finds || []).reduce((acc, find) => {
+    if (!find) return acc;
     const raw = find.date || find.customDate || find.created_at;
-    if (!raw) return acc;
-    const datePart = normalizeDateStr(raw);
-    if (!datePart) return acc;
-    if (!acc[datePart]) acc[datePart] = [];
-    acc[datePart].push(find);
+    const datePart = raw ? normalizeDateStr(raw) : "Date non spécifiée";
+    const cleanDate = datePart || "Date non spécifiée";
+    if (!acc[cleanDate]) acc[cleanDate] = [];
+    acc[cleanDate].push(find);
     return acc;
   }, {});
 
   // Group tracks by clean normalized date
-  const tracksByDate = savedTracks.reduce((acc, track) => {
-    if (!track.created_at) return acc;
-    const dateStr = normalizeDateStr(track.created_at);
-    if (!dateStr) return acc;
-    if (!acc[dateStr]) acc[dateStr] = [];
-    acc[dateStr].push(track);
+  const tracksByDate = (savedTracks || []).reduce((acc, track) => {
+    if (!track) return acc;
+    const raw = track.created_at || track.date;
+    const dateStr = raw ? normalizeDateStr(raw) : "Date non spécifiée";
+    const cleanDate = dateStr || "Date non spécifiée";
+    if (!acc[cleanDate]) acc[cleanDate] = [];
+    acc[cleanDate].push(track);
     return acc;
   }, {});
 
   const allDates = Array.from(
     new Set([...Object.keys(findsByDate), ...Object.keys(tracksByDate)])
   ).sort((a, b) => {
+    if (a === "Date non spécifiée") return 1;
+    if (b === "Date non spécifiée") return -1;
     const parseDate = (dStr) => {
-      const parts = dStr.split("/");
-      if (parts.length === 3) {
-        return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+      try {
+        const parts = String(dStr).split("/");
+        if (parts.length === 3) {
+          return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0])).getTime() || 0;
+        }
+        return new Date(dStr).getTime() || 0;
+      } catch {
+        return 0;
       }
-      return new Date(dStr);
     };
     return parseDate(b) - parseDate(a);
   });
