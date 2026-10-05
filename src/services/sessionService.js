@@ -147,7 +147,7 @@ export async function pullUserProfileFromCloud(user = null) {
 // Automatically sync user profile on auth state changes
 try {
   supabase.auth.onAuthStateChange((event, session) => {
-    if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
+    if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION" || event === "USER_UPDATED" || event === "TOKEN_REFRESHED")) {
       pullUserProfileFromCloud(session.user);
     }
   });
