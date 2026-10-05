@@ -315,7 +315,7 @@ export default function SettingsPanel({
                 }}
               >
                 <span>🔑</span>
-                <span>Restaurer ou changer de code détecteur</span>
+                <span>Restaurer le code détecteur</span>
               </button>
             ) : (
               <form
@@ -328,7 +328,7 @@ export default function SettingsPanel({
                 }}
               >
                 <div style={{ fontSize: "11px", color: textSub, marginBottom: "8px", fontWeight: "600" }}>
-                  Saisissez votre ancien code (ex: <strong>GEO-KE9Q88</strong>) pour recharger instantanément toutes vos trouvailles :
+                  Saisissez votre code pour recharger instantanément toutes vos trouvailles :
                 </div>
 
                 {restoreErrorMsg && (
@@ -342,7 +342,7 @@ export default function SettingsPanel({
                     type="text"
                     value={restoreCodeInput}
                     onChange={(e) => setRestoreCodeInput(e.target.value)}
-                    placeholder="Ex: GEO-KE9Q88"
+                    placeholder="Ex: GEO-XXXXXX"
                     style={{
                       flex: 1,
                       padding: "8px 10px",

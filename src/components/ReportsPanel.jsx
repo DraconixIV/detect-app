@@ -10,7 +10,8 @@ export default function ReportsPanel({
   onClose,
   theme = "dark",
   onOpenCategoryManager,
-  onDeleteTrack
+  onDeleteTrack,
+  onDeleteFind
 }) {
   const isLight = theme === "light";
   const bgPanel = isLight ? "#f8fafc" : "#0b1329";
@@ -44,6 +45,7 @@ export default function ReportsPanel({
             theme={theme}
             onOpenCategoryManager={onOpenCategoryManager}
             onDeleteTrack={onDeleteTrack}
+            onDeleteFind={onDeleteFind}
           />
         </div>
       </div>

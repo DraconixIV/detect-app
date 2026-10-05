@@ -1567,6 +1567,7 @@ function App() {
           }}
           onClose={() => setActiveTab("map")}
           onDeleteTrack={deleteSortieTrack}
+          onDeleteFind={deleteFind}
         />
       )}
 

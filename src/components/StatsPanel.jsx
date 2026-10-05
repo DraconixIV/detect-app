@@ -43,12 +43,14 @@ export default function StatsPanel({
   isFullTab = false,
   theme = "dark",
   onOpenCategoryManager,
-  onDeleteTrack
+  onDeleteTrack,
+  onDeleteFind
 }) {
   const { emojis: categoryEmojis, categories: customCategories, colors: categoryColors = {} } = loadCategoriesData();
   const [chartType, setChartType] = useState("donut"); // 'donut' | 'bar' | 'radar'
   const [expandedCats, setExpandedCats] = useState({});
   const [confirmTrackToDelete, setConfirmTrackToDelete] = useState(null);
+  const [confirmSortieToDelete, setConfirmSortieToDelete] = useState(null);
 
   const isLight = theme === "light";
   const bgPanel = isFullTab ? "transparent" : (isLight ? "#ffffff" : "rgba(15, 23, 42, 0.95)");
@@ -817,12 +819,41 @@ export default function StatsPanel({
                   transition: "0.2s"
                 }}
               >
-                <div style={{ fontWeight: "bold", display: "flex", justifyContent: "space-between", marginBottom: "2px" }}>
-                  <span style={{ color: textMain }}>📅 {dateStr}</span>
-                  {dayFinds.length > 0 && (
-                    <span style={{ color: isLight ? "#000000" : "#facc15", fontWeight: "bold" }}>
-                      🪙 {dayFinds.length} trouvaille{dayFinds.length > 1 ? "s" : ""}
-                    </span>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                  <div style={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                    <span style={{ color: textMain }}>📅 {dateStr}</span>
+                    {dayFinds.length > 0 && (
+                      <span style={{ color: isLight ? "#000000" : "#facc15", fontWeight: "bold" }}>
+                        🪙 {dayFinds.length} trouvaille{dayFinds.length > 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </div>
+
+                  {(onDeleteTrack || onDeleteFind) && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setConfirmSortieToDelete({ dateStr, dayFinds, dayTracks });
+                      }}
+                      title="Supprimer cette sortie"
+                      style={{
+                        background: "rgba(239, 68, 68, 0.15)",
+                        border: "1px solid rgba(239, 68, 68, 0.35)",
+                        color: "#ef4444",
+                        borderRadius: "6px",
+                        padding: "2px 6px",
+                        fontSize: "11px",
+                        fontWeight: "700",
+                        cursor: "pointer",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "3px"
+                      }}
+                    >
+                      <span>🗑️</span>
+                      <span style={{ fontSize: "10px" }}>Supprimer</span>
+                    </button>
                   )}
                 </div>
 
@@ -935,6 +966,28 @@ export default function StatsPanel({
             }
           }}
           onCancel={() => setConfirmTrackToDelete(null)}
+        />
+      )}
+
+      {/* CONFIRM DELETE ENTIRE SORTIE MODAL */}
+      {confirmSortieToDelete && (
+        <ConfirmModal
+          message={`Voulez-vous vraiment supprimer définitivement la sortie du ${confirmSortieToDelete.dateStr} ${confirmSortieToDelete.dayFinds.length > 0 ? `(avec ses ${confirmSortieToDelete.dayFinds.length} trouvaille(s))` : ""}${confirmSortieToDelete.dayTracks.length > 0 ? ` ${confirmSortieToDelete.dayFinds.length > 0 ? "et" : "avec"} son tracé GPS` : ""} ?`}
+          onConfirm={async () => {
+            const { dayFinds = [], dayTracks = [] } = confirmSortieToDelete;
+            setConfirmSortieToDelete(null);
+            if (onDeleteTrack && dayTracks.length > 0) {
+              for (const track of dayTracks) {
+                if (track.id) await onDeleteTrack(track.id);
+              }
+            }
+            if (onDeleteFind && dayFinds.length > 0) {
+              for (const find of dayFinds) {
+                if (find.id) await onDeleteFind(find.id);
+              }
+            }
+          }}
+          onCancel={() => setConfirmSortieToDelete(null)}
         />
       )}
     </div>
