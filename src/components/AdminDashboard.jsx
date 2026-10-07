@@ -108,7 +108,11 @@ CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USI
     return (
       <div
         style={{
-          minHeight: "100vh",
+          position: "fixed",
+          inset: 0,
+          zIndex: 99999,
+          overflowY: "auto",
+          WebkitOverflowScrolling: "touch",
           background: "radial-gradient(circle at top, #1e293b 0%, #0b1329 100%)",
           color: "#ffffff",
           display: "flex",
@@ -116,6 +120,7 @@ CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USI
           alignItems: "center",
           justifyContent: "center",
           padding: "20px",
+          boxSizing: "border-box",
           fontFamily: "system-ui, -apple-system, sans-serif"
         }}
       >
@@ -236,10 +241,15 @@ CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USI
   return (
     <div
       style={{
-        minHeight: "100vh",
+        position: "fixed",
+        inset: 0,
+        zIndex: 99999,
         background: "#0b1329",
         color: "#ffffff",
-        padding: "20px 16px 60px 16px",
+        overflowY: "auto",
+        WebkitOverflowScrolling: "touch",
+        padding: "20px 16px 120px 16px",
+        boxSizing: "border-box",
         fontFamily: "system-ui, -apple-system, sans-serif"
       }}
     >
