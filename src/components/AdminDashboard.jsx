@@ -558,8 +558,13 @@ CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USI
 
         {/* Live Visitor Feed */}
         <div style={sectionCardStyle}>
-          <div style={{ fontSize: "13px", fontWeight: "900", color: "#ffffff", marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
-            <span>⚡</span> Dernières Visites en Direct
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "8px" }}>
+            <div style={{ fontSize: "13.5px", fontWeight: "900", color: "#ffffff", display: "flex", alignItems: "center", gap: "8px" }}>
+              <span>⚡</span> Journal des Clics & Visites en Direct
+            </div>
+            <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+              Heure exacte au format seconde (Paris)
+            </div>
           </div>
 
           {data && data.recentVisits && data.recentVisits.length > 0 ? (
@@ -567,38 +572,108 @@ CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USI
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "11.5px" }}>
                 <thead>
                   <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", textAlign: "left", color: "#64748b" }}>
-                    <th style={{ padding: "8px 6px" }}>Heure</th>
-                    <th style={{ padding: "8px 6px" }}>Source</th>
-                    <th style={{ padding: "8px 6px" }}>Appareil</th>
-                    <th style={{ padding: "8px 6px" }}>Navigateur</th>
-                    <th style={{ padding: "8px 6px" }}>Code Utilisateur</th>
+                    <th style={{ padding: "10px 8px" }}>Heure exacte</th>
+                    <th style={{ padding: "10px 8px" }}>Appareil</th>
+                    <th style={{ padding: "10px 8px" }}>Navigateur</th>
+                    <th style={{ padding: "10px 8px" }}>Source du Clic</th>
+                    <th style={{ padding: "10px 8px" }}>Code Utilisateur</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {data.recentVisits.map((v, i) => (
-                    <tr key={v.id || i} style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.04)" }}>
-                      <td style={{ padding: "8px 6px", color: "#94a3b8" }}>
-                        {new Date(v.created_at).toLocaleString("fr-FR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
-                      </td>
-                      <td style={{ padding: "8px 6px", fontWeight: "700", color: "#38bdf8" }}>
-                        {v.source || "Direct"}
-                      </td>
-                      <td style={{ padding: "8px 6px", color: "#e2e8f0" }}>
-                        {v.device || "Mobile"}
-                      </td>
-                      <td style={{ padding: "8px 6px", color: "#94a3b8" }}>
-                        {v.browser || "Inconnu"}
-                      </td>
-                      <td style={{ padding: "8px 6px", color: "#64748b", fontFamily: "monospace" }}>
-                        {v.user_code || "ANON"}
-                      </td>
-                    </tr>
-                  ))}
+                  {data.recentVisits.map((v, i) => {
+                    const rawDate = v.created_at ? new Date(v.created_at) : null;
+                    const isValidDate = rawDate && !isNaN(rawDate.getTime());
+                    
+                    const timeStr = isValidDate
+                      ? rawDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+                      : "-";
+                    const dateStr = isValidDate
+                      ? rawDate.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })
+                      : "-";
+                    
+                    const isToday = isValidDate && rawDate.toDateString() === new Date().toDateString();
+                    
+                    const diffSec = isValidDate ? Math.floor((Date.now() - rawDate.getTime()) / 1000) : 999999;
+                    const diffMin = Math.floor(diffSec / 60);
+                    const diffHours = Math.floor(diffMin / 60);
+
+                    let relativeBadge = "";
+                    if (diffSec < 60) {
+                      relativeBadge = "À l'instant";
+                    } else if (diffMin < 60) {
+                      relativeBadge = `Il y a ${diffMin} min`;
+                    } else if (diffHours < 24 && isToday) {
+                      relativeBadge = `Il y a ${diffHours}h`;
+                    }
+
+                    return (
+                      <tr key={v.id || i} style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.05)", background: i % 2 === 0 ? "transparent" : "rgba(255, 255, 255, 0.015)" }}>
+                        {/* Heure exacte */}
+                        <td style={{ padding: "10px 8px", whiteSpace: "nowrap" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                            <span style={{ fontWeight: "800", color: "#ffffff", fontSize: "12px" }}>
+                              ⏱️ {timeStr}
+                            </span>
+                            {relativeBadge && (
+                              <span style={{ fontSize: "9.5px", fontWeight: "700", padding: "1px 5px", borderRadius: "4px", background: relativeBadge.includes("instant") || relativeBadge.includes("min") ? "rgba(16, 185, 129, 0.2)" : "rgba(255, 255, 255, 0.08)", color: relativeBadge.includes("instant") || relativeBadge.includes("min") ? "#10b981" : "#94a3b8" }}>
+                                {relativeBadge}
+                              </span>
+                            )}
+                          </div>
+                          <div style={{ fontSize: "10px", color: "#64748b", marginTop: "2px" }}>
+                            {isToday ? "Aujourd'hui" : dateStr}
+                          </div>
+                        </td>
+
+                        {/* Appareil & Écran */}
+                        <td style={{ padding: "10px 8px", whiteSpace: "nowrap" }}>
+                          <div style={{ fontWeight: "700", color: "#e2e8f0" }}>
+                            {v.device?.includes("iPhone") ? "📱 iPhone (iOS)" : v.device?.includes("Android") ? "🤖 Android" : v.device?.includes("Windows") ? "💻 PC Windows" : v.device?.includes("Mac") ? "🍎 Mac" : v.device || "Mobile"}
+                          </div>
+                          {v.screen_size && v.screen_size !== "0x0" && (
+                            <div style={{ fontSize: "10px", color: "#64748b", marginTop: "2px" }}>
+                              Écran: {v.screen_size}
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Navigateur */}
+                        <td style={{ padding: "10px 8px", whiteSpace: "nowrap" }}>
+                          <span style={{ color: "#cbd5e1", fontWeight: "600" }}>
+                            {v.browser || "Inconnu"}
+                          </span>
+                        </td>
+
+                        {/* Source */}
+                        <td style={{ padding: "10px 8px", whiteSpace: "nowrap" }}>
+                          <span
+                            style={{
+                              display: "inline-block",
+                              padding: "3px 8px",
+                              borderRadius: "6px",
+                              fontSize: "11px",
+                              fontWeight: "800",
+                              background: v.source?.toLowerCase().includes("facebook") ? "rgba(59, 130, 246, 0.2)" : "rgba(255, 255, 255, 0.08)",
+                              color: v.source?.toLowerCase().includes("facebook") ? "#60a5fa" : "#e2e8f0",
+                              border: v.source?.toLowerCase().includes("facebook") ? "1px solid rgba(59, 130, 246, 0.4)" : "1px solid rgba(255, 255, 255, 0.1)"
+                            }}
+                          >
+                            {v.source?.toLowerCase().includes("facebook") ? "📘 Facebook" : v.source || "🔗 Direct / PWA"}
+                          </span>
+                        </td>
+
+                        {/* Code Utilisateur */}
+                        <td style={{ padding: "10px 8px", color: "#94a3b8", fontFamily: "monospace", fontSize: "11px", whiteSpace: "nowrap" }}>
+                          {v.user_code || "ANON"}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           ) : (
-            <div style={{ fontSize: "12px", color: "#64748b", textAlign: "center", padding: "20px 0" }}>
+            <div style={{ fontSize: "12px", color: "#64748b", textAlign: "center", padding: "24px 0" }}>
               Aucune visite récente enregistrée pour le moment.
             </div>
           )}
