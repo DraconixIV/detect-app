@@ -3,7 +3,8 @@ import {
   fetchAnalyticsReport,
   setDeveloperDevice,
   isDeveloperDevice,
-  purgeAnalyticsData
+  purgeAnalyticsData,
+  deleteAnalyticsVisit
 } from "../services/analyticsService.js";
 
 const MASTER_PIN = "25802580";
@@ -26,6 +27,7 @@ export default function AdminDashboard({ onExit }) {
   const [showPurgeModal, setShowPurgeModal] = useState(false);
   const [isPurging, setIsPurging] = useState(false);
   const [devDeviceActive, setDevDeviceActive] = useState(() => isDeveloperDevice());
+  const [deletingId, setDeletingId] = useState(null);
 
   const loadData = async () => {
     setLoading(true);
@@ -33,6 +35,30 @@ export default function AdminDashboard({ onExit }) {
     setData(report);
     setLastRefreshed(new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }));
     setLoading(false);
+  };
+
+  const handleDeleteVisit = async (visitId) => {
+    if (!visitId) return;
+    setDeletingId(visitId);
+    // Optimistic UI update
+    setData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        totalVisits: Math.max(0, prev.totalVisits - 1),
+        recentVisits: (prev.recentVisits || []).filter((v) => v.id !== visitId)
+      };
+    });
+
+    const success = await deleteAnalyticsVisit(visitId);
+    setDeletingId(null);
+    if (!success) {
+      await loadData();
+      alert("Erreur lors de la suppression de la visite.");
+    } else {
+      const report = await fetchAnalyticsReport();
+      setData(report);
+    }
   };
 
   useEffect(() => {
@@ -587,6 +613,7 @@ CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USI
                     <th style={{ padding: "10px 8px" }}>Navigateur</th>
                     <th style={{ padding: "10px 8px" }}>Source du Clic</th>
                     <th style={{ padding: "10px 8px" }}>Code Utilisateur</th>
+                    <th style={{ padding: "10px 8px", textAlign: "center" }}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -675,6 +702,31 @@ CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USI
                         {/* Code Utilisateur */}
                         <td style={{ padding: "10px 8px", color: "#94a3b8", fontFamily: "monospace", fontSize: "11px", whiteSpace: "nowrap" }}>
                           {v.user_code || "ANON"}
+                        </td>
+
+                        {/* Action - Suppression individuelle */}
+                        <td style={{ padding: "10px 8px", textAlign: "center", whiteSpace: "nowrap" }}>
+                          <button
+                            onClick={() => handleDeleteVisit(v.id)}
+                            disabled={deletingId === v.id}
+                            title="Supprimer ce clic de la liste"
+                            style={{
+                              padding: "4px 8px",
+                              borderRadius: "8px",
+                              background: "rgba(239, 68, 68, 0.12)",
+                              border: "1px solid rgba(239, 68, 68, 0.3)",
+                              color: "#f87171",
+                              fontSize: "11px",
+                              fontWeight: "700",
+                              cursor: "pointer",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              transition: "all 0.15s ease"
+                            }}
+                          >
+                            {deletingId === v.id ? "..." : "🗑️"}
+                          </button>
                         </td>
                       </tr>
                     );

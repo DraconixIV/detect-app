@@ -106,6 +106,28 @@ export async function purgeAnalyticsData() {
 }
 
 /**
+ * Delete an individual visit record by its ID or created_at timestamp
+ */
+export async function deleteAnalyticsVisit(visitId) {
+  try {
+    if (!visitId) return false;
+    const { error } = await supabase
+      .from("app_analytics")
+      .delete()
+      .eq("id", visitId);
+
+    if (error) {
+      console.warn("Delete visit error:", error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("Delete visit exception:", err);
+    return false;
+  }
+}
+
+/**
  * Tracks an anonymous page view / visit. Throttled to 1 call per 30 minutes per browser session.
  * Excludes developer devices automatically.
  */
