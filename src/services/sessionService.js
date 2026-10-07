@@ -52,16 +52,46 @@ export function normalizeSessionCode(code) {
 }
 
 /**
- * Generate a random, readable 6-character alphanumeric code (e.g. "GEO-8X2M9P")
- * Over 1.07 billion possible combinations without ambiguous chars (0, O, 1, I).
+ * Generate a random, highly secure 6-character code with guaranteed 3 digits and 3 letters (e.g. "GEO-7K3P9X", "GEO-4X8M2T")
+ * Omits ambiguous characters (0, O, 1, I).
+ * Offers 141,557,760 unique combinations with zero risk of all-digit or all-letter codes.
  */
-export function generateRandomCode(prefix = "GEO", length = 6) {
-  const chars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // without ambiguous 0/O, 1/I
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+export function generateRandomCode(prefix = "GEO", numDigits = 3, numLetters = 3) {
+  const digits = "23456789"; // 8 unambiguous digits (omits 0 and 1)
+  const letters = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // 24 unambiguous uppercase letters (omits I and O)
+
+  let d = typeof numDigits === "number" ? numDigits : 3;
+  let l = typeof numLetters === "number" ? numLetters : 3;
+  // Handle legacy call with total length 6 (e.g. generateRandomCode("GEO", 6))
+  if (d === 6 && numLetters === 3) {
+    d = 3;
+    l = 3;
   }
-  return `${prefix}-${result}`;
+
+  const getRandomInt = (max) => {
+    if (typeof window !== "undefined" && window.crypto && window.crypto.getRandomValues) {
+      const array = new Uint32Array(1);
+      window.crypto.getRandomValues(array);
+      return array[0] % max;
+    }
+    return Math.floor(Math.random() * max);
+  };
+
+  const selected = [];
+  for (let i = 0; i < d; i++) {
+    selected.push(digits.charAt(getRandomInt(digits.length)));
+  }
+  for (let i = 0; i < l; i++) {
+    selected.push(letters.charAt(getRandomInt(letters.length)));
+  }
+
+  // Cryptographic Fisher-Yates shuffle
+  for (let i = selected.length - 1; i > 0; i--) {
+    const j = getRandomInt(i + 1);
+    [selected[i], selected[j]] = [selected[j], selected[i]];
+  }
+
+  return `${prefix}-${selected.join("")}`;
 }
 
 /**
