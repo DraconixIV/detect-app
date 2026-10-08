@@ -239,25 +239,64 @@ export async function fetchAnalyticsReport() {
       });
 
       result.uniqueVisitors = uniqueUsersSet.size;
+
+      // Unique user counts per source
+      const userSourcesMap = {};
+      analyticsData.forEach((row) => {
+        if (!row.user_code) return;
+        if (!userSourcesMap[row.user_code]) userSourcesMap[row.user_code] = new Set();
+        let src = row.source || "Accès Direct / PWA";
+        if (src.includes("vercel.app") || src === "Direct") src = "Accès Direct / PWA";
+        userSourcesMap[row.user_code].add(src);
+      });
+
+      let uFb = 0;
+      let uDirect = 0;
+      Object.values(userSourcesMap).forEach((srcSet) => {
+        if (srcSet.has("Facebook")) uFb++;
+        if (srcSet.has("Accès Direct / PWA")) uDirect++;
+      });
+      result.uniqueFacebookUsers = uFb;
+      result.uniqueDirectPWAUsers = uDirect;
     }
 
-    // 2. Fetch finds stats
+    // 2. Fetch finds stats (excluding developer / creator test accounts)
     try {
+      const devCodes = new Set([
+        "GEO-KE9Q88",
+        "GEO-5BCQE7",
+        "GEO-LOCAL",
+        normalizeSessionCode(getMyUserCode())
+      ]);
+
       const { data: allFinds } = await supabase.from("finds").select("id, description");
       if (allFinds) {
-        result.totalFinds = allFinds.length;
-        const finders = new Set();
+        let communityFindsCount = 0;
+        const communityFinders = new Set();
+        let devFindsCount = 0;
+
         allFinds.forEach((f) => {
           const desc = f.description || "";
           const match = desc.match(/<!--GP_META:([\s\S]*?)-->/);
+          let userCode = "";
           if (match) {
             try {
-              const parsed = JSON.parse(match[1]);
-              if (parsed.u) finders.add(parsed.u);
+              const meta = JSON.parse(match[1]);
+              if (meta.u) userCode = normalizeSessionCode(meta.u);
             } catch {}
           }
+
+          if (userCode && devCodes.has(userCode)) {
+            devFindsCount++;
+          } else {
+            communityFindsCount++;
+            if (userCode) communityFinders.add(userCode);
+          }
         });
-        result.uniqueFinders = finders.size;
+
+        result.totalFinds = communityFindsCount;
+        result.uniqueFinders = communityFinders.size;
+        result.devFinds = devFindsCount;
       }
     } catch {}
 

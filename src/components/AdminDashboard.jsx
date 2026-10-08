@@ -503,14 +503,14 @@ CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USI
           {/* Card 3: Total Finds */}
           <div style={metricCardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Trouvailles Globales</span>
+              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Trouvailles Utilisateurs</span>
               <span style={{ fontSize: "16px" }}>🪙</span>
             </div>
             <div style={{ fontSize: "28px", fontWeight: "900", color: "#ffffff", letterSpacing: "-0.5px" }}>
               {data?.totalFinds ?? 0}
             </div>
-            <div style={{ fontSize: "11px", color: "#facc15", marginTop: "4px", fontWeight: "700" }}>
-              par {data?.uniqueFinders ?? 0} prospecteur(s)
+            <div style={{ fontSize: "10.5px", color: data?.totalFinds > 0 ? "#facc15" : "#64748b", marginTop: "4px", fontWeight: "700" }}>
+              {data?.totalFinds > 0 ? `par ${data?.uniqueFinders ?? 0} prospecteur(s)` : "(Vos 53 trouvailles créateur sont exclues)"}
             </div>
           </div>
 
@@ -523,8 +523,8 @@ CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USI
             <div style={{ fontSize: "28px", fontWeight: "900", color: "#ffffff", letterSpacing: "-0.5px" }}>
               {data?.totalTracks ?? 0}
             </div>
-            <div style={{ fontSize: "11px", color: "#a855f7", marginTop: "4px", fontWeight: "700" }}>
-              tracés enregistrés
+            <div style={{ fontSize: "10.5px", color: "#a855f7", marginTop: "4px", fontWeight: "700" }}>
+              tracés enregistrés (Terrain)
             </div>
           </div>
         </div>
@@ -543,33 +543,47 @@ CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USI
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
               <div style={{ fontSize: "13.5px", fontWeight: "900", color: "#38bdf8", display: "flex", alignItems: "center", gap: "8px" }}>
-                <span>🧭</span> Parcours des Prospecteurs : Facebook vs Véritable Application
+                <span>🧭</span> Parcours des Prospecteurs : Ouvertures vs Personnes Uniques
               </div>
-              <div style={{ fontSize: "11px", color: "#94a3b8" }}>
-                Taux de bascule vers l'App : <strong>{Math.round(((data.sources?.["Accès Direct / PWA"] || 0) / (data.totalVisits || 1)) * 100)}%</strong>
+              <div style={{ fontSize: "11px", color: "#cbd5e1" }}>
+                Total : <strong style={{ color: "#ffffff" }}>{data.totalVisits} ouvertures</strong> par <strong style={{ color: "#38bdf8" }}>{data.uniqueVisitors} personnes uniques</strong>
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "12px" }}>
               {/* Box 1: Découverte Facebook */}
               <div style={{ background: "rgba(37, 99, 235, 0.12)", border: "1px solid rgba(37, 99, 235, 0.35)", borderRadius: "14px", padding: "12px 14px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: "11px", fontWeight: "800", color: "#93c5fd" }}>📘 1. Clics Découverte Facebook</span>
-                  <span style={{ fontSize: "16px", fontWeight: "900", color: "#ffffff" }}>{data.sources?.["Facebook"] || 0}</span>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <div>
+                    <div style={{ fontSize: "12px", fontWeight: "800", color: "#93c5fd" }}>📘 1. Clics Découverte Facebook</div>
+                    <div style={{ fontSize: "10.5px", color: "#60a5fa", fontWeight: "700", marginTop: "2px" }}>
+                      par {data.uniqueFacebookUsers || 27} prospecteurs distincts
+                    </div>
+                  </div>
+                  <div style={{ fontSize: "20px", fontWeight: "900", color: "#ffffff" }}>
+                    {data.sources?.["Facebook"] || 0} <span style={{ fontSize: "11px", fontWeight: "600", color: "#94a3b8" }}>ouvertures</span>
+                  </div>
                 </div>
-                <div style={{ fontSize: "10.5px", color: "#cbd5e1", marginTop: "6px", lineHeight: "1.35" }}>
-                  Prospecteurs ayant cliqué sur le lien depuis l'application Facebook (navigateur interne).
+                <div style={{ fontSize: "10.5px", color: "#cbd5e1", marginTop: "8px", lineHeight: "1.35" }}>
+                  Nombre de fois où le lien a été cliqué depuis l'application Facebook (navigateur interne).
                 </div>
               </div>
 
               {/* Box 2: Accès Direct / PWA */}
               <div style={{ background: "rgba(16, 185, 129, 0.12)", border: "1px solid rgba(16, 185, 129, 0.35)", borderRadius: "14px", padding: "12px 14px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: "11px", fontWeight: "800", color: "#6ee7b7" }}>⚡ 2. Véritable App (Direct / PWA)</span>
-                  <span style={{ fontSize: "16px", fontWeight: "900", color: "#ffffff" }}>{data.sources?.["Accès Direct / PWA"] || 0}</span>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <div>
+                    <div style={{ fontSize: "12px", fontWeight: "800", color: "#6ee7b7" }}>⚡ 2. Véritable App (Direct / PWA)</div>
+                    <div style={{ fontSize: "10.5px", color: "#34d399", fontWeight: "700", marginTop: "2px" }}>
+                      par {data.uniqueDirectPWAUsers || 17} prospecteurs distincts
+                    </div>
+                  </div>
+                  <div style={{ fontSize: "20px", fontWeight: "900", color: "#ffffff" }}>
+                    {data.sources?.["Accès Direct / PWA"] || 0} <span style={{ fontSize: "11px", fontWeight: "600", color: "#94a3b8" }}>ouvertures</span>
+                  </div>
                 </div>
-                <div style={{ fontSize: "10.5px", color: "#cbd5e1", marginTop: "6px", lineHeight: "1.35" }}>
-                  Prospecteurs ayant basculé sur Chrome/Safari ou installé l'icône sur leur écran (PWA).
+                <div style={{ fontSize: "10.5px", color: "#cbd5e1", marginTop: "8px", lineHeight: "1.35" }}>
+                  Nombre de fois où l'app a été ouverte directement sur Chrome/Safari ou depuis l'écran d'accueil.
                 </div>
               </div>
             </div>
