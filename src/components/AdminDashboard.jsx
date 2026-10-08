@@ -529,26 +529,102 @@ CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USI
           </div>
         </div>
 
+        {/* ADOPTION & CONVERSION COMPARISON CARD */}
+        {data && data.totalVisits > 0 && (
+          <div
+            style={{
+              background: "linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%)",
+              border: "1px solid rgba(56, 189, 248, 0.25)",
+              borderRadius: "18px",
+              padding: "16px 18px",
+              marginBottom: "20px",
+              boxShadow: "0 10px 30px rgba(0, 0, 0, 0.4)"
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
+              <div style={{ fontSize: "13.5px", fontWeight: "900", color: "#38bdf8", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span>🧭</span> Parcours des Prospecteurs : Facebook vs Véritable Application
+              </div>
+              <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+                Taux de bascule vers l'App : <strong>{Math.round(((data.sources?.["Accès Direct / PWA"] || 0) / (data.totalVisits || 1)) * 100)}%</strong>
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px" }}>
+              {/* Box 1: Découverte Facebook */}
+              <div style={{ background: "rgba(37, 99, 235, 0.12)", border: "1px solid rgba(37, 99, 235, 0.35)", borderRadius: "14px", padding: "12px 14px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "11px", fontWeight: "800", color: "#93c5fd" }}>📘 1. Clics Découverte Facebook</span>
+                  <span style={{ fontSize: "16px", fontWeight: "900", color: "#ffffff" }}>{data.sources?.["Facebook"] || 0}</span>
+                </div>
+                <div style={{ fontSize: "10.5px", color: "#cbd5e1", marginTop: "6px", lineHeight: "1.35" }}>
+                  Prospecteurs ayant cliqué sur le lien depuis l'application Facebook (navigateur interne).
+                </div>
+              </div>
+
+              {/* Box 2: Accès Direct / PWA */}
+              <div style={{ background: "rgba(16, 185, 129, 0.12)", border: "1px solid rgba(16, 185, 129, 0.35)", borderRadius: "14px", padding: "12px 14px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "11px", fontWeight: "800", color: "#6ee7b7" }}>⚡ 2. Véritable App (Direct / PWA)</span>
+                  <span style={{ fontSize: "16px", fontWeight: "900", color: "#ffffff" }}>{data.sources?.["Accès Direct / PWA"] || 0}</span>
+                </div>
+                <div style={{ fontSize: "10.5px", color: "#cbd5e1", marginTop: "6px", lineHeight: "1.35" }}>
+                  Prospecteurs ayant basculé sur Chrome/Safari ou installé l'icône sur leur écran (PWA).
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Detailed Breakdown: Sources & Devices */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px", marginBottom: "20px" }}>
           {/* Sources breakdown */}
           <div style={sectionCardStyle}>
             <div style={{ fontSize: "13px", fontWeight: "900", color: "#ffffff", marginBottom: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>🌐</span> Provenance du Trafic
+              <span>🌐</span> Détail de la Provenance du Trafic
             </div>
 
             {data && Object.keys(data.sources).length > 0 ? (
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 {Object.entries(data.sources).map(([src, count]) => {
                   const pct = Math.round((count / (data.totalVisits || 1)) * 100);
+                  let displayLabel = src;
+                  let icon = "🔗";
+                  if (src === "Facebook") {
+                    displayLabel = "Facebook (Publication & Groupes)";
+                    icon = "📘";
+                  } else if (src === "Accès Direct / PWA") {
+                    displayLabel = "Accès Direct / PWA (Navigateur & App)";
+                    icon = "⚡";
+                  } else if (src === "Google") {
+                    displayLabel = "Google (Recherche, Discover, Gmail)";
+                    icon = "🔍";
+                  } else if (src.includes("Twitter") || src.includes("X")) {
+                    displayLabel = "X / Twitter (Lien partagé)";
+                    icon = "🐦";
+                  }
+
                   return (
                     <div key={src}>
                       <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11.5px", marginBottom: "4px" }}>
-                        <span style={{ fontWeight: "700", color: "#e2e8f0" }}>{src}</span>
+                        <span style={{ fontWeight: "700", color: "#e2e8f0" }}>
+                          {icon} {displayLabel}
+                        </span>
                         <span style={{ color: "#94a3b8", fontWeight: "800" }}>{count} ({pct}%)</span>
                       </div>
                       <div style={{ height: "6px", borderRadius: "3px", background: "rgba(255, 255, 255, 0.08)", overflow: "hidden" }}>
-                        <div style={{ height: "100%", width: `${pct}%`, background: "linear-gradient(90deg, #2563eb, #38bdf8)", borderRadius: "3px" }} />
+                        <div
+                          style={{
+                            height: "100%",
+                            width: `${pct}%`,
+                            background: src === "Facebook"
+                              ? "linear-gradient(90deg, #2563eb, #3b82f6)"
+                              : src.includes("Direct")
+                              ? "linear-gradient(90deg, #10b981, #34d399)"
+                              : "linear-gradient(90deg, #8b5cf6, #a855f7)",
+                            borderRadius: "3px"
+                          }}
+                        />
                       </div>
                     </div>
                   );

@@ -52,9 +52,13 @@ function getTrafficSource() {
   if (referrer) {
     try {
       const parsed = new URL(referrer);
-      return parsed.hostname.replace("www.", "");
+      const host = parsed.hostname.replace("www.", "");
+      if (host.includes("vercel.app") || host.includes("localhost") || (typeof window !== "undefined" && host === window.location.hostname)) {
+        return "Accès Direct / PWA";
+      }
+      return host;
     } catch {
-      return "Web Référent";
+      return "Accès Direct / PWA";
     }
   }
 
@@ -221,7 +225,10 @@ export async function fetchAnalyticsReport() {
           result.weekVisits++;
         }
 
-        const src = row.source || "Direct";
+        let src = row.source || "Accès Direct / PWA";
+        if (src.includes("vercel.app") || src.includes("localhost") || src === "Direct") {
+          src = "Accès Direct / PWA";
+        }
         result.sources[src] = (result.sources[src] || 0) + 1;
 
         const dev = row.device || "Autre";
@@ -236,15 +243,17 @@ export async function fetchAnalyticsReport() {
 
     // 2. Fetch finds stats
     try {
-      const { data: allFinds } = await supabase.from("finds").select("id, created_at, description");
+      const { data: allFinds } = await supabase.from("finds").select("id, description");
       if (allFinds) {
         result.totalFinds = allFinds.length;
         const finders = new Set();
         allFinds.forEach((f) => {
-          if (f.description && f.description.includes("user_code")) {
+          const desc = f.description || "";
+          const match = desc.match(/<!--GP_META:([\s\S]*?)-->/);
+          if (match) {
             try {
-              const parsed = JSON.parse(f.description);
-              if (parsed.user_code) finders.add(parsed.user_code);
+              const parsed = JSON.parse(match[1]);
+              if (parsed.u) finders.add(parsed.u);
             } catch {}
           }
         });
@@ -254,7 +263,7 @@ export async function fetchAnalyticsReport() {
 
     // 3. Fetch tracks stats
     try {
-      const { data: allTracks } = await supabase.from("gps_tracks").select("id, created_at, session_name");
+      const { data: allTracks } = await supabase.from("gps_tracks").select("id");
       if (allTracks) {
         result.totalTracks = allTracks.length;
       }
