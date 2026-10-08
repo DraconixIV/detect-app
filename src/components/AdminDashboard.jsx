@@ -529,67 +529,6 @@ CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USI
           </div>
         </div>
 
-        {/* ADOPTION & CONVERSION COMPARISON CARD */}
-        {data && data.totalVisits > 0 && (
-          <div
-            style={{
-              background: "linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%)",
-              border: "1px solid rgba(56, 189, 248, 0.25)",
-              borderRadius: "18px",
-              padding: "16px 18px",
-              marginBottom: "20px",
-              boxShadow: "0 10px 30px rgba(0, 0, 0, 0.4)"
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
-              <div style={{ fontSize: "13.5px", fontWeight: "900", color: "#38bdf8", display: "flex", alignItems: "center", gap: "8px" }}>
-                <span>🧭</span> Parcours des Prospecteurs : Ouvertures vs Personnes Uniques
-              </div>
-              <div style={{ fontSize: "11px", color: "#cbd5e1" }}>
-                Total : <strong style={{ color: "#ffffff" }}>{data.totalVisits} ouvertures</strong> par <strong style={{ color: "#38bdf8" }}>{data.uniqueVisitors} personnes uniques</strong>
-              </div>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "12px" }}>
-              {/* Box 1: Découverte Facebook */}
-              <div style={{ background: "rgba(37, 99, 235, 0.12)", border: "1px solid rgba(37, 99, 235, 0.35)", borderRadius: "14px", padding: "12px 14px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                  <div>
-                    <div style={{ fontSize: "12px", fontWeight: "800", color: "#93c5fd" }}>📘 1. Clics Découverte Facebook</div>
-                    <div style={{ fontSize: "10.5px", color: "#60a5fa", fontWeight: "700", marginTop: "2px" }}>
-                      par {data.uniqueFacebookUsers || 27} prospecteurs distincts
-                    </div>
-                  </div>
-                  <div style={{ fontSize: "20px", fontWeight: "900", color: "#ffffff" }}>
-                    {data.sources?.["Facebook"] || 0} <span style={{ fontSize: "11px", fontWeight: "600", color: "#94a3b8" }}>ouvertures</span>
-                  </div>
-                </div>
-                <div style={{ fontSize: "10.5px", color: "#cbd5e1", marginTop: "8px", lineHeight: "1.35" }}>
-                  Nombre de fois où le lien a été cliqué depuis l'application Facebook (navigateur interne).
-                </div>
-              </div>
-
-              {/* Box 2: Accès Direct / PWA */}
-              <div style={{ background: "rgba(16, 185, 129, 0.12)", border: "1px solid rgba(16, 185, 129, 0.35)", borderRadius: "14px", padding: "12px 14px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                  <div>
-                    <div style={{ fontSize: "12px", fontWeight: "800", color: "#6ee7b7" }}>⚡ 2. Véritable App (Direct / PWA)</div>
-                    <div style={{ fontSize: "10.5px", color: "#34d399", fontWeight: "700", marginTop: "2px" }}>
-                      par {data.uniqueDirectPWAUsers || 17} prospecteurs distincts
-                    </div>
-                  </div>
-                  <div style={{ fontSize: "20px", fontWeight: "900", color: "#ffffff" }}>
-                    {data.sources?.["Accès Direct / PWA"] || 0} <span style={{ fontSize: "11px", fontWeight: "600", color: "#94a3b8" }}>ouvertures</span>
-                  </div>
-                </div>
-                <div style={{ fontSize: "10.5px", color: "#cbd5e1", marginTop: "8px", lineHeight: "1.35" }}>
-                  Nombre de fois où l'app a été ouverte directement sur Chrome/Safari ou depuis l'écran d'accueil.
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Detailed Breakdown: Sources & Devices */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px", marginBottom: "20px" }}>
           {/* Sources breakdown */}
