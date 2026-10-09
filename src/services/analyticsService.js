@@ -338,6 +338,7 @@ export async function fetchAnalyticsReport() {
       const devCodes = new Set([
         "GEO-KE9Q88",
         "GEO-5BCQE7",
+        "GEO-MMFR88",
         "GEO-LOCAL",
         normalizeSessionCode(getMyUserCode())
       ]);

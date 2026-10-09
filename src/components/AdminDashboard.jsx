@@ -574,7 +574,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
               {data?.totalFinds ?? 0}
             </div>
             <div style={{ fontSize: "10.5px", color: data?.totalFinds > 0 ? "#facc15" : "#64748b", marginTop: "4px", fontWeight: "700" }}>
-              {data?.totalFinds > 0 ? `par ${data?.uniqueFinders ?? 0} prospecteur(s)` : "Vos 54 trouvailles créateur sont exclues"}
+              {data?.totalFinds > 0 ? `par ${data?.uniqueFinders ?? 0} prospecteur(s)` : "En attente des premiers partages"}
             </div>
           </div>
 
