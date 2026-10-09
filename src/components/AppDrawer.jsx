@@ -35,8 +35,6 @@ export default function AppDrawer({
       label: "Mises à jour",
       icon: "🚀",
       hasBadge: hasUnreadNews,
-      badgeText: "1",
-      badgeColor: "#ef4444",
       action: () => {
         onClose();
         if (onOpenNews) onOpenNews();
@@ -46,8 +44,6 @@ export default function AppDrawer({
       id: "feedback",
       label: "Formulaire de retour",
       icon: "📝",
-      badgeText: "Nouveau",
-      badgeColor: "#38bdf8",
       action: () => {
         onClose();
         if (onOpenFeedback) onOpenFeedback();
@@ -236,37 +232,27 @@ export default function AppDrawer({
               <span style={{ fontSize: "18px", flexShrink: 0 }}>{item.icon}</span>
               <span style={{ flex: 1 }}>{item.label}</span>
 
-              {/* Red notification badge or tag */}
+              {/* Red notification badge '1' */}
               {item.hasBadge && (
                 <span
                   style={{
-                    background: item.badgeColor || "#ef4444",
+                    background: "#ef4444",
                     color: "#ffffff",
-                    fontSize: "11px",
+                    fontSize: "11.5px",
                     fontWeight: "900",
-                    padding: "2px 7px",
+                    minWidth: "20px",
+                    height: "20px",
+                    padding: "0 5px",
                     borderRadius: "10px",
-                    boxShadow: "0 2px 8px rgba(239, 68, 68, 0.5)",
-                    animation: "pulse 1.5s infinite"
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    boxShadow: "0 0 10px rgba(239, 68, 68, 0.8)",
+                    border: "1.5px solid #ffffff",
+                    flexShrink: 0
                   }}
                 >
-                  {item.badgeText || "1"}
-                </span>
-              )}
-
-              {item.badgeText && !item.hasBadge && (
-                <span
-                  style={{
-                    background: `${item.badgeColor}22`,
-                    border: `1px solid ${item.badgeColor}55`,
-                    color: item.badgeColor,
-                    fontSize: "10px",
-                    fontWeight: "800",
-                    padding: "2px 6px",
-                    borderRadius: "8px"
-                  }}
-                >
-                  {item.badgeText}
+                  1
                 </span>
               )}
 

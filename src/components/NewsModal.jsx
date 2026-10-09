@@ -6,14 +6,12 @@ const NEWS_ARTICLES = [
     id: "v1.4.0",
     version: "v1.4.0",
     date: "9 Octobre 2026",
-    tag: "Nouveau",
-    tagColor: "#38bdf8",
-    title: "Formulaire de retour et améliorations",
+    title: "Formulaire de retour",
     content: "Une mise à jour dédiée à l'écoute des prospecteurs et au perfectionnement de l'application.",
     highlights: [
-      "Formulaire de retour disponible dans le menu latéral pour signaler un bug ou proposer une idée en un clic.",
-      "Optimisation mobile et amélioration de la fluidité générale.",
-      "Navigation simplifiée et accès direct à toutes les fonctionnalités."
+      "Formulaire de retour disponible dans le menu latéral pour signaler un bug ou une idée.",
+      "Amélioration de la fluidité générale.",
+      "Accès direct à toutes les fonctionnalités."
     ]
   }
 ];
@@ -180,26 +178,10 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
               }}
             >
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <span
-                    style={{
-                      padding: "3px 8px",
-                      borderRadius: "6px",
-                      background: `${item.tagColor}22`,
-                      border: `1px solid ${item.tagColor}44`,
-                      color: item.tagColor,
-                      fontSize: "10px",
-                      fontWeight: "800",
-                      textTransform: "uppercase"
-                    }}
-                  >
-                    {item.tag}
-                  </span>
-                  <span style={{ fontSize: "11px", fontWeight: "800", color: textSub }}>
-                    {item.version}
-                  </span>
-                </div>
-                <span style={{ fontSize: "10.5px", color: textSub, fontWeight: "600" }}>{item.date}</span>
+                <span style={{ fontSize: "12px", fontWeight: "800", color: textMain }}>
+                  {item.version}
+                </span>
+                <span style={{ fontSize: "11px", color: textSub, fontWeight: "600" }}>{item.date}</span>
               </div>
 
               <div style={{ fontSize: "14px", fontWeight: "900", color: textMain }}>
@@ -220,11 +202,11 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
                         color: isLight ? "#1e293b" : "#e2e8f0",
                         display: "flex",
                         alignItems: "flex-start",
-                        gap: "6px",
+                        gap: "8px",
                         lineHeight: "1.4"
                       }}
                     >
-                      <span style={{ color: "#38bdf8", flexShrink: 0 }}>•</span>
+                      <span style={{ color: textSub, flexShrink: 0 }}>•</span>
                       <span>{h}</span>
                     </div>
                   ))}

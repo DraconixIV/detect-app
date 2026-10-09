@@ -193,18 +193,26 @@ export default function MapTopBar({
                 <span
                   style={{
                     position: "absolute",
-                    top: "-3px",
-                    right: "-3px",
-                    width: "9px",
-                    height: "9px",
-                    borderRadius: "50%",
+                    top: "-5px",
+                    right: "-5px",
+                    minWidth: "14px",
+                    height: "14px",
+                    borderRadius: "7px",
                     background: "#ef4444",
+                    color: "#ffffff",
+                    fontSize: "9px",
+                    fontWeight: "900",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                     border: "1.5px solid #ffffff",
-                    boxShadow: "0 0 6px #ef4444",
-                    animation: "pulse 1.5s infinite"
+                    boxShadow: "0 0 8px rgba(239, 68, 68, 0.9)",
+                    padding: "0 2px"
                   }}
                   title="Nouvelle mise à jour disponible"
-                />
+                >
+                  1
+                </span>
               )}
             </button>
           )}

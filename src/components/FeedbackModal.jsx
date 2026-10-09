@@ -20,10 +20,10 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
   const inputBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.15)";
 
   const categories = [
-    { id: "bug", label: "Signaler un bug", icon: "🐛", color: "#ef4444" },
-    { id: "suggestion", label: "Suggérer une idée", icon: "💡", color: "#38bdf8" },
-    { id: "avis", label: "Avis et retours", icon: "💬", color: "#10b981" },
-    { id: "question", label: "Poser une question", icon: "❓", color: "#f59e0b" }
+    { id: "bug", label: "Signaler un bug", icon: "🐛" },
+    { id: "suggestion", label: "Suggérer une idée", icon: "💡" },
+    { id: "avis", label: "Avis", icon: "💬" },
+    { id: "question", label: "Poser une question", icon: "❓" }
   ];
 
   const getPlaceholder = () => {
@@ -152,13 +152,14 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
                   width: "60px",
                   height: "60px",
                   borderRadius: "20px",
-                  background: "linear-gradient(135deg, #10b981, #059669)",
+                  background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.12)",
+                  border: `1px solid ${cardBorder}`,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   fontSize: "30px",
-                  margin: "0 auto 16px auto",
-                  boxShadow: "0 10px 25px rgba(16, 185, 129, 0.4)"
+                  color: "#ffffff",
+                  margin: "0 auto 16px auto"
                 }}
               >
                 ✓
@@ -175,13 +176,12 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
                 style={{
                   padding: "12px 28px",
                   borderRadius: "14px",
-                  background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                  background: isLight ? "#0f172a" : "linear-gradient(135deg, #2563eb, #1d4ed8)",
                   border: "none",
                   color: "#ffffff",
                   fontSize: "13px",
                   fontWeight: "800",
-                  cursor: "pointer",
-                  boxShadow: "0 6px 20px rgba(37, 99, 235, 0.4)"
+                  cursor: "pointer"
                 }}
               >
                 Retour à l'application
@@ -205,9 +205,13 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
                         style={{
                           padding: "10px 12px",
                           borderRadius: "12px",
-                          background: active ? `${c.color}22` : cardBg,
-                          border: active ? `2px solid ${c.color}` : `1px solid ${cardBorder}`,
-                          color: active ? (isLight ? "#0f172a" : "#ffffff") : textSub,
+                          background: active
+                            ? (isLight ? "#0f172a" : "rgba(255, 255, 255, 0.15)")
+                            : cardBg,
+                          border: active
+                            ? (isLight ? "1.5px solid #0f172a" : "1.5px solid rgba(255, 255, 255, 0.7)")
+                            : `1px solid ${cardBorder}`,
+                          color: active ? "#ffffff" : textSub,
                           fontSize: "12px",
                           fontWeight: active ? "800" : "600",
                           cursor: "pointer",

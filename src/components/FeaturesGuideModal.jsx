@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const FEATURES_DATA = [
   {
     category: "maps",
-    categoryLabel: "Cartographie & Histoire",
+    categoryLabel: "Cartographie",
     categoryEmoji: "🗺️",
     features: [
       {
@@ -28,14 +28,14 @@ const FEATURES_DATA = [
         description: "Superposez les levés topographiques militaires du XIXe siècle pour identifier l'évolution des parcelles et l'ancien réseau viaire rural."
       },
       {
-        title: "Imagerie Satellite HD & Relief Topographique",
+        title: "Imagerie Satellite HD",
         icon: "🛰️",
         badge: "HD",
         badgeColor: "#7c3aed",
         description: "Basculez entre vue aérienne haute définition et modèle numérique de relief avec courbes de niveau pour analyser les dénivelés du terrain."
       },
       {
-        title: "Curseur de Transparence / Opacité en Direct",
+        title: "Curseur de Transparence en Direct",
         icon: "🎚️",
         badge: "Temps réel",
         badgeColor: "#0284c7",
@@ -45,11 +45,11 @@ const FEATURES_DATA = [
   },
   {
     category: "finds",
-    categoryLabel: "Trouvailles & Photos HD",
+    categoryLabel: "Trouvailles",
     categoryEmoji: "🪙",
     features: [
       {
-        title: "Pointage Précis & Clic Long Carte",
+        title: "Pointage GPS Précis",
         icon: "📍",
         badge: "GPS",
         badgeColor: "#2563eb",
@@ -63,7 +63,7 @@ const FEATURES_DATA = [
         description: "Ajoutez une photo de découverte brute (en terre) puis une photo après restauration pour apprécier l'évolution du nettoyage."
       },
       {
-        title: "Recadrage Macro & Loupe Circulaire",
+        title: "Recadrage Macro",
         icon: "🔍",
         badge: "Studio",
         badgeColor: "#f59e0b",
@@ -77,7 +77,7 @@ const FEATURES_DATA = [
         description: "Enregistrez un mémo vocal direct pour consigner le contexte du son, la profondeur ou le type de terre sans avoir à taper sur le clavier."
       },
       {
-        title: "Classification & Émojis Personnalisés",
+        title: "Catégories Personnalisées",
         icon: "🏷️",
         badge: "Sur-mesure",
         badgeColor: "#8b5cf6",
@@ -87,7 +87,7 @@ const FEATURES_DATA = [
   },
   {
     category: "gps",
-    categoryLabel: "Traceur GPS & Télémétrie",
+    categoryLabel: "Traceur GPS",
     categoryEmoji: "⏱️",
     features: [
       {
@@ -112,7 +112,7 @@ const FEATURES_DATA = [
         description: "Chronomètre avec mise en pause, calcul de la distance parcourue en kilomètres et protection contre les sauts GPS aberrants."
       },
       {
-        title: "Historique & Revisualisation des Sorties",
+        title: "Historique des Sorties",
         icon: "🗺️",
         badge: "Journal",
         badgeColor: "#3b82f6",
@@ -122,7 +122,7 @@ const FEATURES_DATA = [
   },
   {
     category: "team",
-    categoryLabel: "Sessions en Équipe Multijoueur",
+    categoryLabel: "Sessions en Équipe",
     categoryEmoji: "👥",
     features: [
       {
@@ -140,7 +140,7 @@ const FEATURES_DATA = [
         description: "Soyez notifié dès qu'un coéquipier enregistre une découverte remarquable dans le champ avec son nom et sa catégorie."
       },
       {
-        title: "Code de Session Privé & Modération",
+        title: "Code de Session Privé",
         icon: "🔒",
         badge: "Sécurité",
         badgeColor: "#6366f1",
@@ -150,7 +150,7 @@ const FEATURES_DATA = [
   },
   {
     category: "offline",
-    categoryLabel: "Mode 100 % Hors-Ligne & Cloud",
+    categoryLabel: "Mode Hors-Ligne",
     categoryEmoji: "💾",
     features: [
       {
@@ -178,7 +178,7 @@ const FEATURES_DATA = [
   },
   {
     category: "tools",
-    categoryLabel: "Boîte à Outils & Confort",
+    categoryLabel: "Boîte à Outils",
     categoryEmoji: "🧰",
     features: [
       {
@@ -189,21 +189,21 @@ const FEATURES_DATA = [
         description: "Une pièce 3D réaliste pour trancher vos choix sur le terrain (continuer à gauche ou à droite ? quel champ explorer ?)."
       },
       {
-        title: "Mode Sombre & Thème Clair Adaptatif",
+        title: "Mode Sombre et Clair",
         icon: "🌓",
         badge: "Visibilité",
         badgeColor: "#64748b",
         description: "Basculez entre thème sombre immersif et thème clair à fort contraste pour une lisibilité optimale sous le plein soleil."
       },
       {
-        title: "Mode Zen & Maintien de l'Écran Allumé",
+        title: "Mode Zen",
         icon: "🧘",
         badge: "Confort",
         badgeColor: "#10b981",
         description: "Masquez l'interface inutile pour admirer la carte et activez le Wake Lock pour que votre écran ne s'éteigne jamais pendant la marche."
       },
       {
-        title: "Regroupement Intelligent des Marqueurs (Clustering)",
+        title: "Regroupement des Marqueurs (Clustering)",
         icon: "🫧",
         badge: "Fluidité",
         badgeColor: "#3b82f6",
