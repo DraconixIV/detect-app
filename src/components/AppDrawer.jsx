@@ -1,5 +1,6 @@
 import React from "react";
 import { getMyDisplayName } from "../services/sessionService";
+import { CURRENT_APP_VERSION } from "../services/feedbackService";
 
 export default function AppDrawer({
   isOpen,
@@ -7,12 +8,14 @@ export default function AppDrawer({
   theme = "dark",
   onNavigate,
   onOpenNews,
+  onOpenFeedback,
   onOpenAbout,
   onOpenFeaturesGuide,
   onOpenCgu,
   user,
   isRecordingSortie,
-  isOnline = true
+  isOnline = true,
+  hasUnreadNews = false
 }) {
   if (!isOpen) return null;
 
@@ -24,9 +27,32 @@ export default function AppDrawer({
   const itemBg = isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)";
   const itemBorder = isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.08)";
 
-  const myName = getMyDisplayName() || (user ? user.email.split("@")[0] : "Utilisateur");
+  const myName = getMyDisplayName() || (user ? user.email?.split("@")[0] : "Prospecteur");
 
   const menuItems = [
+    {
+      id: "news",
+      label: "Mises à jour",
+      icon: "🚀",
+      hasBadge: hasUnreadNews,
+      badgeText: "1",
+      badgeColor: "#ef4444",
+      action: () => {
+        onClose();
+        if (onOpenNews) onOpenNews();
+      }
+    },
+    {
+      id: "feedback",
+      label: "Formulaire de retour",
+      icon: "📝",
+      badgeText: "Nouveau",
+      badgeColor: "#38bdf8",
+      action: () => {
+        onClose();
+        if (onOpenFeedback) onOpenFeedback();
+      }
+    },
     {
       id: "features",
       label: "Guide des fonctionnalités",
@@ -34,15 +60,6 @@ export default function AppDrawer({
       action: () => {
         onClose();
         if (onOpenFeaturesGuide) onOpenFeaturesGuide();
-      }
-    },
-    {
-      id: "news",
-      label: "Mises à jour",
-      icon: "🚀",
-      action: () => {
-        onClose();
-        if (onOpenNews) onOpenNews();
       }
     },
     {
@@ -89,8 +106,8 @@ export default function AppDrawer({
     >
       <div
         style={{
-          width: "80%",
-          maxWidth: "300px",
+          width: "82%",
+          maxWidth: "310px",
           height: "100%",
           background: bgDrawer,
           borderRight: `1px solid ${borderColor}`,
@@ -191,7 +208,7 @@ export default function AppDrawer({
           )}
         </div>
 
-        {/* Liste des options autorisées */}
+        {/* Liste des options */}
         <div style={{ padding: "14px 12px", display: "flex", flexDirection: "column", gap: "8px", flex: 1 }}>
           {menuItems.map((item) => (
             <button
@@ -212,11 +229,47 @@ export default function AppDrawer({
                 fontWeight: "700",
                 cursor: "pointer",
                 textAlign: "left",
+                position: "relative",
                 transition: "all 0.15s ease"
               }}
             >
               <span style={{ fontSize: "18px", flexShrink: 0 }}>{item.icon}</span>
               <span style={{ flex: 1 }}>{item.label}</span>
+
+              {/* Red notification badge or tag */}
+              {item.hasBadge && (
+                <span
+                  style={{
+                    background: item.badgeColor || "#ef4444",
+                    color: "#ffffff",
+                    fontSize: "11px",
+                    fontWeight: "900",
+                    padding: "2px 7px",
+                    borderRadius: "10px",
+                    boxShadow: "0 2px 8px rgba(239, 68, 68, 0.5)",
+                    animation: "pulse 1.5s infinite"
+                  }}
+                >
+                  {item.badgeText || "1"}
+                </span>
+              )}
+
+              {item.badgeText && !item.hasBadge && (
+                <span
+                  style={{
+                    background: `${item.badgeColor}22`,
+                    border: `1px solid ${item.badgeColor}55`,
+                    color: item.badgeColor,
+                    fontSize: "10px",
+                    fontWeight: "800",
+                    padding: "2px 6px",
+                    borderRadius: "8px"
+                  }}
+                >
+                  {item.badgeText}
+                </span>
+              )}
+
               <span style={{ fontSize: "13px", color: textSub }}>›</span>
             </button>
           ))}
@@ -234,7 +287,7 @@ export default function AppDrawer({
           }}
         >
           <div style={{ fontSize: "11px", color: textSub, fontWeight: "600" }}>
-            GeoProspect • v3.2
+            GeoProspect • v{CURRENT_APP_VERSION}
           </div>
           <div style={{ display: "flex", gap: "6px" }}>
             <a

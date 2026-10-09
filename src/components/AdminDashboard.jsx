@@ -6,6 +6,10 @@ import {
   purgeAnalyticsData,
   deleteAnalyticsVisit
 } from "../services/analyticsService.js";
+import {
+  fetchAllFeedbacks,
+  deleteFeedbackItem
+} from "../services/feedbackService.js";
 
 const MASTER_PIN = "25802580";
 const AUTH_STORAGE_KEY = "geoprospect_admin_auth_token_v1";
@@ -22,6 +26,8 @@ export default function AdminDashboard({ onExit }) {
   const [pinError, setPinError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [deletingFeedbackId, setDeletingFeedbackId] = useState(null);
   const [lastRefreshed, setLastRefreshed] = useState(null);
   const [copiedSql, setCopiedSql] = useState(false);
   const [showPurgeModal, setShowPurgeModal] = useState(false);
@@ -31,8 +37,12 @@ export default function AdminDashboard({ onExit }) {
 
   const loadData = async () => {
     setLoading(true);
-    const report = await fetchAnalyticsReport();
+    const [report, fbList] = await Promise.all([
+      fetchAnalyticsReport(),
+      fetchAllFeedbacks()
+    ]);
     setData(report);
+    setFeedbacks(fbList || []);
     setLastRefreshed(new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }));
     setLoading(false);
   };
@@ -58,6 +68,19 @@ export default function AdminDashboard({ onExit }) {
     } else {
       const report = await fetchAnalyticsReport();
       setData(report);
+    }
+  };
+
+  const handleDeleteFeedback = async (feedbackId) => {
+    if (!feedbackId) return;
+    setDeletingFeedbackId(feedbackId);
+    setFeedbacks((prev) => prev.filter((f) => f.id !== feedbackId));
+    const ok = await deleteFeedbackItem(feedbackId);
+    setDeletingFeedbackId(null);
+    if (!ok) {
+      const fbList = await fetchAllFeedbacks();
+      setFeedbacks(fbList || []);
+      alert("Erreur lors de la suppression du retour.");
     }
   };
 
@@ -119,7 +142,22 @@ export default function AdminDashboard({ onExit }) {
     created_at TIMESTAMPTZ DEFAULT now()
 );
 ALTER TABLE public.app_analytics ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USING (true) WITH CHECK (true);`;
+CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USING (true) WITH CHECK (true);
+
+CREATE TABLE IF NOT EXISTS public.app_feedback (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_code TEXT,
+    category TEXT DEFAULT 'suggestion',
+    message TEXT NOT NULL,
+    contact TEXT,
+    device TEXT,
+    browser TEXT,
+    screen_size TEXT,
+    app_version TEXT,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+ALTER TABLE public.app_feedback ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR ALL USING (true) WITH CHECK (true);`;
 
   const copySql = () => {
     if (navigator.clipboard) {
@@ -619,6 +657,129 @@ CREATE POLICY "Allow public insert and read" ON public.app_analytics FOR ALL USI
               </div>
             )}
           </div>
+        </div>
+
+        {/* User Feedbacks Section */}
+        <div style={{ ...sectionCardStyle, marginBottom: "20px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "8px" }}>
+            <div style={{ fontSize: "13.5px", fontWeight: "900", color: "#38bdf8", display: "flex", alignItems: "center", gap: "8px" }}>
+              <span>💬</span> Messages & Retours Utilisateurs (Formulaire de retour)
+              <span
+                style={{
+                  fontSize: "10.5px",
+                  fontWeight: "800",
+                  padding: "2px 8px",
+                  borderRadius: "10px",
+                  background: feedbacks.length > 0 ? "rgba(56, 189, 248, 0.2)" : "rgba(255, 255, 255, 0.08)",
+                  color: feedbacks.length > 0 ? "#38bdf8" : "#94a3b8"
+                }}
+              >
+                {feedbacks.length} message(s)
+              </span>
+            </div>
+            <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+              Bugs, idées et avis soumis depuis l'application
+            </div>
+          </div>
+
+          {feedbacks.length > 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {feedbacks.map((fb, idx) => {
+                const dateStr = fb.created_at ? new Date(fb.created_at).toLocaleString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "-";
+                let catBadge = { label: "Avis", icon: "💬", bg: "rgba(16, 185, 129, 0.15)", border: "rgba(16, 185, 129, 0.4)", text: "#10b981" };
+                if (fb.category === "bug") {
+                  catBadge = { label: "Bug", icon: "🐛", bg: "rgba(239, 68, 68, 0.15)", border: "rgba(239, 68, 68, 0.4)", text: "#f87171" };
+                } else if (fb.category === "suggestion") {
+                  catBadge = { label: "Idée", icon: "💡", bg: "rgba(56, 189, 248, 0.15)", border: "rgba(56, 189, 248, 0.4)", text: "#38bdf8" };
+                } else if (fb.category === "question") {
+                  catBadge = { label: "Question", icon: "❓", bg: "rgba(245, 158, 11, 0.15)", border: "rgba(245, 158, 11, 0.4)", text: "#fbbf24" };
+                }
+
+                return (
+                  <div
+                    key={fb.id || idx}
+                    style={{
+                      padding: "14px 16px",
+                      borderRadius: "14px",
+                      background: "rgba(255, 255, 255, 0.03)",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px"
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span
+                          style={{
+                            padding: "3px 8px",
+                            borderRadius: "6px",
+                            background: catBadge.bg,
+                            border: `1px solid ${catBadge.border}`,
+                            color: catBadge.text,
+                            fontSize: "11px",
+                            fontWeight: "800",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px"
+                          }}
+                        >
+                          <span>{catBadge.icon}</span>
+                          <span>{catBadge.label}</span>
+                        </span>
+                        <span style={{ fontSize: "11px", color: "#94a3b8", fontFamily: "monospace" }}>
+                          {fb.user_code || "ANON"}
+                        </span>
+                        {fb.contact && (
+                          <span style={{ fontSize: "11px", color: "#e2e8f0", fontWeight: "700", background: "rgba(255, 255, 255, 0.08)", padding: "2px 8px", borderRadius: "6px" }}>
+                            👤 {fb.contact}
+                          </span>
+                        )}
+                      </div>
+
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <span style={{ fontSize: "11px", color: "#64748b" }}>
+                          ⏱️ {dateStr}
+                        </span>
+                        <button
+                          onClick={() => handleDeleteFeedback(fb.id)}
+                          disabled={deletingFeedbackId === fb.id}
+                          title="Supprimer ce message"
+                          style={{
+                            padding: "4px 8px",
+                            borderRadius: "8px",
+                            background: "rgba(239, 68, 68, 0.12)",
+                            border: "1px solid rgba(239, 68, 68, 0.3)",
+                            color: "#f87171",
+                            fontSize: "11px",
+                            fontWeight: "700",
+                            cursor: "pointer"
+                          }}
+                        >
+                          {deletingFeedbackId === fb.id ? "..." : "🗑️"}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div style={{ fontSize: "13px", color: "#ffffff", lineHeight: "1.5", whiteSpace: "pre-wrap", background: "rgba(0, 0, 0, 0.2)", padding: "10px 12px", borderRadius: "10px" }}>
+                      {fb.message}
+                    </div>
+
+                    <div style={{ fontSize: "10.5px", color: "#64748b", display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                      <span>📱 {fb.device || "Appareil inconnu"}</span>
+                      <span>🌐 {fb.browser || "Navigateur inconnu"}</span>
+                      {fb.screen_size && <span>📐 {fb.screen_size}</span>}
+                      {fb.app_version && <span>🏷️ v{fb.app_version}</span>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div style={{ fontSize: "12px", color: "#64748b", textAlign: "center", padding: "20px 0" }}>
+              Aucun retour utilisateur reçu pour le moment. Dès qu'un prospecteur soumet un message, il apparaîtra ici.
+            </div>
+          )}
         </div>
 
         {/* Live Visitor Feed */}

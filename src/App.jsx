@@ -24,6 +24,7 @@ import MapLayersModal from "./components/MapLayersModal";
 import SplashScreen from "./components/SplashScreen";
 import AppDrawer from "./components/AppDrawer";
 import NewsModal from "./components/NewsModal";
+import FeedbackModal from "./components/FeedbackModal";
 import AboutModal from "./components/AboutModal";
 import CguModal from "./components/CguModal";
 import FeaturesGuideModal from "./components/FeaturesGuideModal";
@@ -44,6 +45,7 @@ import { addFind as createFind, toggleFavorite, normalizeDateStr, isFindInSortie
 import { getActiveSession, leaveTeamSession, normalizeSessionCode, getMyUserCode, getMyDisplayName } from "./services/sessionService";
 import { loadCategoriesData } from "./services/categoriesService";
 import { trackVisitEvent } from "./services/analyticsService";
+import { checkHasUnreadUpdate } from "./services/feedbackService";
 
 function offsetPosition(
   position,
@@ -191,6 +193,12 @@ function App() {
   const [showNewsModal, setShowNewsModal] =
     useState(false);
 
+  const [showFeedbackModal, setShowFeedbackModal] =
+    useState(false);
+
+  const [hasUnreadNews, setHasUnreadNews] =
+    useState(() => checkHasUnreadUpdate());
+
   const [showAboutModal, setShowAboutModal] =
     useState(false);
 
@@ -335,6 +343,26 @@ function App() {
       document.body.classList.remove("theme-light");
     }
   }, [theme]);
+
+  // Handle new app update notification & auto popup on launch
+  useEffect(() => {
+    const handleVersionSeen = () => {
+      setHasUnreadNews(checkHasUnreadUpdate());
+    };
+    window.addEventListener("geoprospect-version-seen", handleVersionSeen);
+
+    if (checkHasUnreadUpdate()) {
+      const timer = setTimeout(() => {
+        setShowNewsModal(true);
+      }, 1400);
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener("geoprospect-version-seen", handleVersionSeen);
+      };
+    }
+
+    return () => window.removeEventListener("geoprospect-version-seen", handleVersionSeen);
+  }, []);
 
   const [showAlbum, setShowAlbum] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState(null);
@@ -1501,6 +1529,7 @@ function App() {
           workspace={workspace}
           gpsAccuracy={gpsAccuracy}
           isOnline={isOnline}
+          hasUnreadNews={hasUnreadNews}
           isRecordingSortie={isRecordingSortie}
           onToggleRecording={() => isRecordingSortie ? stopSortie() : startSortie(position)}
           onOpenTeamSession={() => setShowTeamSessionModal(true)}
@@ -2199,8 +2228,13 @@ function App() {
         isOpen={showDrawer}
         onClose={() => setShowDrawer(false)}
         theme={theme}
+        hasUnreadNews={hasUnreadNews}
         onNavigate={(tab) => {
           setActiveTab(tab);
+          setShowDrawer(false);
+        }}
+        onOpenFeedback={() => {
+          setShowFeedbackModal(true);
           setShowDrawer(false);
         }}
         onOpenFeaturesGuide={() => {
@@ -2248,6 +2282,17 @@ function App() {
       <NewsModal
         isOpen={showNewsModal}
         onClose={() => setShowNewsModal(false)}
+        onOpenFeedback={() => {
+          setShowNewsModal(false);
+          setShowFeedbackModal(true);
+        }}
+        theme={theme}
+      />
+
+      {/* Feedback Form Modal */}
+      <FeedbackModal
+        isOpen={showFeedbackModal}
+        onClose={() => setShowFeedbackModal(false)}
         theme={theme}
       />
 

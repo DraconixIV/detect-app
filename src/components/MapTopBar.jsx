@@ -21,7 +21,8 @@ export default function MapTopBar({
   finds = [],
   onSelectFind,
   onSelectPlace,
-  zenMode = false
+  zenMode = false,
+  hasUnreadNews = false
 }) {
   const [categoriesData, setCategoriesData] = useState(() => loadCategoriesData());
   const [places, setPlaces] = useState([]);
@@ -183,10 +184,28 @@ export default function MapTopBar({
                 color: textMain,
                 fontSize: "14px",
                 cursor: "pointer",
-                flexShrink: 0
+                flexShrink: 0,
+                position: "relative"
               }}
             >
-              ☰
+              <span>☰</span>
+              {hasUnreadNews && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "-3px",
+                    right: "-3px",
+                    width: "9px",
+                    height: "9px",
+                    borderRadius: "50%",
+                    background: "#ef4444",
+                    border: "1.5px solid #ffffff",
+                    boxShadow: "0 0 6px #ef4444",
+                    animation: "pulse 1.5s infinite"
+                  }}
+                  title="Nouvelle mise à jour disponible"
+                />
+              )}
             </button>
           )}
 
