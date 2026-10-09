@@ -582,10 +582,10 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                   let displayLabel = src;
                   let icon = "🔗";
                   if (src === "Facebook") {
-                    displayLabel = "Facebook (Publication & Groupes)";
+                    displayLabel = "Facebook (Publication et Groupes)";
                     icon = "📘";
                   } else if (src === "Accès Direct / PWA") {
-                    displayLabel = "Accès Direct / PWA (Navigateur & App)";
+                    displayLabel = "Accès Direct / PWA (Navigateur et App)";
                     icon = "⚡";
                   } else if (src === "Google") {
                     displayLabel = "Google (Recherche, Discover, Gmail)";
@@ -631,7 +631,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           {/* Devices breakdown */}
           <div style={sectionCardStyle}>
             <div style={{ fontSize: "13px", fontWeight: "900", color: "#ffffff", marginBottom: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>📱</span> Appareils & Navigateurs
+              <span>📱</span> Appareils et Navigateurs
             </div>
 
             {data && Object.keys(data.devices).length > 0 ? (
@@ -663,7 +663,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
         <div style={{ ...sectionCardStyle, marginBottom: "20px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "8px" }}>
             <div style={{ fontSize: "13.5px", fontWeight: "900", color: "#38bdf8", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>💬</span> Messages & Retours Utilisateurs (Formulaire de retour)
+              <span>💬</span> Messages et Retours Utilisateurs (Formulaire de retour)
               <span
                 style={{
                   fontSize: "10.5px",
@@ -786,7 +786,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
         <div style={sectionCardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "8px" }}>
             <div style={{ fontSize: "13.5px", fontWeight: "900", color: "#ffffff", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>⚡</span> Journal des Clics & Visites en Direct
+              <span>⚡</span> Journal des Clics et Visites en Direct
             </div>
             <div style={{ fontSize: "11px", color: "#94a3b8" }}>
               Heure exacte au format seconde (Paris)

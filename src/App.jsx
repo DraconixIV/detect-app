@@ -344,23 +344,12 @@ function App() {
     }
   }, [theme]);
 
-  // Handle new app update notification & auto popup on launch
+  // Sync update notification badge status
   useEffect(() => {
     const handleVersionSeen = () => {
       setHasUnreadNews(checkHasUnreadUpdate());
     };
     window.addEventListener("geoprospect-version-seen", handleVersionSeen);
-
-    if (checkHasUnreadUpdate()) {
-      const timer = setTimeout(() => {
-        setShowNewsModal(true);
-      }, 1400);
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener("geoprospect-version-seen", handleVersionSeen);
-      };
-    }
-
     return () => window.removeEventListener("geoprospect-version-seen", handleVersionSeen);
   }, []);
 

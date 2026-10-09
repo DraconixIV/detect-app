@@ -8,41 +8,12 @@ const NEWS_ARTICLES = [
     date: "9 Octobre 2026",
     tag: "Nouveau",
     tagColor: "#38bdf8",
-    title: "✨ Formulaire de retour & Sécurité renforcée",
-    content: "Une mise à jour dédiée à l'écoute des prospecteurs et à la sécurité !",
+    title: "Formulaire de retour et améliorations",
+    content: "Une mise à jour dédiée à l'écoute des prospecteurs et au perfectionnement de l'application.",
     highlights: [
-      "📝 Formulaire de retour disponible dans le menu latéral : signalez un bug ou proposez vos idées en 1 clic.",
-      "🔒 Sécurité renforcée : Nouveaux codes de session cryptographiques équilibrés (3 chiffres + 3 lettres).",
-      "⚡ Optimisation mobile PWA : Amélioration de la fluidité et du signal GPS en extérieur.",
-      "📊 Console de suivi en direct : Meilleure détection des appareils et des navigateurs."
-    ]
-  },
-  {
-    id: "v1.3.0",
-    version: "v1.3.0",
-    date: "30 Septembre 2026",
-    tag: "Majeure",
-    tagColor: "#10b981",
-    title: "🏛️ Cabinet Numismatique & Sorties GPS",
-    content: "L'intelligence artificielle au service de l'identification de vos monnaies.",
-    highlights: [
-      "🪙 Cabinet Numismatique IA : Reconnaissance détaillée des monnaies Romaines, Royales et Gauloises.",
-      "📍 Enregistrement GPS continu avec mode hors-ligne pour les zones blanches.",
-      "👥 Sessions d'équipe synchronisées et modération d'hôte."
-    ]
-  },
-  {
-    id: "v1.2.0",
-    version: "v1.2.0",
-    date: "20 Septembre 2026",
-    tag: "Lancement",
-    tagColor: "#f59e0b",
-    title: "🧭 Lancement officiel de GeoProspect",
-    content: "L'application de cartographie privée pensée par et pour les prospecteurs de métaux.",
-    highlights: [
-      "🗺️ Cartes IGN, Satellite et Cadastre haute précision.",
-      "📷 Galerie de trouvailles avec géolocalisation et photos haute résolution.",
-      "🛡️ Confidentialité totale : Zéro carte publique, vos coins restent strictement secrets."
+      "Formulaire de retour disponible dans le menu latéral pour signaler un bug ou proposer une idée en un clic.",
+      "Optimisation mobile et amélioration de la fluidité générale.",
+      "Navigation simplifiée et accès direct à toutes les fonctionnalités."
     ]
   }
 ];
@@ -95,8 +66,8 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
       <div
         style={{
           width: "100%",
-          maxWidth: "500px",
-          maxHeight: "88vh",
+          maxWidth: "480px",
+          maxHeight: "85vh",
           background: bgModal,
           borderRadius: "24px",
           border: `1px solid ${cardBorder}`,
@@ -121,7 +92,7 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
             <span style={{ fontSize: "22px" }}>🚀</span>
             <div>
               <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: textMain }}>
-                Nouveautés & Mises à jour
+                Mises à jour
               </h3>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
                 Dernières évolutions de GeoProspect
@@ -149,47 +120,46 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
           </button>
         </div>
 
-        {/* Action banner to test feedback */}
+        {/* Centered Action banner to test feedback */}
         <div
           style={{
-            padding: "12px 18px",
-            background: "linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(56, 189, 248, 0.1))",
+            padding: "14px 18px",
+            background: "linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(56, 189, 248, 0.08))",
             borderBottom: `1px solid ${cardBorder}`,
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
-            justifyContent: "space-between",
+            justifyContent: "center",
+            textAlign: "center",
             gap: "10px"
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "18px" }}>💬</span>
-            <div style={{ fontSize: "11.5px", color: textMain, fontWeight: "700" }}>
-              Une idée ou un bug à signaler ?
-            </div>
+          <div style={{ fontSize: "12.5px", color: textMain, fontWeight: "700", textAlign: "center" }}>
+            Une idée ou un bug à signaler ?
           </div>
           <button
             type="button"
             onClick={handleFeedbackClick}
             style={{
-              padding: "6px 12px",
+              padding: "7px 16px",
               borderRadius: "10px",
               background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
               border: "none",
               color: "#ffffff",
-              fontSize: "11.5px",
+              fontSize: "12px",
               fontWeight: "800",
               cursor: "pointer",
               boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)"
             }}
           >
-            Formulaire de retour ›
+            Formulaire de retour
           </button>
         </div>
 
         {/* Content list */}
         <div
           style={{
-            padding: "16px 20px",
+            padding: "18px 20px",
             overflowY: "auto",
             display: "flex",
             flexDirection: "column",
@@ -241,12 +211,12 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
               </p>
 
               {item.highlights && item.highlights.length > 0 && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "5px", marginTop: "4px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
                   {item.highlights.map((h, i) => (
                     <div
                       key={i}
                       style={{
-                        fontSize: "11.5px",
+                        fontSize: "12px",
                         color: isLight ? "#1e293b" : "#e2e8f0",
                         display: "flex",
                         alignItems: "flex-start",

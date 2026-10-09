@@ -4,7 +4,6 @@ import { submitUserFeedback } from "../services/feedbackService";
 export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
   const [category, setCategory] = useState("suggestion");
   const [message, setMessage] = useState("");
-  const [contact, setContact] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -23,8 +22,8 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
   const categories = [
     { id: "bug", label: "Signaler un bug", icon: "🐛", color: "#ef4444" },
     { id: "suggestion", label: "Suggérer une idée", icon: "💡", color: "#38bdf8" },
-    { id: "avis", label: "Avis & Retour", icon: "💬", color: "#10b981" },
-    { id: "question", label: "Question", icon: "❓", color: "#f59e0b" }
+    { id: "avis", label: "Avis et retours", icon: "💬", color: "#10b981" },
+    { id: "question", label: "Poser une question", icon: "❓", color: "#f59e0b" }
   ];
 
   const getPlaceholder = () => {
@@ -36,7 +35,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
       case "question":
         return "Posez votre question sur l'application ou son utilisation...";
       default:
-        return "Partagez votre avis ou vos impressions sur l'application...";
+        return "Partagez vos impressions ou votre avis sur l'application...";
     }
   };
 
@@ -53,8 +52,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
     try {
       await submitUserFeedback({
         category,
-        message,
-        contact
+        message
       });
       setIsSubmitting(false);
       setIsSubmitted(true);
@@ -66,7 +64,6 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
 
   const handleClose = () => {
     setMessage("");
-    setContact("");
     setIsSubmitted(false);
     setErrorMsg("");
     onClose();
@@ -93,7 +90,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
         style={{
           width: "100%",
           maxWidth: "480px",
-          maxHeight: "90vh",
+          maxHeight: "85vh",
           background: bgModal,
           borderRadius: "24px",
           border: `1px solid ${cardBorder}`,
@@ -170,7 +167,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
                 Merci pour votre retour !
               </h4>
               <p style={{ fontSize: "13px", color: textSub, lineHeight: "1.5", margin: "0 0 24px 0" }}>
-                Votre message a été transmis directement au développeur. Vos retours sont précieux pour faire grandir GeoProspect.
+                Votre message a bien été transmis. Vos retours permettent de faire évoluer GeoProspect pour tous les prospecteurs.
               </p>
               <button
                 type="button"
@@ -234,7 +231,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
                   Votre message <span style={{ color: "#ef4444" }}>*</span>
                 </label>
                 <textarea
-                  rows={5}
+                  rows={6}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder={getPlaceholder()}
@@ -256,44 +253,11 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
                 />
               </div>
 
-              {/* Optional contact */}
-              <div>
-                <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
-                  Contact (Optionnel) :
-                </label>
-                <input
-                  type="text"
-                  value={contact}
-                  onChange={(e) => setContact(e.target.value)}
-                  placeholder="Email, pseudo Facebook ou Messenger..."
-                  style={{
-                    width: "100%",
-                    boxSizing: "border-box",
-                    padding: "10px 14px",
-                    borderRadius: "12px",
-                    background: inputBg,
-                    border: `1px solid ${inputBorder}`,
-                    color: textMain,
-                    fontSize: "12.5px",
-                    outline: "none"
-                  }}
-                />
-                <div style={{ fontSize: "10.5px", color: textSub, marginTop: "4px" }}>
-                  Laissez un moyen de contact si vous souhaitez une réponse personnalisée.
-                </div>
-              </div>
-
               {errorMsg && (
                 <div style={{ padding: "8px 12px", borderRadius: "10px", background: "rgba(239, 68, 68, 0.15)", border: "1px solid rgba(239, 68, 68, 0.4)", color: "#f87171", fontSize: "11.5px", fontWeight: "700" }}>
                   ⚠️ {errorMsg}
                 </div>
               )}
-
-              {/* Privacy / Auto info note */}
-              <div style={{ padding: "8px 12px", borderRadius: "10px", background: "rgba(56, 189, 248, 0.08)", border: "1px solid rgba(56, 189, 248, 0.2)", fontSize: "10.5px", color: "#94a3b8", display: "flex", alignItems: "center", gap: "6px" }}>
-                <span>🔒</span>
-                <span>Votre modèle d'appareil et version sont joints automatiquement pour faciliter le diagnostic.</span>
-              </div>
 
               {/* Submit button */}
               <button
@@ -317,7 +281,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
                   transition: "all 0.2s"
                 }}
               >
-                <span>{isSubmitting ? "Envoi en cours..." : "Envoyer mon retour 🚀"}</span>
+                <span>{isSubmitting ? "Envoi en cours..." : "Envoyer mon message"}</span>
               </button>
             </form>
           )}
