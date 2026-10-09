@@ -15,7 +15,6 @@ export const APP_RELEASES = [
     version: "v1.4.0",
     date: "9 Octobre 2026",
     title: "Formulaire de retour",
-    content: "Une mise à jour dédiée à l'écoute des prospecteurs et au perfectionnement de l'application.",
     highlights: [
       "Formulaire de retour disponible dans le menu latéral pour signaler un bug ou une idée.",
       "Amélioration de la fluidité générale.",
@@ -27,7 +26,6 @@ export const APP_RELEASES = [
     version: "v1.3.0",
     date: "7 Octobre 2026",
     title: "Cartographie et cadastre IGN",
-    content: "Intégration des parcelles cadastrales et des fonds historiques Cassini et d'état-major.",
     highlights: [
       "Superposition du cadastre officiel IGN avec réglage de l'opacité.",
       "Cartes anciennes de Cassini et de l'état-major en surcouche.",
@@ -39,7 +37,6 @@ export const APP_RELEASES = [
     version: "v1.2.0",
     date: "4 Octobre 2026",
     title: "Sessions d'équipe en direct",
-    content: "Prospection en groupe avec partage de position GPS et synchronisation en direct.",
     highlights: [
       "Partage de localisation en direct entre coéquipiers.",
       "Alertes instantanées des découvertes sur le terrain.",
@@ -51,7 +48,6 @@ export const APP_RELEASES = [
     version: "v1.1.0",
     date: "1 Octobre 2026",
     title: "Carnet de détection GeoProspect",
-    content: "Lancement officiel de l'application tout-en-un pour prospecteurs.",
     highlights: [
       "Enregistrement GPS précis de chaque trouvaille.",
       "Photos macro avant et après restauration.",

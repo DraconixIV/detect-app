@@ -548,7 +548,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
               {data?.totalFinds ?? 0}
             </div>
             <div style={{ fontSize: "10.5px", color: data?.totalFinds > 0 ? "#facc15" : "#64748b", marginTop: "4px", fontWeight: "700" }}>
-              {data?.totalFinds > 0 ? `par ${data?.uniqueFinders ?? 0} prospecteur(s)` : "(Vos 53 trouvailles créateur sont exclues)"}
+              {data?.totalFinds > 0 ? `par ${data?.uniqueFinders ?? 1} prospecteur(s)` : "Aucune trouvaille enregistrée"}
             </div>
           </div>
 
@@ -562,7 +562,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
               {data?.totalTracks ?? 0}
             </div>
             <div style={{ fontSize: "10.5px", color: "#a855f7", marginTop: "4px", fontWeight: "700" }}>
-              tracés enregistrés (Terrain)
+              tracés enregistrés (terrain)
             </div>
           </div>
         </div>

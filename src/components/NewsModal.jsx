@@ -149,7 +149,7 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
             gap: "14px"
           }}
         >
-          {APP_RELEASES.map((item) => (
+          {APP_RELEASES.filter((r) => r.id === "1.4.0").map((item) => (
             <div
               key={item.id}
               style={{
@@ -159,7 +159,7 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
                 border: `1px solid ${cardBorder}`,
                 display: "flex",
                 flexDirection: "column",
-                gap: "8px"
+                gap: "10px"
               }}
             >
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -173,22 +173,18 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
                 {item.title}
               </div>
 
-              <p style={{ margin: "2px 0 6px 0", fontSize: "12px", color: textSub, lineHeight: "1.4" }}>
-                {item.content}
-              </p>
-
               {item.highlights && item.highlights.length > 0 && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "2px" }}>
                   {item.highlights.map((h, i) => (
                     <div
                       key={i}
                       style={{
-                        fontSize: "12px",
+                        fontSize: "12.5px",
                         color: isLight ? "#1e293b" : "#e2e8f0",
                         display: "flex",
                         alignItems: "flex-start",
                         gap: "8px",
-                        lineHeight: "1.4"
+                        lineHeight: "1.45"
                       }}
                     >
                       <span style={{ color: textSub, flexShrink: 0 }}>•</span>

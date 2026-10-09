@@ -184,9 +184,41 @@ export async function saveTrack(track, sessionName, sessionCode = null) {
     created_at: new Date().toISOString()
   };
 
-  // Always save locally first for immediate 100% offline safety
+  // 1. Always save locally first for immediate 100% offline safety
   saveLocalTrack(newTrack);
 
+  // 2. Log GPS sortie to app_analytics for reliable global telemetry & admin counting
+  try {
+    const ua = typeof window !== "undefined" && window.navigator ? navigator.userAgent || "" : "";
+    let device = "Mobile / Autre";
+    if (/iPad|iPhone|iPod/.test(ua)) device = "iPhone / iPad";
+    else if (/Android/i.test(ua)) device = "Android";
+    else if (/Windows/i.test(ua)) device = "Windows PC";
+    else if (/Macintosh|Mac OS X/i.test(ua)) device = "Mac";
+
+    let browser = "Navigateur";
+    if (/Chrome|CriOS/i.test(ua)) browser = "Chrome";
+    else if (/Safari/i.test(ua)) browser = "Safari";
+    else if (/Firefox/i.test(ua)) browser = "Firefox";
+
+    const screen = typeof window !== "undefined" ? `${window.screen?.width || 0}x${window.screen?.height || 0}` : "0x0";
+
+    await supabase.from("app_analytics").insert([
+      {
+        event_type: "track",
+        user_code: myCode || "ANON",
+        source: `[track:${newTrack.id}] ${cleanName} (${track.length} pts)`,
+        device: device,
+        browser: browser,
+        screen_size: screen,
+        created_at: newTrack.created_at
+      }
+    ]);
+  } catch (err) {
+    console.warn("Analytics track log warning:", err);
+  }
+
+  // 3. Cloud sync to gps_tracks (if table has positions/session_name columns)
   try {
     const { error } = await supabase
       .from("gps_tracks")
@@ -198,7 +230,7 @@ export async function saveTrack(track, sessionName, sessionCode = null) {
       ]);
 
     if (error) {
-      console.warn("Supabase gps_tracks insert error, saved locally:", error.message);
+      console.warn("Supabase gps_tracks insert warning, saved locally:", error.message);
     }
   } catch (err) {
     console.warn("Cloud sync error for track, saved locally:", err);
@@ -220,7 +252,17 @@ export async function deleteTrack(trackId) {
     console.warn("Error deleting local track:", e);
   }
 
-  // 2. Delete from Supabase
+  // 2. Delete from app_analytics
+  try {
+    await supabase
+      .from("app_analytics")
+      .delete()
+      .ilike("source", `[track:${trackId}]%`);
+  } catch (e) {
+    console.warn("Analytics track delete warning:", e);
+  }
+
+  // 3. Delete from Supabase gps_tracks
   try {
     if (typeof trackId === "number" || (!String(trackId).startsWith("local-track-") && !isNaN(Number(trackId)))) {
       const { error } = await supabase

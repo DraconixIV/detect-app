@@ -205,8 +205,10 @@ export async function fetchAnalyticsReport() {
     if (analyticsErr) {
       result.tableReady = false;
     } else if (analyticsData && analyticsData.length > 0) {
-      // Exclude feedback records from visits report
-      const visitData = analyticsData.filter((r) => r.event_type !== "feedback");
+      // Exclude feedback and track records from visits report
+      const visitData = analyticsData.filter(
+        (r) => r.event_type === "visit" || (!r.event_type && !r.source?.startsWith("[feedback]") && !r.source?.startsWith("[track]"))
+      );
 
       result.totalVisits = visitData.length;
       result.recentVisits = visitData.slice(0, 50);
@@ -261,22 +263,19 @@ export async function fetchAnalyticsReport() {
       });
       result.uniqueFacebookUsers = uFb;
       result.uniqueDirectPWAUsers = uDirect;
+
+      // 3. Count GPS tracks / sorties from app_analytics
+      const trackEvents = analyticsData.filter(
+        (r) => r.event_type === "track" || r.event_type === "sortie" || (r.source && r.source.startsWith("[track"))
+      );
+      result.totalTracks = trackEvents.length;
     }
 
-    // 2. Fetch finds stats (excluding developer / creator test accounts)
+    // 2. Fetch finds stats from database
     try {
-      const devCodes = new Set([
-        "GEO-KE9Q88",
-        "GEO-5BCQE7",
-        "GEO-LOCAL",
-        normalizeSessionCode(getMyUserCode())
-      ]);
-
       const { data: allFinds } = await supabase.from("finds").select("id, description");
       if (allFinds) {
-        let communityFindsCount = 0;
         const communityFinders = new Set();
-        let devFindsCount = 0;
 
         allFinds.forEach((f) => {
           const desc = f.description || "";
@@ -288,26 +287,11 @@ export async function fetchAnalyticsReport() {
               if (meta.u) userCode = normalizeSessionCode(meta.u);
             } catch {}
           }
-
-          if (userCode && devCodes.has(userCode)) {
-            devFindsCount++;
-          } else {
-            communityFindsCount++;
-            if (userCode) communityFinders.add(userCode);
-          }
+          if (userCode) communityFinders.add(userCode);
         });
 
-        result.totalFinds = communityFindsCount;
-        result.uniqueFinders = communityFinders.size;
-        result.devFinds = devFindsCount;
-      }
-    } catch {}
-
-    // 3. Fetch tracks stats
-    try {
-      const { data: allTracks } = await supabase.from("gps_tracks").select("id");
-      if (allTracks) {
-        result.totalTracks = allTracks.length;
+        result.totalFinds = allFinds.length;
+        result.uniqueFinders = Math.max(1, communityFinders.size);
       }
     } catch {}
 
