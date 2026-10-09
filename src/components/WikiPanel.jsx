@@ -304,7 +304,7 @@ ${contexte}
       {/* Header section with Museum Title */}
       <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
         <h2 style={{ margin: 0, fontSize: "22px", fontWeight: "900", letterSpacing: "-0.5px" }}>
-          🏛️ Musée Numismatique
+          🏛️ Musée numismatique
         </h2>
         <p style={{ margin: 0, fontSize: "12px", opacity: 0.7 }}>
           Consultez et valorisez l'histoire de vos plus belles monnaies trouvées.
@@ -324,7 +324,7 @@ ${contexte}
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-          <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "bold", textTransform: "uppercase" }}>Total Monnaies</span>
+          <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "bold", textTransform: "uppercase" }}>Total monnaies</span>
           <span style={{ fontSize: "24px", fontWeight: "900" }}>{stats.total} 🪙</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -514,7 +514,7 @@ ${contexte}
             {/* Header */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: "11px", opacity: 0.6, fontWeight: "700", textTransform: "uppercase", letterSpacing: "1px" }}>
-                🏛️ Exposition Collection
+                🏛️ Exposition collection
               </span>
               <button
                 onClick={() => setSelectedCoin(null)}
@@ -569,7 +569,7 @@ ${contexte}
               </h3>
               <div style={{ display: "flex", justifyContent: "center", gap: "6px", flexWrap: "wrap", marginTop: "4px" }}>
                 <span style={{ padding: "4px 8px", borderRadius: "8px", background: "rgba(251, 191, 36, 0.15)", color: "#fbbf24", fontSize: "10px", fontWeight: "bold" }}>
-                  {selectedCoin.description || "Métal Inconnu"}
+                  {selectedCoin.description || "Métal inconnu"}
                 </span>
                 <span style={{ padding: "4px 8px", borderRadius: "8px", background: "rgba(255, 255, 255, 0.08)", color: "#e5e7eb", fontSize: "10px", fontWeight: "bold" }}>
                   {selectedCoin.epoch}
@@ -580,7 +580,7 @@ ${contexte}
             {/* Notice header block */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: "11px", opacity: 0.6, fontWeight: "700", textTransform: "uppercase" }}>
-                📜 Notice Historique
+                📜 Notice historique
               </span>
               {!isEditing && selectedCoin.clean_description && (
                 <button

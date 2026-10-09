@@ -172,7 +172,7 @@ export default function CropperModal({
         {/* Title */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h4 style={{ margin: 0, color: "white", fontSize: "15px", fontWeight: "800" }}>
-            📐 Centrer et Aligner la Trouvaille
+            📐 Centrer et aligner la trouvaille
           </h4>
           <button
             onClick={onClose}

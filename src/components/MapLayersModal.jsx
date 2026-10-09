@@ -173,7 +173,7 @@ export default function MapLayersModal({
                 color: c.textPrimary || '#ffffff'
               }}
             >
-              <span>🗺️</span> Cartes et Surcouches IGN
+              <span>🗺️</span> Cartes et surcouches IGN
             </h3>
             <p
               style={{
@@ -234,7 +234,7 @@ export default function MapLayersModal({
                 gap: '6px'
               }}
             >
-              Fond de Carte Principal (1 au choix)
+              Fond de carte principal (1 au choix)
             </div>
 
             <div
@@ -312,7 +312,7 @@ export default function MapLayersModal({
                 gap: '6px'
               }}
             >
-              Surcouche Superposable (1 au choix)
+              Surcouche superposable (1 au choix)
             </div>
             <p style={{ fontSize: '11px', color: '#ffffff', opacity: 0.85, margin: '0 0 10px 0' }}>
               Superposez une couche cadastrale ou historique unique sur votre fond de carte.
@@ -334,7 +334,7 @@ export default function MapLayersModal({
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <div style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff' }}>
-                      Cadastre Officiel IGN / DGFiP
+                      Cadastre officiel IGN / DGFiP
                     </div>
                     <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, marginTop: '1px' }}>
                       Limites exactes des parcelles et numéros cadastraux
@@ -456,7 +456,7 @@ export default function MapLayersModal({
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <div style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff' }}>
-                      Carte d'État-Major (1820-1866 - IGN)
+                      Carte de l'état-major (1820 — 1866 - IGN)
                     </div>
                     <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, marginTop: '1px' }}>
                       Cartographie militaire du XIXe siècle (1:40 000)

@@ -154,7 +154,7 @@ export default function FlipCoinModal({
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
             <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "800", color: "#ffffff", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>🪙</span> Configuration Flip Coin 3D
+              <span>🪙</span> Configuration de la vue 3D
             </h2>
             <p style={{ margin: "4px 0 0 0", fontSize: "12px", color: textSub }}>
               Sélectionnez les 2 faces de <strong>{find.title || "votre objet"}</strong> pour créer la vue rotative.

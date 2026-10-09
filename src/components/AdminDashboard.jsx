@@ -219,7 +219,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           </div>
 
           <h2 style={{ margin: "0 0 6px 0", fontSize: "18px", fontWeight: "900", letterSpacing: "-0.3px" }}>
-            Console Développeur
+            Console développeur
           </h2>
           <p style={{ margin: "0 0 24px 0", fontSize: "12px", color: "#94a3b8" }}>
             Espace confidentiel GeoProspect
@@ -444,7 +444,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
             <span style={{ fontSize: "20px" }}>🛡️</span>
             <div>
               <div style={{ fontWeight: "900", color: "#38bdf8", letterSpacing: "-0.2px" }}>
-                Mode Développeur Actif sur cet appareil
+                Mode développeur actif sur cet appareil
               </div>
               <div style={{ fontSize: "11px", color: "#cbd5e1", marginTop: "2px" }}>
                 Vos visites et tests depuis ce {/iPhone|iPad|Android/i.test(navigator.userAgent || "") ? "smartphone" : "PC"} ne sont <strong>plus comptabilisés</strong>.
@@ -513,7 +513,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           {/* Card 1: Total Visits */}
           <div style={metricCardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Ouvertures / Clics</span>
+              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Ouvertures / clics</span>
               <span style={{ fontSize: "16px" }}>📈</span>
             </div>
             <div style={{ fontSize: "28px", fontWeight: "900", color: "#ffffff", letterSpacing: "-0.5px" }}>
@@ -527,7 +527,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           {/* Card 2: Unique Visitors */}
           <div style={metricCardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Visiteurs Uniques</span>
+              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Visiteurs uniques</span>
               <span style={{ fontSize: "16px" }}>👥</span>
             </div>
             <div style={{ fontSize: "28px", fontWeight: "900", color: "#ffffff", letterSpacing: "-0.5px" }}>
@@ -541,7 +541,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           {/* Card 3: Total Finds */}
           <div style={metricCardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Trouvailles Utilisateurs</span>
+              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Trouvailles utilisateurs</span>
               <span style={{ fontSize: "16px" }}>🪙</span>
             </div>
             <div style={{ fontSize: "28px", fontWeight: "900", color: "#ffffff", letterSpacing: "-0.5px" }}>
@@ -572,7 +572,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           {/* Sources breakdown */}
           <div style={sectionCardStyle}>
             <div style={{ fontSize: "13px", fontWeight: "900", color: "#ffffff", marginBottom: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>🌐</span> Détail de la Provenance du Trafic
+              <span>🌐</span> Détail de la provenance du trafic
             </div>
 
             {data && Object.keys(data.sources).length > 0 ? (
@@ -631,7 +631,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           {/* Devices breakdown */}
           <div style={sectionCardStyle}>
             <div style={{ fontSize: "13px", fontWeight: "900", color: "#ffffff", marginBottom: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>📱</span> Appareils et Navigateurs
+              <span>📱</span> Appareils et navigateurs
             </div>
 
             {data && Object.keys(data.devices).length > 0 ? (
@@ -663,7 +663,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
         <div style={{ ...sectionCardStyle, marginBottom: "20px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "8px" }}>
             <div style={{ fontSize: "13.5px", fontWeight: "900", color: "#38bdf8", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>💬</span> Messages et Retours Utilisateurs (Formulaire de retour)
+              <span>💬</span> Messages et retours utilisateurs
               <span
                 style={{
                   fontSize: "10.5px",
@@ -786,7 +786,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
         <div style={sectionCardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "8px" }}>
             <div style={{ fontSize: "13.5px", fontWeight: "900", color: "#ffffff", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>⚡</span> Journal des Clics et Visites en Direct
+              <span>⚡</span> Journal des clics et visites en direct
             </div>
             <div style={{ fontSize: "11px", color: "#94a3b8" }}>
               Heure exacte au format seconde (Paris)

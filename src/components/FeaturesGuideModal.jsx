@@ -7,38 +7,28 @@ const FEATURES_DATA = [
     categoryEmoji: "🗺️",
     features: [
       {
-        title: "Superposition du Cadastre Officiel IGN",
+        title: "Superposition du cadastre officiel IGN",
         icon: "📐",
-        badge: "Officiel",
-        badgeColor: "#2563eb",
         description: "Affiche le découpage parcellaire officiel, les limites de propriétés et les numéros de sections pour situer vos autorisations avec précision."
       },
       {
         title: "Carte de Cassini (XVIIIe siècle)",
         icon: "📜",
-        badge: "Historique",
-        badgeColor: "#d97706",
         description: "Explorez la toute première carte générale du royaume de France pour repérer les anciens moulins, chapelles, gués, châteaux et chemins séculaires."
       },
       {
-        title: "Carte de l'État-Major (1820 — 1866)",
+        title: "Carte de l'état-major (1820 — 1866)",
         icon: "⚔️",
-        badge: "XIXe siècle",
-        badgeColor: "#059669",
         description: "Superposez les levés topographiques militaires du XIXe siècle pour identifier l'évolution des parcelles et l'ancien réseau viaire rural."
       },
       {
-        title: "Imagerie Satellite HD",
+        title: "Imagerie satellite HD",
         icon: "🛰️",
-        badge: "HD",
-        badgeColor: "#7c3aed",
         description: "Basculez entre vue aérienne haute définition et modèle numérique de relief avec courbes de niveau pour analyser les dénivelés du terrain."
       },
       {
-        title: "Curseur de Transparence en Direct",
+        title: "Curseur de transparence en direct",
         icon: "🎚️",
-        badge: "Temps réel",
-        badgeColor: "#0284c7",
         description: "Ajustez la transparence de chaque couche historique pour voir le cadastre ou le satellite en transparence sous la carte ancienne."
       }
     ]
@@ -49,39 +39,29 @@ const FEATURES_DATA = [
     categoryEmoji: "🪙",
     features: [
       {
-        title: "Pointage GPS Précis",
+        title: "Pointage GPS précis",
         icon: "📍",
-        badge: "GPS",
-        badgeColor: "#2563eb",
         description: "Épinglez instantanément une découverte avec vos coordonnées GPS réelles ou ciblez n'importe quel point précis de la carte par un appui long."
       },
       {
-        title: "Photos Macro Avant / Après Nettoyage",
+        title: "Photos macro avant / après nettoyage",
         icon: "✨",
-        badge: "HD",
-        badgeColor: "#10b981",
         description: "Ajoutez une photo de découverte brute (en terre) puis une photo après restauration pour apprécier l'évolution du nettoyage."
       },
       {
-        title: "Recadrage Macro",
+        title: "Recadrage macro",
         icon: "🔍",
-        badge: "Studio",
-        badgeColor: "#f59e0b",
         description: "Recadrez et zoomez directement sur les détails des monnaies, fibules et reliefs fins sans quitter l'application."
       },
       {
-        title: "Notes Vocales Dictées sur le Terrain",
+        title: "Notes vocales dictées sur le terrain",
         icon: "🎙️",
-        badge: "Audio",
-        badgeColor: "#ef4444",
         description: "Enregistrez un mémo vocal direct pour consigner le contexte du son, la profondeur ou le type de terre sans avoir à taper sur le clavier."
       },
       {
-        title: "Catégories Personnalisées",
+        title: "Catégories personnalisées",
         icon: "🏷️",
-        badge: "Sur-mesure",
-        badgeColor: "#8b5cf6",
-        description: "Créez vos propres catégories, sous-catégories et associez-y des métaux (Or, Argent, Bronze, Fer, Cuivre, Plomb...) avec leurs couleurs repères."
+        description: "Créez vos propres catégories, sous-catégories et associez-y des métaux (or, argent, bronze, fer, cuivre, plomb...) avec leurs couleurs repères."
       }
     ]
   },
@@ -91,122 +71,89 @@ const FEATURES_DATA = [
     categoryEmoji: "⏱️",
     features: [
       {
-        title: "Ligne de Tracé GPS en Direct (Fil d'Ariane)",
+        title: "Ligne de tracé GPS en direct",
         icon: "🔴",
-        badge: "Direct",
-        badgeColor: "#ef4444",
         description: "Visualisez en temps réel votre parcours sur la carte pour prospecter méthodiquement et ne jamais repasser au même endroit."
       },
       {
-        title: "Compteur de Cibles Dynamique",
+        title: "Compteur de cibles dynamique",
         icon: "🎯",
-        badge: "Live",
-        badgeColor: "#f59e0b",
         description: "Le bandeau de télémétrie démarre à 0 et comptabilise automatiquement le nombre de trouvailles épinglées pendant la sortie."
       },
       {
-        title: "Télémétrie Complète (Distance, Chrono, Pause)",
+        title: "Télémétrie complète",
         icon: "📊",
-        badge: "Métriques",
-        badgeColor: "#06b6d4",
         description: "Chronomètre avec mise en pause, calcul de la distance parcourue en kilomètres et protection contre les sauts GPS aberrants."
       },
       {
-        title: "Historique des Sorties",
+        title: "Historique des sorties",
         icon: "🗺️",
-        badge: "Journal",
-        badgeColor: "#3b82f6",
         description: "Sauvegardez vos sorties avec un nom personnalisé et réaffichez le tracé complet d'une journée passée sur la carte."
       }
     ]
   },
   {
     category: "team",
-    categoryLabel: "Sessions en Équipe",
+    categoryLabel: "Sessions en équipe",
     categoryEmoji: "👥",
     features: [
       {
-        title: "Partage GPS en Direct entre Coéquipiers",
+        title: "Partage GPS en direct entre coéquipiers",
         icon: "📡",
-        badge: "Multijoueur",
-        badgeColor: "#10b981",
         description: "Visualisez les positions de vos amis en temps réel sous forme de pastilles sur la carte pour rester coordonnés sur les grands terrains."
       },
       {
-        title: "Alertes Trouvailles Instantanées",
+        title: "Alertes trouvailles instantanées",
         icon: "🔔",
-        badge: "Temps réel",
-        badgeColor: "#f59e0b",
         description: "Soyez notifié dès qu'un coéquipier enregistre une découverte remarquable dans le champ avec son nom et sa catégorie."
       },
       {
-        title: "Code de Session Privé",
+        title: "Code de session privé",
         icon: "🔒",
-        badge: "Sécurité",
-        badgeColor: "#6366f1",
         description: "Rejoignez une session avec un code unique à 6 lettres. L'hôte peut verrouiller la session ou exclure un participant."
       }
     ]
   },
   {
     category: "offline",
-    categoryLabel: "Mode Hors-Ligne",
+    categoryLabel: "Mode hors-ligne",
     categoryEmoji: "💾",
     features: [
       {
-        title: "Fonctionnement Total Sans Réseau (PWA)",
+        title: "Fonctionnement sans réseau (PWA)",
         icon: "🌲",
-        badge: "Hors-ligne",
-        badgeColor: "#059669",
         description: "Enregistrez vos trouvailles, photos et tracés même au fond des bois sans aucune couverture 4G grâce au stockage IndexedDB."
       },
       {
-        title: "Synchronisation Automatique Silencieuse",
+        title: "Synchronisation automatique silencieuse",
         icon: "🔄",
-        badge: "Auto",
-        badgeColor: "#2563eb",
         description: "Dès que votre téléphone capte à nouveau une connexion Internet, vos trouvailles en attente sont transmises à votre carnet de détection cloud."
       },
       {
-        title: "Sauvegardes Complètes JSON (Export / Import)",
+        title: "Sauvegardes complètes JSON",
         icon: "📁",
-        badge: "Sécurité",
-        badgeColor: "#d97706",
         description: "Téléchargez l'intégralité de vos trouvailles et paramètres dans un fichier de sauvegarde local réimportable à tout moment."
       }
     ]
   },
   {
     category: "tools",
-    categoryLabel: "Boîte à Outils",
+    categoryLabel: "Boîte à outils",
     categoryEmoji: "🧰",
     features: [
       {
-        title: "Simulateur Pile ou Face 3D",
-        icon: "🪙",
-        badge: "Pratique",
-        badgeColor: "#f59e0b",
-        description: "Une pièce 3D réaliste pour trancher vos choix sur le terrain (continuer à gauche ou à droite ? quel champ explorer ?)."
-      },
-      {
-        title: "Mode Sombre et Clair",
+        title: "Mode sombre et clair",
         icon: "🌓",
-        badge: "Visibilité",
-        badgeColor: "#64748b",
         description: "Basculez entre thème sombre immersif et thème clair à fort contraste pour une lisibilité optimale sous le plein soleil."
       },
       {
-        title: "Mode Zen",
+        title: "Mode zen",
         icon: "🧘",
-        badge: "Confort",
-        badgeColor: "#10b981",
         description: "Masquez l'interface inutile pour admirer la carte et activez le Wake Lock pour que votre écran ne s'éteigne jamais pendant la marche."
       },
       {
-        title: "Regroupement des Marqueurs (Clustering)",
+        title: "Regroupement des marqueurs (clustering)",
         icon: "🫧",
-        badge: "Fluidité",
-        badgeColor: "#3b82f6",
         description: "Les centaines de points de découvertes se regroupent automatiquement en grappes fluides pour ne jamais saturer l'affichage."
       }
     ]
@@ -290,7 +237,7 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
             <span style={{ fontSize: "22px" }}>📖</span>
             <div>
               <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: textMain }}>
-                Guide des Fonctionnalités
+                Guide des fonctionnalités
               </h3>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
                 Toutes les capacités de votre carnet de détection GeoProspect

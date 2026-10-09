@@ -17,7 +17,7 @@ export default function OnboardingStep5Theme({
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       <div>
         <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
-          Configuration Initiale ⚙️
+          Configuration initiale ⚙️
         </h1>
         <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
           Personnalisez votre affichage cartographique et l'interface de travail.
@@ -63,7 +63,7 @@ export default function OnboardingStep5Theme({
             }}
           >
             <div style={{ fontSize: "14px", fontWeight: "800", color: selectedMapStyle === "streets" ? (isDark ? "#60a5fa" : "#1e3a8a") : textMain }}>
-              🏔️ Relief et Topo
+              🏔️ Relief topographique
             </div>
             <div style={{ fontSize: "11px", color: textSub, marginTop: "2px" }}>
               Courbes de niveau
@@ -75,7 +75,7 @@ export default function OnboardingStep5Theme({
       {/* 2. Dark / Light Mode with Live Preview */}
       <div>
         <label style={{ fontSize: "11px", fontWeight: "800", textTransform: "uppercase", color: textSub, letterSpacing: "0.5px", marginBottom: "8px", display: "block" }}>
-          Mode d'Affichage
+          Mode d'affichage
         </label>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
           <button

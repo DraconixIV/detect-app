@@ -525,7 +525,7 @@ export default function AlbumPanel({
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
           <div>
             <h2 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: textMain }}>
-              🖼️ Album de Collection
+              🖼️ Album de collection
             </h2>
             <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
               {albumFilteredFinds.length} trouvaille{albumFilteredFinds.length > 1 ? "s" : ""} photographiée{albumFilteredFinds.length > 1 ? "s" : ""}

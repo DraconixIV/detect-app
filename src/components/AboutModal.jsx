@@ -56,10 +56,10 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
             <span style={{ fontSize: "22px" }}>ℹ️</span>
             <div>
               <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: textMain }}>
-                À Propos de GeoProspect
+                À propos de GeoProspect
               </h3>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
-                Version 3.2.0 • 100 % Indépendant & Libre
+                Version 3.2.0 • 100 % indépendant et libre
               </p>
             </div>
           </div>
@@ -146,16 +146,16 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "12px", fontWeight: "800", color: textMain, textTransform: "uppercase" }}>
-              🛡️ Nos Engagements
+              🛡️ Nos engagements
             </div>
             <div style={{ fontSize: "11px", color: textSub, lineHeight: "1.4" }}>
-              • <strong>100 % Gratuit</strong> : Aucune fonctionnalité bridée derrière un abonnement payant.
+              • <strong>100 % gratuit</strong> : aucune fonctionnalité bridée derrière un abonnement payant.
             </div>
             <div style={{ fontSize: "11px", color: textSub, lineHeight: "1.4" }}>
-              • <strong>Confidentialité Totale</strong> : Vos coordonnées GPS et trouvailles restent votre propriété exclusive.
+              • <strong>Confidentialité totale</strong> : vos coordonnées GPS et trouvailles restent votre propriété exclusive.
             </div>
             <div style={{ fontSize: "11px", color: textSub, lineHeight: "1.4" }}>
-              • <strong>Respect du Patrimoine</strong> : Pratique légale et responsable de la détection de loisir.
+              • <strong>Respect du patrimoine</strong> : pratique légale et responsable de la détection de loisir.
             </div>
           </div>
 
@@ -172,7 +172,7 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "12px", fontWeight: "800", color: textMain, textTransform: "uppercase" }}>
-              ☕ Soutenir le Développement
+              ☕ Soutenir le projet
             </div>
             <p style={{ margin: 0, fontSize: "11px", color: textSub, lineHeight: "1.4" }}>
               Un petit don encourage les futures nouveautés !

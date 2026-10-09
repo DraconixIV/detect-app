@@ -60,7 +60,7 @@ export default function AppDrawer({
     },
     {
       id: "about",
-      label: "À Propos de GeoProspect",
+      label: "À propos de GeoProspect",
       icon: "ℹ️",
       action: () => {
         onClose();
@@ -69,7 +69,7 @@ export default function AppDrawer({
     },
     {
       id: "cgu",
-      label: "Conditions d'Utilisation (CGU)",
+      label: "Conditions d'utilisation (CGU)",
       icon: "⚖️",
       action: () => {
         onClose();

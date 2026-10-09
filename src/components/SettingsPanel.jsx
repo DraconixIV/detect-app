@@ -532,7 +532,7 @@ export default function SettingsPanel({
         <div style={cardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
             <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff", marginBottom: 0 }}>
-              <span>🏷️</span> Catégories Personnalisées
+              <span>🏷️</span> Catégories personnalisées
             </div>
             <div style={{ display: "flex", gap: "6px" }}>
               {onOpenCategoryManager && (
@@ -565,7 +565,7 @@ export default function SettingsPanel({
                   fontWeight: "bold"
                 }}
               >
-                {showCatManager ? "Masquer" : "Édition Rapide ▾"}
+                {showCatManager ? "Masquer" : "Édition rapide ▾"}
               </button>
             </div>
           </div>
@@ -709,16 +709,16 @@ export default function SettingsPanel({
 
         <div style={cardStyle}>
           <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
-            <span>👤</span> DONNÉES
+            <span>👤</span> Données
           </div>
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: showAuthBox ? "14px" : "12px" }}>
             <div>
               <div style={{ fontSize: "12px", fontWeight: "bold", color: textMain }}>
-                {user ? user.email : "Mode 100% Local / Invité"}
+                {user ? user.email : "Mode 100 % local / invité"}
               </div>
               <div style={{ fontSize: "10px", color: textSub }}>
-                {user ? "Synchronisation Cloud activée ✅" : "Données stockées uniquement sur votre appareil"}
+                {user ? "Synchronisation cloud activée ✅" : "Données stockées uniquement sur votre appareil"}
               </div>
             </div>
 
@@ -791,7 +791,7 @@ export default function SettingsPanel({
                 cursor: "pointer"
               }}
             >
-              📥 Exporter Sauvegarde
+              📥 Exporter la sauvegarde
             </button>
             <button
               onClick={onImportBackup}
@@ -806,7 +806,7 @@ export default function SettingsPanel({
                 cursor: "pointer"
               }}
             >
-              📤 Importer Sauvegarde
+              📤 Importer une sauvegarde
             </button>
           </div>
         </div>
@@ -818,7 +818,7 @@ export default function SettingsPanel({
 
         <div style={cardStyle}>
           <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
-            <span>☕</span> Soutenir le Projet (Dons)
+            <span>☕</span> Soutenir le projet (dons)
           </div>
           <p style={{ margin: "0 0 14px 0", fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
             L'outil est 100% libre et développé sur mon temps libre avec l'aide de l'IA comme assistante pour concevoir un carnet de détection moderne et fluide. Aucune publicité ne finance le projet et vos données restent strictement privées et ne font l'objet d'aucune exploitation commerciale. Si l'application vous plaît et vous est utile lors de vos sorties, un petit don encourage les futures améliorations !
@@ -897,7 +897,7 @@ export default function SettingsPanel({
         <div style={{ ...cardStyle, marginTop: "16px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff", marginBottom: 0 }}>
-              <span>⚖️</span> Mentions Légales
+              <span>⚖️</span> Mentions légales
             </div>
             <button
               onClick={() => setShowLegal(!showLegal)}
@@ -954,7 +954,7 @@ export default function SettingsPanel({
                       gap: "6px"
                     }}
                   >
-                    <span>🔄</span> Relancer l'Onboarding
+                    <span>🔄</span> Relancer le guide de démarrage
                   </button>
                 )}
               </div>

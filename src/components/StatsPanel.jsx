@@ -775,7 +775,7 @@ export default function StatsPanel({
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
           <h3 style={{ margin: 0, fontSize: "13px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px", color: isLight ? "#0f172a" : "#ffffff" }}>
-            📅 Journal des Sorties
+            📅 Journal des sorties
           </h3>
           <button
             onClick={() => setSelectedDate(null)}

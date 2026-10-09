@@ -16,7 +16,7 @@ export default function OnboardingStep3Auth({
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       <div>
         <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
-          Votre Espace Prospecteur 👤
+          Votre espace prospecteur 👤
         </h1>
         <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
           Connectez-vous pour synchroniser vos trouvailles sur tous vos appareils, ou continuez en local.

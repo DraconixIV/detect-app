@@ -110,7 +110,7 @@ export default function AddFindModal({
                   letterSpacing: "-0.3px"
                 }}
               >
-                Nouvelle Trouvaille
+                Nouvelle trouvaille
               </h3>
             </div>
 

@@ -63,7 +63,7 @@ export default function ConsultationRequestModal({
           </div>
           <div>
             <div style={{ fontSize: "11px", fontWeight: "800", textTransform: "uppercase", color: "#3b82f6", letterSpacing: "0.5px" }}>
-              Autorisation Requise
+              Autorisation requise
             </div>
             <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: isLight ? "#0f172a" : "#ffffff" }}>
               Consultation de votre carte
