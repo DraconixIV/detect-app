@@ -182,6 +182,8 @@ export async function fetchAnalyticsReport() {
   const result = {
     totalVisits: 0,
     uniqueVisitors: 0,
+    uniqueVisitorsToday: 0,
+    uniqueVisitorsWeek: 0,
     todayVisits: 0,
     weekVisits: 0,
     sources: {},
@@ -191,6 +193,7 @@ export async function fetchAnalyticsReport() {
     totalFinds: 0,
     totalTracks: 0,
     uniqueFinders: 0,
+    devFinds: 0,
     tableReady: true
   };
 
@@ -218,16 +221,21 @@ export async function fetchAnalyticsReport() {
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
       const uniqueUsersSet = new Set();
+      const uniqueTodayUsersSet = new Set();
+      const uniqueWeekUsersSet = new Set();
 
       visitData.forEach((row) => {
-        if (row.user_code) uniqueUsersSet.add(row.user_code);
+        const uCode = row.user_code;
+        if (uCode) uniqueUsersSet.add(uCode);
 
         const rowDateStr = (row.created_at || "").slice(0, 10);
         if (rowDateStr === todayStr) {
           result.todayVisits++;
+          if (uCode) uniqueTodayUsersSet.add(uCode);
         }
         if (new Date(row.created_at) >= sevenDaysAgo) {
           result.weekVisits++;
+          if (uCode) uniqueWeekUsersSet.add(uCode);
         }
 
         let src = row.source || "Accès Direct / PWA";
@@ -244,6 +252,8 @@ export async function fetchAnalyticsReport() {
       });
 
       result.uniqueVisitors = uniqueUsersSet.size;
+      result.uniqueVisitorsToday = uniqueTodayUsersSet.size;
+      result.uniqueVisitorsWeek = uniqueWeekUsersSet.size;
 
       // Unique user counts per source
       const userSourcesMap = {};
@@ -271,11 +281,20 @@ export async function fetchAnalyticsReport() {
       result.totalTracks = trackEvents.length;
     }
 
-    // 2. Fetch finds stats from database
+    // 2. Fetch finds stats from database (strictly excluding creator test finds)
     try {
+      const devCodes = new Set([
+        "GEO-KE9Q88",
+        "GEO-5BCQE7",
+        "GEO-LOCAL",
+        normalizeSessionCode(getMyUserCode())
+      ]);
+
       const { data: allFinds } = await supabase.from("finds").select("id, description");
       if (allFinds) {
+        let communityFindsCount = 0;
         const communityFinders = new Set();
+        let devFindsCount = 0;
 
         allFinds.forEach((f) => {
           const desc = f.description || "";
@@ -287,11 +306,18 @@ export async function fetchAnalyticsReport() {
               if (meta.u) userCode = normalizeSessionCode(meta.u);
             } catch {}
           }
-          if (userCode) communityFinders.add(userCode);
+
+          if (userCode && devCodes.has(userCode)) {
+            devFindsCount++;
+          } else {
+            communityFindsCount++;
+            if (userCode) communityFinders.add(userCode);
+          }
         });
 
-        result.totalFinds = allFinds.length;
-        result.uniqueFinders = Math.max(1, communityFinders.size);
+        result.totalFinds = communityFindsCount;
+        result.uniqueFinders = communityFinders.size;
+        result.devFinds = devFindsCount;
       }
     } catch {}
 

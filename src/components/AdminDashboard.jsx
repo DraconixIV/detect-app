@@ -534,7 +534,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
               {data?.uniqueVisitors ?? 0}
             </div>
             <div style={{ fontSize: "11px", color: "#10b981", marginTop: "4px", fontWeight: "700" }}>
-              {data?.weekVisits ?? 0} sur 7 jours
+              +{data?.uniqueVisitorsToday ?? 0} aujourd'hui ({data?.uniqueVisitorsWeek ?? data?.uniqueVisitors ?? 0} sur 7 j)
             </div>
           </div>
 
@@ -548,7 +548,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
               {data?.totalFinds ?? 0}
             </div>
             <div style={{ fontSize: "10.5px", color: data?.totalFinds > 0 ? "#facc15" : "#64748b", marginTop: "4px", fontWeight: "700" }}>
-              {data?.totalFinds > 0 ? `par ${data?.uniqueFinders ?? 1} prospecteur(s)` : "Aucune trouvaille enregistrée"}
+              {data?.totalFinds > 0 ? `par ${data?.uniqueFinders ?? 0} prospecteur(s)` : "(Vos 54 trouvailles créateur sont exclues)"}
             </div>
           </div>
 
