@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { supabase } from "../supabase";
 import {
   fetchAnalyticsReport,
   setDeveloperDevice,
@@ -90,8 +91,33 @@ export default function AdminDashboard({ onExit }) {
       setDeveloperDevice(true);
       setDevDeviceActive(true);
       loadData();
-      const interval = setInterval(loadData, 20000); // Auto-refresh every 20s
-      return () => clearInterval(interval);
+
+      // 1. Live Instant WebSocket updates (Supabase Realtime)
+      const channel = supabase
+        .channel("admin-dashboard-realtime")
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "app_analytics" },
+          () => {
+            loadData();
+          }
+        )
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "app_feedback" },
+          () => {
+            loadData();
+          }
+        )
+        .subscribe();
+
+      // 2. Periodic polling safety fallback every 20 seconds
+      const interval = setInterval(loadData, 20000);
+
+      return () => {
+        clearInterval(interval);
+        supabase.removeChannel(channel);
+      };
     }
   }, [isAuthenticated]);
 
