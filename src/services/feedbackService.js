@@ -53,9 +53,9 @@ function getDeviceInfo() {
 }
 
 /**
- * Submit user feedback to Supabase table app_feedback
+ * Submit user feedback to Supabase
  */
-export async function submitUserFeedback({ category, message, contact = "" }) {
+export async function submitUserFeedback({ category = "suggestion", message = "" }) {
   try {
     if (!message || !message.trim()) {
       throw new Error("Veuillez saisir un message.");
@@ -63,32 +63,59 @@ export async function submitUserFeedback({ category, message, contact = "" }) {
 
     const { device, browser, screen } = getDeviceInfo();
     const userCode = normalizeSessionCode(getMyUserCode()) || "ANON";
+    const cleanMsg = message.trim();
+    const cleanCat = category || "suggestion";
+    const nowIso = new Date().toISOString();
 
-    const payload = {
+    // 1. Primary write into existing app_analytics table (event_type = 'feedback')
+    const analyticsFeedbackPayload = {
+      event_type: "feedback",
       user_code: userCode,
-      category: category || "suggestion",
-      message: message.trim(),
-      contact: (contact || "").trim().slice(0, 150),
+      source: `[${cleanCat}] ${cleanMsg}`,
+      device: device,
+      browser: browser,
+      screen_size: screen,
+      created_at: nowIso
+    };
+
+    let inserted = false;
+    try {
+      const { error: aErr } = await supabase
+        .from("app_analytics")
+        .insert([analyticsFeedbackPayload]);
+      if (!aErr) {
+        inserted = true;
+      }
+    } catch (e) {
+      console.warn("Analytics feedback insert error:", e);
+    }
+
+    // 2. Also attempt write to dedicated app_feedback table if created
+    const feedbackTablePayload = {
+      user_code: userCode,
+      category: cleanCat,
+      message: cleanMsg,
       device: device,
       browser: browser,
       screen_size: screen,
       app_version: CURRENT_APP_VERSION,
-      created_at: new Date().toISOString()
+      created_at: nowIso
     };
 
-    const { data, error } = await supabase
-      .from("app_feedback")
-      .insert([payload])
-      .select();
+    try {
+      const { error: fErr } = await supabase
+        .from("app_feedback")
+        .insert([feedbackTablePayload]);
+      if (!fErr) {
+        inserted = true;
+      }
+    } catch {}
 
-    if (error) {
-      console.warn("Supabase feedback insert error:", error);
-      // Fallback: save locally in localStorage queue if network/table error
-      saveOfflineFeedback(payload);
-      return { success: true, fallback: true };
+    if (!inserted) {
+      saveOfflineFeedback(feedbackTablePayload);
     }
 
-    return { success: true, data };
+    return { success: true };
   } catch (err) {
     console.error("submitUserFeedback exception:", err);
     throw err;
@@ -99,21 +126,70 @@ export async function submitUserFeedback({ category, message, contact = "" }) {
  * Fetch all user feedback for Developer Admin Console
  */
 export async function fetchAllFeedbacks() {
+  const feedbacksMap = new Map();
+
   try {
-    const { data, error } = await supabase
+    // 1. Fetch from app_analytics where event_type = 'feedback'
+    const { data: analyticsFb, error: aErr } = await supabase
+      .from("app_analytics")
+      .select("*")
+      .eq("event_type", "feedback")
+      .order("created_at", { ascending: false })
+      .limit(500);
+
+    if (!aErr && analyticsFb) {
+      analyticsFb.forEach((row) => {
+        let cat = "suggestion";
+        let msg = row.source || "";
+        const match = msg.match(/^\[([a-zA-Z0-9_-]+)\]\s*([\s\S]*)$/);
+        if (match) {
+          cat = match[1].toLowerCase();
+          msg = match[2];
+        }
+
+        feedbacksMap.set(row.id, {
+          id: row.id,
+          user_code: row.user_code || "ANON",
+          category: cat,
+          message: msg,
+          device: row.device || "Mobile",
+          browser: row.browser || "Navigateur",
+          screen_size: row.screen_size,
+          app_version: CURRENT_APP_VERSION,
+          created_at: row.created_at
+        });
+      });
+    }
+
+    // 2. Also try fetching from dedicated app_feedback table
+    const { data: fbData, error: fErr } = await supabase
       .from("app_feedback")
       .select("*")
       .order("created_at", { ascending: false })
       .limit(500);
 
-    if (error) {
-      console.warn("Error fetching feedbacks:", error);
-      return [];
+    if (!fErr && fbData) {
+      fbData.forEach((row) => {
+        feedbacksMap.set(row.id, {
+          id: row.id,
+          user_code: row.user_code || "ANON",
+          category: row.category || "suggestion",
+          message: row.message || "",
+          device: row.device || "Mobile",
+          browser: row.browser || "Navigateur",
+          screen_size: row.screen_size,
+          app_version: row.app_version || CURRENT_APP_VERSION,
+          created_at: row.created_at
+        });
+      });
     }
-    return data || [];
+
+    const result = Array.from(feedbacksMap.values());
+    result.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+    return result;
   } catch (err) {
     console.error("fetchAllFeedbacks exception:", err);
-    return [];
+    return Array.from(feedbacksMap.values());
   }
 }
 
@@ -123,15 +199,12 @@ export async function fetchAllFeedbacks() {
 export async function deleteFeedbackItem(feedbackId) {
   try {
     if (!feedbackId) return false;
-    const { error } = await supabase
-      .from("app_feedback")
-      .delete()
-      .eq("id", feedbackId);
 
-    if (error) {
-      console.warn("Error deleting feedback:", error);
-      return false;
-    }
+    await Promise.allSettled([
+      supabase.from("app_analytics").delete().eq("id", feedbackId),
+      supabase.from("app_feedback").delete().eq("id", feedbackId)
+    ]);
+
     return true;
   } catch (err) {
     console.error("deleteFeedbackItem exception:", err);

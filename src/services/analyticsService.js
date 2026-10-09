@@ -205,8 +205,11 @@ export async function fetchAnalyticsReport() {
     if (analyticsErr) {
       result.tableReady = false;
     } else if (analyticsData && analyticsData.length > 0) {
-      result.totalVisits = analyticsData.length;
-      result.recentVisits = analyticsData.slice(0, 50);
+      // Exclude feedback records from visits report
+      const visitData = analyticsData.filter((r) => r.event_type !== "feedback");
+
+      result.totalVisits = visitData.length;
+      result.recentVisits = visitData.slice(0, 50);
 
       const now = new Date();
       const todayStr = now.toISOString().slice(0, 10);
@@ -214,7 +217,7 @@ export async function fetchAnalyticsReport() {
 
       const uniqueUsersSet = new Set();
 
-      analyticsData.forEach((row) => {
+      visitData.forEach((row) => {
         if (row.user_code) uniqueUsersSet.add(row.user_code);
 
         const rowDateStr = (row.created_at || "").slice(0, 10);
@@ -242,7 +245,7 @@ export async function fetchAnalyticsReport() {
 
       // Unique user counts per source
       const userSourcesMap = {};
-      analyticsData.forEach((row) => {
+      visitData.forEach((row) => {
         if (!row.user_code) return;
         if (!userSourcesMap[row.user_code]) userSourcesMap[row.user_code] = new Set();
         let src = row.source || "Accès Direct / PWA";

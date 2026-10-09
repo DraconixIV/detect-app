@@ -363,9 +363,13 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
               style={{
                 padding: "6px 12px",
                 borderRadius: "10px",
-                border: activeCategory === "all" ? "1px solid #3b82f6" : `1px solid ${cardBorder}`,
-                background: activeCategory === "all" ? (isLight ? "#eff6ff" : "rgba(59, 130, 246, 0.2)") : "transparent",
-                color: activeCategory === "all" ? (isLight ? "#1e40af" : "#93c5fd") : textSub,
+                border: activeCategory === "all"
+                  ? (isLight ? "1.5px solid #0f172a" : "1.5px solid rgba(255, 255, 255, 0.6)")
+                  : `1px solid ${cardBorder}`,
+                background: activeCategory === "all"
+                  ? (isLight ? "#0f172a" : "rgba(255, 255, 255, 0.15)")
+                  : "transparent",
+                color: activeCategory === "all" ? "#ffffff" : textSub,
                 fontSize: "11px",
                 fontWeight: "700",
                 cursor: "pointer",
@@ -384,9 +388,13 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
                   style={{
                     padding: "6px 12px",
                     borderRadius: "10px",
-                    border: isSelected ? "1px solid #3b82f6" : `1px solid ${cardBorder}`,
-                    background: isSelected ? (isLight ? "#eff6ff" : "rgba(59, 130, 246, 0.2)") : "transparent",
-                    color: isSelected ? (isLight ? "#1e40af" : "#93c5fd") : textSub,
+                    border: isSelected
+                      ? (isLight ? "1.5px solid #0f172a" : "1.5px solid rgba(255, 255, 255, 0.6)")
+                      : `1px solid ${cardBorder}`,
+                    background: isSelected
+                      ? (isLight ? "#0f172a" : "rgba(255, 255, 255, 0.15)")
+                      : "transparent",
+                    color: isSelected ? "#ffffff" : textSub,
                     fontSize: "11px",
                     fontWeight: "700",
                     cursor: "pointer",
@@ -468,26 +476,8 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
                         {f.icon}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", marginBottom: "3px" }}>
-                          <div style={{ fontSize: "13px", fontWeight: "800", color: textMain }}>
-                            {f.title}
-                          </div>
-                          {f.badge && (
-                            <span
-                              style={{
-                                fontSize: "10px",
-                                fontWeight: "800",
-                                padding: "2px 7px",
-                                borderRadius: "6px",
-                                background: isLight ? "#eff6ff" : "rgba(59, 130, 246, 0.15)",
-                                color: f.badgeColor || "#3b82f6",
-                                border: `1px solid ${f.badgeColor}40`,
-                                flexShrink: 0
-                              }}
-                            >
-                              {f.badge}
-                            </span>
-                          )}
+                        <div style={{ fontSize: "13px", fontWeight: "800", color: textMain, marginBottom: "3px" }}>
+                          {f.title}
                         </div>
                         <p style={{ margin: 0, fontSize: "11.5px", color: textSub, lineHeight: "1.45" }}>
                           {f.description}
@@ -516,9 +506,9 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
             style={{
               padding: "10px 20px",
               borderRadius: "12px",
-              border: "none",
-              background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-              color: "white",
+              border: `1px solid ${cardBorder}`,
+              background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.12)",
+              color: "#ffffff",
               fontSize: "13px",
               fontWeight: "700",
               cursor: "pointer"
