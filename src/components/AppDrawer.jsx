@@ -15,7 +15,8 @@ export default function AppDrawer({
   user,
   isRecordingSortie,
   isOnline = true,
-  hasUnreadNews = false
+  hasUnreadNews = false,
+  unreadUpdatesCount = 0
 }) {
   if (!isOpen) return null;
 
@@ -29,12 +30,15 @@ export default function AppDrawer({
 
   const myName = getMyDisplayName() || (user ? user.email?.split("@")[0] : "Prospecteur");
 
+  const newsBadgeCount = unreadUpdatesCount > 0 ? unreadUpdatesCount : (hasUnreadNews ? 1 : 0);
+
   const menuItems = [
     {
       id: "news",
       label: "Mises à jour",
       icon: "🚀",
-      hasBadge: hasUnreadNews,
+      hasBadge: newsBadgeCount > 0,
+      badgeCount: newsBadgeCount,
       action: () => {
         onClose();
         if (onOpenNews) onOpenNews();
@@ -252,7 +256,7 @@ export default function AppDrawer({
                     flexShrink: 0
                   }}
                 >
-                  1
+                  {item.badgeCount || 1}
                 </span>
               )}
 

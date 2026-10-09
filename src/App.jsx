@@ -45,7 +45,7 @@ import { addFind as createFind, toggleFavorite, normalizeDateStr, isFindInSortie
 import { getActiveSession, leaveTeamSession, normalizeSessionCode, getMyUserCode, getMyDisplayName } from "./services/sessionService";
 import { loadCategoriesData } from "./services/categoriesService";
 import { trackVisitEvent } from "./services/analyticsService";
-import { checkHasUnreadUpdate } from "./services/feedbackService";
+import { checkHasUnreadUpdate, getUnreadUpdatesCount } from "./services/feedbackService";
 
 function offsetPosition(
   position,
@@ -196,8 +196,9 @@ function App() {
   const [showFeedbackModal, setShowFeedbackModal] =
     useState(false);
 
-  const [hasUnreadNews, setHasUnreadNews] =
-    useState(() => checkHasUnreadUpdate());
+  const [unreadUpdatesCount, setUnreadUpdatesCount] =
+    useState(() => getUnreadUpdatesCount());
+  const hasUnreadNews = unreadUpdatesCount > 0;
 
   const [showAboutModal, setShowAboutModal] =
     useState(false);
@@ -347,7 +348,7 @@ function App() {
   // Sync update notification badge status
   useEffect(() => {
     const handleVersionSeen = () => {
-      setHasUnreadNews(checkHasUnreadUpdate());
+      setUnreadUpdatesCount(getUnreadUpdatesCount());
     };
     window.addEventListener("geoprospect-version-seen", handleVersionSeen);
     return () => window.removeEventListener("geoprospect-version-seen", handleVersionSeen);
@@ -1519,6 +1520,7 @@ function App() {
           gpsAccuracy={gpsAccuracy}
           isOnline={isOnline}
           hasUnreadNews={hasUnreadNews}
+          unreadUpdatesCount={unreadUpdatesCount}
           isRecordingSortie={isRecordingSortie}
           onToggleRecording={() => isRecordingSortie ? stopSortie() : startSortie(position)}
           onOpenTeamSession={() => setShowTeamSessionModal(true)}
@@ -2218,6 +2220,7 @@ function App() {
         onClose={() => setShowDrawer(false)}
         theme={theme}
         hasUnreadNews={hasUnreadNews}
+        unreadUpdatesCount={unreadUpdatesCount}
         onNavigate={(tab) => {
           setActiveTab(tab);
           setShowDrawer(false);

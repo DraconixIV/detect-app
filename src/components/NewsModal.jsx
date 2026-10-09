@@ -1,20 +1,5 @@
 import React, { useEffect } from "react";
-import { markUpdateAsSeen } from "../services/feedbackService";
-
-const NEWS_ARTICLES = [
-  {
-    id: "v1.4.0",
-    version: "v1.4.0",
-    date: "9 Octobre 2026",
-    title: "Formulaire de retour",
-    content: "Une mise à jour dédiée à l'écoute des prospecteurs et au perfectionnement de l'application.",
-    highlights: [
-      "Formulaire de retour disponible dans le menu latéral pour signaler un bug ou une idée.",
-      "Amélioration de la fluidité générale.",
-      "Accès direct à toutes les fonctionnalités."
-    ]
-  }
-];
+import { markUpdateAsSeen, APP_RELEASES } from "../services/feedbackService";
 
 export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "dark" }) {
   useEffect(() => {
@@ -164,7 +149,7 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
             gap: "14px"
           }}
         >
-          {NEWS_ARTICLES.map((item) => (
+          {APP_RELEASES.map((item) => (
             <div
               key={item.id}
               style={{

@@ -22,7 +22,8 @@ export default function MapTopBar({
   onSelectFind,
   onSelectPlace,
   zenMode = false,
-  hasUnreadNews = false
+  hasUnreadNews = false,
+  unreadUpdatesCount = 0
 }) {
   const [categoriesData, setCategoriesData] = useState(() => loadCategoriesData());
   const [places, setPlaces] = useState([]);
@@ -189,29 +190,30 @@ export default function MapTopBar({
               }}
             >
               <span>☰</span>
-              {hasUnreadNews && (
+              {(unreadUpdatesCount > 0 || hasUnreadNews) && (
                 <span
                   style={{
                     position: "absolute",
                     top: "-5px",
                     right: "-5px",
-                    minWidth: "14px",
-                    height: "14px",
-                    borderRadius: "7px",
+                    minWidth: "15px",
+                    height: "15px",
+                    borderRadius: "8px",
                     background: "#ef4444",
                     color: "#ffffff",
-                    fontSize: "9px",
+                    fontSize: "9.5px",
                     fontWeight: "900",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     border: "1.5px solid #ffffff",
                     boxShadow: "0 0 8px rgba(239, 68, 68, 0.9)",
-                    padding: "0 2px"
+                    padding: "0 3px",
+                    lineHeight: 1
                   }}
-                  title="Nouvelle mise à jour disponible"
+                  title={`${unreadUpdatesCount || 1} nouvelle${(unreadUpdatesCount || 1) > 1 ? "s" : ""} mise${(unreadUpdatesCount || 1) > 1 ? "s" : ""} à jour`}
                 >
-                  1
+                  {unreadUpdatesCount || 1}
                 </span>
               )}
             </button>

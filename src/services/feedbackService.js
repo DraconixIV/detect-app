@@ -4,26 +4,134 @@ import { detectInAppBrowser } from "../components/InAppBrowserBanner.jsx";
 
 export const CURRENT_APP_VERSION = "1.4.0";
 export const LAST_SEEN_VERSION_KEY = "geoprospect_last_seen_app_version";
+export const FIRST_INSTALLED_KEY = "geoprospect_first_installed";
 
 /**
- * Checks if the user has an unread app update notification
+ * Chronological release history (newest to oldest)
  */
-export function checkHasUnreadUpdate() {
-  if (typeof window === "undefined") return false;
+export const APP_RELEASES = [
+  {
+    id: "1.4.0",
+    version: "v1.4.0",
+    date: "9 Octobre 2026",
+    title: "Formulaire de retour",
+    content: "Une mise à jour dédiée à l'écoute des prospecteurs et au perfectionnement de l'application.",
+    highlights: [
+      "Formulaire de retour disponible dans le menu latéral pour signaler un bug ou une idée.",
+      "Amélioration de la fluidité générale.",
+      "Accès direct à toutes les fonctionnalités."
+    ]
+  },
+  {
+    id: "1.3.0",
+    version: "v1.3.0",
+    date: "7 Octobre 2026",
+    title: "Cartographie et cadastre IGN",
+    content: "Intégration des parcelles cadastrales et des fonds historiques Cassini et d'état-major.",
+    highlights: [
+      "Superposition du cadastre officiel IGN avec réglage de l'opacité.",
+      "Cartes anciennes de Cassini et de l'état-major en surcouche.",
+      "Optimisation du mode hors-ligne sans connexion réseau."
+    ]
+  },
+  {
+    id: "1.2.0",
+    version: "v1.2.0",
+    date: "4 Octobre 2026",
+    title: "Sessions d'équipe en direct",
+    content: "Prospection en groupe avec partage de position GPS et synchronisation en direct.",
+    highlights: [
+      "Partage de localisation en direct entre coéquipiers.",
+      "Alertes instantanées des découvertes sur le terrain.",
+      "Gestion d'équipe avec code de session sécurisé."
+    ]
+  },
+  {
+    id: "1.1.0",
+    version: "v1.1.0",
+    date: "1 Octobre 2026",
+    title: "Carnet de détection GeoProspect",
+    content: "Lancement officiel de l'application tout-en-un pour prospecteurs.",
+    highlights: [
+      "Enregistrement GPS précis de chaque trouvaille.",
+      "Photos macro avant et après restauration.",
+      "Classification personnalisée des monnaies et objets."
+    ]
+  }
+];
+
+/**
+ * Returns the number of unread app updates.
+ * - For a brand new user opening the app for the 1st time: returns 0 (initializes to CURRENT_APP_VERSION).
+ * - For a returning user: counts the exact number of new updates released since their last seen version (1, 2, 3, etc.).
+ */
+export function getUnreadUpdatesCount() {
+  if (typeof window === "undefined") return 0;
   try {
     const lastSeen = localStorage.getItem(LAST_SEEN_VERSION_KEY);
-    return lastSeen !== CURRENT_APP_VERSION;
+    const hasInstalledFlag = localStorage.getItem(FIRST_INSTALLED_KEY);
+
+    // 1. First time opening the application
+    if (!lastSeen && !hasInstalledFlag) {
+      // Check if user has legacy app data to detect if they are an existing user from an earlier version
+      const hasLegacyData =
+        !!localStorage.getItem("geoprospect_finds") ||
+        !!localStorage.getItem("geoprospect_onboarding_completed") ||
+        !!localStorage.getItem("geoprospect_user_code") ||
+        !!localStorage.getItem("geoprospect_saved_tracks");
+
+      localStorage.setItem(FIRST_INSTALLED_KEY, "true");
+
+      if (!hasLegacyData) {
+        // Brand new user: initialize to current version so they do NOT see any red badge
+        localStorage.setItem(LAST_SEEN_VERSION_KEY, CURRENT_APP_VERSION);
+        return 0;
+      } else {
+        // Returning user who hadn't opened the updates tab yet: 1 update unread
+        return 1;
+      }
+    }
+
+    // 2. User has already seen the current version
+    if (lastSeen === CURRENT_APP_VERSION || lastSeen === `v${CURRENT_APP_VERSION}`) {
+      return 0;
+    }
+
+    if (!lastSeen) {
+      return 0;
+    }
+
+    // 3. Find the index of the last seen version in APP_RELEASES
+    const lastIndex = APP_RELEASES.findIndex(
+      (r) => r.id === lastSeen || r.version === lastSeen || `v${r.id}` === lastSeen
+    );
+
+    if (lastIndex === -1) {
+      // Older unlisted version -> all releases count as unread
+      return APP_RELEASES.length;
+    }
+
+    // Number of unread updates is the count of releases newer than lastSeen
+    return Math.max(0, lastIndex);
   } catch {
-    return false;
+    return 0;
   }
 }
 
 /**
- * Marks the current app update as seen / acknowledged
+ * Boolean helper for unread update status
+ */
+export function checkHasUnreadUpdate() {
+  return getUnreadUpdatesCount() > 0;
+}
+
+/**
+ * Marks all app updates as seen / acknowledged
  */
 export function markUpdateAsSeen() {
   if (typeof window === "undefined") return;
   try {
+    localStorage.setItem(FIRST_INSTALLED_KEY, "true");
     localStorage.setItem(LAST_SEEN_VERSION_KEY, CURRENT_APP_VERSION);
     window.dispatchEvent(new Event("geoprospect-version-seen"));
   } catch {}
