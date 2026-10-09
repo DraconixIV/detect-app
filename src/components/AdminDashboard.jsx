@@ -510,10 +510,24 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
 
         {/* Key Metrics Grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "12px", marginBottom: "20px" }}>
-          {/* Card 1: Total Visits */}
+          {/* Card 1: Estimated Real Prospectors */}
           <div style={metricCardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Ouvertures / clics</span>
+              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Prospecteurs réels estimés</span>
+              <span style={{ fontSize: "16px" }}>👥</span>
+            </div>
+            <div style={{ fontSize: "28px", fontWeight: "900", color: "#ffffff", letterSpacing: "-0.5px" }}>
+              {data?.estimatedRealVisitors || data?.uniqueVisitors || 0}
+            </div>
+            <div style={{ fontSize: "11px", color: "#10b981", marginTop: "4px", fontWeight: "700" }}>
+              Dédoublonné sur {data?.uniqueVisitors ?? 0} navigateurs (+{data?.uniqueVisitorsToday ?? 0} aujourd'hui)
+            </div>
+          </div>
+
+          {/* Card 2: Total Visits / Clicks */}
+          <div style={metricCardStyle}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Ouvertures et clics</span>
               <span style={{ fontSize: "16px" }}>📈</span>
             </div>
             <div style={{ fontSize: "28px", fontWeight: "900", color: "#ffffff", letterSpacing: "-0.5px" }}>
@@ -521,20 +535,6 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
             </div>
             <div style={{ fontSize: "11px", color: "#38bdf8", marginTop: "4px", fontWeight: "700" }}>
               +{data?.todayVisits ?? 0} aujourd'hui
-            </div>
-          </div>
-
-          {/* Card 2: Unique Visitors */}
-          <div style={metricCardStyle}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Visiteurs uniques</span>
-              <span style={{ fontSize: "16px" }}>👥</span>
-            </div>
-            <div style={{ fontSize: "28px", fontWeight: "900", color: "#ffffff", letterSpacing: "-0.5px" }}>
-              {data?.uniqueVisitors ?? 0}
-            </div>
-            <div style={{ fontSize: "11px", color: "#10b981", marginTop: "4px", fontWeight: "700" }}>
-              +{data?.uniqueVisitorsToday ?? 0} aujourd'hui ({data?.uniqueVisitorsWeek ?? data?.uniqueVisitors ?? 0} sur 7 j)
             </div>
           </div>
 
@@ -548,7 +548,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
               {data?.totalFinds ?? 0}
             </div>
             <div style={{ fontSize: "10.5px", color: data?.totalFinds > 0 ? "#facc15" : "#64748b", marginTop: "4px", fontWeight: "700" }}>
-              {data?.totalFinds > 0 ? `par ${data?.uniqueFinders ?? 0} prospecteur(s)` : "(Vos 54 trouvailles créateur sont exclues)"}
+              {data?.totalFinds > 0 ? `par ${data?.uniqueFinders ?? 0} prospecteur(s)` : "Vos 54 trouvailles créateur sont exclues"}
             </div>
           </div>
 
@@ -801,8 +801,8 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                     <th style={{ padding: "10px 8px" }}>Heure exacte</th>
                     <th style={{ padding: "10px 8px" }}>Appareil</th>
                     <th style={{ padding: "10px 8px" }}>Navigateur</th>
-                    <th style={{ padding: "10px 8px" }}>Source du Clic</th>
-                    <th style={{ padding: "10px 8px" }}>Code Utilisateur</th>
+                    <th style={{ padding: "10px 8px" }}>Source du clic</th>
+                    <th style={{ padding: "10px 8px" }}>Code utilisateur</th>
                     <th style={{ padding: "10px 8px", textAlign: "center" }}>Action</th>
                   </tr>
                 </thead>

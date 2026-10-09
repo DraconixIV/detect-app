@@ -255,6 +255,58 @@ export async function fetchAnalyticsReport() {
       result.uniqueVisitorsToday = uniqueTodayUsersSet.size;
       result.uniqueVisitorsWeek = uniqueWeekUsersSet.size;
 
+      // 4. Smart Reconciliation: merge In-App -> Safari/Chrome transitions on same device into 1 real prospector
+      const userClusters = new Map();
+      let clusterCounter = 0;
+      for (const row of visitData) {
+        const u = row.user_code;
+        if (u && !userClusters.has(u)) {
+          userClusters.set(u, ++clusterCounter);
+        }
+      }
+
+      const chronoVisits = [...visitData].sort(
+        (a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0)
+      );
+
+      for (let i = 0; i < chronoVisits.length; i++) {
+        const rowA = chronoVisits[i];
+        const uA = rowA.user_code;
+        const isAInApp = (rowA.browser || "").includes("In-App") || rowA.source === "Facebook";
+        const timeA = new Date(rowA.created_at || 0).getTime();
+
+        if (!isAInApp || !uA) continue;
+
+        for (let j = i + 1; j < chronoVisits.length; j++) {
+          const rowB = chronoVisits[j];
+          const uB = rowB.user_code;
+          const timeB = new Date(rowB.created_at || 0).getTime();
+
+          if (timeB - timeA > 15 * 60 * 1000) break;
+
+          if (
+            uB &&
+            uA !== uB &&
+            rowA.device === rowB.device &&
+            rowA.screen_size === rowB.screen_size &&
+            rowA.screen_size !== "0x0"
+          ) {
+            const clusterA = userClusters.get(uA);
+            const clusterB = userClusters.get(uB);
+            if (clusterA !== clusterB) {
+              for (const [code, cId] of userClusters.entries()) {
+                if (cId === clusterB) {
+                  userClusters.set(code, clusterA);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      const distinctClusters = new Set(userClusters.values());
+      result.estimatedRealVisitors = distinctClusters.size > 0 ? distinctClusters.size : result.uniqueVisitors;
+
       // Unique user counts per source
       const userSourcesMap = {};
       visitData.forEach((row) => {

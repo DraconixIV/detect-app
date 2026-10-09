@@ -190,6 +190,22 @@ try {
  */
 export function getMyUserCode() {
   try {
+    // Check if an established user code was passed in the URL (e.g. In-App -> Safari / Chrome switch)
+    if (typeof window !== "undefined" && window.location && window.location.search) {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const urlUid = params.get("uid") || params.get("ucode");
+        if (urlUid && /^GEO-[A-Z0-9]{4,10}$/i.test(urlUid.trim())) {
+          const normalized = normalizeSessionCode(urlUid);
+          const existing = localStorage.getItem(USER_CODE_STORAGE_KEY);
+          if (!existing || existing.startsWith("GEO-LOCAL") || existing.startsWith("GEO-ANON")) {
+            localStorage.setItem(USER_CODE_STORAGE_KEY, normalized);
+            return normalized;
+          }
+        }
+      } catch {}
+    }
+
     let code = localStorage.getItem(USER_CODE_STORAGE_KEY);
     if (!code) {
       const legacy = localStorage.getItem("rdl_user_code_v1");

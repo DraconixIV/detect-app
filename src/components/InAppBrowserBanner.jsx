@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { getMyUserCode } from "../services/sessionService";
 
 export function detectInAppBrowser() {
   if (typeof window === "undefined" || !window.navigator) return { isInApp: false, appName: "" };
@@ -47,7 +48,12 @@ export default function InAppBrowserBanner() {
 
   const handleCopyLink = async () => {
     try {
-      const url = window.location.href.split("?")[0];
+      const myCode = getMyUserCode();
+      const origin = typeof window !== "undefined" ? window.location.origin : "https://detect-app-iota.vercel.app";
+      const url = myCode && !myCode.includes("ANON") && !myCode.includes("LOCAL")
+        ? `${origin}/?uid=${myCode}`
+        : origin;
+
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(url);
       } else {
