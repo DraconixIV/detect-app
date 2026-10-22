@@ -93,13 +93,12 @@ export default function InAppBrowserBanner() {
       <div style={{ maxWidth: "600px", margin: "0 auto" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "10px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "20px" }}>🧭</span>
             <div>
-              <div style={{ fontSize: "13px", fontWeight: "900", color: "#fbbf24", letterSpacing: "-0.2px" }}>
+              <div style={{ fontSize: "13px", fontWeight: "800", color: "#ffffff", letterSpacing: "-0.2px" }}>
                 Navigateur {inAppInfo.appName || "interne"} détecté
               </div>
-              <div style={{ fontSize: "11px", color: "#e2e8f0", marginTop: "2px", lineHeight: "1.35" }}>
-                Le signal <strong>GPS</strong> et l'installation sont <strong>bloqués</strong> dans {inAppInfo.appName || "cette application"}.
+              <div style={{ fontSize: "11px", color: "#cbd5e1", marginTop: "2px", lineHeight: "1.35" }}>
+                Le signal <strong>GPS</strong> et l'installation sont limités dans {inAppInfo.appName || "cette application"}.
               </div>
             </div>
           </div>
@@ -132,10 +131,10 @@ export default function InAppBrowserBanner() {
             marginTop: "10px",
             padding: "8px 10px",
             borderRadius: "8px",
-            background: "rgba(245, 158, 11, 0.12)",
-            border: "1px solid rgba(245, 158, 11, 0.3)",
+            background: "rgba(255, 255, 255, 0.06)",
+            border: "1px solid rgba(255, 255, 255, 0.14)",
             fontSize: "11.5px",
-            color: "#fef3c7",
+            color: "#e2e8f0",
             lineHeight: "1.4",
             display: "flex",
             alignItems: "center",
@@ -144,9 +143,8 @@ export default function InAppBrowserBanner() {
           }}
         >
           <div>
-            👉 Appuyez sur les <strong>3 points (⋮)</strong> tout en haut à droite et choisissez <strong>« Ouvrir dans {isAndroid ? "Chrome" : "Safari / Navigateur"} »</strong>.
+            Appuyez sur les <strong>3 points (⋮)</strong> en haut à droite et choisissez <strong>« Ouvrir dans {isAndroid ? "Chrome" : "Safari"} »</strong>.
           </div>
-          <span style={{ fontSize: "16px", flexShrink: 0 }}>↗️</span>
         </div>
 
         {/* Copy link button */}
@@ -170,8 +168,7 @@ export default function InAppBrowserBanner() {
               transition: "all 0.2s"
             }}
           >
-            <span>{copied ? "✓" : "📋"}</span>
-            {copied ? "Lien copié dans le presse-papier !" : "Copier le lien de l'appli"}
+            {copied ? "Lien copié dans le presse-papier" : "Copier le lien de l'application"}
           </button>
         </div>
       </div>

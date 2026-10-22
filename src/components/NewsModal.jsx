@@ -72,7 +72,6 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "22px" }}>🚀</span>
             <div>
               <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: textMain }}>
                 Mises à jour

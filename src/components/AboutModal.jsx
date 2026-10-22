@@ -53,7 +53,6 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "22px" }}>ℹ️</span>
             <div>
               <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: textMain }}>
                 À propos de GeoProspect
@@ -112,17 +111,20 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
               style={{
                 width: "52px",
                 height: "52px",
-                borderRadius: "16px",
-                background: isLight ? "#0f172a" : "#1e293b",
+                borderRadius: "14px",
+                background: "#ebe3d3",
                 border: `1px solid ${cardBorder}`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "26px",
-                color: "#ffffff"
+                overflow: "hidden"
               }}
             >
-              🧭
+              <img
+                src="/icon-192.png"
+                alt="GeoProspect"
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
             </div>
             <div style={{ fontSize: "16px", fontWeight: "900", color: textMain }}>GeoProspect</div>
             <div style={{ fontSize: "11px", fontWeight: "700", color: textSub }}>
@@ -146,7 +148,7 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "12px", fontWeight: "800", color: textMain, textTransform: "uppercase" }}>
-              🛡️ Nos engagements
+              Nos engagements
             </div>
             <div style={{ fontSize: "11px", color: textSub, lineHeight: "1.4" }}>
               • <strong>100 % gratuit</strong> : aucune fonctionnalité bridée derrière un abonnement payant.
@@ -172,7 +174,7 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
             }}
           >
             <div style={{ fontSize: "12px", fontWeight: "800", color: textMain, textTransform: "uppercase" }}>
-              ☕ Soutenir le projet
+              Soutenir le projet
             </div>
             <p style={{ margin: 0, fontSize: "11px", color: textSub, lineHeight: "1.4" }}>
               Un petit don encourage les futures nouveautés !
@@ -195,7 +197,7 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
                   textAlign: "center"
                 }}
               >
-                ☕ Ko-fi
+                Ko-fi
               </a>
               <a
                 href="https://paypal.me/geoprospect"
@@ -214,7 +216,7 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
                   textAlign: "center"
                 }}
               >
-                💳 PayPal.me
+                PayPal.me
               </a>
             </div>
           </div>

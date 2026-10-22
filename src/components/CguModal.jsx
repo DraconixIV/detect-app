@@ -54,7 +54,6 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "22px" }}>⚖️</span>
             <div>
               <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: textMain }}>
                 Conditions générales d'utilisation

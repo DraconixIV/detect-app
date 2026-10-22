@@ -234,7 +234,6 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "22px" }}>📖</span>
             <div>
               <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: textMain }}>
                 Guide des fonctionnalités
@@ -279,7 +278,7 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
           {/* Search Input */}
           <input
             type="text"
-            placeholder="🔍 Rechercher une fonctionnalité..."
+            placeholder="Rechercher une fonctionnalité..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
@@ -323,7 +322,7 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
                 whiteSpace: "nowrap"
               }}
             >
-              🌟 Tout voir
+              Tout voir
             </button>
             {FEATURES_DATA.map((cat) => {
               const isSelected = activeCategory === cat.category;
@@ -351,7 +350,6 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
                     gap: "4px"
                   }}
                 >
-                  <span>{cat.categoryEmoji}</span>
                   <span>{cat.categoryLabel.split(" ")[0]}</span>
                 </button>
               );
@@ -371,7 +369,6 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
         >
           {filteredCategories.length === 0 ? (
             <div style={{ textAlign: "center", padding: "30px 10px", color: textSub }}>
-              <div style={{ fontSize: "32px", marginBottom: "8px" }}>🔍</div>
               <div style={{ fontWeight: "700", fontSize: "14px", color: textMain }}>
                 Aucune fonctionnalité trouvée
               </div>
@@ -383,7 +380,6 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
             filteredCategories.map((cat) => (
               <div key={cat.category} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <span style={{ fontSize: "16px" }}>{cat.categoryEmoji}</span>
                   <span style={{ fontSize: "13px", fontWeight: "800", color: textMain, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                     {cat.categoryLabel}
                   </span>
@@ -406,22 +402,6 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
                         alignItems: "flex-start"
                       }}
                     >
-                      <div
-                        style={{
-                          width: "36px",
-                          height: "36px",
-                          borderRadius: "10px",
-                          background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
-                          border: `1px solid ${cardBorder}`,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "18px",
-                          flexShrink: 0
-                        }}
-                      >
-                        {f.icon}
-                      </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: "13px", fontWeight: "800", color: textMain, marginBottom: "3px" }}>
                           {f.title}

@@ -46,7 +46,6 @@ export default function MapFloatingControls({
             backdropFilter: "blur(12px)",
             WebkitBackdropFilter: "blur(12px)",
             color: "#ffffff",
-            fontSize: "17px",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
@@ -56,11 +55,21 @@ export default function MapFloatingControls({
           }}
           title={hideAllFinds ? "Afficher les trouvailles sur la carte" : "Masquer toutes les trouvailles sur la carte"}
         >
-          {hideAllFinds ? "🚫" : "📍"}
+          {hideAllFinds ? (
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+              <line x1="1" y1="1" x2="23" y2="23" />
+            </svg>
+          ) : (
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+          )}
         </button>
       )}
 
-      {/* 2. CLUSTERING / GROUPING TOGGLE (In Zen Mode next to telescope) */}
+      {/* 2. CLUSTERING / GROUPING TOGGLE (In Zen Mode next to fullscreen) */}
       {zenMode && setUseClustering && (
         <button
           onClick={() => setUseClustering(!useClustering)}
@@ -73,7 +82,6 @@ export default function MapFloatingControls({
             backdropFilter: "blur(12px)",
             WebkitBackdropFilter: "blur(12px)",
             color: "#ffffff",
-            fontSize: "18px",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
@@ -81,9 +89,13 @@ export default function MapFloatingControls({
             boxShadow: useClustering ? "0 4px 20px rgba(56, 189, 248, 0.5)" : "0 4px 16px rgba(0, 0, 0, 0.45)",
             transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
           }}
-          title={useClustering ? "Désactiver le regroupement (Clustering)" : "Activer le regroupement (Clustering)"}
+          title={useClustering ? "Désactiver le regroupement" : "Activer le regroupement"}
         >
-          🫧
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="7" cy="7" r="3.5" />
+            <circle cx="17" cy="8" r="3" />
+            <circle cx="12" cy="17" r="3.5" />
+          </svg>
         </button>
       )}
 
@@ -99,7 +111,6 @@ export default function MapFloatingControls({
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
           color: "#ffffff",
-          fontSize: "18px",
           cursor: "pointer",
           display: "flex",
           alignItems: "center",
@@ -107,9 +118,17 @@ export default function MapFloatingControls({
           boxShadow: zenMode ? "0 4px 20px rgba(56, 189, 248, 0.5)" : "0 4px 16px rgba(0, 0, 0, 0.45)",
           transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
         }}
-        title={zenMode ? "Quitter le mode Plein Écran Zen" : "Mode Plein Écran Zen (Masquer l'interface)"}
+        title={zenMode ? "Quitter le mode plein écran" : "Mode plein écran (masquer l'interface)"}
       >
-        {zenMode ? "👁️" : "🔭"}
+        {zenMode ? (
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+          </svg>
+        ) : (
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+          </svg>
+        )}
       </button>
 
       {/* When in Zen mode, other controls are hidden to give 100% clean view */}
@@ -127,7 +146,6 @@ export default function MapFloatingControls({
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
               color: activeLayersCount > 0 ? "#fbbf24" : "#ffffff",
-              fontSize: "18px",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
@@ -136,9 +154,13 @@ export default function MapFloatingControls({
               position: "relative",
               transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
             }}
-            title="Couches Cartographiques et Cadastre"
+            title="Couches cartographiques et cadastre"
           >
-            🗺️
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2" />
+              <polyline points="2 17 12 22 22 17" />
+              <polyline points="2 12 12 17 22 12" />
+            </svg>
             {activeLayersCount > 0 && (
               <span
                 style={{
@@ -179,7 +201,6 @@ export default function MapFloatingControls({
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
               color: isLocatingGps ? "#38bdf8" : (followGps ? "#34d399" : "#ffffff"),
-              fontSize: "19px",
               cursor: isLocatingGps ? "wait" : "pointer",
               display: "flex",
               alignItems: "center",
@@ -193,11 +214,18 @@ export default function MapFloatingControls({
               isLocatingGps
                 ? "Recherche satellite GPS en cours..."
                 : (followGps
-                    ? `Suivi GPS Actif${gpsAccuracy ? ` (Précision ±${Math.round(gpsAccuracy)}m)` : ""}`
+                    ? `Suivi GPS actif${gpsAccuracy ? ` (précision ±${Math.round(gpsAccuracy)}m)` : ""}`
                     : "Recentrer sur ma position GPS exacte")
             }
           >
-            {isLocatingGps ? "🛰️" : "🎯"}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="7" />
+              <circle cx="12" cy="12" r="2" fill="currentColor" />
+              <line x1="12" y1="2" x2="12" y2="5" />
+              <line x1="12" y1="19" x2="12" y2="22" />
+              <line x1="2" y1="12" x2="5" y2="12" />
+              <line x1="19" y1="12" x2="22" y2="12" />
+            </svg>
           </button>
 
           {/* 4. QUICK ADD FIND FLOATING ACTION BUTTON */}

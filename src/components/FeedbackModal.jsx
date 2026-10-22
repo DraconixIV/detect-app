@@ -20,10 +20,10 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
   const inputBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.15)";
 
   const categories = [
-    { id: "bug", label: "Signaler un bug", icon: "🐛" },
-    { id: "suggestion", label: "Suggérer une idée", icon: "💡" },
-    { id: "avis", label: "Avis", icon: "💬" },
-    { id: "question", label: "Poser une question", icon: "❓" }
+    { id: "bug", label: "Signaler un bug" },
+    { id: "suggestion", label: "Suggérer une idée" },
+    { id: "avis", label: "Avis" },
+    { id: "question", label: "Poser une question" }
   ];
 
   const getPlaceholder = () => {
@@ -112,7 +112,6 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "22px" }}>📝</span>
             <div>
               <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: textMain }}>
                 Formulaire de retour
@@ -217,11 +216,10 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
                           cursor: "pointer",
                           display: "flex",
                           alignItems: "center",
-                          gap: "8px",
+                          justifyContent: "center",
                           transition: "all 0.15s ease"
                         }}
                       >
-                        <span style={{ fontSize: "16px" }}>{c.icon}</span>
                         <span>{c.label}</span>
                       </button>
                     );
@@ -259,7 +257,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
 
               {errorMsg && (
                 <div style={{ padding: "8px 12px", borderRadius: "10px", background: "rgba(239, 68, 68, 0.15)", border: "1px solid rgba(239, 68, 68, 0.4)", color: "#f87171", fontSize: "11.5px", fontWeight: "700" }}>
-                  ⚠️ {errorMsg}
+                  {errorMsg}
                 </div>
               )}
 

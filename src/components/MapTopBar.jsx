@@ -189,7 +189,11 @@ export default function MapTopBar({
                 position: "relative"
               }}
             >
-              <span>☰</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
               {(unreadUpdatesCount > 0 || hasUnreadNews) && (
                 <span
                   style={{
@@ -334,7 +338,10 @@ export default function MapTopBar({
             }}
             title={showSearch ? "Fermer la recherche" : "Rechercher une trouvaille"}
           >
-            🔍
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
           </button>
 
           {/* Team Session Button */}
@@ -359,7 +366,12 @@ export default function MapTopBar({
               }}
               title={workspace.mode === "session" ? "Session d'équipe en direct" : "Session d'équipe"}
             >
-              👥
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
             </button>
           )}
 
@@ -422,7 +434,12 @@ export default function MapTopBar({
         >
           {/* Search Input Row */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "14px" }}>🔍</span>
+            <span style={{ color: textSub, display: "flex", alignItems: "center" }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </span>
             <input
               ref={searchInputRef}
               type="text"
@@ -514,7 +531,7 @@ export default function MapTopBar({
               {matchingFinds.length > 0 && (
                 <div>
                   <div style={{ fontSize: "10px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "4px" }}>
-                    🪙 Trouvailles ({matchingFinds.length}) :
+                    Trouvailles ({matchingFinds.length})
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                     {matchingFinds.map((f) => {
@@ -556,7 +573,7 @@ export default function MapTopBar({
                             </div>
                           </div>
                           <span style={{ fontSize: "11px", fontWeight: "700", color: "#38bdf8", flexShrink: 0 }}>
-                            Voir ➔
+                            Voir
                           </span>
                         </div>
                       );
@@ -569,7 +586,7 @@ export default function MapTopBar({
               {places.length > 0 && (
                 <div style={{ marginTop: matchingFinds.length > 0 ? "6px" : "0" }}>
                   <div style={{ fontSize: "10px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "4px" }}>
-                    📍 Lieux et Villes ({places.length}) :
+                    Lieux et villes ({places.length})
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                     {places.map((p, idx) => (
@@ -598,13 +615,18 @@ export default function MapTopBar({
                         }}
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
-                          <span style={{ fontSize: "16px", flexShrink: 0 }}>📍</span>
+                          <span style={{ color: textSub, display: "flex", alignItems: "center", flexShrink: 0 }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                              <circle cx="12" cy="10" r="3" />
+                            </svg>
+                          </span>
                           <div style={{ fontSize: "12px", fontWeight: "600", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             {p.display_name}
                           </div>
                         </div>
                         <span style={{ fontSize: "11px", fontWeight: "700", color: "#38bdf8", flexShrink: 0 }}>
-                          Aller ➔
+                          Aller
                         </span>
                       </div>
                     ))}
@@ -615,7 +637,7 @@ export default function MapTopBar({
               {/* Searching indicator */}
               {isSearchingPlaces && (
                 <div style={{ fontSize: "11px", color: textSub, padding: "4px 8px", fontStyle: "italic" }}>
-                  ⏳ Recherche géographique en cours...
+                  Recherche géographique en cours...
                 </div>
               )}
 
@@ -631,7 +653,7 @@ export default function MapTopBar({
                     fontSize: "12px"
                   }}
                 >
-                  🔍 Aucune trouvaille ni lieu trouvé pour "{search}"
+                  Aucune trouvaille ni lieu trouvé pour « {search} »
                 </div>
               )}
             </div>
