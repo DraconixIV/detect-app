@@ -67,36 +67,44 @@ export default defineConfig({
       },
 
       manifest: {
+        id: "/",
         name: "GeoProspect",
-
         short_name: "GeoProspect",
-
         description:
-          "GeoProspect - Application premium de détection de métaux & cartographie",
-
-        theme_color: "#ffffff",
-
-        background_color: "#ffffff",
-
+          "Cartographie de terrain, suivi GPS et journal de trouvailles pour la détection de métaux.",
+        lang: "fr",
+        dir: "ltr",
+        theme_color: "#0b1329",
+        background_color: "#0b1329",
         display: "standalone",
-
         orientation: "portrait",
-
         scope: "/",
-
         start_url: "/",
-
+        categories: ["navigation", "utilities", "sports"],
         icons: [
           {
             src: "icon-192.png",
             sizes: "192x192",
-            type: "image/png"
+            type: "image/png",
+            purpose: "any"
           },
-
+          {
+            src: "icon-192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "maskable"
+          },
           {
             src: "icon-512.png",
             sizes: "512x512",
-            type: "image/png"
+            type: "image/png",
+            purpose: "any"
+          },
+          {
+            src: "icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable"
           }
         ]
       }
