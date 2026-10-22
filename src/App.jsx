@@ -727,16 +727,16 @@ function App() {
     const handleTeamSortieSaved = async (e) => {
       const payload = e.detail;
       if (!payload) return;
-      const curPositions = positionsRef.current || [];
+      const curPositions = positionsRef.current && positionsRef.current.length > 0
+        ? positionsRef.current
+        : position
+        ? [position, position]
+        : [];
       const sessionName = payload.sessionName || (workspace?.sessionName ? `Session ${workspace.sessionName}` : "Sortie d'équipe");
       const sessionCode = payload.sessionCode || workspace?.targetCode;
 
-      if (curPositions.length >= 2) {
-        await saveSortie(curPositions, sessionName, sessionCode);
-        recordCompletedOutingAndCheckBackup();
-      } else {
-        cancelSortie();
-      }
+      await saveSortie(curPositions, sessionName, sessionCode);
+      recordCompletedOutingAndCheckBackup();
       setToast({
         message: `L'hôte a terminé la sortie commune "${sessionName}". Tracé sauvegardé dans votre journal.`,
         type: "success"
@@ -747,14 +747,18 @@ function App() {
     return () => {
       window.removeEventListener("geoprospect-team-sortie-saved", handleTeamSortieSaved);
     };
-  }, [workspace?.targetCode, workspace?.sessionName, saveSortie, cancelSortie, setToast, recordCompletedOutingAndCheckBackup]);
+  }, [workspace?.targetCode, workspace?.sessionName, saveSortie, cancelSortie, setToast, recordCompletedOutingAndCheckBackup, position]);
 
   const handleLeaveSessionWithSave = async () => {
-    const curPositions = positionsRef.current || [];
+    const curPositions = positionsRef.current && positionsRef.current.length > 0
+      ? positionsRef.current
+      : position
+      ? [position, position]
+      : [];
     const sessionCode = workspace?.targetCode;
     const sessionName = workspace?.sessionName || "Sortie d'équipe";
 
-    if (curPositions.length >= 2) {
+    if (isRecordingSortie) {
       const name = `${sessionName} (partielle)`;
       await saveSortie(curPositions, name, sessionCode);
       recordCompletedOutingAndCheckBackup();
@@ -813,21 +817,18 @@ function App() {
   };
 
   const stopSortie = async () => {
-    if (sortiePositions.length < 2 || sortieDistance === 0) {
-      setConfirmConfig({
-        message: "Pas assez de déplacements enregistrés. Annuler la sortie ?",
-        onConfirm: () => {
-          cancelSortie();
-          setToast({
-            message: "Sortie annulée.",
-            type: "info"
-          });
-        }
-      });
-      return;
-    }
+    const basePositions =
+      sortiePositions && sortiePositions.length > 0
+        ? sortiePositions
+        : position
+        ? [position]
+        : [];
+    const normalizedPositions =
+      basePositions.length === 1
+        ? [basePositions[0], basePositions[0]]
+        : basePositions;
 
-    setTempSortiePositions(sortiePositions);
+    setTempSortiePositions(normalizedPositions);
     const defaultName = workspace?.mode === "session"
       ? (workspace.sessionName ? `Session ${workspace.sessionName}` : `Session d'équipe ${workspace.targetCode || ""}`)
       : `Sortie du ${new Date().toLocaleDateString("fr-FR")}`;
@@ -2003,7 +2004,7 @@ function App() {
                   cursor: "pointer"
                 }}
               >
-                Annuler
+                Reprendre
               </button>
               <button
                 onClick={submitOutingName}
@@ -2019,9 +2020,32 @@ function App() {
                   cursor: "pointer"
                 }}
               >
-                Valider
+                Enregistrer
               </button>
             </div>
+            <button
+              onClick={() => {
+                setShowOutingNameModal(false);
+                setTempSortiePositions([]);
+                cancelSortie();
+                setToast({
+                  message: "Sortie annulée.",
+                  type: "info"
+                });
+              }}
+              style={{
+                padding: "8px",
+                borderRadius: "10px",
+                border: "none",
+                background: "transparent",
+                color: "#f87171",
+                fontSize: "12px",
+                fontWeight: "600",
+                cursor: "pointer"
+              }}
+            >
+              Abandonner la sortie sans enregistrer
+            </button>
           </div>
         </div>
       )}

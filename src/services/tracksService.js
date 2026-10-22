@@ -166,9 +166,13 @@ export async function loadTracks(options = {}) {
 }
 
 export async function saveTrack(track, sessionName, sessionCode = null) {
-  if (!track || track.length < 2) {
+  if (!Array.isArray(track)) {
     return false;
   }
+  const normalizedTrack =
+    track.length === 1
+      ? [track[0], track[0]]
+      : track;
 
   const myCode = normalizeSessionCode(getMyUserCode());
   const cleanName = (sessionName || "").replace(/<!--GP_META:[\s\S]*?-->/g, "").trim() || `Sortie du ${new Date().toLocaleDateString("fr-FR")}`;
@@ -178,7 +182,7 @@ export async function saveTrack(track, sessionName, sessionCode = null) {
   const newTrack = {
     id: `local-track-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
     session_name: cleanName,
-    positions: track,
+    positions: normalizedTrack,
     user_code: myCode,
     session_code: cleanSessionCode,
     created_at: new Date().toISOString()
@@ -207,7 +211,7 @@ export async function saveTrack(track, sessionName, sessionCode = null) {
       {
         event_type: "track",
         user_code: myCode || "ANON",
-        source: `[track:${newTrack.id}] ${cleanName} (${track.length} pts)`,
+        source: `[track:${newTrack.id}] ${cleanName} (${normalizedTrack.length} pts)`,
         device: device,
         browser: browser,
         screen_size: screen,
@@ -225,7 +229,7 @@ export async function saveTrack(track, sessionName, sessionCode = null) {
       .insert([
         {
           session_name: taggedSessionName,
-          positions: track
+          positions: normalizedTrack
         }
       ]);
 
