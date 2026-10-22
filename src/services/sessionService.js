@@ -132,7 +132,15 @@ export async function pullUserProfileFromCloud(user = null) {
     }
     if (!currentUser || !currentUser.user_metadata) return false;
 
-    const cloudCode = currentUser.user_metadata.geoprospect_user_code;
+    const emailLower = (currentUser.email || "").toLowerCase();
+    const isCreatorAccount =
+      emailLower === "geoprospect.app@gmail.com" ||
+      emailLower === "dblue3642@gmail.com";
+
+    let cloudCode = currentUser.user_metadata.geoprospect_user_code;
+    if (isCreatorAccount || cloudCode === "GEO-MMFR88") {
+      cloudCode = "GEO-KE9Q88";
+    }
     const cloudName = currentUser.user_metadata.geoprospect_display_name;
 
     let updated = false;
@@ -142,6 +150,9 @@ export async function pullUserProfileFromCloud(user = null) {
       if (currentLocal !== cleanCloudCode) {
         localStorage.setItem(USER_CODE_STORAGE_KEY, cleanCloudCode);
         updated = true;
+      }
+      if (isCreatorAccount && currentUser.user_metadata.geoprospect_user_code !== "GEO-KE9Q88") {
+        syncUserProfileToCloud();
       }
     } else {
       // User has account but no cloud user code saved yet: save local code up to cloud
@@ -216,6 +227,13 @@ export function getMyUserCode() {
     }
     if (code && code.toUpperCase().startsWith("RDL-")) {
       code = code.replace(/^RDL-/i, "GEO-");
+    }
+
+    if (
+      code === "GEO-MMFR88" ||
+      localStorage.getItem("geoprospect_is_developer_device_v1") === "true"
+    ) {
+      code = "GEO-KE9Q88";
     }
 
     if (!code) {
