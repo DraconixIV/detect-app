@@ -76,7 +76,7 @@ export async function exportData() {
     a.click();
     URL.revokeObjectURL(url);
 
-    alert(`✅ Sauvegarde exportée avec succès !\n• ${backup.findsCount} trouvailles personnelles\n• ${backup.photosCount} photos\n• ${backup.tracksCount} tracés GPS`);
+    alert(`Sauvegarde exportée avec succès.\n• ${backup.findsCount} trouvailles personnelles\n• ${backup.photosCount} photos\n• ${backup.tracksCount} tracés GPS`);
     return backup;
   } catch (err) {
     console.error("Export error:", err);
@@ -184,7 +184,7 @@ export async function importData(onSuccess) {
         }
       }
 
-      alert(`✅ Sauvegarde restaurée avec succès !\n• ${importedFinds} trouvaille(s) importée(s)\n• ${importedPhotos} photo(s)\n• ${importedTracks} sortie(s) & tracé(s) GPS\nAttribuées à votre code (${myCode})`);
+      alert(`Sauvegarde restaurée avec succès.\n• ${importedFinds} trouvaille(s) importée(s)\n• ${importedPhotos} photo(s)\n• ${importedTracks} sortie(s) et tracé(s) GPS\nAttribuées à votre code (${myCode})`);
       if (onSuccess) onSuccess();
     } catch (err) {
       console.error("Import failed:", err);

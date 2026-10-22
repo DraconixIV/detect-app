@@ -710,6 +710,19 @@ function App() {
   }, [workspace?.mode, workspace?.targetCode]);
 
   // Synchronized Team Sortie Saving: Teammates auto-save their track when host saves the sortie
+  const [showBackupPromptModal, setShowBackupPromptModal] = useState(false);
+
+  const recordCompletedOutingAndCheckBackup = useCallback(() => {
+    try {
+      const prevCount = parseInt(localStorage.getItem("geoprospect_completed_sorties_count_v1") || "0", 10) || 0;
+      const nextCount = prevCount + 1;
+      localStorage.setItem("geoprospect_completed_sorties_count_v1", String(nextCount));
+      if (nextCount > 0 && nextCount % 2 === 0) {
+        setShowBackupPromptModal(true);
+      }
+    } catch {}
+  }, []);
+
   useEffect(() => {
     const handleTeamSortieSaved = async (e) => {
       const payload = e.detail;
@@ -720,11 +733,12 @@ function App() {
 
       if (curPositions.length >= 2) {
         await saveSortie(curPositions, sessionName, sessionCode);
+        recordCompletedOutingAndCheckBackup();
       } else {
         cancelSortie();
       }
       setToast({
-        message: `🏁 L'hôte a terminé la sortie commune "${sessionName}". Tracé sauvegardé dans votre journal !`,
+        message: `L'hôte a terminé la sortie commune "${sessionName}". Tracé sauvegardé dans votre journal.`,
         type: "success"
       });
     };
@@ -733,7 +747,7 @@ function App() {
     return () => {
       window.removeEventListener("geoprospect-team-sortie-saved", handleTeamSortieSaved);
     };
-  }, [workspace?.targetCode, workspace?.sessionName, saveSortie, cancelSortie, setToast]);
+  }, [workspace?.targetCode, workspace?.sessionName, saveSortie, cancelSortie, setToast, recordCompletedOutingAndCheckBackup]);
 
   const handleLeaveSessionWithSave = async () => {
     const curPositions = positionsRef.current || [];
@@ -743,14 +757,15 @@ function App() {
     if (curPositions.length >= 2) {
       const name = `${sessionName} (partielle)`;
       await saveSortie(curPositions, name, sessionCode);
+      recordCompletedOutingAndCheckBackup();
       setToast({
-        message: "🚪 Session quittée. Votre tracé a été sauvegardé dans votre journal !",
+        message: "Session quittée. Votre tracé a été sauvegardé dans votre journal.",
         type: "info"
       });
     } else {
       cancelSortie();
       setToast({
-        message: "🚪 Vous avez quitté la session.",
+        message: "Vous avez quitté la session.",
         type: "info"
       });
     }
@@ -766,7 +781,7 @@ function App() {
     setFollowGps(true);
     startSortieRaw(position);
     setToast({
-      message: "⏱️ Sortie démarrée ! Tracé GPS en direct activé.",
+      message: "Sortie démarrée. Tracé GPS en direct activé.",
       type: "success"
     });
   };
@@ -780,6 +795,7 @@ function App() {
 
     const sessionCode = workspace?.mode === "session" ? workspace.targetCode : null;
     await saveSortie(tempSortiePositions, name, sessionCode);
+    recordCompletedOutingAndCheckBackup();
 
     if (workspace?.mode === "session" && broadcastSaveSortie) {
       broadcastSaveSortie({
@@ -791,7 +807,7 @@ function App() {
 
     setTempSortiePositions([]);
     setToast({
-      message: "💾 Sortie enregistrée avec succès dans votre journal !",
+      message: "Sortie enregistrée avec succès dans votre journal.",
       type: "success"
     });
   };
@@ -1942,7 +1958,7 @@ function App() {
             onClick={(e) => e.stopPropagation()}
           >
             <h4 style={{ margin: 0, color: "white", fontSize: "16px", fontWeight: "800" }}>
-              ⏱️ Nom de la sortie ?
+              Nom de la sortie
             </h4>
 
             <input
@@ -2003,7 +2019,127 @@ function App() {
                   cursor: "pointer"
                 }}
               >
-                Valider ✅
+                Valider
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showBackupPromptModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.78)",
+            backdropFilter: "blur(6px)",
+            zIndex: 999999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontFamily: "system-ui, sans-serif",
+            padding: "16px",
+            boxSizing: "border-box"
+          }}
+          onClick={() => setShowBackupPromptModal(false)}
+        >
+          <div
+            style={{
+              background: "#111827",
+              border: "1px solid rgba(255,255,255,0.14)",
+              borderRadius: "24px",
+              width: "100%",
+              maxWidth: "380px",
+              padding: "24px",
+              boxSizing: "border-box",
+              display: "flex",
+              flexDirection: "column",
+              gap: "16px",
+              boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
+              color: "white"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "12px",
+                  background: "rgba(59, 130, 246, 0.14)",
+                  border: "1px solid rgba(59, 130, 246, 0.3)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#60a5fa",
+                  flexShrink: 0
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <path d="M12 8v6" />
+                  <path d="M9 11l3 3 3-3" />
+                </svg>
+              </div>
+              <div>
+                <h4 style={{ margin: 0, color: "white", fontSize: "16px", fontWeight: "800" }}>
+                  Sauvegarde de sécurité recommandée
+                </h4>
+                <span style={{ fontSize: "12px", color: "#9ca3af", fontWeight: "500" }}>
+                  Rappel automatique toutes les 2 sorties
+                </span>
+              </div>
+            </div>
+
+            <p style={{ margin: 0, fontSize: "13px", lineHeight: "1.55", color: "#d1d5db" }}>
+              Vous venez d'enregistrer deux nouvelles sorties. Pour garantir la sécurité absolue de vos trouvailles et de vos tracés GPS face aux mises à jour, aux déconnexions ou à un changement de téléphone, nous vous recommandons de télécharger une copie de sauvegarde sur votre appareil.
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" }}>
+              <button
+                onClick={async () => {
+                  setShowBackupPromptModal(false);
+                  await handleExport();
+                }}
+                style={{
+                  padding: "12px",
+                  borderRadius: "12px",
+                  border: "none",
+                  background: "#2563eb",
+                  color: "white",
+                  fontSize: "13px",
+                  fontWeight: "700",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px"
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Exporter mes trouvailles
+              </button>
+              <button
+                onClick={() => setShowBackupPromptModal(false)}
+                style={{
+                  padding: "11px",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  background: "rgba(255,255,255,0.04)",
+                  color: "#9ca3af",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  cursor: "pointer"
+                }}
+              >
+                Plus tard
               </button>
             </div>
           </div>
