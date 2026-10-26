@@ -345,12 +345,13 @@ export default function AlbumPanel({
   const [lightboxCoinFlipped, setLightboxCoinFlipped] = useState(false);
 
   const isLight = theme === "light";
-  const bgPanel = isLight ? "#f8fafc" : "rgba(17, 24, 39, 0.95)";
-  const textMain = isLight ? "#000000" : "#ffffff";
-  const textSub = isLight ? "#1e293b" : "#ffffff";
-  const cardBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
-  const inputBg = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)";
-  const inputBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.16)";
+  const bgPage = isLight ? "#f3f4f2" : "#111915";
+  const sheetBg = isLight ? "#ffffff" : "#19231e";
+  const textMain = isLight ? "#1f2924" : "#f1f5f2";
+  const textSub = isLight ? "#5c6b63" : "#9aa8a0";
+  const dividerCol = isLight ? "#eef0ed" : "rgba(255, 255, 255, 0.08)";
+  const accentForest = "#2c5e4c";
+  const accentMint = "#40916c";
 
   const getFindPhotoUrl = (f) => {
     if (!f) return null;
@@ -449,22 +450,16 @@ export default function AlbumPanel({
           bottom: isTab ? "60px" : "auto",
           left: isTab ? 0 : "auto",
           width: isTab ? "100%" : "calc(100% - 40px)",
-          maxWidth: isTab ? "680px" : "430px",
-          margin: isTab ? "0 auto" : undefined,
+          maxWidth: isTab ? "100%" : "430px",
           height: isTab ? "calc(100vh - 60px)" : "calc(100vh - 40px)",
-          background: bgPanel,
-          backdropFilter: "blur(16px)",
-          border: isTab ? "none" : `1px solid ${cardBorder}`,
-          borderRight: isTab ? `1px solid ${cardBorder}` : undefined,
-          borderLeft: isTab ? `1px solid ${cardBorder}` : undefined,
-          borderRadius: isTab ? 0 : "24px",
+          background: bgPage,
+          borderRadius: isTab ? 0 : "20px",
           boxShadow: isTab ? "none" : "0 12px 40px rgba(0, 0, 0, 0.5)",
           zIndex: 6000,
           display: "flex",
           flexDirection: "column",
-          padding: "20px 16px 20px 16px",
           boxSizing: "border-box",
-          fontFamily: "system-ui, sans-serif",
+          fontFamily: "system-ui, -apple-system, sans-serif",
           color: textMain
         }}
       >
@@ -482,17 +477,11 @@ export default function AlbumPanel({
             width: 100%;
             height: 0;
             padding-bottom: 100%;
-            border-radius: 14px;
+            border-radius: 12px;
             overflow: hidden;
-            border: 1px solid ${cardBorder};
             cursor: pointer;
             transform: translateZ(0);
-            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s, box-shadow 0.25s;
-          }
-          .album-grid-card:hover {
-            transform: scale(1.04) translateY(-2px);
-            border-color: rgba(37, 99, 235, 0.6);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+            transition: transform 0.2s ease;
           }
           .album-grid-img {
             position: absolute;
@@ -501,59 +490,60 @@ export default function AlbumPanel({
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          }
-          .album-grid-card:hover .album-grid-img {
-            transform: scale(1.08);
           }
           .album-grid-overlay {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to top, rgba(10, 15, 30, 0.92) 0%, rgba(10, 15, 30, 0.5) 60%, transparent 100%);
+            background: linear-gradient(to top, rgba(13, 31, 24, 0.9) 0%, transparent 100%);
             padding: 8px;
             display: flex;
             flex-direction: column;
             gap: 2px;
             opacity: 0;
-            transform: translateY(8px);
-            transition: opacity 0.25s, transform 0.25s;
+            transition: opacity 0.2s;
             pointer-events: none;
           }
           .album-grid-card:hover .album-grid-overlay {
             opacity: 1;
-            transform: translateY(0);
           }
         `}</style>
 
-        {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-          <div>
-            <h2 style={{ margin: 0, fontSize: "20px", fontWeight: "400", color: textMain }}>
-              🖼️ Album de collection
-            </h2>
-            <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
-              {albumFilteredFinds.length} trouvaille{albumFilteredFinds.length > 1 ? "s" : ""} photographiée{albumFilteredFinds.length > 1 ? "s" : ""}
-            </p>
-          </div>
-          
-          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+        {/* Forest-Style Solid Top Header Bar */}
+        <div
+          style={{
+            background: accentForest,
+            color: "#ffffff",
+            padding: "16px 18px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.12)"
+          }}
+        >
+          <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.8)" }}>
+            {albumFilteredFinds.length} objet{albumFilteredFinds.length > 1 ? "s" : ""}
+          </span>
+          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "400", color: "#ffffff", letterSpacing: "0.2px" }}>
+            Album de collection
+          </h2>
+          <div style={{ minWidth: "50px", display: "flex", justifyContent: "flex-end" }}>
             {!isTab && onClose && (
               <button
+                type="button"
                 onClick={onClose}
                 style={{
-                  background: isLight ? "#e2e8f0" : "rgba(255,255,255,0.1)",
+                  background: "rgba(255,255,255,0.15)",
                   border: "none",
                   borderRadius: "50%",
-                  width: "30px",
-                  height: "30px",
+                  width: "28px",
+                  height: "28px",
                   color: "#ffffff",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
-                  fontWeight: "400"
+                  justifyContent: "center"
                 }}
               >
                 ✕
@@ -562,225 +552,229 @@ export default function AlbumPanel({
           </div>
         </div>
 
-        {/* Search & Sort Panel */}
-        <div style={{ display: "flex", gap: "8px", marginBottom: "12px", position: "relative" }}>
-          <input
-            type="text"
-            placeholder="🔍 Rechercher titre, métal, lieu..."
-            value={albumSearch}
-            onChange={(e) => setAlbumSearch(e.target.value)}
-            style={{
-              flex: 1,
-              padding: "9px 12px",
-              borderRadius: "12px",
-              border: `1px solid ${inputBorder}`,
-              background: inputBg,
-              color: "#ffffff",
-              fontSize: "12px",
-              outline: "none"
-            }}
-          />
-          <div style={{ position: "relative" }}>
-            <button
-              type="button"
-              onClick={() => setShowSortDropdown((prev) => !prev)}
+        {/* Main Content Container */}
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            maxWidth: "640px",
+            width: "100%",
+            margin: "0 auto",
+            padding: "14px 12px 16px 12px",
+            boxSizing: "border-box",
+            overflow: "hidden"
+          }}
+        >
+          {/* Search & Sort Panel */}
+          <div style={{ display: "flex", gap: "8px", marginBottom: "12px", position: "relative" }}>
+            <input
+              type="text"
+              placeholder="Rechercher un objet, métal, lieu..."
+              value={albumSearch}
+              onChange={(e) => setAlbumSearch(e.target.value)}
               style={{
-                height: "100%",
-                padding: "9px 12px",
+                flex: 1,
+                padding: "10px 14px",
                 borderRadius: "12px",
-                border: `1px solid ${inputBorder}`,
-                background: inputBg,
-                color: "#ffffff",
-                fontSize: "12px",
-                fontWeight: "400",
-                outline: "none",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                whiteSpace: "nowrap"
+                border: `1px solid ${dividerCol}`,
+                background: sheetBg,
+                color: textMain,
+                fontSize: "13px",
+                outline: "none"
               }}
-            >
-              <span>
-                {albumSort === "recent" ? "📅 Récentes" : albumSort === "old" ? "📅 Anciennes" : "⭐ Favoris"}
-              </span>
-              <span style={{ fontSize: "10px", opacity: 0.75 }}>{showSortDropdown ? "▴" : "▾"}</span>
-            </button>
-
-            {showSortDropdown && (
-              <>
-                <div
-                  style={{ position: "fixed", inset: 0, zIndex: 7000 }}
-                  onClick={() => setShowSortDropdown(false)}
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "calc(100% + 6px)",
-                    right: 0,
-                    minWidth: "160px",
-                    background: isLight ? "#ffffff" : "#111827",
-                    border: `1px solid ${cardBorder}`,
-                    borderRadius: "14px",
-                    boxShadow: "0 12px 30px rgba(0, 0, 0, 0.65)",
-                    padding: "6px",
-                    zIndex: 7001,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px"
-                  }}
-                >
-                  {[
-                    { id: "recent", label: "📅 Récentes" },
-                    { id: "old", label: "📅 Anciennes" },
-                    { id: "fav", label: "⭐ Favoris" }
-                  ].map((opt) => {
-                    const isSelected = albumSort === opt.id;
-                    return (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        onClick={() => {
-                          setAlbumSort(opt.id);
-                          setShowSortDropdown(false);
-                        }}
-                        style={{
-                          width: "100%",
-                          padding: "8px 10px",
-                          borderRadius: "10px",
-                          border: isSelected ? "1px solid rgba(255,255,255,0.22)" : "1px solid transparent",
-                          background: isSelected ? "rgba(255, 255, 255, 0.1)" : "transparent",
-                          color: textMain,
-                          fontSize: "12px",
-                          fontWeight: "400",
-                          textAlign: "left",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          gap: "8px"
-                        }}
-                      >
-                        <span>{opt.label}</span>
-                        {isSelected && <span style={{ fontSize: "11px", opacity: 0.9 }}>✓</span>}
-                      </button>
-                    );
-                  })}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Category Filters Carousel */}
-        <div style={{ display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "10px", marginBottom: "12px" }}>
-          {categoriesList.map((cat) => {
-            const isSel = albumFilter === cat;
-            return (
+            />
+            <div style={{ position: "relative" }}>
               <button
-                key={cat}
-                onClick={() => setAlbumFilter(cat)}
+                type="button"
+                onClick={() => setShowSortDropdown((prev) => !prev)}
                 style={{
-                  background: isSel ? "#2563eb" : (isLight ? "#ffffff" : "rgba(255,255,255,0.08)"),
-                  color: "#ffffff",
-                  border: isSel ? "none" : `1px solid ${cardBorder}`,
-                  padding: "6px 12px",
+                  height: "100%",
+                  padding: "10px 14px",
                   borderRadius: "12px",
-                  fontSize: "11px",
+                  border: `1px solid ${dividerCol}`,
+                  background: sheetBg,
+                  color: textMain,
+                  fontSize: "13px",
                   fontWeight: "400",
-                  whiteSpace: "nowrap",
+                  outline: "none",
                   cursor: "pointer",
-                  boxShadow: isSel ? "0 2px 8px rgba(37, 99, 235, 0.3)" : "none",
-                  transition: "all 0.2s"
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  whiteSpace: "nowrap"
                 }}
               >
-                {cat === "Tous" ? "📁 Tous" : `${categoryEmojis[cat] || "🏷️"} ${cat}`}
+                <span>
+                  {albumSort === "recent" ? "Récentes" : albumSort === "old" ? "Anciennes" : "Favoris"}
+                </span>
+                <span style={{ fontSize: "10px", opacity: 0.7 }}>{showSortDropdown ? "▴" : "▾"}</span>
               </button>
-            );
-          })}
-        </div>
 
-        {/* Grid or Empty State */}
-        {albumFilteredFinds.length === 0 ? (
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              textAlign: "center",
-              padding: "20px",
-              color: textSub
-            }}
-          >
-            <span style={{ fontSize: "40px", marginBottom: "10px" }}>📷</span>
-            <div style={{ fontWeight: "400", fontSize: "14px", color: "#ffffff", marginBottom: "4px" }}>
-              Aucune trouvaille photographiée
-            </div>
-            <div style={{ fontSize: "12px", color: "#ffffff", opacity: 0.85 }}>
-              Ajoutez des photos à vos trouvailles pour les voir apparaître dans votre album de collection.
+              {showSortDropdown && (
+                <>
+                  <div
+                    style={{ position: "fixed", inset: 0, zIndex: 7000 }}
+                    onClick={() => setShowSortDropdown(false)}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "calc(100% + 6px)",
+                      right: 0,
+                      minWidth: "150px",
+                      background: sheetBg,
+                      border: `1px solid ${dividerCol}`,
+                      borderRadius: "14px",
+                      boxShadow: "0 12px 30px rgba(0, 0, 0, 0.45)",
+                      padding: "6px",
+                      zIndex: 7001,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "2px"
+                    }}
+                  >
+                    {[
+                      { id: "recent", label: "Récentes" },
+                      { id: "old", label: "Anciennes" },
+                      { id: "fav", label: "Favoris" }
+                    ].map((opt) => {
+                      const isSelected = albumSort === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => {
+                            setAlbumSort(opt.id);
+                            setShowSortDropdown(false);
+                          }}
+                          style={{
+                            width: "100%",
+                            padding: "9px 12px",
+                            borderRadius: "10px",
+                            border: "none",
+                            background: isSelected ? accentForest : "transparent",
+                            color: isSelected ? "#ffffff" : textMain,
+                            fontSize: "13px",
+                            fontWeight: "400",
+                            textAlign: "left",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: "8px"
+                          }}
+                        >
+                          <span>{opt.label}</span>
+                          {isSelected && <span style={{ fontSize: "11px" }}>✓</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </div>
           </div>
-        ) : (
-          <div style={{ flex: 1, overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", paddingRight: "4px" }}>
-            {albumFilteredFinds.map((find) => {
-              const photoUrl = getFindPhotoUrl(find) || "";
-              const thumbUrl = getFindThumbUrl(find) || photoUrl;
-              const hasFlipCoin = !!getFlipCoin(find.id);
 
+          {/* Category Filters Carousel */}
+          <div style={{ display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "10px", marginBottom: "8px", scrollbarWidth: "none" }}>
+            {categoriesList.map((cat) => {
+              const isSel = albumFilter === cat;
               return (
-                <div
-                  key={find.id}
-                  className="album-grid-card"
-                  onClick={() => {
-                    setSelectedAlbumPhoto({ find, photoUrl });
-                    setLightboxCoinFlipped(false);
-                    setForcePhotoView(false);
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setAlbumFilter(cat)}
+                  style={{
+                    background: isSel ? accentForest : sheetBg,
+                    color: isSel ? "#ffffff" : textSub,
+                    border: isSel ? "none" : `1px solid ${dividerCol}`,
+                    padding: "6px 14px",
+                    borderRadius: "999px",
+                    fontSize: "12px",
+                    fontWeight: "400",
+                    whiteSpace: "nowrap",
+                    cursor: "pointer",
+                    transition: "all 0.15s"
                   }}
                 >
-                  <LazyImage src={thumbUrl} alt={find.title} />
-                  
-                  {/* Category Badge */}
-                  <div style={{ position: "absolute", top: "6px", left: "6px", background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {categoryEmojis[find.category] || categoryEmojis[find.category?.trim().charAt(0).toUpperCase() + find.category?.trim().slice(1).toLowerCase()] || "📍"}
-                  </div>
-
-                  {/* 3D Coin Badge if configured */}
-                  {hasFlipCoin && (
-                    <div style={{ position: "absolute", bottom: "6px", right: "6px", background: "rgba(245, 158, 11, 0.85)", padding: "2px 5px", borderRadius: "5px", fontSize: "8px", fontWeight: "400", color: "#000000", display: "flex", alignItems: "center", gap: "2px" }}>
-                      🪙 3D
-                    </div>
-                  )}
-
-                  {/* Favorite Badge */}
-                  {find.favorite && (
-                    <div style={{ position: "absolute", top: "6px", right: "6px", background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", color: "#ffffff", fontWeight: "400"}}>
-                      ⭐
-                    </div>
-                  )}
-
-                  {/* Hover Details Overlay */}
-                  <div className="album-grid-overlay">
-                    <div style={{ fontSize: "10px", fontWeight: "400", color: "#ffffff", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
-                      {find.title || "Sans titre"}
-                    </div>
-                    {find.finder_name && (
-                      <div style={{ fontSize: "8px", color: "#38bdf8", fontWeight: "400", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
-                        👤 {find.finder_name}
-                      </div>
-                    )}
-                    {find.date && (
-                      <div style={{ fontSize: "8px", color: "#ffffff", opacity: 0.85 }}>
-                        {find.date.split(",")[0]}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                  {cat}
+                </button>
               );
             })}
           </div>
-        )}
+
+          {/* Grid or Empty State */}
+          {albumFilteredFinds.length === 0 ? (
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+                padding: "20px",
+                color: textSub
+              }}
+            >
+              <div style={{ fontSize: "15px", color: textMain, marginBottom: "6px" }}>
+                Aucun objet photographié
+              </div>
+              <div style={{ fontSize: "12.5px", color: textSub }}>
+                Les trouvailles accompagnées d'une photo apparaîtront ici.
+              </div>
+            </div>
+          ) : (
+            <div style={{ flex: 1, overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px", paddingRight: "2px" }}>
+              {albumFilteredFinds.map((find) => {
+                const photoUrl = getFindPhotoUrl(find) || "";
+                const thumbUrl = getFindThumbUrl(find) || photoUrl;
+                const hasFlipCoin = !!getFlipCoin(find.id);
+
+                return (
+                  <div
+                    key={find.id}
+                    className="album-grid-card"
+                    onClick={() => {
+                      setSelectedAlbumPhoto({ find, photoUrl });
+                      setLightboxCoinFlipped(false);
+                      setForcePhotoView(false);
+                    }}
+                  >
+                    <LazyImage src={thumbUrl} alt={find.title} />
+
+                    {/* 3D Coin Badge if configured */}
+                    {hasFlipCoin && (
+                      <div style={{ position: "absolute", bottom: "6px", right: "6px", background: "rgba(13, 31, 24, 0.8)", padding: "2px 6px", borderRadius: "6px", fontSize: "9px", color: "#ffffff" }}>
+                        3D
+                      </div>
+                    )}
+
+                    {/* Subtle Favorite Indicator */}
+                    {find.favorite && (
+                      <div style={{ position: "absolute", top: "6px", right: "6px", background: "rgba(13, 31, 24, 0.7)", width: "20px", height: "20px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "#e9edc9", fontSize: "10px" }}>
+                        ★
+                      </div>
+                    )}
+
+                    {/* Hover Details Overlay */}
+                    <div className="album-grid-overlay">
+                      <div style={{ fontSize: "10.5px", color: "#ffffff", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                        {find.title || "Sans titre"}
+                      </div>
+                      {find.date && (
+                        <div style={{ fontSize: "9px", color: "rgba(255,255,255,0.75)" }}>
+                          {find.date.split(",")[0]}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* FULLSCREEN ALBUM PHOTO LIGHTBOX WITH ZOOM & MANUAL FLIP COIN */}
@@ -1040,11 +1034,11 @@ export default function AlbumPanel({
                 <h3 style={{ margin: 0, fontSize: "17px", fontWeight: "400", color: "#ffffff" }}>
                   {selectedAlbumPhoto.find.title || "Sans titre"}
                 </h3>
-                <p style={{ margin: 0, fontSize: "13px", color: "#ffffff", opacity: 0.9 }}>
-                  {categoryEmojis[selectedAlbumPhoto.find.category] || "📍"} {selectedAlbumPhoto.find.category}
+                <p style={{ margin: 0, fontSize: "13px", color: "#ffffff", opacity: 0.85 }}>
+                  {selectedAlbumPhoto.find.category}
                   {selectedAlbumPhoto.find.sub_category ? ` • ${selectedAlbumPhoto.find.sub_category}` : ""}
-                  {selectedAlbumPhoto.find.date ? ` • 📅 ${selectedAlbumPhoto.find.date.split(",")[0]}` : ""}
-                  {selectedAlbumPhoto.find.finder_name ? ` • 👤 ${selectedAlbumPhoto.find.finder_name}` : ""}
+                  {selectedAlbumPhoto.find.date ? ` • ${selectedAlbumPhoto.find.date.split(",")[0]}` : ""}
+                  {selectedAlbumPhoto.find.finder_name ? ` • ${selectedAlbumPhoto.find.finder_name}` : ""}
                 </p>
 
                 {/* Primary Button: Voir sur la carte */}
@@ -1058,20 +1052,18 @@ export default function AlbumPanel({
                     width: "100%",
                     border: "none",
                     borderRadius: "14px",
-                    padding: "11px 20px",
-                    background: "#2563eb",
+                    padding: "12px 20px",
+                    background: "#2c5e4c",
                     color: "#ffffff",
                     fontWeight: "400",
-                    fontSize: "13px",
+                    fontSize: "13.5px",
                     cursor: "pointer",
-                    boxShadow: "0 4px 14px rgba(37, 99, 235, 0.4)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "6px"
                   }}
                 >
-                  <span>🔗</span>
                   <span>Voir la trouvaille sur la carte</span>
                 </button>
 
@@ -1083,8 +1075,8 @@ export default function AlbumPanel({
                     width: "100%",
                     border: "1px solid rgba(255, 255, 255, 0.2)",
                     borderRadius: "14px",
-                    padding: "10px 16px",
-                    background: "rgba(255, 255, 255, 0.1)",
+                    padding: "11px 16px",
+                    background: "rgba(255, 255, 255, 0.08)",
                     color: "#ffffff",
                     fontWeight: "400",
                     fontSize: "13px",
@@ -1095,8 +1087,7 @@ export default function AlbumPanel({
                     gap: "6px"
                   }}
                 >
-                  <span>🪙</span>
-                  <span>{configuredFlipCoin ? "Modifier le Flip Coin 3D" : "Ajouter un flip coin"}</span>
+                  <span>{configuredFlipCoin ? "Modifier la vue 3D" : "Ajouter une vue 3D (Avers / Revers)"}</span>
                 </button>
               </div>
             </div>

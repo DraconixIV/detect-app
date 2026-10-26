@@ -102,12 +102,12 @@ export default function MapTopBar({
   const isLight = themeMode === "light";
   const theme = THEMES[currentThemeKey] || THEMES.tactical;
 
-  const bgBar = isLight ? "rgba(255, 255, 255, 0.95)" : "rgba(11, 19, 41, 0.88)";
-  const bgCard = isLight ? "#ffffff" : "rgba(11, 19, 41, 0.96)";
-  const textMain = isLight ? "#000000" : "#ffffff";
-  const textSub = isLight ? "#1e293b" : "#94a3b8";
-  const borderCol = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
-  const inputBg = isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)";
+  const bgBar = isLight ? "rgba(255, 255, 255, 0.96)" : "#0d1f18";
+  const bgCard = isLight ? "#ffffff" : "#14261e";
+  const textMain = isLight ? "#1f2924" : "#ffffff";
+  const textSub = isLight ? "#5c6b63" : "#9aa8a0";
+  const borderCol = isLight ? "#e2e6e3" : "rgba(255, 255, 255, 0.1)";
+  const inputBg = isLight ? "#f3f4f2" : "rgba(255, 255, 255, 0.07)";
 
   const getGpsStatusColor = () => {
     if (gpsAccuracy === null) return "#9ca3af";
@@ -261,7 +261,7 @@ export default function MapTopBar({
               }}
             >
               <span>Geo</span>
-              <span style={{ color: "#38bdf8" }}>Prospect</span>
+              <span style={{ color: isLight ? "#2c5e4c" : "#80b99c" }}>Prospect</span>
             </span>
             <span
               style={{

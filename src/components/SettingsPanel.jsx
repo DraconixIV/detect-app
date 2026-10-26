@@ -67,7 +67,7 @@ export default function SettingsPanel({
     const updated = setMyUserCode(clean, "GeoProspect");
     if (updated) {
       setActiveCode(updated);
-      setRestoreSuccessMsg(`Code ${updated} activé avec succès ! Vos trouvailles sont rechargées.`);
+      setRestoreSuccessMsg(`Code ${updated} activé avec succès. Vos trouvailles sont rechargées.`);
       setShowRestoreCode(false);
       setRestoreCodeInput("");
       setTimeout(() => setRestoreSuccessMsg(""), 5000);
@@ -122,54 +122,42 @@ export default function SettingsPanel({
   };
 
   const isLight = theme === "light";
-  const bgPanel = isLight ? "#f8fafc" : "#0b1329";
-  const textMain = isLight ? "#000000" : "#ffffff";
-  const textSub = isLight ? "#1e293b" : "#ffffff";
-  const cardBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
-  const cardBg = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.04)";
-  const cardShadow = isLight ? "0 2px 8px rgba(0, 0, 0, 0.06)" : "none";
-  const inputBg = isLight ? "#ffffff" : "rgba(0, 0, 0, 0.25)";
-  const inputBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.16)";
+  // Forest-inspired palette: Deep Forest Header (#2c5e4c), Soft Sage/Stone background in light mode (#f3f4f2), Matte Forest/Anthracite in dark mode (#111915)
+  const bgPage = isLight ? "#f3f4f2" : "#111915";
+  const sheetBg = isLight ? "#ffffff" : "#19231e";
+  const textMain = isLight ? "#1f2924" : "#f1f5f2";
+  const textSub = isLight ? "#5c6b63" : "#9aa8a0";
+  const dividerCol = isLight ? "#eef0ed" : "rgba(255, 255, 255, 0.07)";
+  const accentForest = "#2c5e4c";
+  const accentMint = "#40916c";
 
-  const cardStyle = {
-    background: cardBg,
-    borderRadius: "18px",
-    border: `1px solid ${cardBorder}`,
-    boxShadow: cardShadow,
-    padding: "16px",
-    marginBottom: "16px"
+  const sheetStyle = {
+    background: sheetBg,
+    borderRadius: "16px",
+    padding: "18px 18px 6px 18px",
+    marginBottom: "14px",
+    boxShadow: isLight ? "0 2px 10px rgba(0, 0, 0, 0.03)" : "0 4px 16px rgba(0, 0, 0, 0.25)"
   };
 
-  const sectionTitleStyle = {
-    fontSize: "12px",
-    fontWeight: "400",
-    textTransform: "uppercase",
-    letterSpacing: "0.5px",
-    marginBottom: "12px",
-    color: isLight ? "#000000" : "#ffffff",
+  const rowStyle = (isLast = false) => ({
     display: "flex",
     alignItems: "center",
-    gap: "6px"
-  };
+    justifyContent: "space-between",
+    padding: "14px 0",
+    borderBottom: isLast ? "none" : `1px solid ${dividerCol}`,
+    fontSize: "14px",
+    color: textMain,
+    gap: "12px"
+  });
 
-  const renderGroupHeader = (icon, title, color = isLight ? "#000000" : "#ffffff", isFirst = false) => (
-    <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: isFirst ? "0 0 10px 0" : "24px 0 10px 0" }}>
-      <div style={{
-        fontSize: "11px",
-        fontWeight: "400",
-        textTransform: "uppercase",
-        letterSpacing: "1.2px",
-        color: color,
-        display: "flex",
-        alignItems: "center",
-        gap: "6px"
-      }}>
-        <span>{icon}</span>
-        <span>{title}</span>
-      </div>
-      <div style={{ flex: 1, height: "1px", background: isLight ? "rgba(0, 0, 0, 0.08)" : "rgba(255, 255, 255, 0.08)" }} />
-    </div>
-  );
+  const sectionHeaderStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    fontSize: "16px",
+    color: textMain,
+    paddingBottom: "8px"
+  };
 
   return (
     <div
@@ -177,505 +165,385 @@ export default function SettingsPanel({
         position: "fixed",
         inset: "0 0 60px 0",
         zIndex: 5500,
-        background: bgPanel,
+        background: bgPage,
         color: textMain,
         overflowY: "auto",
-        padding: "20px 16px 80px 16px",
         fontFamily: "system-ui, -apple-system, sans-serif"
       }}
     >
-      <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-        {/* Top Header */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-          <div style={{ fontSize: "28px" }}>⚙️</div>
-          <div>
-            <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "400", color: textMain }}>
-              Paramètres
-            </h1>
-            <p style={{ margin: 0, fontSize: "12px", color: textSub }}>
-              Personnalisez votre carnet de détection
-            </p>
-          </div>
-        </div>
+      {/* Forest-Style Solid Top Header Bar */}
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 20,
+          background: accentForest,
+          color: "#ffffff",
+          padding: "16px 18px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.12)"
+        }}
+      >
+        <h1 style={{ margin: 0, fontSize: "18px", fontWeight: "400", color: "#ffffff", letterSpacing: "0.2px" }}>
+          Paramètres
+        </h1>
+      </div>
 
-        {/* ============================================================ */}
-        {/* GROUPE 1 : SESSIONS D'ÉQUIPE (MIS EN AVANT)                  */}
-        {/* ============================================================ */}
-        {renderGroupHeader("👥", "Sessions d'équipe", isLight ? "#000000" : "#ffffff", true)}
-
-        <div style={cardStyle}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
-              <span>👥</span> Code détecteur
-            </div>
-            {workspace.mode !== "personal" && (
-              <span
-                style={{
-                  fontSize: "10px",
-                  fontWeight: "400",
-                  padding: "3px 8px",
-                  borderRadius: "6px",
-                  background: workspace.mode === "session" ? "#10b981" : "#3b82f6",
-                  color: "#ffffff"
-                }}
-              >
-                {workspace.mode === "session" ? "SESSION LIVE" : "CONSULTATION"}
-              </span>
-            )}
-          </div>
-
-          <p style={{ margin: "0 0 12px 0", fontSize: "12px", color: textSub, lineHeight: "1.4" }}>
-            Votre code unique identifie vos trouvailles. Partagez-le pour permettre à vos amis de consulter votre carte, ou rejoignez une session en direct à plusieurs !
-          </p>
-
+      <div style={{ maxWidth: "600px", margin: "0 auto", padding: "14px 12px 80px 12px" }}>
+        {/* SHEET 1: PROFILE & DETECTOR CODE (Forest Profile Card Style) */}
+        <div style={sheetStyle}>
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "space-between",
-              background: isLight ? "#f8fafc" : "rgba(0, 0, 0, 0.4)",
-              border: `1px solid ${inputBorder}`,
-              borderRadius: "14px",
-              padding: "10px 14px",
-              marginBottom: "12px"
+              gap: "14px",
+              paddingBottom: "16px",
+              borderBottom: `1px solid ${dividerCol}`
             }}
           >
-            <div>
-              <div style={{ fontSize: "10px", color: textSub, fontWeight: "400", textTransform: "uppercase" }}>
-                Mon Code Unique
-              </div>
-              <div style={{ fontSize: "18px", fontWeight: "400", letterSpacing: "1.5px", color: isLight ? "#000000" : "#ffffff" }}>
-                {myCode}
-              </div>
-              {myName && (
-                <div style={{ fontSize: "11px", color: textSub, fontWeight: "400", marginTop: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
-                  <span>👤 Pseudo : <strong style={{ color: textMain }}>{myName}</strong></span>
-                  <span style={{ fontSize: "9px", background: "rgba(16, 185, 129, 0.15)", color: "#10b981", padding: "1px 5px", borderRadius: "4px", fontWeight: "400"}}>🔒</span>
-                </div>
-              )}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                navigator.clipboard.writeText(myCode);
-                setCopiedCode(true);
-                setTimeout(() => setCopiedCode(false), 2000);
-              }}
+            <div
               style={{
-                background: copiedCode ? "#10b981" : (isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.12)"),
-                color: copiedCode ? "#ffffff" : (isLight ? "#0f172a" : "#ffffff"),
-                border: `1px solid ${cardBorder}`,
-                borderRadius: "10px",
-                padding: "8px 12px",
-                fontSize: "11px",
-                fontWeight: "400",
-                cursor: "pointer",
-                transition: "all 0.2s"
+                width: "60px",
+                height: "60px",
+                borderRadius: "50%",
+                background: "#ebe3d3",
+                overflow: "hidden",
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: `1px solid ${dividerCol}`
               }}
             >
-              {copiedCode ? "Copié ✅" : "Copier"}
-            </button>
-          </div>
+              <img src="/icon-192.png" alt="GeoProspect" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            </div>
 
-          {/* Code Restore Accordion / Trigger */}
-          <div style={{ marginBottom: "12px" }}>
-            {restoreSuccessMsg && (
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div
                 style={{
-                  background: "rgba(16, 185, 129, 0.15)",
-                  border: "1px solid rgba(16, 185, 129, 0.3)",
-                  color: "#10b981",
-                  padding: "8px 12px",
-                  borderRadius: "10px",
-                  fontSize: "12px",
-                  fontWeight: "400",
-                  marginBottom: "8px"
+                  display: "inline-block",
+                  background: "#1b4332",
+                  color: "#ffffff",
+                  fontSize: "10.5px",
+                  padding: "2px 9px",
+                  borderRadius: "999px",
+                  marginBottom: "4px"
                 }}
               >
-                ✅ {restoreSuccessMsg}
+                {workspace.mode === "session" ? "Session en direct" : "Carnet personnel"}
               </div>
-            )}
-
-            {!showRestoreCode ? (
-              <button
-                type="button"
-                onClick={() => setShowRestoreCode(true)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: isLight ? "#2563eb" : "#60a5fa",
-                  fontSize: "11px",
-                  fontWeight: "400",
-                  cursor: "pointer",
-                  padding: "4px 0",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px"
-                }}
-              >
-                <span>🔑</span>
-                <span>Restaurer le code détecteur</span>
-              </button>
-            ) : (
-              <form
-                onSubmit={handleRestoreExistingCode}
-                style={{
-                  background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.05)",
-                  border: `1px solid ${cardBorder}`,
-                  borderRadius: "12px",
-                  padding: "10px 12px"
-                }}
-              >
-                <div style={{ fontSize: "11px", color: textSub, marginBottom: "8px", fontWeight: "400"}}>
-                  Saisissez votre code pour recharger instantanément toutes vos trouvailles :
-                </div>
-
-                {restoreErrorMsg && (
-                  <div style={{ color: "#ef4444", fontSize: "11px", fontWeight: "400", marginBottom: "6px" }}>
-                    ⚠️ {restoreErrorMsg}
-                  </div>
-                )}
-
-                <div style={{ display: "flex", gap: "8px" }}>
-                  <input
-                    type="text"
-                    value={restoreCodeInput}
-                    onChange={(e) => setRestoreCodeInput(e.target.value)}
-                    placeholder="Ex: GEO-XXXXXX"
-                    style={{
-                      flex: 1,
-                      padding: "8px 10px",
-                      borderRadius: "8px",
-                      border: `1px solid ${inputBorder}`,
-                      background: inputBg,
-                      color: textMain,
-                      fontSize: "12px",
-                      fontWeight: "400",
-                      textTransform: "uppercase"
-                    }}
-                  />
-                  <button
-                    type="submit"
-                    style={{
-                      background: "#3b82f6",
-                      color: "#ffffff",
-                      border: "none",
-                      borderRadius: "8px",
-                      padding: "8px 14px",
-                      fontSize: "11px",
-                      fontWeight: "400",
-                      cursor: "pointer"
-                    }}
-                  >
-                    Activer
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowRestoreCode(false);
-                      setRestoreErrorMsg("");
-                    }}
-                    style={{
-                      background: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.1)",
-                      color: textSub,
-                      border: "none",
-                      borderRadius: "8px",
-                      padding: "8px 10px",
-                      fontSize: "11px",
-                      cursor: "pointer"
-                    }}
-                  >
-                    ✕
-                  </button>
-                </div>
-              </form>
-            )}
+              <div style={{ fontSize: "16px", color: textMain, lineHeight: "1.25" }}>
+                {myName || "Prospecteur"}
+              </div>
+              <div style={{ fontSize: "13px", color: accentMint, marginTop: "2px" }}>
+                {user ? user.email : `Code détecteur : ${myCode}`}
+              </div>
+            </div>
           </div>
 
+          {/* Row 1: Copy unique code */}
+          <div
+            style={{ ...rowStyle(false), cursor: "pointer" }}
+            onClick={() => {
+              navigator.clipboard.writeText(myCode);
+              setCopiedCode(true);
+              setTimeout(() => setCopiedCode(false), 2000);
+            }}
+          >
+            <span>Mon code détecteur ({myCode})</span>
+            <span style={{ fontSize: "12px", color: copiedCode ? accentMint : textSub }}>
+              {copiedCode ? "Copié" : "Copier"}
+            </span>
+          </div>
+
+          {/* Row 2: Team Session */}
           {onOpenTeamSession && (
-            <button
-              type="button"
+            <div
+              style={{ ...rowStyle(false), cursor: "pointer" }}
               onClick={onOpenTeamSession}
-              style={{
-                width: "100%",
-                padding: "12px",
-                borderRadius: "12px",
-                border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.15)",
-                background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
-                color: isLight ? "#0f172a" : "#ffffff",
-                fontSize: "13px",
-                fontWeight: "400",
-                cursor: "pointer",
-                boxShadow: isLight ? "0 2px 8px rgba(0, 0, 0, 0.04)" : "none",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "all 0.2s"
-              }}
             >
-              <span>Rejoindre une session ou consulter une carte</span>
-            </button>
+              <span>Sessions d'équipe et partage en direct</span>
+              <span style={{ fontSize: "16px", color: textSub }}>›</span>
+            </div>
           )}
-        </div>
 
-        {/* ============================================================ */}
-        {/* GROUPE 2 : PRÉFÉRENCES                                        */}
-        {/* ============================================================ */}
-        {renderGroupHeader("🎨", "Préférences", isLight ? "#000000" : "#ffffff")}
-
-        {/* Mode Sombre / Clair */}
-        <div style={cardStyle}>
-          <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
-            <span>🌓</span> Mode Sombre / Clair
+          {/* Row 3: Restore detector code */}
+          <div
+            style={{ ...rowStyle(!showRestoreCode && !showAuthBox), cursor: "pointer" }}
+            onClick={() => setShowRestoreCode(!showRestoreCode)}
+          >
+            <span>Restaurer un code détecteur existant</span>
+            <span style={{ fontSize: "12px", color: textSub }}>{showRestoreCode ? "Fermer" : "Modifier"}</span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-            <button
-              onClick={() => {
-                setTheme("dark");
-                localStorage.setItem("app_theme", "dark");
-              }}
+
+          {showRestoreCode && (
+            <form
+              onSubmit={handleRestoreExistingCode}
               style={{
-                padding: "12px",
-                borderRadius: "14px",
-                border: theme === "dark" ? (isLight ? "2px solid #3b82f6" : "2px solid #38bdf8") : `1px solid ${cardBorder}`,
-                background: theme === "dark" ? (isLight ? "rgba(59, 130, 246, 0.1)" : "rgba(56, 189, 248, 0.12)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
-                color: textMain,
-                fontWeight: "400",
-                cursor: "pointer",
+                padding: "12px 0 14px 0",
+                borderBottom: `1px solid ${dividerCol}`,
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                flexDirection: "column",
                 gap: "8px"
               }}
             >
-              <span>🌙</span> Sombre
-            </button>
-
-            <button
-              onClick={() => {
-                setTheme("light");
-                localStorage.setItem("app_theme", "light");
-              }}
-              style={{
-                padding: "12px",
-                borderRadius: "14px",
-                border: theme === "light" ? (isLight ? "2px solid #3b82f6" : "2px solid #38bdf8") : `1px solid ${cardBorder}`,
-                background: theme === "light" ? (isLight ? "rgba(59, 130, 246, 0.1)" : "rgba(56, 189, 248, 0.12)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
-                color: textMain,
-                fontWeight: "400",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "8px"
-              }}
-            >
-              <span>☀️</span> Clair
-            </button>
-          </div>
-        </div>
-
-        {/* Taille des curseurs / marqueurs sur la carte */}
-        <div style={cardStyle}>
-          <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
-            <span>📍</span> Taille des curseurs sur la carte
-          </div>
-          <p style={{ margin: "0 0 10px 0", fontSize: "11px", color: textSub }}>
-            Ajustez la taille d'affichage des épingles de trouvailles sur la carte.
-          </p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
-            {[
-              { id: "small", label: "Compact", icon: "🔹" },
-              { id: "medium", label: "Normal", icon: "📍" },
-              { id: "large", label: "Grand", icon: "📌" }
-            ].map((sizeOpt) => {
-              const isSelected = (markerSize || "medium") === sizeOpt.id;
-              return (
-                <button
-                  key={sizeOpt.id}
-                  onClick={() => {
-                    if (setMarkerSize) {
-                      setMarkerSize(sizeOpt.id);
-                      localStorage.setItem("marker_size", sizeOpt.id);
-                    }
-                  }}
-                  style={{
-                    padding: "10px 6px",
-                    borderRadius: "12px",
-                    border: isSelected
-                      ? (isLight ? "2px solid #3b82f6" : "2px solid #38bdf8")
-                      : `1px solid ${cardBorder}`,
-                    background: isSelected
-                      ? (isLight ? "rgba(59, 130, 246, 0.12)" : "rgba(56, 189, 248, 0.15)")
-                      : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
-                    color: textMain,
-                    fontWeight: "400",
-                    fontSize: "12px",
-                    cursor: "pointer",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "4px",
-                    transition: "all 0.15s ease"
-                  }}
-                >
-                  <span style={{ fontSize: "16px" }}>{sizeOpt.icon}</span>
-                  <span>{sizeOpt.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Catégories Personnalisées */}
-        <div style={cardStyle}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff", marginBottom: 0 }}>
-              <span>🏷️</span> Catégories personnalisées
-            </div>
-            <div style={{ display: "flex", gap: "6px" }}>
-              {onOpenCategoryManager && (
-                <button
-                  onClick={onOpenCategoryManager}
-                  style={{
-                    padding: "6px 12px",
-                    borderRadius: "10px",
-                    border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                    background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
-                    color: isLight ? "#0f172a" : "#ffffff",
-                    fontSize: "11px",
-                    cursor: "pointer",
-                    fontWeight: "400"
-                  }}
-                >
-                  ⚙️ Gestionnaire
-                </button>
+              {restoreErrorMsg && (
+                <div style={{ color: "#dc2626", fontSize: "12px" }}>{restoreErrorMsg}</div>
               )}
-              <button
-                onClick={() => setShowCatManager(!showCatManager)}
-                style={{
-                  padding: "6px 10px",
-                  borderRadius: "10px",
-                  border: `1px solid ${cardBorder}`,
-                  background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.06)",
-                  color: textMain,
-                  fontSize: "11px",
-                  cursor: "pointer",
-                  fontWeight: "400"
-                }}
-              >
-                {showCatManager ? "Masquer" : "Édition rapide ▾"}
-              </button>
-            </div>
-          </div>
-
-          {showCatManager && (
-            <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "12px" }}>
-              {/* Add category form */}
+              {restoreSuccessMsg && (
+                <div style={{ color: accentMint, fontSize: "12px" }}>{restoreSuccessMsg}</div>
+              )}
               <div style={{ display: "flex", gap: "8px" }}>
                 <input
                   type="text"
-                  value={newCatEmoji}
-                  onChange={(e) => setNewCatEmoji(e.target.value)}
-                  placeholder="Emoji"
-                  style={{ width: "50px", textAlign: "center", padding: "8px", borderRadius: "10px", border: `1px solid ${inputBorder}`, background: inputBg, color: textMain, fontSize: "16px" }}
+                  value={restoreCodeInput}
+                  onChange={(e) => setRestoreCodeInput(e.target.value)}
+                  placeholder="Ex: GEO-XXXXXX"
+                  style={{
+                    flex: 1,
+                    padding: "9px 12px",
+                    borderRadius: "10px",
+                    border: `1px solid ${dividerCol}`,
+                    fontSize: "13px",
+                    textTransform: "uppercase"
+                  }}
                 />
+                <button
+                  type="submit"
+                  style={{
+                    background: accentForest,
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: "10px",
+                    padding: "9px 16px",
+                    fontSize: "12px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Activer
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Row 4: Synchronisation state */}
+          <div
+            style={{ ...rowStyle(!showAuthBox), cursor: "pointer" }}
+            onClick={() => {
+              if (user) {
+                setShowLogoutConfirm(true);
+              } else {
+                setShowAuthBox(!showAuthBox);
+              }
+            }}
+          >
+            <span>Synchronisation</span>
+            <span style={{ fontSize: "12.5px", color: textSub, display: "flex", alignItems: "center", gap: "6px" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+                <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                <path d="M16 16h5v5" />
+              </svg>
+              <span>{user ? "Synchronisé" : "Mode local (Se connecter)"}</span>
+            </span>
+          </div>
+
+          {!user && showAuthBox && (
+            <div style={{ padding: "12px 0 16px 0" }}>
+              <AuthForm theme={theme} onAuthSuccess={() => setShowAuthBox(false)} />
+            </div>
+          )}
+        </div>
+
+        {/* SHEET 2: CARTOGRAPHIE & AFFICHAGE (Forest "Plantation et Minuterie" Style) */}
+        <div style={sheetStyle}>
+          <div style={sectionHeaderStyle}>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+            </svg>
+            <span>Cartographie et Affichage</span>
+          </div>
+
+          {/* Apparence Clair / Sombre */}
+          <div style={rowStyle(false)}>
+            <span>Apparence de l'application</span>
+            <div style={{ display: "flex", background: isLight ? "#eef0ed" : "rgba(255,255,255,0.08)", borderRadius: "999px", padding: "3px" }}>
+              {[
+                { id: "light", label: "Clair" },
+                { id: "dark", label: "Sombre" }
+              ].map((opt) => {
+                const active = theme === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => {
+                      setTheme(opt.id);
+                      localStorage.setItem("app_theme", opt.id);
+                    }}
+                    style={{
+                      border: "none",
+                      borderRadius: "999px",
+                      padding: "4px 12px",
+                      fontSize: "12px",
+                      background: active ? accentForest : "transparent",
+                      color: active ? "#ffffff" : textSub,
+                      cursor: "pointer"
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Taille des marqueurs */}
+          <div style={rowStyle(false)}>
+            <span>Taille des marqueurs sur la carte</span>
+            <div style={{ display: "flex", background: isLight ? "#eef0ed" : "rgba(255,255,255,0.08)", borderRadius: "999px", padding: "3px" }}>
+              {[
+                { id: "small", label: "Petit" },
+                { id: "medium", label: "Normal" },
+                { id: "large", label: "Grand" }
+              ].map((s) => {
+                const active = (markerSize || "medium") === s.id;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => {
+                      if (setMarkerSize) {
+                        setMarkerSize(s.id);
+                        localStorage.setItem("marker_size", s.id);
+                      }
+                    }}
+                    style={{
+                      border: "none",
+                      borderRadius: "999px",
+                      padding: "4px 10px",
+                      fontSize: "12px",
+                      background: active ? accentForest : "transparent",
+                      color: active ? "#ffffff" : textSub,
+                      cursor: "pointer"
+                    }}
+                  >
+                    {s.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Gestionnaire de catégories */}
+          {onOpenCategoryManager && (
+            <div
+              style={{ ...rowStyle(false), cursor: "pointer" }}
+              onClick={onOpenCategoryManager}
+            >
+              <span>Catégories et métaux personnalisés</span>
+              <span style={{ fontSize: "12.5px", color: textSub }}>Configurer ›</span>
+            </div>
+          )}
+
+          {/* Édition rapide des catégories */}
+          <div
+            style={{ ...rowStyle(!showCatManager), cursor: "pointer" }}
+            onClick={() => setShowCatManager(!showCatManager)}
+          >
+            <span>Liste des sous-catégories</span>
+            <span style={{ fontSize: "12.5px", color: textSub }}>{showCatManager ? "Masquer" : "Afficher"}</span>
+          </div>
+
+          {showCatManager && (
+            <div style={{ padding: "12px 0 16px 0", display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div style={{ display: "flex", gap: "8px" }}>
                 <input
                   type="text"
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
                   placeholder="Nouvelle catégorie (ex: Fossile)"
-                  style={{ flex: 1, padding: "8px 12px", borderRadius: "10px", border: `1px solid ${inputBorder}`, background: inputBg, color: textMain, fontSize: "12px", outline: "none" }}
+                  style={{ flex: 1, padding: "8px 12px", borderRadius: "10px", border: `1px solid ${dividerCol}`, fontSize: "12px" }}
                 />
                 <button
+                  type="button"
                   onClick={handleAddCategory}
-                  style={{ padding: "8px 14px", borderRadius: "10px", border: "none", background: "#10b981", color: "white", fontWeight: "400", fontSize: "12px", cursor: "pointer" }}
+                  style={{ padding: "8px 14px", borderRadius: "10px", border: "none", background: accentForest, color: "#ffffff", fontSize: "12px", cursor: "pointer" }}
                 >
-                  ➕ Ajouter
+                  Ajouter
                 </button>
               </div>
 
-              {/* Categories list */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "250px", overflowY: "auto", paddingRight: "4px" }}>
-                {Object.keys(categoriesData.categories).length === 0 && (
-                  <div style={{ textAlign: "center", padding: "16px 10px", color: textSub, fontSize: "11px", fontStyle: "italic" }}>
-                    Aucune catégorie personnalisée configurée.
-                  </div>
-                )}
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px", maxHeight: "240px", overflowY: "auto" }}>
                 {Object.keys(categoriesData.categories).map((cat) => (
                   <div
                     key={cat}
                     style={{
-                      padding: "8px 12px",
-                      borderRadius: "12px",
-                      background: isLight ? "#f8fafc" : "rgba(255,255,255,0.03)",
-                      border: `1px solid ${cardBorder}`,
+                      padding: "8px 10px",
+                      borderRadius: "10px",
+                      border: `1px solid ${dividerCol}`,
                       display: "flex",
                       flexDirection: "column",
                       gap: "6px"
                     }}
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                         <span
                           style={{
-                            width: "12px",
-                            height: "12px",
+                            width: "10px",
+                            height: "10px",
                             borderRadius: "50%",
-                            background: categoriesData.colors?.[cat] || defaultCategoryColors[cat] || "#3b82f6",
-                            display: "inline-block",
-                            boxShadow: `0 0 4px ${categoriesData.colors?.[cat] || defaultCategoryColors[cat] || "#3b82f6"}88`
+                            background: categoriesData.colors?.[cat] || defaultCategoryColors[cat] || accentMint
                           }}
                         />
-                        <span style={{ fontSize: "13px", fontWeight: "400", color: textMain }}>
-                          {categoriesData.emojis[cat] || "📦"} {cat}
-                        </span>
+                        <span style={{ fontSize: "13px", color: textMain }}>{cat}</span>
                       </div>
                       <div style={{ display: "flex", gap: "6px" }}>
                         <button
+                          type="button"
                           onClick={() => setSelectedCatForSub(selectedCatForSub === cat ? "" : cat)}
-                          style={{ padding: "3px 8px", borderRadius: "8px", border: "none", background: isLight ? "rgba(0, 0, 0, 0.08)" : "rgba(255, 255, 255, 0.12)", color: textMain, fontSize: "10px", fontWeight: "400", cursor: "pointer" }}
+                          style={{ padding: "3px 8px", borderRadius: "6px", border: `1px solid ${dividerCol}`, background: "transparent", color: textSub, fontSize: "11px", cursor: "pointer" }}
                         >
                           + Sous-catégorie
                         </button>
                         <button
+                          type="button"
                           onClick={() => setConfirmCatToDelete(cat)}
-                          style={{ padding: "3px 8px", borderRadius: "8px", border: "none", background: "rgba(239, 68, 68, 0.15)", color: "#ef4444", fontSize: "10px", cursor: "pointer" }}
+                          style={{ padding: "3px 8px", borderRadius: "6px", border: "none", background: "rgba(220, 38, 38, 0.1)", color: "#dc2626", fontSize: "11px", cursor: "pointer" }}
                         >
-                          🗑️
+                          Supprimer
                         </button>
                       </div>
                     </div>
 
-                    {/* Subcategories */}
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", paddingLeft: "10px" }}>
-                      {categoriesData.categories[cat]?.map((sub) => (
-                        <span
-                          key={sub}
-                          style={{
-                            padding: "2px 8px",
-                            borderRadius: "6px",
-                            background: isLight ? "#e2e8f0" : "rgba(255,255,255,0.06)",
-                            fontSize: "10px",
-                            color: textMain,
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "4px"
-                          }}
-                        >
-                          {sub}
+                    {categoriesData.categories[cat]?.length > 0 && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                        {categoriesData.categories[cat].map((sub) => (
                           <span
-                            onClick={() => removeSubCategory(cat, sub)}
-                            style={{ cursor: "pointer", color: "#ef4444", fontWeight: "400"}}
+                            key={sub}
+                            style={{
+                              padding: "2px 8px",
+                              borderRadius: "6px",
+                              background: isLight ? "#f3f4f2" : "rgba(255,255,255,0.06)",
+                              fontSize: "11px",
+                              color: textSub,
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px"
+                            }}
                           >
-                            ×
+                            {sub}
+                            <span onClick={() => removeSubCategory(cat, sub)} style={{ cursor: "pointer", color: "#dc2626" }}>×</span>
                           </span>
-                        </span>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
 
-                    {/* Add subcategory input */}
                     {selectedCatForSub === cat && (
                       <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
                         <input
@@ -683,11 +551,12 @@ export default function SettingsPanel({
                           value={newSubName}
                           onChange={(e) => setNewSubName(e.target.value)}
                           placeholder={`Sous-catégorie pour ${cat}...`}
-                          style={{ flex: 1, padding: "6px 10px", borderRadius: "8px", border: `1px solid ${inputBorder}`, background: inputBg, color: textMain, fontSize: "11px", outline: "none" }}
+                          style={{ flex: 1, padding: "6px 10px", borderRadius: "8px", border: `1px solid ${dividerCol}`, fontSize: "12px" }}
                         />
                         <button
+                          type="button"
                           onClick={() => handleAddSub(cat)}
-                          style={{ padding: "6px 10px", borderRadius: "8px", border: isLight ? "1px solid #cbd5e1" : "none", background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.15)", color: isLight ? "#0f172a" : "white", fontSize: "11px", fontWeight: "400", cursor: "pointer" }}
+                          style={{ padding: "6px 12px", borderRadius: "8px", border: "none", background: accentForest, color: "#ffffff", fontSize: "12px", cursor: "pointer" }}
                         >
                           OK
                         </button>
@@ -700,339 +569,97 @@ export default function SettingsPanel({
           )}
         </div>
 
-        {/* ============================================================ */}
-        {/* GROUPE 3 : COMPTE                                            */}
-        {/* ============================================================ */}
-        <div id="compte-section-anchor">
-          {renderGroupHeader("👤", "Compte", isLight ? "#000000" : "#ffffff")}
+        {/* SHEET 3: SAUVEGARDES & DONNÉES */}
+        <div style={sheetStyle}>
+          <div style={sectionHeaderStyle}>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            <span>Sauvegardes et Données</span>
+          </div>
+
+          <div
+            style={{ ...rowStyle(false), cursor: "pointer" }}
+            onClick={onExportBackup}
+          >
+            <span>Exporter une sauvegarde locale (.json)</span>
+            <span style={{ fontSize: "12.5px", color: textSub }}>Télécharger ›</span>
+          </div>
+
+          <div
+            style={{ ...rowStyle(true), cursor: "pointer" }}
+            onClick={onImportBackup}
+          >
+            <span>Importer un fichier de sauvegarde</span>
+            <span style={{ fontSize: "12.5px", color: textSub }}>Parcourir ›</span>
+          </div>
         </div>
 
-        <div style={cardStyle}>
-          <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
-            <span>👤</span> Données
+        {/* SHEET 4: À PROPOS, SOUTIEN & LÉGAL */}
+        <div style={sheetStyle}>
+          <div style={sectionHeaderStyle}>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <span>Projet et Cadre légal</span>
           </div>
 
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: showAuthBox ? "14px" : "12px" }}>
-            <div>
-              <div style={{ fontSize: "12px", fontWeight: "400", color: textMain }}>
-                {user ? user.email : "Mode 100 % local / invité"}
-              </div>
-              <div style={{ fontSize: "10px", color: textSub }}>
-                {user ? "Synchronisation cloud activée ✅" : "Données stockées uniquement sur votre appareil"}
-              </div>
-            </div>
+          <a
+            href={DONATION_LINKS.kofi}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ ...rowStyle(false), textDecoration: "none" }}
+          >
+            <span>Soutenir le projet sur Ko-fi</span>
+            <span style={{ fontSize: "12.5px", color: textSub }}>Ouvrir ↗</span>
+          </a>
 
-            {user ? (
-              <button
-                type="button"
-                onClick={() => setShowLogoutConfirm(true)}
-                style={{
-                  padding: "7px 14px",
-                  borderRadius: "10px",
-                  border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                  background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
-                  color: isLight ? "#0f172a" : "#ffffff",
-                  fontSize: "11px",
-                  fontWeight: "400",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "5px"
-                }}
-              >
-                <span>🚪</span>
-                <span>Déconnexion</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowAuthBox(!showAuthBox)}
-                style={{
-                  padding: "8px 14px",
-                  borderRadius: "10px",
-                  border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                  background: showAuthBox ? (isLight ? "#e2e8f0" : "rgba(255,255,255,0.12)") : (isLight ? "#f1f5f9" : "rgba(255,255,255,0.08)"),
-                  color: isLight ? "#0f172a" : "white",
-                  fontSize: "11px",
-                  fontWeight: "400",
-                  cursor: "pointer"
-                }}
-              >
-                {showAuthBox ? "Fermer ✕" : "🔑 Connexion / Inscription"}
-              </button>
-            )}
-          </div>
+          <a
+            href={DONATION_LINKS.paypal}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ ...rowStyle(false), textDecoration: "none" }}
+          >
+            <span>Faire un don via PayPal</span>
+            <span style={{ fontSize: "12.5px", color: textSub }}>Ouvrir ↗</span>
+          </a>
 
-          {/* Collapsible Auth Form */}
-          {!user && showAuthBox && (
+          {onOpenCgu && (
             <div
-              style={{
-                background: isLight ? "#f8fafc" : "rgba(0,0,0,0.35)",
-                borderRadius: "14px",
-                padding: "16px",
-                marginBottom: "14px",
-                border: isLight ? "1px solid #e2e8f0" : "1px solid rgba(255, 255, 255, 0.12)"
-              }}
+              style={{ ...rowStyle(false), cursor: "pointer" }}
+              onClick={onOpenCgu}
             >
-              <AuthForm theme={theme} onAuthSuccess={() => setShowAuthBox(false)} />
+              <span>Conditions d'utilisation et législation</span>
+              <span style={{ fontSize: "16px", color: textSub }}>›</span>
             </div>
           )}
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", borderTop: `1px solid ${cardBorder}`, paddingTop: "12px" }}>
-            <button
-              onClick={onExportBackup}
-              style={{
-                padding: "10px",
-                borderRadius: "12px",
-                border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
-                color: isLight ? "#0f172a" : "white",
-                fontSize: "11px",
-                fontWeight: "400",
-                cursor: "pointer"
-              }}
+          {onRestartOnboarding && (
+            <div
+              style={{ ...rowStyle(false), cursor: "pointer" }}
+              onClick={onRestartOnboarding}
             >
-              📥 Exporter la sauvegarde
-            </button>
-            <button
-              onClick={onImportBackup}
-              style={{
-                padding: "10px",
-                borderRadius: "12px",
-                border: `1px solid ${cardBorder}`,
-                background: isLight ? "#f8fafc" : "rgba(255,255,255,0.04)",
-                color: textMain,
-                fontSize: "11px",
-                fontWeight: "400",
-                cursor: "pointer"
-              }}
-            >
-              📤 Importer une sauvegarde
-            </button>
-          </div>
-        </div>
-
-        {/* ============================================================ */}
-        {/* GROUPE 4 : SOUTIEN AU PROJET (DONS)                          */}
-        {/* ============================================================ */}
-        {renderGroupHeader("☕", "Soutien", isLight ? "#000000" : "#ffffff")}
-
-        <div style={cardStyle}>
-          <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff" }}>
-            <span>☕</span> Soutenir le projet (dons)
-          </div>
-          <p style={{ margin: "0 0 14px 0", fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
-            L'outil est 100% libre et développé sur mon temps libre avec l'aide de l'IA comme assistante pour concevoir un carnet de détection moderne et fluide. Aucune publicité ne finance le projet et vos données restent strictement privées et ne font l'objet d'aucune exploitation commerciale. Si l'application vous plaît et vous est utile lors de vos sorties, un petit don encourage les futures améliorations !
-          </p>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            {/* Ko-fi */}
-            <a
-              href={DONATION_LINKS.kofi}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                padding: "10px 14px",
-                borderRadius: "12px",
-                background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)",
-                border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
-                color: textMain,
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                transition: "all 0.2s"
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <span style={{ fontSize: "18px" }}>☕</span>
-                <div>
-                  <div style={{ fontSize: "12px", fontWeight: "400", color: isLight ? "#0f172a" : "#ffffff" }}>
-                    Ko-fi
-                  </div>
-                  <div style={{ fontSize: "10px", color: textSub }}>
-                    Don libre sans commission (CB, Apple Pay, Google Pay)
-                  </div>
-                </div>
-              </div>
-              <span style={{ fontSize: "13px", color: textSub, fontWeight: "400"}}>↗</span>
-            </a>
-
-            {/* PayPal */}
-            <a
-              href={DONATION_LINKS.paypal}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                padding: "10px 14px",
-                borderRadius: "12px",
-                background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)",
-                border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.12)",
-                color: textMain,
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                transition: "all 0.2s"
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <span style={{ fontSize: "18px" }}>💳</span>
-                <div>
-                  <div style={{ fontSize: "12px", fontWeight: "400", color: isLight ? "#0f172a" : "#ffffff" }}>
-                    PayPal.me
-                  </div>
-                  <div style={{ fontSize: "10px", color: textSub }}>
-                    Transfert direct sécurisé avec votre compte PayPal
-                  </div>
-                </div>
-              </div>
-              <span style={{ fontSize: "13px", color: textSub, fontWeight: "400"}}>↗</span>
-            </a>
-          </div>
-        </div>
-
-        {/* ============================================================ */}
-        {/* GROUPE 5 : MENTIONS LÉGALES                                  */}
-        {/* ============================================================ */}
-        <div style={{ ...cardStyle, marginTop: "16px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div style={{ ...sectionTitleStyle, color: isLight ? "#000000" : "#ffffff", marginBottom: 0 }}>
-              <span>⚖️</span> Mentions légales
-            </div>
-            <button
-              onClick={() => setShowLegal(!showLegal)}
-              style={{ padding: "4px 8px", borderRadius: "8px", border: `1px solid ${cardBorder}`, background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.06)", color: textMain, fontSize: "10px", cursor: "pointer" }}
-            >
-              {showLegal ? "Masquer" : "Lire"}
-            </button>
-          </div>
-
-          {showLegal && (
-            <div style={{ marginTop: "12px", fontSize: "11px", color: textSub, lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "8px" }}>
-              <p style={{ margin: 0 }}>
-                Cette application est un carnet de détection d'enregistrement personnel pour la pratique de loisir. L'utilisateur est seul responsable de sa pratique et s'engage à respecter scrupuleusement l'article L.542-1 du code du patrimoine, obtenir l'autorisation expresse des propriétaires des parcelles prospectées et à déclarer toute découverte fortuite.
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "8px" }}>
-                {onOpenCgu && (
-                  <button
-                    type="button"
-                    onClick={onOpenCgu}
-                    style={{
-                      padding: "10px 14px",
-                      borderRadius: "10px",
-                      border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                      background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
-                      color: isLight ? "#0f172a" : "white",
-                      fontSize: "11px",
-                      fontWeight: "400",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "6px"
-                    }}
-                  >
-                    <span>⚖️</span> Consulter les CGU
-                  </button>
-                )}
-                {onRestartOnboarding && (
-                  <button
-                    type="button"
-                    onClick={onRestartOnboarding}
-                    style={{
-                      padding: "10px 14px",
-                      borderRadius: "10px",
-                      border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                      background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
-                      color: isLight ? "#0f172a" : "white",
-                      fontSize: "11px",
-                      fontWeight: "400",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "6px"
-                    }}
-                  >
-                    <span>🔄</span> Relancer le guide de démarrage
-                  </button>
-                )}
-              </div>
+              <span>Relancer le guide de présentation</span>
+              <span style={{ fontSize: "16px", color: textSub }}>›</span>
             </div>
           )}
-        </div>
 
-        {/* ============================================================ */}
-        {/* GROUPE 6 : ZONE DE DANGER - SUPPRESSION DU COMPTE             */}
-        {/* ============================================================ */}
-        {renderGroupHeader("⚠️", "Zone de danger", isLight ? "#dc2626" : "#ef4444")}
-
-        <div
-          style={{
-            background: isLight ? "#fef2f2" : "rgba(239, 68, 68, 0.06)",
-            borderRadius: "18px",
-            border: isLight ? "1.5px solid #fecaca" : "1px solid rgba(239, 68, 68, 0.25)",
-            boxShadow: cardShadow,
-            padding: "16px",
-            marginBottom: "24px"
-          }}
-        >
-          <div style={{ ...sectionTitleStyle, color: isLight ? "#b91c1c" : "#f87171" }}>
-            <span>🗑️</span> Suppression définitive du compte
+          <div
+            style={{ ...rowStyle(false), cursor: "pointer" }}
+            onClick={() => setShowLogoutConfirm(true)}
+          >
+            <span>{user ? `Se déconnecter (${user.email})` : "Réinitialiser la session locale"}</span>
+            <span style={{ fontSize: "16px", color: textSub }}>›</span>
           </div>
-          <p style={{ margin: "0 0 14px 0", fontSize: "12px", color: isLight ? "#991b1b" : "#fca5a5", lineHeight: "1.5" }}>
-            Cette action effacera irréversiblement votre profil ({myCode}), votre pseudonyme ({myName || "Non défini"}) ainsi que <strong>l'ensemble de vos trouvailles, photos HD, vidéos et notes vocales</strong> de nos serveurs et de votre appareil.
-          </p>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            <button
-              type="button"
-              onClick={() => setShowLogoutConfirm(true)}
-              style={{
-                width: "100%",
-                padding: "12px 16px",
-                borderRadius: "12px",
-                border: isLight ? "1.5px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.18)",
-                background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
-                color: textMain,
-                fontSize: "13px",
-                fontWeight: "400",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "8px",
-                transition: "background 0.2s ease"
-              }}
-            >
-              <span>🚪</span>
-              <span>{user ? `Se déconnecter (${user.email})` : "Se déconnecter / Changer de compte"}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setShowDeleteConfirm(true)}
-              style={{
-                width: "100%",
-                padding: "12px 16px",
-                borderRadius: "12px",
-                border: "none",
-                background: "#ef4444",
-                color: "#ffffff",
-                fontSize: "13px",
-                fontWeight: "400",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "8px",
-                boxShadow: "0 4px 14px rgba(239, 68, 68, 0.3)",
-                transition: "background 0.2s ease"
-              }}
-            >
-              <span>🗑️</span>
-              <span>Supprimer définitivement mon compte et mes données</span>
-            </button>
+          <div
+            style={{ ...rowStyle(true), cursor: "pointer", color: "#dc2626" }}
+            onClick={() => setShowDeleteConfirm(true)}
+          >
+            <span>Supprimer mon compte et mes données</span>
+            <span style={{ fontSize: "16px", color: "#dc2626" }}>›</span>
           </div>
         </div>
       </div>
@@ -1044,9 +671,7 @@ export default function SettingsPanel({
             position: "fixed",
             inset: 0,
             zIndex: 1000000,
-            background: "rgba(0, 0, 0, 0.85)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
+            background: "rgba(0, 0, 0, 0.8)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -1060,145 +685,63 @@ export default function SettingsPanel({
         >
           <div
             style={{
-              background: isLight ? "#ffffff" : "#0f172a",
-              border: isLight ? "2px solid #ef4444" : "1.5px solid rgba(239, 68, 68, 0.5)",
-              borderRadius: "24px",
+              background: sheetBg,
+              borderRadius: "20px",
               width: "100%",
-              maxWidth: "440px",
+              maxWidth: "420px",
               padding: "24px",
               boxSizing: "border-box",
               display: "flex",
               flexDirection: "column",
-              gap: "16px",
-              color: isLight ? "#0f172a" : "#ffffff",
-              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8)"
+              gap: "14px",
+              color: textMain,
+              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)"
             }}
             onClick={(e) => e.stopPropagation()}
           >
             {deleteSuccess ? (
-              <div style={{ textAlign: "center", padding: "20px 0", display: "flex", flexDirection: "column", gap: "12px", alignItems: "center" }}>
-                <div style={{ fontSize: "40px" }}>✅</div>
-                <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "400", color: "#10b981" }}>
+              <div style={{ textAlign: "center", padding: "20px 0" }}>
+                <h3 style={{ margin: "0 0 8px 0", fontSize: "17px", color: accentMint }}>
                   Compte et données supprimés
                 </h3>
                 <p style={{ margin: 0, fontSize: "13px", color: textSub }}>
-                  Toutes vos données ont été définitivement effacées. Réinitialisation de l'application...
+                  Toutes vos données ont été effacées. Réinitialisation...
                 </p>
               </div>
             ) : isDeleting ? (
-              <div style={{ textAlign: "center", padding: "24px 0", display: "flex", flexDirection: "column", gap: "14px", alignItems: "center" }}>
-                <div style={{ fontSize: "36px", animation: "pulse 1.5s infinite" }}>⏳</div>
-                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400"}}>
+              <div style={{ textAlign: "center", padding: "20px 0" }}>
+                <h3 style={{ margin: "0 0 8px 0", fontSize: "16px" }}>
                   Suppression en cours...
                 </h3>
                 <p style={{ margin: 0, fontSize: "12px", color: textSub }}>
-                  Purge des trouvailles, photos, vidéos, notes vocales et métadonnées en cours. Veuillez patienter.
+                  Purge des trouvailles et médias en cours. Veuillez patienter.
                 </p>
               </div>
             ) : (
               <>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <div
-                    style={{
-                      width: "44px",
-                      height: "44px",
-                      borderRadius: "14px",
-                      background: "rgba(239, 68, 68, 0.15)",
-                      border: "1px solid rgba(239, 68, 68, 0.3)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "22px",
-                      flexShrink: 0
-                    }}
-                  >
-                    ⚠️
-                  </div>
-                  <div>
-                    <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: isLight ? "#991b1b" : "#ef4444" }}>
-                      Êtes-vous bien sûr de vouloir supprimer votre compte ?
-                    </h3>
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    background: isLight ? "#fef2f2" : "rgba(239, 68, 68, 0.08)",
-                    border: isLight ? "1px solid #fecaca" : "1px solid rgba(239, 68, 68, 0.2)",
-                    borderRadius: "14px",
-                    padding: "14px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "8px",
-                    fontSize: "12px",
-                    lineHeight: "1.45"
-                  }}
-                >
-                  <div style={{ fontWeight: "400", color: isLight ? "#991b1b" : "#fca5a5", marginBottom: "2px" }}>
-                    Cette opération est définitive et irréversible. Voici ce qui sera supprimé :
-                  </div>
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
-                    <span>❌</span>
-                    <span><strong>Toutes vos trouvailles</strong> (positions GPS, descriptions, métaux, dates)</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
-                    <span>❌</span>
-                    <span><strong>Toutes vos photos et vidéos de terrain</strong> stockées sur nos serveurs</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
-                    <span>❌</span>
-                    <span><strong>Toutes vos notes vocales</strong> enregistrées</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
-                    <span>❌</span>
-                    <span>Votre code détecteur unique (<strong>{myCode}</strong>) et votre pseudonyme (<strong>{myName || "Non défini"}</strong>)</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
-                    <span>❌</span>
-                    <span>Votre historique de sessions, autorisations de partage et préférences locales</span>
-                  </div>
-                </div>
-
-                <div style={{ display: "flex", gap: "8px", marginTop: "4px", flexWrap: "wrap" }}>
+                <h3 style={{ margin: 0, fontSize: "16px", color: "#dc2626" }}>
+                  Supprimer définitivement votre compte ?
+                </h3>
+                <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
+                  Cette opération effacera irréversiblement toutes vos trouvailles, photos, vidéos, notes vocales ainsi que votre code détecteur ({myCode}).
+                </p>
+                <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
                   <button
                     type="button"
                     onClick={() => setShowDeleteConfirm(false)}
                     style={{
                       flex: 1,
-                      padding: "12px",
-                      borderRadius: "12px",
-                      border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                      background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
-                      color: isLight ? "#0f172a" : "#ffffff",
+                      padding: "11px",
+                      borderRadius: "10px",
+                      border: `1px solid ${dividerCol}`,
+                      background: "transparent",
+                      color: textMain,
                       fontSize: "13px",
-                      fontWeight: "400",
                       cursor: "pointer"
                     }}
                   >
                     Annuler
                   </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowDeleteConfirm(false);
-                      setShowLogoutConfirm(true);
-                    }}
-                    style={{
-                      flex: 1.2,
-                      padding: "12px",
-                      borderRadius: "12px",
-                      border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                      background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
-                      color: textMain,
-                      fontSize: "12px",
-                      fontWeight: "400",
-                      cursor: "pointer"
-                    }}
-                  >
-                    🚪 {user ? "Déconnexion seule" : "Changer de compte"}
-                  </button>
-
                   <button
                     type="button"
                     onClick={async () => {
@@ -1217,19 +760,17 @@ export default function SettingsPanel({
                       }
                     }}
                     style={{
-                      flex: 1.4,
-                      padding: "12px",
-                      borderRadius: "12px",
+                      flex: 1,
+                      padding: "11px",
+                      borderRadius: "10px",
                       border: "none",
-                      background: "#ef4444",
+                      background: "#dc2626",
                       color: "#ffffff",
                       fontSize: "13px",
-                      fontWeight: "400",
-                      cursor: "pointer",
-                      boxShadow: "0 4px 14px rgba(239, 68, 68, 0.35)"
+                      cursor: "pointer"
                     }}
                   >
-                    Oui, tout supprimer
+                    Tout supprimer
                   </button>
                 </div>
               </>
@@ -1241,8 +782,7 @@ export default function SettingsPanel({
       {confirmCatToDelete && (
         <ConfirmModal
           title="Supprimer la catégorie"
-          icon="🏷️"
-          confirmColor="#ef4444"
+          confirmColor="#dc2626"
           message={`Voulez-vous vraiment supprimer la catégorie "${confirmCatToDelete}" ?`}
           confirmText="Supprimer"
           cancelText="Annuler"
@@ -1256,15 +796,14 @@ export default function SettingsPanel({
 
       {showLogoutConfirm && (
         <ConfirmModal
-          title={user ? "Déconnexion" : "Changer de compte"}
-          icon="🚪"
-          confirmColor="#2563eb"
+          title={user ? "Déconnexion" : "Réinitialiser la session"}
+          confirmColor={accentForest}
           message={
             user
-              ? `Voulez-vous vous déconnecter du compte ${user.email} ? Vos données synchronisées resteront conservées en toute sécurité sur votre compte dans le Cloud. Vous serez redirigé vers l'onboarding pour vous reconnecter avec un autre compte ou continuer en mode local.`
-              : "Voulez-vous réinitialiser la session actuelle pour changer de compte ou recommencer la configuration ? Vos données distantes restent intactes."
+              ? `Voulez-vous vous déconnecter du compte ${user.email} ? Vos données synchronisées restent conservées sur votre compte.`
+              : "Voulez-vous réinitialiser la session actuelle ? Vos données synchronisées restent intactes."
           }
-          confirmText="Me déconnecter"
+          confirmText="Confirmer"
           cancelText="Annuler"
           onConfirm={() => {
             setShowLogoutConfirm(false);

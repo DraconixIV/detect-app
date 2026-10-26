@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { categoriesWithSub, categoriesWithSub as defaultCategoriesWithSub, defaultCategoryColors, PRESET_CATEGORY_COLORS } from "../subCategories";
+import { categoriesWithSub as defaultCategoriesWithSub, defaultCategoryColors, PRESET_CATEGORY_COLORS } from "../subCategories";
 import { loadCategoriesData } from "../services/categoriesService";
 import { normalizeDateStr } from "../services/findsService";
 import ConfirmModal from "./ConfirmModal";
 
 function getDistance(p1, p2) {
   if (!p1 || !p2 || !Array.isArray(p1) || !Array.isArray(p2)) return 0;
-  const R = 6371e3; // metres
+  const R = 6371e3;
   const phi1 = (p1[0] * Math.PI) / 180;
   const phi2 = (p2[0] * Math.PI) / 180;
   const deltaPhi = ((p2[0] - p1[0]) * Math.PI) / 180;
@@ -18,7 +18,7 @@ function getDistance(p1, p2) {
     Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  return R * c; // in metres
+  return R * c;
 }
 
 function getDistanceOfTrack(positions) {
@@ -29,7 +29,7 @@ function getDistanceOfTrack(positions) {
       dist += getDistance(positions[i], positions[i + 1]);
     }
   }
-  return dist / 1000; // in km
+  return dist / 1000;
 }
 
 export default function StatsPanel({
@@ -46,20 +46,28 @@ export default function StatsPanel({
   onDeleteTrack,
   onDeleteFind
 }) {
-  const { emojis: categoryEmojis, categories: customCategories, colors: categoryColors = {} } = loadCategoriesData();
+  const { categories: customCategories, colors: categoryColors = {} } = loadCategoriesData();
   const [chartType, setChartType] = useState("donut"); // 'donut' | 'bar' | 'radar'
   const [expandedCats, setExpandedCats] = useState({});
   const [confirmTrackToDelete, setConfirmTrackToDelete] = useState(null);
   const [confirmSortieToDelete, setConfirmSortieToDelete] = useState(null);
 
   const isLight = theme === "light";
-  const bgPanel = isFullTab ? "transparent" : (isLight ? "#ffffff" : "rgba(15, 23, 42, 0.95)");
-  const textMain = isLight ? "#000000" : "#ffffff";
-  const textSub = isLight ? "#1e293b" : "#ffffff";
-  const cardBg = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.05)";
-  const cardBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
-  const cardShadow = isLight ? "0 2px 8px rgba(0, 0, 0, 0.06)" : "none";
-  const subBg = isLight ? "#f1f5f9" : "rgba(0, 0, 0, 0.25)";
+  const bgPanel = isFullTab ? "transparent" : (isLight ? "#ffffff" : "#111915");
+  const sheetBg = isLight ? "#ffffff" : "#19231e";
+  const textMain = isLight ? "#1f2924" : "#f1f5f2";
+  const textSub = isLight ? "#5c6b63" : "#9aa8a0";
+  const dividerCol = isLight ? "#eef0ed" : "rgba(255, 255, 255, 0.07)";
+  const accentForest = "#2c5e4c";
+  const accentMint = "#40916c";
+
+  const sheetStyle = {
+    background: sheetBg,
+    borderRadius: "16px",
+    padding: "18px",
+    marginBottom: "14px",
+    boxShadow: isLight ? "0 2px 10px rgba(0, 0, 0, 0.03)" : "0 4px 16px rgba(0, 0, 0, 0.25)"
+  };
 
   // Group finds by clean normalized date
   const findsByDate = (finds || []).reduce((acc, find) => {
@@ -109,7 +117,6 @@ export default function StatsPanel({
     return acc;
   }, {});
 
-  // All defined categories (from custom categories or default starter set + any existing in finds)
   const sourceCategories = (customCategories && Object.keys(customCategories).length > 0)
     ? customCategories
     : (defaultCategoriesWithSub || {});
@@ -118,7 +125,6 @@ export default function StatsPanel({
     new Set([...Object.keys(sourceCategories), ...Object.keys(categoryCounts)])
   );
 
-  // Full category list sorted by count (highest first), then alphabetically
   const categoryData = allKnownCategoryNames
     .map((cat) => [cat, categoryCounts[cat] || 0])
     .sort((a, b) => {
@@ -126,20 +132,14 @@ export default function StatsPanel({
       return a[0].localeCompare(b[0], "fr");
     });
 
-  // Filtered categories with finds > 0 for charts
   const activeCategoryData = categoryData.filter(([_, count]) => count > 0);
-
   const totalFinds = finds.length;
   const maxCount = categoryData.length > 0 ? Math.max(...categoryData.map((d) => d[1]), 1) : 1;
 
   const getCategoryColor = (cat, idx) => {
-    if (categoryColors && categoryColors[cat]) {
-      return categoryColors[cat];
-    }
-    if (defaultCategoryColors && defaultCategoryColors[cat]) {
-      return defaultCategoryColors[cat];
-    }
-    return PRESET_CATEGORY_COLORS[idx % PRESET_CATEGORY_COLORS.length] || "#3b82f6";
+    if (categoryColors && categoryColors[cat]) return categoryColors[cat];
+    if (defaultCategoryColors && defaultCategoryColors[cat]) return defaultCategoryColors[cat];
+    return PRESET_CATEGORY_COLORS[idx % PRESET_CATEGORY_COLORS.length] || accentMint;
   };
 
   const toggleCategory = (cat) => {
@@ -157,10 +157,10 @@ export default function StatsPanel({
     setExpandedCats(next);
   };
 
-  // 1. Donut Segment Calculations
+  // Donut Segment Calculations
   const r = 38;
   const circ = 2 * Math.PI * r;
-  const strokeWidth = 10;
+  const strokeWidth = 9;
   const donutSegments = [];
   let accumulatedLength = 0;
 
@@ -184,36 +184,32 @@ export default function StatsPanel({
     <div
       style={{
         background: bgPanel,
-        backdropFilter: isFullTab ? "none" : "blur(12px)",
         color: textMain,
-        padding: "16px",
-        borderRadius: "20px",
-        border: isFullTab ? "none" : `1px solid ${cardBorder}`,
+        padding: isFullTab ? 0 : "16px",
+        borderRadius: isFullTab ? 0 : "20px",
         width: isFullTab ? "100%" : "280px",
         maxHeight: isFullTab ? "none" : "75vh",
         overflowY: isFullTab ? "visible" : "auto",
         position: "relative",
         boxSizing: "border-box",
-        boxShadow: isFullTab ? "none" : "0 10px 30px rgba(0,0,0,0.4)",
-        fontFamily: "system-ui, sans-serif"
+        fontFamily: "system-ui, -apple-system, sans-serif"
       }}
     >
-      {/* Close button for non-full tab modal */}
       {!isFullTab && onClose && (
         <button
+          type="button"
           onClick={onClose}
           style={{
             position: "absolute",
             top: "12px",
             right: "12px",
-            width: "30px",
-            height: "30px",
+            width: "28px",
+            height: "28px",
             borderRadius: "50%",
             border: "none",
-            background: "#ef4444",
-            color: "white",
-            fontSize: "16px",
-            fontWeight: "400",
+            background: "rgba(255,255,255,0.1)",
+            color: textMain,
+            fontSize: "14px",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
@@ -224,126 +220,89 @@ export default function StatsPanel({
         </button>
       )}
 
-      {/* Top Title */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-        <div>
-          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "400", color: textMain }}>
-            📊 Statistiques
-          </h2>
-          <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
-            Vue globale de vos découvertes et sorties
-          </p>
-        </div>
-        {onOpenCategoryManager && (
-          <button
-            onClick={onOpenCategoryManager}
-            style={{
-              padding: "6px 10px",
-              borderRadius: "10px",
-              border: `1px solid ${cardBorder}`,
-              background: cardBg,
-              color: textMain,
-              fontSize: "11px",
-              fontWeight: "400",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "4px"
-            }}
-          >
-            ⚙️ Catégories
-          </button>
-        )}
-      </div>
-
-      {/* Summary KPI Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", marginBottom: "16px" }}>
-        <div style={{ background: cardBg, border: `1px solid ${cardBorder}`, boxShadow: cardShadow, padding: "10px", borderRadius: "14px", textAlign: "center" }}>
-          <div style={{ fontSize: "18px" }}>📍</div>
-          <div style={{ fontSize: "9px", color: textSub, marginTop: "2px", fontWeight: "400", textTransform: "uppercase" }}>Trouvailles</div>
-          <div style={{ fontSize: "16px", fontWeight: "400", marginTop: "2px", color: textMain }}>{totalFinds}</div>
-        </div>
-        <div style={{ background: cardBg, border: `1px solid ${cardBorder}`, boxShadow: cardShadow, padding: "10px", borderRadius: "14px", textAlign: "center" }}>
-          <div style={{ fontSize: "18px" }}>⭐</div>
-          <div style={{ fontSize: "9px", color: textSub, marginTop: "2px", fontWeight: "400", textTransform: "uppercase" }}>Favoris</div>
-          <div style={{ fontSize: "16px", fontWeight: "400", marginTop: "2px", color: textMain }}>{finds.filter(f => f.favorite).length}</div>
-        </div>
-        <div style={{ background: cardBg, border: `1px solid ${cardBorder}`, boxShadow: cardShadow, padding: "10px", borderRadius: "14px", textAlign: "center" }}>
-          <div style={{ fontSize: "18px" }}>🚶</div>
-          <div style={{ fontSize: "9px", color: textSub, marginTop: "2px", fontWeight: "400", textTransform: "uppercase" }}>Sorties</div>
-          <div style={{ fontSize: "16px", fontWeight: "400", marginTop: "2px", color: textMain }}>{savedTracks.length}</div>
-        </div>
-      </div>
-
-      {/* SECTION ORGANIGRAMMES */}
-      <div
-        style={{
-          background: cardBg,
-          border: `1px solid ${cardBorder}`,
-          boxShadow: cardShadow,
-          borderRadius: "16px",
-          padding: "14px",
-          marginBottom: "16px"
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-          <span style={{ fontSize: "12px", fontWeight: "400", textTransform: "uppercase", letterSpacing: "0.5px", color: textMain }}>
-            🏆 Organigrammes
-          </span>
-        </div>
-
-        {/* 3-Way Chart Selector */}
+      {/* SHEET 1: SYNTHÈSE DES DÉCOUVERTES */}
+      <div style={sheetStyle}>
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "4px",
-            background: isLight ? "#e2e8f0" : "rgba(0,0,0,0.3)",
-            padding: "4px",
-            borderRadius: "12px",
-            marginBottom: "14px"
+            gridTemplateColumns: "1fr 1fr 1fr",
+            textAlign: "center"
           }}
         >
-          {[
-            { id: "donut", label: "Donut", icon: "🍩" },
-            { id: "bar", label: "Barres", icon: "📊" },
-            { id: "radar", label: "Radar", icon: "🕸️" }
-          ].map((item) => {
-            const isSel = chartType === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setChartType(item.id)}
-                style={{
-                  padding: "6px 2px",
-                  borderRadius: "8px",
-                  border: "none",
-                  background: isSel ? (isLight ? "#ffffff" : "#2563eb") : "transparent",
-                  color: isSel ? (isLight ? "#1e293b" : "#ffffff") : textSub,
-                  boxShadow: isSel && isLight ? "0 2px 4px rgba(0,0,0,0.1)" : "none",
-                  fontWeight: "400",
-                  fontSize: "10px",
-                  cursor: "pointer",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "2px",
-                  transition: "all 0.2s"
-                }}
-              >
-                <span style={{ fontSize: "14px" }}>{item.icon}</span>
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
+          <div style={{ borderRight: `1px solid ${dividerCol}`, padding: "4px 6px" }}>
+            <div style={{ fontSize: "22px", color: textMain, lineHeight: "1.2" }}>{totalFinds}</div>
+            <div style={{ fontSize: "11.5px", color: textSub, marginTop: "4px" }}>Trouvailles</div>
+          </div>
+
+          <div style={{ borderRight: `1px solid ${dividerCol}`, padding: "4px 6px" }}>
+            <div style={{ fontSize: "22px", color: textMain, lineHeight: "1.2" }}>
+              {finds.filter((f) => f.favorite).length}
+            </div>
+            <div style={{ fontSize: "11.5px", color: textSub, marginTop: "4px" }}>Favoris</div>
+          </div>
+
+          <div style={{ padding: "4px 6px" }}>
+            <div style={{ fontSize: "22px", color: textMain, lineHeight: "1.2" }}>{savedTracks.length}</div>
+            <div style={{ fontSize: "11.5px", color: textSub, marginTop: "4px" }}>Sorties</div>
+          </div>
+        </div>
+      </div>
+
+      {/* SHEET 2: RÉPARTITION & GRAPHIQUES */}
+      <div style={sheetStyle}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "15px", color: textMain }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+              <path d="M22 12A10 10 0 0 0 12 2v10z" />
+            </svg>
+            <span>Répartition des objets</span>
+          </div>
+
+          {/* Segmented Pill Selector (Forest Style) */}
+          <div
+            style={{
+              display: "flex",
+              background: isLight ? "#eef0ed" : "rgba(255, 255, 255, 0.06)",
+              padding: "3px",
+              borderRadius: "999px",
+              gap: "2px"
+            }}
+          >
+            {[
+              { id: "donut", label: "Anneau" },
+              { id: "bar", label: "Barres" },
+              { id: "radar", label: "Radar" }
+            ].map((item) => {
+              const isSel = chartType === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setChartType(item.id)}
+                  style={{
+                    padding: "4px 11px",
+                    borderRadius: "999px",
+                    border: "none",
+                    background: isSel ? accentForest : "transparent",
+                    color: isSel ? "#ffffff" : textSub,
+                    fontSize: "11.5px",
+                    cursor: "pointer"
+                  }}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* 1. DONUT CHART */}
         {chartType === "donut" && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{ position: "relative", width: "120px", height: "120px", margin: "6px 0 14px 0" }}>
-              <svg width="120" height="120" viewBox="0 0 100 100" style={{ transform: "rotate(-90deg)" }}>
-                <circle cx="50" cy="50" r={r} fill="transparent" stroke={isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.08)"} strokeWidth={strokeWidth} />
+            <div style={{ position: "relative", width: "136px", height: "136px", margin: "8px 0 16px 0" }}>
+              <svg width="136" height="136" viewBox="0 0 100 100" style={{ transform: "rotate(-90deg)" }}>
+                <circle cx="50" cy="50" r={r} fill="transparent" stroke={dividerCol} strokeWidth={strokeWidth} />
                 {donutSegments.map((seg, idx) => (
                   <circle
                     key={idx}
@@ -355,7 +314,6 @@ export default function StatsPanel({
                     strokeWidth={strokeWidth}
                     strokeDasharray={seg.strokeDasharray}
                     strokeDashoffset={seg.strokeDashoffset}
-                    strokeLinecap="round"
                     style={{ transition: "stroke-dashoffset 0.5s ease" }}
                   />
                 ))}
@@ -371,31 +329,40 @@ export default function StatsPanel({
                   pointerEvents: "none"
                 }}
               >
-                <span style={{ fontSize: "16px", fontWeight: "400", color: textMain }}>{totalFinds}</span>
-                <span style={{ fontSize: "8px", fontWeight: "400", color: textSub, textTransform: "uppercase" }}>Objets</span>
+                <span style={{ fontSize: "20px", color: textMain, lineHeight: "1.1" }}>{totalFinds}</span>
+                <span style={{ fontSize: "10px", color: textSub, marginTop: "2px" }}>objets</span>
               </div>
             </div>
 
-            {/* Legend pills */}
-            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px" }}>
+            {/* Clean Grid Legend */}
+            <div
+              style={{
+                width: "100%",
+                display: "grid",
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: "8px 16px",
+                borderTop: `1px solid ${dividerCol}`,
+                paddingTop: "14px"
+              }}
+            >
               {donutSegments.map((seg) => (
                 <div
                   key={seg.category}
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "4px",
-                    padding: "3px 8px",
-                    borderRadius: "10px",
-                    background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.06)",
-                    border: `1px solid ${cardBorder}`,
-                    fontSize: "10px",
-                    fontWeight: "400"
+                    justifyContent: "space-between",
+                    fontSize: "12.5px",
+                    color: textMain
                   }}
                 >
-                  <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: seg.color }} />
-                  <span>{categoryEmojis[seg.category] || ""} {seg.category}</span>
-                  <strong style={{ color: seg.color }}>({Math.round(seg.pct * 100)}%)</strong>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: seg.color, flexShrink: 0 }} />
+                    <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{seg.category}</span>
+                  </div>
+                  <span style={{ color: textSub, fontSize: "12px", flexShrink: 0 }}>
+                    {Math.round(seg.pct * 100)}%
+                  </span>
                 </div>
               ))}
             </div>
@@ -404,24 +371,24 @@ export default function StatsPanel({
 
         {/* 2. BAR CHART */}
         {chartType === "bar" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px", paddingTop: "4px" }}>
             {categoryData.map(([category, count], idx) => {
               const pct = Math.round((count / (totalFinds || 1)) * 100);
-              const barWidth = Math.max((count / maxCount) * 100, 8);
+              const barWidth = Math.max((count / maxCount) * 100, count > 0 ? 6 : 0);
               const color = getCategoryColor(category, idx);
 
               return (
                 <div key={category}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", fontWeight: "400", marginBottom: "3px" }}>
-                    <span>{categoryEmojis[category] || "🏷️"} {category}</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12.5px", marginBottom: "4px" }}>
+                    <span style={{ color: textMain }}>{category}</span>
                     <span style={{ color: textSub }}>{count} ({pct}%)</span>
                   </div>
-                  <div style={{ width: "100%", height: "8px", borderRadius: "4px", background: isLight ? "#e2e8f0" : "rgba(255,255,255,0.08)", overflow: "hidden" }}>
+                  <div style={{ width: "100%", height: "6px", borderRadius: "999px", background: dividerCol, overflow: "hidden" }}>
                     <div
                       style={{
                         width: `${barWidth}%`,
                         height: "100%",
-                        borderRadius: "4px",
+                        borderRadius: "999px",
                         background: color,
                         transition: "width 0.4s ease"
                       }}
@@ -433,21 +400,21 @@ export default function StatsPanel({
           </div>
         )}
 
-        {/* 3. RADAR / TOILE D'ARAIGNÉE */}
+        {/* 3. RADAR CHART */}
         {chartType === "radar" && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "4px" }}>
             {(() => {
               const topCategories = categoryData.slice(0, 6);
               if (topCategories.length < 3) {
                 return (
-                  <div style={{ textAlign: "center", padding: "16px", fontSize: "11px", color: textSub }}>
-                    Le radar nécessite au moins 3 catégories d'objets pour s'afficher.
+                  <div style={{ textAlign: "center", padding: "16px", fontSize: "12px", color: textSub }}>
+                    Au moins 3 catégories sont nécessaires pour afficher ce graphique.
                   </div>
                 );
               }
 
               const svgW = 310;
-              const svgH = 260;
+              const svgH = 250;
               const cx = svgW / 2;
               const cy = svgH / 2;
               const maxR = 72;
@@ -465,308 +432,175 @@ export default function StatsPanel({
                 .join(" ");
 
               return (
-                <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                  <div style={{ fontSize: "10.5px", color: textSub, opacity: 0.85, textAlign: "center", marginBottom: "4px" }}>
-                    Comparaison des 6 catégories principales (échelle de 0 à {maxCount})
-                  </div>
-                  <svg width="100%" height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ maxWidth: "320px", overflow: "visible" }}>
-                    {/* Concentric grid polygons with scale labels */}
-                    {[0.25, 0.5, 0.75, 1].map((scale, i) => {
-                      const gridPoints = topCategories
-                        .map((_, idx) => {
-                          const angle = (Math.PI * 2 / totalAxes) * idx - Math.PI / 2;
-                          return `${cx + Math.cos(angle) * maxR * scale},${cy + Math.sin(angle) * maxR * scale}`;
-                        })
-                        .join(" ");
-                      return (
-                        <polygon
-                          key={i}
-                          points={gridPoints}
-                          fill={i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent"}
-                          stroke={isLight ? "#cbd5e1" : "rgba(255,255,255,0.16)"}
-                          strokeWidth="1"
-                          strokeDasharray={i < 3 ? "2 2" : "none"}
-                        />
-                      );
-                    })}
+                <svg width="100%" height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ maxWidth: "320px", overflow: "visible" }}>
+                  {[0.25, 0.5, 0.75, 1].map((scale, i) => {
+                    const gridPoints = topCategories
+                      .map((_, idx) => {
+                        const angle = (Math.PI * 2 / totalAxes) * idx - Math.PI / 2;
+                        return `${cx + Math.cos(angle) * maxR * scale},${cy + Math.sin(angle) * maxR * scale}`;
+                      })
+                      .join(" ");
+                    return (
+                      <polygon
+                        key={i}
+                        points={gridPoints}
+                        fill="transparent"
+                        stroke={dividerCol}
+                        strokeWidth="1"
+                      />
+                    );
+                  })}
 
-                    {/* Axis rays and outer vertex labels */}
-                    {topCategories.map(([cat, count], idx) => {
-                      const angle = (Math.PI * 2 / totalAxes) * idx - Math.PI / 2;
-                      const x2 = cx + Math.cos(angle) * maxR;
-                      const y2 = cy + Math.sin(angle) * maxR;
-                      const labelR = maxR + 28;
-                      const lx = cx + Math.cos(angle) * labelR;
-                      const ly = cy + Math.sin(angle) * labelR;
-                      const pct = Math.round((count / (totalFinds || 1)) * 100);
+                  {topCategories.map(([cat, count], idx) => {
+                    const angle = (Math.PI * 2 / totalAxes) * idx - Math.PI / 2;
+                    const x2 = cx + Math.cos(angle) * maxR;
+                    const y2 = cy + Math.sin(angle) * maxR;
+                    const labelR = maxR + 26;
+                    const lx = cx + Math.cos(angle) * labelR;
+                    const ly = cy + Math.sin(angle) * labelR;
+                    const pct = Math.round((count / (totalFinds || 1)) * 100);
 
-                      return (
-                        <g key={cat}>
-                          <line
-                            x1={cx}
-                            y1={cy}
-                            x2={x2}
-                            y2={y2}
-                            stroke={isLight ? "#cbd5e1" : "rgba(255,255,255,0.2)"}
-                            strokeWidth="1"
-                          />
-                          <text
-                            x={lx}
-                            y={ly - 5}
-                            textAnchor="middle"
-                            dominantBaseline="central"
-                            fill={textMain}
-                            fontSize="10"
-                          >
-                            {categoryEmojis[cat] || ""} {cat}
-                          </text>
-                          <text
-                            x={lx}
-                            y={ly + 8}
-                            textAnchor="middle"
-                            dominantBaseline="central"
-                            fill={textSub}
-                            opacity="0.85"
-                            fontSize="9.5"
-                          >
-                            {count} obj. ({pct}%)
-                          </text>
-                        </g>
-                      );
-                    })}
+                    return (
+                      <g key={cat}>
+                        <line x1={cx} y1={cy} x2={x2} y2={y2} stroke={dividerCol} strokeWidth="1" />
+                        <text x={lx} y={ly - 5} textAnchor="middle" dominantBaseline="central" fill={textMain} fontSize="10.5">
+                          {cat}
+                        </text>
+                        <text x={lx} y={ly + 8} textAnchor="middle" dominantBaseline="central" fill={textSub} fontSize="9.5">
+                          {count} ({pct}%)
+                        </text>
+                      </g>
+                    );
+                  })}
 
-                    {/* Shaded radar area */}
-                    <polygon
-                      points={polygonPoints}
-                      fill="rgba(59, 130, 246, 0.28)"
-                      stroke="#3b82f6"
-                      strokeWidth="2"
-                    />
+                  <polygon
+                    points={polygonPoints}
+                    fill="rgba(44, 94, 76, 0.25)"
+                    stroke={accentMint}
+                    strokeWidth="1.8"
+                  />
 
-                    {/* Points nodes */}
-                    {topCategories.map(([_, count], idx) => {
-                      const [px, py] = getPoint(count, idx);
-                      return (
-                        <circle
-                          key={idx}
-                          cx={px}
-                          cy={py}
-                          r="4"
-                          fill="#ffffff"
-                          stroke="#2563eb"
-                          strokeWidth="2"
-                        />
-                      );
-                    })}
-                  </svg>
-                </div>
+                  {topCategories.map(([_, count], idx) => {
+                    const [px, py] = getPoint(count, idx);
+                    return (
+                      <circle key={idx} cx={px} cy={py} r="3.5" fill={accentMint} />
+                    );
+                  })}
+                </svg>
               );
             })()}
           </div>
         )}
       </div>
 
-      {/* SECTION ACCORDÉON DÉTAILLÉ DES CATÉGORIES ET SOUS-CATÉGORIES */}
-      <div
-        style={{
-          background: cardBg,
-          border: `1px solid ${cardBorder}`,
-          boxShadow: cardShadow,
-          borderRadius: "16px",
-          padding: "16px 14px",
-          marginBottom: "16px"
-        }}
-      >
-        <div style={{ textAlign: "center", marginBottom: "14px" }}>
-          <h3 style={{ margin: 0, fontSize: "13.5px", fontWeight: "400", textTransform: "uppercase", letterSpacing: "0.5px", color: isLight ? "#0f172a" : "#ffffff", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <span>📂</span> Détails par sous-catégories
-          </h3>
-          <p style={{ margin: "4px 0 10px 0", fontSize: "11px", color: textSub }}>
-            Touchez une catégorie pour déplier ou replier ses sous-catégories
-          </p>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            {(() => {
-              const allExpanded = categoryData.length > 0 && categoryData.every(([cat]) => !!expandedCats[cat]);
-              return (
-                <button
-                  type="button"
-                  onClick={() => toggleAllCategories(!allExpanded)}
-                  style={{
-                    padding: "6px 16px",
-                    borderRadius: "10px",
-                    border: `1px solid ${cardBorder}`,
-                    background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.08)",
-                    color: textMain,
-                    fontSize: "11px",
-                    fontWeight: "400",
-                    cursor: "pointer",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "6px",
-                    whiteSpace: "nowrap",
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
-                    transition: "all 0.15s ease"
-                  }}
-                >
-                  <span>{allExpanded ? "▲" : "▼"}</span>
-                  <span>{allExpanded ? "Replier tout" : "Déplier tout"}</span>
-                </button>
-              );
-            })()}
+      {/* SHEET 3: DÉTAILS PAR SOUS-CATÉGORIES (Forest Clean Rows) */}
+      <div style={sheetStyle}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "10px", borderBottom: `1px solid ${dividerCol}` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "15px", color: textMain }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+            </svg>
+            <span>Détails par sous-catégories</span>
           </div>
+
+          {(() => {
+            const allExpanded = categoryData.length > 0 && categoryData.every(([cat]) => !!expandedCats[cat]);
+            return (
+              <button
+                type="button"
+                onClick={() => toggleAllCategories(!allExpanded)}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  color: accentMint,
+                  fontSize: "12px",
+                  cursor: "pointer",
+                  padding: 0
+                }}
+              >
+                {allExpanded ? "Replier tout" : "Déplier tout"}
+              </button>
+            );
+          })()}
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <div style={{ display: "flex", flexDirection: "column" }}>
           {categoryData.map(([category, count], idx) => {
             const isExpanded = !!expandedCats[category];
             const color = getCategoryColor(category, idx);
             const pct = Math.round((count / (totalFinds || 1)) * 100);
+            const isLast = idx === categoryData.length - 1;
 
-            // Defined sub-categories for this family
             const definedSubCats = (customCategories && customCategories[category]) || defaultCategoriesWithSub[category] || [];
-
-            // Sub-category counts for this category from actual finds
             const subCatCounts = Object.entries(
               finds
                 .filter((f) => f.category === category && f.sub_category)
                 .reduce((acc, f) => {
                   const matchingSubCat =
-                    definedSubCats.find(
-                      (sub) => sub.toLowerCase() === f.sub_category.toLowerCase()
-                    ) || f.sub_category;
+                    definedSubCats.find((sub) => sub.toLowerCase() === f.sub_category.toLowerCase()) || f.sub_category;
                   acc[matchingSubCat] = (acc[matchingSubCat] || 0) + 1;
                   return acc;
                 }, {})
             ).sort((a, b) => b[1] - a[1]);
 
-            const subCatsCount = definedSubCats.length > 0 ? definedSubCats.length : subCatCounts.length;
-
             return (
-              <div
-                key={category}
-                style={{
-                  borderRadius: "12px",
-                  border: `1px solid ${cardBorder}`,
-                  background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.03)",
-                  overflow: "hidden",
-                  transition: "all 0.2s"
-                }}
-              >
-                {/* Category Accordion Header */}
+              <div key={category} style={{ borderBottom: isLast ? "none" : `1px solid ${dividerCol}` }}>
                 <div
                   onClick={() => toggleCategory(category)}
                   style={{
-                    padding: "10px 12px",
+                    padding: "13px 0",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    cursor: "pointer",
-                    userSelect: "none",
-                    background: isExpanded ? (isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.06)") : "transparent"
+                    cursor: "pointer"
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{ fontSize: "18px" }}>{categoryEmojis[category] || "🏷️"}</span>
-                    <div>
-                      <span style={{ fontWeight: "400", fontSize: "13px", color: textMain }}>
-                        {category}
-                      </span>
-                      <span style={{ marginLeft: "6px", fontSize: "11px", fontWeight: "400", color }}>
-                        {count} ({pct}%)
-                      </span>
-                    </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: color }} />
+                    <span style={{ fontSize: "14px", color: textMain }}>{category}</span>
                   </div>
 
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span
-                      style={{
-                        fontSize: "9px",
-                        fontWeight: "400",
-                        padding: "2px 6px",
-                        borderRadius: "6px",
-                        background: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.1)",
-                        color: textSub
-                      }}
-                    >
-                      {subCatsCount} sous-catégories
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <span style={{ fontSize: "13px", color: textSub }}>
+                      {count} ({pct}%)
                     </span>
-                    <span
-                      style={{
-                        fontSize: "12px",
-                        color: textSub,
-                        transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-                        transition: "transform 0.2s ease"
-                      }}
-                    >
-                      ▼
+                    <span style={{ fontSize: "14px", color: textSub, transform: isExpanded ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>
+                      ›
                     </span>
                   </div>
                 </div>
 
-                {/* Sub-categories expandable content */}
                 {isExpanded && (
-                  <div
-                    style={{
-                      padding: "10px 12px 12px 12px",
-                      borderTop: `1px solid ${cardBorder}`,
-                      background: subBg,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "6px"
-                    }}
-                  >
+                  <div style={{ padding: "0 0 12px 18px", display: "flex", flexDirection: "column", gap: "6px" }}>
                     {subCatCounts.length > 0 ? (
                       subCatCounts.map(([subCat, subCount]) => {
                         const subPct = Math.round((subCount / count) * 100);
-                        const subBarWidth = Math.max((subCount / count) * 100, 10);
-
                         return (
-                          <div key={subCat} style={{ padding: "4px 0" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", fontWeight: "400", marginBottom: "2px" }}>
-                              <span style={{ color: textMain }}>↳ {subCat}</span>
-                              <span style={{ color: textSub }}>{subCount} ({subPct}%)</span>
-                            </div>
-                            <div style={{ width: "100%", height: "5px", borderRadius: "3px", background: isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.1)", overflow: "hidden" }}>
-                              <div
-                                style={{
-                                  width: `${subBarWidth}%`,
-                                  height: "100%",
-                                  borderRadius: "3px",
-                                  background: color
-                                }}
-                              />
-                            </div>
+                          <div key={subCat} style={{ display: "flex", justifyContent: "space-between", fontSize: "12.5px", color: textSub }}>
+                            <span>{subCat}</span>
+                            <span>{subCount} ({subPct}%)</span>
                           </div>
                         );
                       })
                     ) : definedSubCats.length > 0 ? (
-                      <div>
-                        <div style={{ fontSize: "10.5px", color: textSub, marginBottom: "6px", fontStyle: "italic" }}>
-                          Sous-catégories disponibles (0 trouvaille enregistrée) :
-                        </div>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                          {definedSubCats.map((sub) => (
-                            <span
-                              key={sub}
-                              style={{
-                                fontSize: "10px",
-                                padding: "2px 7px",
-                                borderRadius: "6px",
-                                background: isLight ? "#ffffff" : "rgba(255,255,255,0.08)",
-                                color: textSub,
-                                border: `1px solid ${cardBorder}`
-                              }}
-                            >
-                              {sub}
-                            </span>
-                          ))}
-                        </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                        {definedSubCats.map((sub) => (
+                          <span
+                            key={sub}
+                            style={{
+                              fontSize: "11px",
+                              padding: "2px 8px",
+                              borderRadius: "6px",
+                              background: isLight ? "#f3f4f2" : "rgba(255,255,255,0.05)",
+                              color: textSub
+                            }}
+                          >
+                            {sub}
+                          </span>
+                        ))}
                       </div>
                     ) : (
-                      <div style={{ fontSize: "11px", color: textSub, fontStyle: "italic", padding: "4px 0" }}>
-                        Aucune sous-catégorie configurée pour cette famille.
-                      </div>
+                      <div style={{ fontSize: "12px", color: textSub }}>Aucune sous-catégorie</div>
                     )}
                   </div>
                 )}
@@ -776,217 +610,119 @@ export default function StatsPanel({
         </div>
       </div>
 
-      {/* SECTION JOURNAL DES SORTIES */}
-      <div
-        style={{
-          background: cardBg,
-          border: `1px solid ${cardBorder}`,
-          boxShadow: cardShadow,
-          borderRadius: "16px",
-          padding: "14px",
-          marginBottom: "16px"
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-          <h3 style={{ margin: 0, fontSize: "13px", fontWeight: "400", textTransform: "uppercase", letterSpacing: "0.5px", color: isLight ? "#0f172a" : "#ffffff" }}>
-            📅 Journal des sorties
-          </h3>
+      {/* SHEET 4: JOURNAL DES SORTIES */}
+      <div style={sheetStyle}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "10px", borderBottom: `1px solid ${dividerCol}` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "15px", color: textMain }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            <span>Journal des sorties</span>
+          </div>
+
           <button
+            type="button"
             onClick={() => setSelectedDate(null)}
             style={{
-              padding: "4px 8px",
-              borderRadius: "8px",
-              border: `1px solid ${cardBorder}`,
-              fontSize: "10px",
-              fontWeight: "400",
+              border: "none",
+              background: "transparent",
+              color: accentMint,
+              fontSize: "12px",
               cursor: "pointer",
-              background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
-              color: textMain
+              padding: 0
             }}
           >
-            ✕ Retirer filtre
+            Tout afficher
           </button>
         </div>
 
-        {allDates.length === 0 && (
-          <p style={{ color: textSub, fontSize: "12px", fontStyle: "italic" }}>
-            Aucune sortie ni trouvaille enregistrée
-          </p>
-        )}
+        {allDates.length === 0 ? (
+          <div style={{ padding: "16px 0", fontSize: "13px", color: textSub }}>
+            Aucune sortie enregistrée
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {allDates.map((dateStr, idx) => {
+              const dayFinds = findsByDate[dateStr] || [];
+              const dayTracks = tracksByDate[dateStr] || [];
+              const isLast = idx === allDates.length - 1;
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "250px", overflowY: "auto", paddingRight: "4px" }}>
-          {allDates.map((dateStr) => {
-            const dayFinds = findsByDate[dateStr] || [];
-            const dayTracks = tracksByDate[dateStr] || [];
+              return (
+                <div
+                  key={dateStr}
+                  onClick={() => setSelectedDate(dateStr)}
+                  style={{
+                    padding: "13px 0",
+                    borderBottom: isLast ? "none" : `1px solid ${dividerCol}`,
+                    cursor: "pointer"
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <span style={{ fontSize: "14px", color: textMain }}>{dateStr}</span>
+                      {dayFinds.length > 0 && (
+                        <span style={{ fontSize: "12px", color: accentMint }}>
+                          {dayFinds.length} trouvaille{dayFinds.length > 1 ? "s" : ""}
+                        </span>
+                      )}
+                    </div>
 
-            return (
-              <div
-                key={dateStr}
-                onClick={() => setSelectedDate(dateStr)}
-                style={{
-                  background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)",
-                  border: `1px solid ${cardBorder}`,
-                  borderRadius: "12px",
-                  padding: "10px",
-                  fontSize: "12px",
-                  cursor: "pointer",
-                  transition: "0.2s"
-                }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
-                  <div style={{ fontWeight: "400", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-                    <span style={{ color: textMain }}>📅 {dateStr}</span>
-                    {dayFinds.length > 0 && (
-                      <span style={{ color: isLight ? "#000000" : "#facc15", fontWeight: "400"}}>
-                        🪙 {dayFinds.length} trouvaille{dayFinds.length > 1 ? "s" : ""}
-                      </span>
+                    {(onDeleteTrack || onDeleteFind) && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setConfirmSortieToDelete({ dateStr, dayFinds, dayTracks });
+                        }}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          color: textSub,
+                          fontSize: "12px",
+                          cursor: "pointer",
+                          padding: "2px 6px"
+                        }}
+                      >
+                        Supprimer
+                      </button>
                     )}
                   </div>
 
-                  {(onDeleteTrack || onDeleteFind) && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setConfirmSortieToDelete({ dateStr, dayFinds, dayTracks });
-                      }}
-                      title="Supprimer cette sortie"
-                      style={{
-                        background: "rgba(239, 68, 68, 0.15)",
-                        border: "1px solid rgba(239, 68, 68, 0.35)",
-                        color: "#ef4444",
-                        borderRadius: "6px",
-                        padding: "2px 6px",
-                        fontSize: "11px",
-                        fontWeight: "400",
-                        cursor: "pointer",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "3px"
-                      }}
-                    >
-                      <span>🗑️</span>
-                      <span style={{ fontSize: "10px" }}>Supprimer</span>
-                    </button>
+                  {dayTracks.length > 0 && (
+                    <div style={{ marginTop: "6px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                      {dayTracks.map((t, i) => (
+                        <div key={t.id || i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12.5px", color: textSub }}>
+                          <span>{t.session_name || `Parcours ${i + 1}`}</span>
+                          <span>{getDistanceOfTrack(t.positions).toFixed(2)} km</span>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
-
-                {dayTracks.length > 0 ? (
-                  <div style={{ color: textSub, fontSize: "11px", display: "flex", flexDirection: "column", gap: "3px", borderTop: `1px solid ${cardBorder}`, paddingTop: "4px", marginTop: "4px" }}>
-                    {dayTracks.map((t, i) => (
-                      <div key={t.id || i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "6px" }}>
-                        <span style={{ display: "flex", alignItems: "center", gap: "4px", minWidth: 0, overflow: "hidden" }}>
-                          <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                            🚶 {t.session_name || `Parcours ${i + 1}`}
-                          </span>
-                          {t.session_code && (
-                            <span style={{ fontSize: "9px", background: "rgba(16, 185, 129, 0.2)", color: "#10b981", padding: "1px 5px", borderRadius: "4px", fontWeight: "400", flexShrink: 0 }}>
-                              👥 Équipe
-                            </span>
-                          )}
-                        </span>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
-                          <span>📏 <strong>{getDistanceOfTrack(t.positions).toFixed(2)}</strong> km</span>
-                          {onDeleteTrack && (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setConfirmTrackToDelete(t);
-                              }}
-                              title="Supprimer cette sortie"
-                              style={{
-                                background: "rgba(239, 68, 68, 0.15)",
-                                border: "1px solid rgba(239, 68, 68, 0.35)",
-                                color: "#f87171",
-                                borderRadius: "6px",
-                                padding: "2px 5px",
-                                fontSize: "11px",
-                                cursor: "pointer",
-                                display: "inline-flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                lineHeight: "1"
-                              }}
-                            >
-                              🗑️
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  dayFinds.length > 0 && (
-                    <div style={{ color: textSub, fontSize: "10px", fontStyle: "italic", marginTop: "2px" }}>
-                      Pas de tracé GPS enregistré
-                    </div>
-                  )
-                )}
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      {/* EXPORT / IMPORT ACTIONS */}
-      <div style={{ display: "flex", gap: "8px" }}>
-        <button
-          onClick={exportData}
-          style={{
-            flex: 1,
-            padding: "10px",
-            borderRadius: "12px",
-            fontSize: "12px",
-            fontWeight: "400",
-            cursor: "pointer",
-            background: isLight ? "#ffffff" : "rgba(255,255,255,0.08)",
-            border: `1px solid ${cardBorder}`,
-            boxShadow: cardShadow,
-            color: textMain
-          }}
-        >
-          📤 Exporter (Sauvegarde)
-        </button>
-
-        <button
-          onClick={importData}
-          style={{
-            flex: 1,
-            padding: "10px",
-            borderRadius: "12px",
-            fontSize: "12px",
-            fontWeight: "400",
-            cursor: "pointer",
-            background: isLight ? "#ffffff" : "rgba(255,255,255,0.08)",
-            border: `1px solid ${cardBorder}`,
-            boxShadow: cardShadow,
-            color: textMain
-          }}
-        >
-          📥 Importer (Restauration)
-        </button>
-      </div>
-
-      {/* CONFIRM DELETE TRACK MODAL */}
       {confirmTrackToDelete && (
         <ConfirmModal
-          message={`Voulez-vous vraiment supprimer définitivement la sortie "${confirmTrackToDelete.session_name || "cette sortie"}" du journal ?`}
+          message={`Voulez-vous vraiment supprimer la sortie "${confirmTrackToDelete.session_name || "cette sortie"}" du journal ?`}
           onConfirm={async () => {
             const trackId = confirmTrackToDelete.id;
             setConfirmTrackToDelete(null);
-            if (onDeleteTrack) {
-              await onDeleteTrack(trackId);
-            }
+            if (onDeleteTrack) await onDeleteTrack(trackId);
           }}
           onCancel={() => setConfirmTrackToDelete(null)}
         />
       )}
 
-      {/* CONFIRM DELETE ENTIRE SORTIE MODAL */}
       {confirmSortieToDelete && (
         <ConfirmModal
-          message={`Voulez-vous vraiment supprimer définitivement la sortie du ${confirmSortieToDelete.dateStr} ${confirmSortieToDelete.dayFinds.length > 0 ? `(avec ses ${confirmSortieToDelete.dayFinds.length} trouvaille(s))` : ""}${confirmSortieToDelete.dayTracks.length > 0 ? ` ${confirmSortieToDelete.dayFinds.length > 0 ? "et" : "avec"} son tracé GPS` : ""} ?`}
+          message={`Voulez-vous vraiment supprimer la sortie du ${confirmSortieToDelete.dateStr} ?`}
           onConfirm={async () => {
             const { dayFinds = [], dayTracks = [] } = confirmSortieToDelete;
             setConfirmSortieToDelete(null);

@@ -68,15 +68,13 @@ export default function BottomNav({
         left: 0,
         right: 0,
         zIndex: 6500,
-        background: "rgba(11, 19, 41, 0.88)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderTop: "1px solid rgba(255, 255, 255, 0.12)",
+        background: "#0d1f18",
+        borderTop: "1px solid rgba(255, 255, 255, 0.08)",
         display: "flex",
         justifyContent: "space-around",
         alignItems: "center",
-        padding: "6px 12px env(safe-area-inset-bottom, 8px) 12px",
-        boxShadow: "0 -4px 24px rgba(0, 0, 0, 0.5)",
+        padding: "8px 12px env(safe-area-inset-bottom, 10px) 12px",
+        boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.35)",
         userSelect: "none"
       }}
     >
@@ -85,6 +83,7 @@ export default function BottomNav({
         return (
           <button
             key={tab.id}
+            type="button"
             data-tab={tab.id}
             onClick={() => {
               if (activeTab === tab.id && tab.id !== "map") {
@@ -99,21 +98,24 @@ export default function BottomNav({
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              gap: "2px",
-              padding: "6px 2px",
+              gap: "3px",
+              padding: "4px 2px",
               border: "none",
-              background: isActive ? "rgba(56, 189, 248, 0.14)" : "transparent",
-              borderRadius: "14px",
+              background: "transparent",
               cursor: "pointer",
-              transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-              color: isActive ? "#38bdf8" : "#94a3b8"
+              transition: "all 0.2s ease",
+              color: isActive ? "#ffffff" : "rgba(255, 255, 255, 0.5)"
             }}
           >
             <span
               style={{
-                fontSize: "19px",
-                transform: isActive ? "scale(1.12)" : "scale(1)",
-                transition: "transform 0.2s ease"
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "3px 14px",
+                borderRadius: "999px",
+                background: isActive ? "rgba(44, 94, 76, 0.55)" : "transparent",
+                transition: "all 0.2s ease"
               }}
             >
               {tab.icon}
@@ -123,8 +125,7 @@ export default function BottomNav({
                 fontSize: "11px",
                 fontWeight: "400",
                 letterSpacing: "0.2px",
-                color: "#ffffff",
-                opacity: isActive ? 1 : 0.8
+                color: isActive ? "#ffffff" : "rgba(255, 255, 255, 0.55)"
               }}
             >
               {tab.label}

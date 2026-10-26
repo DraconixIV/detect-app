@@ -101,31 +101,30 @@ export default function MapFloatingControls({
 
       {/* 3. ZEN MODE / FULLSCREEN TOGGLE (Always visible) */}
       <button
+        type="button"
         onClick={() => setZenMode(!zenMode)}
         style={{
           width: "44px",
           height: "44px",
           borderRadius: "50%",
-          border: `1.5px solid ${zenMode ? "#38bdf8" : "rgba(255, 255, 255, 0.18)"}`,
-          background: zenMode ? "rgba(14, 165, 233, 0.9)" : "rgba(11, 19, 41, 0.82)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
+          border: "1.5px solid rgba(255, 255, 255, 0.18)",
+          background: "#0d1f18",
           color: "#ffffff",
           cursor: "pointer",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          boxShadow: zenMode ? "0 4px 20px rgba(56, 189, 248, 0.5)" : "0 4px 16px rgba(0, 0, 0, 0.45)",
-          transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
+          boxShadow: "0 4px 16px rgba(0, 0, 0, 0.4)",
+          transition: "all 0.2s ease"
         }}
         title={zenMode ? "Quitter le mode plein écran" : "Mode plein écran (masquer l'interface)"}
       >
         {zenMode ? (
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
           </svg>
         ) : (
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
           </svg>
         )}
@@ -136,27 +135,26 @@ export default function MapFloatingControls({
         <>
           {/* 2. MAP LAYERS & CADASTRE / CASSINI MODAL TRIGGER */}
           <button
+            type="button"
             onClick={onOpenMapLayers}
             style={{
               width: "44px",
               height: "44px",
               borderRadius: "50%",
-              border: `1.5px solid ${activeLayersCount > 0 ? "#f59e0b" : "rgba(255, 255, 255, 0.18)"}`,
-              background: activeLayersCount > 0 ? "rgba(245, 158, 11, 0.25)" : "rgba(11, 19, 41, 0.82)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
-              color: activeLayersCount > 0 ? "#fbbf24" : "#ffffff",
+              border: "1.5px solid rgba(255, 255, 255, 0.18)",
+              background: "#0d1f18",
+              color: "#ffffff",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.45)",
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.4)",
               position: "relative",
-              transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
+              transition: "all 0.2s ease"
             }}
             title="Couches cartographiques et cadastre"
           >
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="12 2 2 7 12 12 22 7 12 2" />
               <polyline points="2 17 12 22 22 17" />
               <polyline points="2 12 12 17 22 12" />
@@ -170,8 +168,8 @@ export default function MapFloatingControls({
                   width: "16px",
                   height: "16px",
                   borderRadius: "50%",
-                  background: "#f59e0b",
-                  color: "#000000",
+                  background: "#e9edc9",
+                  color: "#0d1f18",
                   fontSize: "10px",
                   fontWeight: "400",
                   display: "flex",
@@ -196,16 +194,14 @@ export default function MapFloatingControls({
               height: "44px",
               borderRadius: "50%",
               border: "1.5px solid rgba(255, 255, 255, 0.18)",
-              background: "rgba(11, 19, 41, 0.82)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
+              background: "#0d1f18",
               color: "#ffffff",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.45)",
-              transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.4)",
+              transition: "all 0.2s ease"
             }}
             title={
               isLocatingGps
@@ -215,7 +211,7 @@ export default function MapFloatingControls({
                     : "Recentrer sur ma position GPS exacte")
             }
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="7" />
               <circle cx="12" cy="12" r="2" fill="currentColor" />
               <line x1="12" y1="2" x2="12" y2="5" />
@@ -227,13 +223,14 @@ export default function MapFloatingControls({
 
           {/* 4. QUICK ADD FIND FLOATING ACTION BUTTON */}
           <button
+            type="button"
             onClick={onAddFindClick}
             style={{
               width: "52px",
               height: "52px",
               borderRadius: "50%",
-              border: "2px solid rgba(255, 255, 255, 0.4)",
-              background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+              border: "1.5px solid rgba(255, 255, 255, 0.3)",
+              background: "#2c5e4c",
               color: "#ffffff",
               fontSize: "24px",
               fontWeight: "400",
@@ -241,9 +238,9 @@ export default function MapFloatingControls({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 6px 22px rgba(37, 99, 235, 0.6), 0 0 0 1px rgba(255,255,255,0.2) inset",
+              boxShadow: "0 6px 20px rgba(13, 31, 24, 0.55)",
               marginTop: "4px",
-              transition: "transform 0.15s cubic-bezier(0.16, 1, 0.3, 1)"
+              transition: "transform 0.15s ease"
             }}
             onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.92)")}
             onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}

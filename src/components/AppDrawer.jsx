@@ -20,26 +20,81 @@ export default function AppDrawer({
 }) {
   if (!isOpen) return null;
 
-  const isLight = theme === "light";
-  const bgDrawer = isLight ? "#ffffff" : "#0a0f1d";
-  const textMain = isLight ? "#0f172a" : "#ffffff";
-  const textSub = isLight ? "#64748b" : "#94a3b8";
-  const borderColor = isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.12)";
-  const itemBg = isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)";
-  const itemBorder = isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.08)";
-
   const myName = getMyDisplayName() || (user ? user.email?.split("@")[0] : "Prospecteur");
-
   const newsBadgeCount = unreadUpdatesCount > 0 ? unreadUpdatesCount : (hasUnreadNews ? 1 : 0);
 
   const menuItems = [
     {
-      id: "news",
-      label: "Mises à jour",
+      id: "map",
+      label: "Carte",
       icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+          <line x1="9" y1="3" x2="9" y2="18" />
+          <line x1="15" y1="6" x2="15" y2="21" />
+        </svg>
+      ),
+      action: () => {
+        onClose();
+        if (onNavigate) onNavigate("map");
+      }
+    },
+    {
+      id: "gallery",
+      label: "Album de collection",
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <polyline points="21 15 16 10 5 21" />
+        </svg>
+      ),
+      action: () => {
+        onClose();
+        if (onNavigate) onNavigate("gallery");
+      }
+    },
+    {
+      id: "reports",
+      label: "Chronologie & Statistiques",
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="8" y1="6" x2="21" y2="6" />
+          <line x1="8" y1="12" x2="21" y2="12" />
+          <line x1="8" y1="18" x2="21" y2="18" />
+          <line x1="3" y1="6" x2="3.01" y2="6" />
+          <line x1="3" y1="12" x2="3.01" y2="12" />
+          <line x1="3" y1="18" x2="3.01" y2="18" />
+        </svg>
+      ),
+      action: () => {
+        onClose();
+        if (onNavigate) onNavigate("reports");
+      }
+    },
+    {
+      id: "features",
+      label: "Guide d'exploration",
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+        </svg>
+      ),
+      action: () => {
+        onClose();
+        if (onOpenFeaturesGuide) onOpenFeaturesGuide();
+      }
+    },
+    {
+      id: "news",
+      label: "Actualités",
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
+          <path d="M18 14h-8" />
+          <path d="M15 18h-5" />
+          <path d="M10 6h8v4h-8V6Z" />
         </svg>
       ),
       hasBadge: newsBadgeCount > 0,
@@ -53,7 +108,7 @@ export default function AppDrawer({
       id: "feedback",
       label: "Formulaire de retour",
       icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
       ),
@@ -63,24 +118,23 @@ export default function AppDrawer({
       }
     },
     {
-      id: "features",
-      label: "Guide des fonctionnalités",
+      id: "cgu",
+      label: "Cadre légal",
       icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
         </svg>
       ),
       action: () => {
         onClose();
-        if (onOpenFeaturesGuide) onOpenFeaturesGuide();
+        if (onOpenCgu) onOpenCgu();
       }
     },
     {
       id: "about",
-      label: "À propos de GeoProspect",
+      label: "À propos",
       icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10" />
           <line x1="12" y1="16" x2="12" y2="12" />
           <line x1="12" y1="8" x2="12.01" y2="8" />
@@ -92,23 +146,10 @@ export default function AppDrawer({
       }
     },
     {
-      id: "cgu",
-      label: "Conditions d'utilisation (CGU)",
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        </svg>
-      ),
-      action: () => {
-        onClose();
-        if (onOpenCgu) onOpenCgu();
-      }
-    },
-    {
       id: "settings",
       label: "Paramètres",
       icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="3" />
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
         </svg>
@@ -126,131 +167,105 @@ export default function AppDrawer({
         position: "fixed",
         inset: 0,
         zIndex: 9500,
-        background: "rgba(0, 0, 0, 0.65)",
-        backdropFilter: "blur(6px)",
-        WebkitBackdropFilter: "blur(6px)",
+        background: "rgba(12, 24, 19, 0.55)",
+        backdropFilter: "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
         display: "flex"
       }}
       onClick={onClose}
     >
       <div
         style={{
-          width: "82%",
-          maxWidth: "310px",
+          width: "68%",
+          maxWidth: "280px",
           height: "100%",
-          background: bgDrawer,
-          borderRight: `1px solid ${borderColor}`,
+          background: "#0d1f18",
           display: "flex",
           flexDirection: "column",
-          boxShadow: isLight ? "10px 0 30px rgba(0,0,0,0.1)" : "10px 0 40px rgba(0,0,0,0.6)",
-          overflowY: "auto"
+          justifyContent: "space-between",
+          padding: "48px 24px 28px 24px",
+          boxSizing: "border-box",
+          overflowY: "auto",
+          boxShadow: "12px 0 36px rgba(0, 0, 0, 0.45)"
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* En-tête Utilisateur (Monochrome Noir/Blanc) */}
+        {/* Top Centered Emblem (Forest Style) */}
         <div
           style={{
-            padding: "20px 16px 16px 16px",
-            borderBottom: `1px solid ${borderColor}`,
-            background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.02)",
             display: "flex",
             flexDirection: "column",
-            gap: "10px"
+            alignItems: "center",
+            gap: "10px",
+            marginBottom: "28px",
+            cursor: "pointer"
+          }}
+          onClick={() => {
+            onClose();
+            if (onNavigate) onNavigate("settings");
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <div
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "10px",
-                  background: "#ebe3d3",
-                  border: `1px solid ${borderColor}`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  overflow: "hidden",
-                  flexShrink: 0
-                }}
-              >
-                <img
-                  src="/icon-192.png"
-                  alt="GeoProspect"
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              </div>
-              <div>
-                <div style={{ fontSize: "14px", fontWeight: "400", color: textMain }}>
-                  {myName}
-                </div>
-                <div style={{ fontSize: "11px", color: textSub, display: "flex", alignItems: "center", gap: "4px" }}>
-                  <span
-                    style={{
-                      width: "6px",
-                      height: "6px",
-                      borderRadius: "50%",
-                      background: isOnline ? "#10b981" : "#f59e0b"
-                    }}
-                  />
-                  <span>{isOnline ? "En ligne" : "Hors-ligne"}</span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={onClose}
-              style={{
-                background: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.08)",
-                border: "none",
-                borderRadius: "50%",
-                width: "28px",
-                height: "28px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: textMain,
-                fontSize: "12px",
-                cursor: "pointer"
-              }}
-            >
-              ✕
-            </button>
+          <div
+            style={{
+              width: "56px",
+              height: "56px",
+              borderRadius: "50%",
+              background: "#ebe3d3",
+              border: "2px solid rgba(255, 255, 255, 0.2)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+              boxShadow: "0 6px 18px rgba(0, 0, 0, 0.35)"
+            }}
+          >
+            <img
+              src="/icon-192.png"
+              alt="GeoProspect"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
           </div>
 
-          {/* Badge Sortie active */}
+          <div
+            style={{
+              fontSize: "13px",
+              color: "#ffffff",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              opacity: 0.95
+            }}
+          >
+            <span>{myName}</span>
+            <span style={{ fontSize: "14px", opacity: 0.7 }}>›</span>
+          </div>
+
           {isRecordingSortie && (
             <div
               style={{
-                padding: "6px 10px",
-                borderRadius: "10px",
-                background: "rgba(239, 68, 68, 0.12)",
-                border: "1px solid rgba(239, 68, 68, 0.3)",
-                color: "#ef4444",
-                fontSize: "11px",
-                fontWeight: "400",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px"
+                padding: "3px 10px",
+                borderRadius: "999px",
+                background: "#e9edc9",
+                color: "#1b4332",
+                fontSize: "10px",
+                letterSpacing: "0.4px"
               }}
             >
-              <span
-                style={{
-                  width: "7px",
-                  height: "7px",
-                  borderRadius: "50%",
-                  background: "#ef4444",
-                  flexShrink: 0
-                }}
-              />
-              <span>Sortie en cours</span>
+              SORTIE EN COURS
             </div>
           )}
         </div>
 
-        {/* Liste des options */}
-        <div style={{ padding: "14px 12px", display: "flex", flexDirection: "column", gap: "8px", flex: 1 }}>
+        {/* Clean Borderless Menu List (Forest Style) */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "22px",
+            flex: 1,
+            paddingLeft: "4px"
+          }}
+        >
           {menuItems.map((item) => (
             <button
               key={item.id}
@@ -258,88 +273,88 @@ export default function AppDrawer({
               onClick={item.action}
               style={{
                 width: "100%",
-                padding: "12px 14px",
-                borderRadius: "14px",
-                border: `1px solid ${itemBorder}`,
-                background: itemBg,
-                color: textMain,
+                padding: 0,
+                border: "none",
+                background: "transparent",
+                color: "#ffffff",
                 display: "flex",
                 alignItems: "center",
-                gap: "12px",
-                fontSize: "13px",
+                gap: "18px",
+                fontSize: "15px",
                 fontWeight: "400",
                 cursor: "pointer",
-                textAlign: "left",
-                position: "relative",
-                transition: "all 0.15s ease"
+                textAlign: "left"
               }}
             >
-              <span style={{ display: "flex", alignItems: "center", justifyContent: "center", color: textSub, flexShrink: 0 }}>
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#ffffff",
+                  opacity: 0.92,
+                  flexShrink: 0
+                }}
+              >
                 {item.icon}
               </span>
-              <span style={{ flex: 1 }}>{item.label}</span>
 
-              {/* Red notification badge '1' */}
-              {item.hasBadge && (
-                <span
-                  style={{
-                    background: "#ef4444",
-                    color: "#ffffff",
-                    fontSize: "11.5px",
-                    fontWeight: "400",
-                    minWidth: "20px",
-                    height: "20px",
-                    padding: "0 5px",
-                    borderRadius: "10px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    boxShadow: "0 0 10px rgba(239, 68, 68, 0.8)",
-                    border: "1.5px solid #ffffff",
-                    flexShrink: 0
-                  }}
-                >
-                  {item.badgeCount || 1}
-                </span>
-              )}
-
-              <span style={{ fontSize: "13px", color: textSub }}>›</span>
+              <div style={{ display: "flex", flexDirection: "column", gap: "3px", flex: 1 }}>
+                {item.hasBadge && (
+                  <span
+                    style={{
+                      alignSelf: "flex-start",
+                      background: "#e9edc9",
+                      color: "#1b4332",
+                      fontSize: "9.5px",
+                      padding: "1px 7px",
+                      borderRadius: "999px",
+                      letterSpacing: "0.4px"
+                    }}
+                  >
+                    NOUVEAU
+                  </span>
+                )}
+                <span style={{ lineHeight: "1.25", opacity: 0.95 }}>{item.label}</span>
+              </div>
             </button>
           ))}
         </div>
 
-        {/* Pied de page */}
+        {/* Bottom Brand Signature (Forest "Seekrtech" Style) */}
         <div
           style={{
-            padding: "12px 16px",
-            borderTop: `1px solid ${borderColor}`,
-            background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.02)",
+            marginTop: "32px",
+            paddingTop: "16px",
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between"
+            gap: "10px",
+            opacity: 0.88
           }}
         >
-          <div style={{ fontSize: "11px", color: textSub, fontWeight: "400"}}>
-            GeoProspect • v{CURRENT_APP_VERSION}
+          <div
+            style={{
+              width: "22px",
+              height: "22px",
+              borderRadius: "50%",
+              background: "#ffffff",
+              color: "#0d1f18",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="9" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
           </div>
-          <div style={{ display: "flex", gap: "6px" }}>
-            <a
-              href="https://ko-fi.com/geoprospect"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontSize: "11px",
-                textDecoration: "none",
-                padding: "4px 8px",
-                borderRadius: "8px",
-                background: isLight ? "#e2e8f0" : "rgba(255,255,255,0.08)",
-                color: textMain,
-                fontWeight: "400"
-              }}
-            >
-              Soutenir
-            </a>
-          </div>
+          <span style={{ fontSize: "14px", color: "#ffffff", letterSpacing: "0.5px" }}>
+            GeoProspect
+          </span>
+          <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)", marginLeft: "auto" }}>
+            v{CURRENT_APP_VERSION}
+          </span>
         </div>
       </div>
     </div>

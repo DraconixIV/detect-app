@@ -137,12 +137,12 @@ export default function MapLayersModal({
           width: '100%',
           maxWidth: '520px',
           maxHeight: '88vh',
-          background: c.bgPrimary || '#111827',
-          border: `1px solid ${c.border || 'rgba(255, 255, 255, 0.15)'}`,
+          background: '#111915',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
           borderRadius: '24px',
           padding: '22px',
           boxShadow: '0 25px 50px rgba(0, 0, 0, 0.8)',
-          color: c.textPrimary || '#ffffff',
+          color: '#f1f5f2',
           boxSizing: 'border-box',
           display: 'flex',
           flexDirection: 'column',
@@ -157,7 +157,7 @@ export default function MapLayersModal({
             justifyContent: 'space-between',
             alignItems: 'flex-start',
             marginBottom: '16px',
-            borderBottom: `1px solid ${c.border || 'rgba(255,255,255,0.1)'}`,
+            borderBottom: '1px solid rgba(255,255,255,0.08)',
             paddingBottom: '12px'
           }}
         >
@@ -170,16 +170,16 @@ export default function MapLayersModal({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: c.textPrimary || '#ffffff'
+                color: '#f1f5f2'
               }}
             >
-              <span>🗺️</span> Cartes et surcouches IGN
+              Cartes et surcouches IGN
             </h3>
             <p
               style={{
                 margin: '4px 0 0 0',
                 fontSize: '12px',
-                color: c.textSecondary || '#9ca3af',
+                color: '#9aa8a0',
                 lineHeight: '1.4'
               }}
             >
@@ -541,18 +541,18 @@ export default function MapLayersModal({
         </div>
 
         {/* Modal Footer */}
-        <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: `1px solid ${c.border || 'rgba(255,255,255,0.1)'}`, display: 'flex', justifyContent: 'center' }}>
+        <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'center' }}>
           <button
             type="button"
             onClick={handleApply}
             style={{
               width: '100%',
-              padding: '11px 20px',
+              padding: '12px 20px',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.25)',
-              background: 'rgba(255, 255, 255, 0.14)',
+              border: 'none',
+              background: '#2c5e4c',
               color: '#ffffff',
-              fontSize: '13px',
+              fontSize: '13.5px',
               fontWeight: "400",
               cursor: 'pointer'
             }}
