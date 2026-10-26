@@ -391,7 +391,12 @@ export default function AlbumPanel({
 
       // Photo match
       const photoUrl = getFindPhotoUrl(f);
-      return !!photoUrl;
+      if (!photoUrl) return false;
+
+      // Favorites filter when "fav" is selected
+      if (albumSort === "fav" && !f.favorite) return false;
+
+      return true;
     });
 
     // 2. Filter by search term

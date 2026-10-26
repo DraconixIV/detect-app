@@ -365,28 +365,14 @@ export default function StatsPanel({
                   position: "absolute",
                   inset: 0,
                   display: "flex",
+                  flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
                   pointerEvents: "none"
                 }}
               >
-                <div
-                  style={{
-                    width: "66px",
-                    height: "66px",
-                    borderRadius: "50%",
-                    background: "#f8fafc",
-                    border: "1px solid rgba(255, 255, 255, 0.25)",
-                    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.35)",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}
-                >
-                  <span style={{ fontSize: "16px", fontWeight: "400", color: "#000000", lineHeight: "1.1" }}>{totalFinds}</span>
-                  <span style={{ fontSize: "7.5px", fontWeight: "400", color: "#000000", opacity: 0.75, textTransform: "uppercase", marginTop: "1px" }}>Objets</span>
-                </div>
+                <span style={{ fontSize: "16px", fontWeight: "400", color: textMain }}>{totalFinds}</span>
+                <span style={{ fontSize: "8px", fontWeight: "400", color: textSub, textTransform: "uppercase" }}>Objets</span>
               </div>
             </div>
 
