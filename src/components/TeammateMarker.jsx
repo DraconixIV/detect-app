@@ -56,7 +56,7 @@ export default function TeammateMarker({ teammate, myPosition }) {
             border-radius: 12px;
             padding: 3px 8px;
             font-size: 11px;
-            font-weight: 800;
+            font-weight: 400;
             white-space: nowrap;
             box-shadow: 0 4px 14px rgba(0,0,0,0.6);
             font-family: system-ui, -apple-system, sans-serif;
@@ -102,7 +102,7 @@ export default function TeammateMarker({ teammate, myPosition }) {
     <Marker position={position} icon={customIcon}>
       <Popup className="gps-popup" autoPan={false}>
         <div style={{ padding: "4px 2px", textAlign: "left", fontFamily: "system-ui, sans-serif" }}>
-          <div style={{ fontSize: "13px", fontWeight: "800", color: "#10b981", display: "flex", alignItems: "center", gap: "6px" }}>
+          <div style={{ fontSize: "13px", fontWeight: "400", color: "#10b981", display: "flex", alignItems: "center", gap: "6px" }}>
             <span>🟢</span>
             <span>{userName || "Coéquipier"}</span>
           </div>
@@ -110,7 +110,7 @@ export default function TeammateMarker({ teammate, myPosition }) {
             Code : {userCode}
           </div>
           {distanceText && (
-            <div style={{ fontSize: "11px", color: "#e2e8f0", marginTop: "6px", fontWeight: "600" }}>
+            <div style={{ fontSize: "11px", color: "#e2e8f0", marginTop: "6px", fontWeight: "400"}}>
               📍 À {distanceText} de vous
             </div>
           )}

@@ -166,7 +166,7 @@ export default function MapLayersModal({
               style={{
                 margin: 0,
                 fontSize: '18px',
-                fontWeight: '900',
+                fontWeight: "400",
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
@@ -198,7 +198,7 @@ export default function MapLayersModal({
               height: '32px',
               color: 'white',
               fontSize: '14px',
-              fontWeight: 'bold',
+              fontWeight: "400",
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -224,14 +224,12 @@ export default function MapLayersModal({
             <div
               style={{
                 fontSize: '12px',
-                fontWeight: '800',
+                fontWeight: "400",
                 textTransform: 'uppercase',
                 letterSpacing: '0.6px',
                 color: '#ffffff',
-                marginBottom: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
+                marginBottom: '10px',
+                textAlign: 'center'
               }}
             >
               Fond de carte principal (1 au choix)
@@ -240,57 +238,68 @@ export default function MapLayersModal({
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                gap: '8px'
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '10px'
               }}
             >
-              {baseMapList.map((bm) => {
+              {baseMapList.map((bm, idx) => {
                 const isSelected = (draftBaseMap === bm.id) || (!draftBaseMap && bm.id === 'satellite');
+                const isLastOdd = (idx === baseMapList.length - 1) && (baseMapList.length % 2 === 1);
                 return (
                   <button
                     key={bm.id}
+                    type="button"
                     onClick={() => {
                       setDraftBaseMap(bm.id);
                     }}
                     style={{
-                      padding: '10px 12px',
+                      gridColumn: isLastOdd ? '1 / -1' : undefined,
+                      maxWidth: isLastOdd ? '220px' : undefined,
+                      width: '100%',
+                      margin: isLastOdd ? '0 auto' : undefined,
+                      minHeight: '86px',
+                      padding: '12px 10px',
                       borderRadius: '14px',
                       border: isSelected
-                        ? `2px solid ${c.accent || '#ef4444'}`
+                        ? '1.5px solid rgba(255, 255, 255, 0.45)'
                         : `1px solid ${c.border || 'rgba(255,255,255,0.1)'}`,
                       background: isSelected
-                        ? `${c.accent || '#ef4444'}20`
+                        ? 'rgba(255, 255, 255, 0.1)'
                         : (c.bgCard || 'rgba(255,255,255,0.04)'),
                       color: '#ffffff',
                       cursor: 'pointer',
-                      textAlign: 'left',
+                      textAlign: 'center',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '3px',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px',
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <div style={{ fontSize: '12px', fontWeight: '800', color: '#ffffff' }}>{bm.name}</div>
-                      {isSelected && (
-                        <span
-                          style={{
-                            fontSize: '9px',
-                            fontWeight: '900',
-                            background: c.accent || '#ef4444',
-                            color: '#ffffff',
-                            padding: '2px 5px',
-                            borderRadius: '6px',
-                            textTransform: 'uppercase'
-                          }}
-                        >
-                          Actif
-                        </span>
-                      )}
+                    <div style={{ fontSize: '12px', fontWeight: "400", color: '#ffffff', lineHeight: '1.25' }}>
+                      {bm.name}
                     </div>
-                    <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, lineHeight: '1.2', marginTop: '2px' }}>
+                    <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.78, lineHeight: '1.25' }}>
                       {bm.desc}
                     </div>
+                    {isSelected && (
+                      <span
+                        style={{
+                          fontSize: '8.5px',
+                          fontWeight: "400",
+                          background: 'rgba(255, 255, 255, 0.16)',
+                          border: '1px solid rgba(255, 255, 255, 0.25)',
+                          color: '#ffffff',
+                          padding: '1px 7px',
+                          borderRadius: '999px',
+                          marginTop: '3px',
+                          letterSpacing: '0.3px'
+                        }}
+                      >
+                        Actif
+                      </span>
+                    )}
                   </button>
                 );
               })}
@@ -302,19 +311,17 @@ export default function MapLayersModal({
             <div
               style={{
                 fontSize: '12px',
-                fontWeight: '800',
+                fontWeight: "400",
                 textTransform: 'uppercase',
                 letterSpacing: '0.6px',
                 color: '#ffffff',
                 marginBottom: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
+                textAlign: 'center'
               }}
             >
               Surcouche superposable (1 au choix)
             </div>
-            <p style={{ fontSize: '11px', color: '#ffffff', opacity: 0.85, margin: '0 0 10px 0' }}>
+            <p style={{ fontSize: '11px', color: '#ffffff', opacity: 0.85, margin: '0 0 10px 0', textAlign: 'center' }}>
               Superposez une couche cadastrale ou historique unique sur votre fond de carte.
             </p>
 
@@ -322,36 +329,38 @@ export default function MapLayersModal({
               {/* 1. Cadastre Officiel IGN */}
               <div
                 style={{
-                  background: draftShowCadastre ? 'rgba(16, 185, 129, 0.12)' : (c.bgCard || 'rgba(255,255,255,0.04)'),
+                  background: draftShowCadastre ? 'rgba(255, 255, 255, 0.1)' : (c.bgCard || 'rgba(255,255,255,0.04)'),
                   border: draftShowCadastre
-                    ? '1.5px solid #10b981'
+                    ? '1.5px solid rgba(255, 255, 255, 0.45)'
                     : `1px solid ${c.border || 'rgba(255,255,255,0.08)'}`,
                   borderRadius: '16px',
                   padding: '12px 14px',
                   transition: 'all 0.2s ease'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
                   <div>
-                    <div style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff' }}>
+                    <div style={{ fontSize: '13px', fontWeight: "400", color: '#ffffff' }}>
                       Cadastre officiel IGN / DGFiP
                     </div>
-                    <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, marginTop: '1px' }}>
+                    <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, marginTop: '2px' }}>
                       Limites exactes des parcelles et numéros cadastraux
                     </div>
                   </div>
                   <button
+                    type="button"
                     onClick={() => handleSelectOverlay('cadastre')}
                     style={{
-                      padding: '6px 12px',
+                      padding: '5px 11px',
                       borderRadius: '10px',
-                      border: 'none',
-                      background: draftShowCadastre ? '#10b981' : 'rgba(255,255,255,0.1)',
-                      color: draftShowCadastre ? '#ffffff' : '#ffffff',
+                      border: draftShowCadastre ? '1px solid rgba(255,255,255,0.35)' : '1px solid rgba(255,255,255,0.12)',
+                      background: draftShowCadastre ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.08)',
+                      color: '#ffffff',
                       fontSize: '11px',
-                      fontWeight: '800',
+                      fontWeight: "400",
                       cursor: 'pointer',
-                      transition: 'all 0.15s ease'
+                      transition: 'all 0.15s ease',
+                      flexShrink: 0
                     }}
                   >
                     {draftShowCadastre ? 'Actif' : 'Activer'}
@@ -362,7 +371,7 @@ export default function MapLayersModal({
                   <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#ffffff', marginBottom: '4px' }}>
                       <span>Opacité Cadastre</span>
-                      <strong style={{ color: '#ffffff' }}>{Math.round(draftCadastreOpacity * 100)}%</strong>
+                      <span style={{ color: '#ffffff' }}>{Math.round(draftCadastreOpacity * 100)}%</span>
                     </div>
                     <input
                       type='range'
@@ -374,7 +383,7 @@ export default function MapLayersModal({
                         const val = parseFloat(e.target.value);
                         setDraftCadastreOpacity(val);
                       }}
-                      style={{ width: '100%', accentColor: '#10b981', cursor: 'pointer' }}
+                      style={{ width: '100%', accentColor: '#94a3b8', cursor: 'pointer' }}
                     />
                   </div>
                 )}
@@ -383,36 +392,38 @@ export default function MapLayersModal({
               {/* 2. Carte de Cassini (18e) */}
               <div
                 style={{
-                  background: draftShowCassini ? 'rgba(59, 130, 246, 0.12)' : (c.bgCard || 'rgba(255,255,255,0.04)'),
+                  background: draftShowCassini ? 'rgba(255, 255, 255, 0.1)' : (c.bgCard || 'rgba(255,255,255,0.04)'),
                   border: draftShowCassini
-                    ? '1.5px solid #3b82f6'
+                    ? '1.5px solid rgba(255, 255, 255, 0.45)'
                     : `1px solid ${c.border || 'rgba(255,255,255,0.08)'}`,
                   borderRadius: '16px',
                   padding: '12px 14px',
                   transition: 'all 0.2s ease'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
                   <div>
-                    <div style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff' }}>
+                    <div style={{ fontSize: '13px', fontWeight: "400", color: '#ffffff' }}>
                       Carte de Cassini (XVIIIe siècle - BnF / IGN)
                     </div>
-                    <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, marginTop: '1px' }}>
+                    <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, marginTop: '2px' }}>
                       Première carte générale du Royaume de France (1750-1815)
                     </div>
                   </div>
                   <button
+                    type="button"
                     onClick={() => handleSelectOverlay('cassini')}
                     style={{
-                      padding: '6px 12px',
+                      padding: '5px 11px',
                       borderRadius: '10px',
-                      border: 'none',
-                      background: draftShowCassini ? '#3b82f6' : 'rgba(255,255,255,0.1)',
+                      border: draftShowCassini ? '1px solid rgba(255,255,255,0.35)' : '1px solid rgba(255,255,255,0.12)',
+                      background: draftShowCassini ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.08)',
                       color: '#ffffff',
                       fontSize: '11px',
-                      fontWeight: '800',
+                      fontWeight: "400",
                       cursor: 'pointer',
-                      transition: 'all 0.15s ease'
+                      transition: 'all 0.15s ease',
+                      flexShrink: 0
                     }}
                   >
                     {draftShowCassini ? 'Actif' : 'Activer'}
@@ -423,7 +434,7 @@ export default function MapLayersModal({
                   <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#ffffff', marginBottom: '4px' }}>
                       <span>Opacité Cassini</span>
-                      <strong style={{ color: '#ffffff' }}>{Math.round(draftCassiniOpacity * 100)}%</strong>
+                      <span style={{ color: '#ffffff' }}>{Math.round(draftCassiniOpacity * 100)}%</span>
                     </div>
                     <input
                       type='range'
@@ -435,7 +446,7 @@ export default function MapLayersModal({
                         const val = parseFloat(e.target.value);
                         setDraftCassiniOpacity(val);
                       }}
-                      style={{ width: '100%', accentColor: '#3b82f6', cursor: 'pointer' }}
+                      style={{ width: '100%', accentColor: '#94a3b8', cursor: 'pointer' }}
                     />
                   </div>
                 )}
@@ -444,36 +455,38 @@ export default function MapLayersModal({
               {/* 3. Carte d'État-Major 1820-1866 (IGN) */}
               <div
                 style={{
-                  background: draftShowEtatMajor ? 'rgba(217, 119, 6, 0.12)' : (c.bgCard || 'rgba(255,255,255,0.04)'),
+                  background: draftShowEtatMajor ? 'rgba(255, 255, 255, 0.1)' : (c.bgCard || 'rgba(255,255,255,0.04)'),
                   border: draftShowEtatMajor
-                    ? '1.5px solid #d97706'
+                    ? '1.5px solid rgba(255, 255, 255, 0.45)'
                     : `1px solid ${c.border || 'rgba(255,255,255,0.08)'}`,
                   borderRadius: '16px',
                   padding: '12px 14px',
                   transition: 'all 0.2s ease'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
                   <div>
-                    <div style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff' }}>
+                    <div style={{ fontSize: '13px', fontWeight: "400", color: '#ffffff' }}>
                       Carte de l'état-major (1820 — 1866 - IGN)
                     </div>
-                    <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, marginTop: '1px' }}>
+                    <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, marginTop: '2px' }}>
                       Cartographie militaire du XIXe siècle (1:40 000)
                     </div>
                   </div>
                   <button
+                    type="button"
                     onClick={() => handleSelectOverlay('etatmajor')}
                     style={{
-                      padding: '6px 12px',
+                      padding: '5px 11px',
                       borderRadius: '10px',
-                      border: 'none',
-                      background: draftShowEtatMajor ? '#d97706' : 'rgba(255,255,255,0.1)',
-                      color: draftShowEtatMajor ? '#ffffff' : '#ffffff',
+                      border: draftShowEtatMajor ? '1px solid rgba(255,255,255,0.35)' : '1px solid rgba(255,255,255,0.12)',
+                      background: draftShowEtatMajor ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.08)',
+                      color: '#ffffff',
                       fontSize: '11px',
-                      fontWeight: '800',
+                      fontWeight: "400",
                       cursor: 'pointer',
-                      transition: 'all 0.15s ease'
+                      transition: 'all 0.15s ease',
+                      flexShrink: 0
                     }}
                   >
                     {draftShowEtatMajor ? 'Actif' : 'Activer'}
@@ -484,7 +497,7 @@ export default function MapLayersModal({
                   <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#ffffff', marginBottom: '4px' }}>
                       <span>Opacité État-Major</span>
-                      <strong style={{ color: '#ffffff' }}>{Math.round(draftEtatMajorOpacity * 100)}%</strong>
+                      <span style={{ color: '#ffffff' }}>{Math.round(draftEtatMajorOpacity * 100)}%</span>
                     </div>
                     <input
                       type='range'
@@ -496,7 +509,7 @@ export default function MapLayersModal({
                         const val = parseFloat(e.target.value);
                         setDraftEtatMajorOpacity(val);
                       }}
-                      style={{ width: '100%', accentColor: '#d97706', cursor: 'pointer' }}
+                      style={{ width: '100%', accentColor: '#94a3b8', cursor: 'pointer' }}
                     />
                   </div>
                 )}
@@ -513,10 +526,11 @@ export default function MapLayersModal({
               padding: '12px 14px',
               display: 'flex',
               flexDirection: 'column',
-              gap: '4px'
+              gap: '4px',
+              textAlign: 'center'
             }}
           >
-            <div style={{ fontSize: '11px', fontWeight: '800', color: '#ffffff' }}>
+            <div style={{ fontSize: '11px', fontWeight: "400", color: '#ffffff' }}>
               Limite légale
             </div>
             <div style={{ fontSize: '10px', color: '#ffffff', opacity: 0.85, lineHeight: '1.4' }}>
@@ -527,19 +541,20 @@ export default function MapLayersModal({
         </div>
 
         {/* Modal Footer */}
-        <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: `1px solid ${c.border || 'rgba(255,255,255,0.1)'}`, display: 'flex', justifyContent: 'flex-end' }}>
+        <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: `1px solid ${c.border || 'rgba(255,255,255,0.1)'}`, display: 'flex', justifyContent: 'center' }}>
           <button
+            type="button"
             onClick={handleApply}
             style={{
-              padding: '10px 20px',
+              width: '100%',
+              padding: '11px 20px',
               borderRadius: '12px',
-              border: 'none',
-              background: `linear-gradient(135deg, ${c.accent || '#ef4444'}, ${c.accentHover || '#dc2626'})`,
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              background: 'rgba(255, 255, 255, 0.14)',
               color: '#ffffff',
               fontSize: '13px',
-              fontWeight: '800',
-              cursor: 'pointer',
-              boxShadow: `0 4px 12px ${c.accent || '#ef4444'}44`
+              fontWeight: "400",
+              cursor: 'pointer'
             }}
           >
             Appliquer et fermer

@@ -164,7 +164,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
             border: "none",
             background: mode === "signup" ? "#2563eb" : "transparent",
             color: mode === "signup" ? "#ffffff" : (isLight ? "#475569" : "#cbd5e1"),
-            fontWeight: mode === "signup" ? "700" : "600",
+            fontWeight: "400",
             fontSize: "12px",
             letterSpacing: "0.2px",
             cursor: "pointer",
@@ -188,7 +188,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
             border: "none",
             background: mode === "login" ? "#2563eb" : "transparent",
             color: mode === "login" ? "#ffffff" : (isLight ? "#475569" : "#cbd5e1"),
-            fontWeight: mode === "login" ? "700" : "600",
+            fontWeight: "400",
             fontSize: "12px",
             letterSpacing: "0.2px",
             cursor: "pointer",
@@ -215,7 +215,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
               background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
               color: isLight ? "#0f172a" : "#ffffff",
               fontSize: "13px",
-              fontWeight: "600",
+              fontWeight: "400",
               cursor: googleLoading ? "wait" : "pointer",
               opacity: googleLoading ? 0.7 : 1,
               display: "flex",
@@ -263,7 +263,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
 
           <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "14px 0 2px 0" }}>
             <div style={{ flex: 1, height: "1px", background: isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.16)" }} />
-            <span style={{ fontSize: "11px", color: isLight ? "#64748b" : "#cbd5e1", textTransform: "uppercase", letterSpacing: "0.5px", fontWeight: "700" }}>
+            <span style={{ fontSize: "11px", color: isLight ? "#64748b" : "#cbd5e1", textTransform: "uppercase", letterSpacing: "0.5px", fontWeight: "400"}}>
               ou par email
             </span>
             <div style={{ flex: 1, height: "1px", background: isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.16)" }} />
@@ -274,7 +274,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
       {/* Form Fields */}
       <form onSubmit={handleEmailAuth} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         <div>
-          <label style={{ fontSize: "12px", fontWeight: "700", color: isLight ? "#0f172a" : "#ffffff", marginBottom: "6px", display: "block" }}>
+          <label style={{ fontSize: "12px", fontWeight: "400", color: isLight ? "#0f172a" : "#ffffff", marginBottom: "6px", display: "block" }}>
             Adresse e-mail
           </label>
           <input
@@ -311,7 +311,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
         {mode !== "reset" && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-              <label style={{ fontSize: "12px", fontWeight: "700", color: isLight ? "#0f172a" : "#ffffff" }}>
+              <label style={{ fontSize: "12px", fontWeight: "400", color: isLight ? "#0f172a" : "#ffffff" }}>
                 Mot de passe
               </label>
               {mode === "login" && (
@@ -328,7 +328,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
                     padding: 0,
                     fontSize: "11px",
                     color: isLight ? "#2563eb" : "#60a5fa",
-                    fontWeight: "600",
+                    fontWeight: "400",
                     cursor: "pointer"
                   }}
                 >
@@ -379,7 +379,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
               color: isLight ? "#b91c1c" : "#fca5a5",
               fontSize: "12px",
               lineHeight: "1.4",
-              fontWeight: "500"
+              fontWeight: "400"
             }}
           >
             {errorMsg}
@@ -396,7 +396,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
               color: isLight ? "#047857" : "#86efac",
               fontSize: "12px",
               lineHeight: "1.4",
-              fontWeight: "500"
+              fontWeight: "400"
             }}
           >
             {successMsg}
@@ -415,7 +415,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
             background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
             color: "#ffffff",
             fontSize: "13px",
-            fontWeight: "700",
+            fontWeight: "400",
             cursor: loading ? "not-allowed" : "pointer",
             opacity: loading ? 0.7 : 1,
             boxShadow: "0 2px 10px rgba(37, 99, 235, 0.3)",

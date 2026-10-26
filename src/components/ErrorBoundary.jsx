@@ -65,7 +65,7 @@ export default class ErrorBoundary extends React.Component {
           }}
         >
           <div style={{ fontSize: "44px", marginBottom: "14px" }}>🧭</div>
-          <h2 style={{ fontSize: "20px", fontWeight: "900", margin: "0 0 10px 0", color: "#f8fafc" }}>
+          <h2 style={{ fontSize: "20px", fontWeight: "400", margin: "0 0 10px 0", color: "#f8fafc" }}>
             GeoProspect
           </h2>
           <p style={{ fontSize: "13px", color: "#94a3b8", maxWidth: "300px", margin: "0 0 24px 0", lineHeight: "1.5" }}>
@@ -81,7 +81,7 @@ export default class ErrorBoundary extends React.Component {
                 background: "#2563eb",
                 color: "#ffffff",
                 border: "none",
-                fontWeight: "800",
+                fontWeight: "400",
                 cursor: "pointer",
                 fontSize: "14px",
                 boxShadow: "0 4px 14px rgba(37, 99, 235, 0.4)"
@@ -97,7 +97,7 @@ export default class ErrorBoundary extends React.Component {
                 background: "rgba(255, 255, 255, 0.08)",
                 border: "1px solid rgba(255, 255, 255, 0.2)",
                 color: "#e2e8f0",
-                fontWeight: "700",
+                fontWeight: "400",
                 cursor: "pointer",
                 fontSize: "13px"
               }}

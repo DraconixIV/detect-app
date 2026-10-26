@@ -94,7 +94,7 @@ export default function InAppBrowserBanner() {
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "10px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <div>
-              <div style={{ fontSize: "13px", fontWeight: "800", color: "#ffffff", letterSpacing: "-0.2px" }}>
+              <div style={{ fontSize: "13px", fontWeight: "400", color: "#ffffff", letterSpacing: "-0.2px" }}>
                 Navigateur {inAppInfo.appName || "interne"} détecté
               </div>
               <div style={{ fontSize: "11px", color: "#cbd5e1", marginTop: "2px", lineHeight: "1.35" }}>
@@ -159,7 +159,7 @@ export default function InAppBrowserBanner() {
               border: "1px solid rgba(255, 255, 255, 0.2)",
               color: "#ffffff",
               fontSize: "11px",
-              fontWeight: "700",
+              fontWeight: "400",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",

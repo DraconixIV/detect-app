@@ -480,7 +480,7 @@ function App() {
       if (showFeedback) {
         const accText = accuracy ? ` (±${Math.round(accuracy)}m)` : "";
         setToast({
-          message: `🎯 Position GPS actualisée${accText} !`,
+          message: `Position GPS actualisée${accText}`,
           type: "success"
         });
       }
@@ -1395,7 +1395,7 @@ function App() {
             boxShadow: "0 8px 30px rgba(0, 0, 0, 0.45)",
             fontFamily: "system-ui, -apple-system, sans-serif",
             fontSize: "13px",
-            fontWeight: "700",
+            fontWeight: "400",
             border: "1.5px solid rgba(250, 204, 21, 0.6)",
             maxWidth: "460px",
             width: "calc(100% - 28px)",
@@ -1405,10 +1405,10 @@ function App() {
           <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
             <span style={{ fontSize: "16px", flexShrink: 0 }}>✨</span>
             <div style={{ minWidth: 0 }}>
-              <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontSize: "13px", fontWeight: "800", color: "#fef08a" }}>
+              <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontSize: "13px", fontWeight: "400", color: "#fef08a" }}>
                 Sortie du {normalizeDateStr(selectedDate)}
               </div>
-              <div style={{ fontSize: "11px", color: "#94a3b8", fontWeight: "600" }}>
+              <div style={{ fontSize: "11px", color: "#94a3b8", fontWeight: "400"}}>
                 {selectedSortieFindsCount > 0 ? (
                   <>🪙 <strong style={{ color: "#facc15" }}>{selectedSortieFindsCount}</strong> trouvaille{selectedSortieFindsCount > 1 ? "s" : ""} en surbrillance</>
                 ) : (
@@ -1436,7 +1436,7 @@ function App() {
               gap: "4px",
               cursor: "pointer",
               fontSize: "11px",
-              fontWeight: "800",
+              fontWeight: "400",
               flexShrink: 0,
               transition: "0.2s"
             }}
@@ -1469,7 +1469,7 @@ function App() {
             boxShadow: "0 8px 30px rgba(0, 0, 0, 0.45), 0 0 16px rgba(59, 130, 246, 0.2)",
             fontFamily: "system-ui, -apple-system, sans-serif",
             fontSize: "12px",
-            fontWeight: "700",
+            fontWeight: "400",
             border: "1.5px solid rgba(59, 130, 246, 0.5)",
             maxWidth: "480px",
             width: "calc(100% - 24px)",
@@ -1489,10 +1489,10 @@ function App() {
               }}
             />
             <div style={{ minWidth: 0 }}>
-              <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontSize: "12px", fontWeight: "800", color: "#38bdf8" }}>
+              <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontSize: "12px", fontWeight: "400", color: "#38bdf8" }}>
                 👁️ Consultation : {workspace.targetCode}
               </div>
-              <div style={{ fontSize: "10.5px", color: "#94a3b8", fontWeight: "600" }}>
+              <div style={{ fontSize: "10.5px", color: "#94a3b8", fontWeight: "400"}}>
                 Mode lecture seule
               </div>
             </div>
@@ -1518,7 +1518,7 @@ function App() {
               gap: "4px",
               cursor: "pointer",
               fontSize: "11px",
-              fontWeight: "800"
+              fontWeight: "400"
             }}
             title="Fermer la consultation"
           >
@@ -1850,7 +1850,7 @@ function App() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h4 style={{ margin: 0, color: "white", fontSize: "16px", fontWeight: "800" }}>
+            <h4 style={{ margin: 0, color: "white", fontSize: "16px", fontWeight: "400"}}>
               📷 Titre de la trouvaille rapide :
             </h4>
 
@@ -1871,7 +1871,7 @@ function App() {
                 background: "rgba(255,255,255,0.06)",
                 color: "white",
                 fontSize: "14px",
-                fontWeight: "600",
+                fontWeight: "400",
                 width: "100%",
                 boxSizing: "border-box",
                 outline: "none"
@@ -1892,7 +1892,7 @@ function App() {
                   background: "transparent",
                   color: "white",
                   fontSize: "12px",
-                  fontWeight: "bold",
+                  fontWeight: "400",
                   cursor: "pointer"
                 }}
               >
@@ -1908,7 +1908,7 @@ function App() {
                   background: "#16a34a",
                   color: "white",
                   fontSize: "12px",
-                  fontWeight: "bold",
+                  fontWeight: "400",
                   cursor: "pointer"
                 }}
               >
@@ -1958,7 +1958,7 @@ function App() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h4 style={{ margin: 0, color: "white", fontSize: "16px", fontWeight: "800" }}>
+            <h4 style={{ margin: 0, color: "white", fontSize: "16px", fontWeight: "400"}}>
               Nom de la sortie
             </h4>
 
@@ -1979,7 +1979,7 @@ function App() {
                 background: "rgba(255,255,255,0.06)",
                 color: "white",
                 fontSize: "14px",
-                fontWeight: "600",
+                fontWeight: "400",
                 width: "100%",
                 boxSizing: "border-box",
                 outline: "none"
@@ -2000,7 +2000,7 @@ function App() {
                   background: "transparent",
                   color: "white",
                   fontSize: "12px",
-                  fontWeight: "bold",
+                  fontWeight: "400",
                   cursor: "pointer"
                 }}
               >
@@ -2016,7 +2016,7 @@ function App() {
                   background: "#16a34a",
                   color: "white",
                   fontSize: "12px",
-                  fontWeight: "bold",
+                  fontWeight: "400",
                   cursor: "pointer"
                 }}
               >
@@ -2040,7 +2040,7 @@ function App() {
                 background: "transparent",
                 color: "#f87171",
                 fontSize: "12px",
-                fontWeight: "600",
+                fontWeight: "400",
                 cursor: "pointer"
               }}
             >
@@ -2109,10 +2109,10 @@ function App() {
                 </svg>
               </div>
               <div>
-                <h4 style={{ margin: 0, color: "white", fontSize: "16px", fontWeight: "800" }}>
+                <h4 style={{ margin: 0, color: "white", fontSize: "16px", fontWeight: "400"}}>
                   Sauvegarde de sécurité recommandée
                 </h4>
-                <span style={{ fontSize: "12px", color: "#9ca3af", fontWeight: "500" }}>
+                <span style={{ fontSize: "12px", color: "#9ca3af", fontWeight: "400"}}>
                   Rappel automatique toutes les 2 sorties
                 </span>
               </div>
@@ -2135,7 +2135,7 @@ function App() {
                   background: "#2563eb",
                   color: "white",
                   fontSize: "13px",
-                  fontWeight: "700",
+                  fontWeight: "400",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
@@ -2159,7 +2159,7 @@ function App() {
                   background: "rgba(255,255,255,0.04)",
                   color: "#9ca3af",
                   fontSize: "12px",
-                  fontWeight: "600",
+                  fontWeight: "400",
                   cursor: "pointer"
                 }}
               >
@@ -2217,7 +2217,7 @@ function App() {
           >
             {subCatModalStep === 1 ? (
               <>
-                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", display: "flex", alignItems: "center", gap: "8px" }}>
+                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", display: "flex", alignItems: "center", gap: "8px" }}>
                   🔍 Filtrer par sous-catégorie ?
                 </h3>
                 <p style={{ margin: 0, fontSize: "13px", lineHeight: "1.5", color: "#d1d5db" }}>
@@ -2233,7 +2233,7 @@ function App() {
                       background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
                       color: "white",
                       fontSize: "13px",
-                      fontWeight: "bold",
+                      fontWeight: "400",
                       cursor: "pointer",
                       boxShadow: "0 4px 12px rgba(59, 130, 246, 0.25)"
                     }}
@@ -2253,7 +2253,7 @@ function App() {
                       background: "rgba(255,255,255,0.06)",
                       color: "white",
                       fontSize: "13px",
-                      fontWeight: "bold",
+                      fontWeight: "400",
                       cursor: "pointer"
                     }}
                   >
@@ -2277,7 +2277,7 @@ function App() {
               </>
             ) : (
               <>
-                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", display: "flex", alignItems: "center", gap: "8px" }}>
+                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", display: "flex", alignItems: "center", gap: "8px" }}>
                   🏷️ Choisir la sous-catégorie
                 </h3>
                 <p style={{ margin: 0, fontSize: "12px", color: "#9ca3af" }}>
@@ -2336,7 +2336,7 @@ function App() {
                       background: "transparent",
                       color: "white",
                       fontSize: "12px",
-                      fontWeight: "bold",
+                      fontWeight: "400",
                       cursor: "pointer"
                     }}
                   >
@@ -2352,7 +2352,7 @@ function App() {
                       background: "#ef4444",
                       color: "white",
                       fontSize: "12px",
-                      fontWeight: "bold",
+                      fontWeight: "400",
                       cursor: "pointer"
                     }}
                   >

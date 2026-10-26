@@ -248,7 +248,7 @@ export default function ChaosBenchmarkModal({
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <span style={{ fontSize: "24px" }}>⚡</span>
             <div>
-              <h2 style={{ margin: 0, fontSize: "16px", fontWeight: "900", color: textMain }}>
+              <h2 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: textMain }}>
                 Banc de test de charge
               </h2>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
@@ -266,7 +266,7 @@ export default function ChaosBenchmarkModal({
               background: cardBg,
               color: textMain,
               fontSize: "14px",
-              fontWeight: "bold",
+              fontWeight: "400",
               cursor: "pointer"
             }}
           >
@@ -290,13 +290,13 @@ export default function ChaosBenchmarkModal({
             }}
           >
             <div>
-              <div style={{ fontSize: "10px", fontWeight: "800", color: textSub, textTransform: "uppercase" }}>
+              <div style={{ fontSize: "10px", fontWeight: "400", color: textSub, textTransform: "uppercase" }}>
                 Fluidité (FPS)
               </div>
               <div
                 style={{
                   fontSize: "20px",
-                  fontWeight: "900",
+                  fontWeight: "400",
                   color: fps >= 55 ? "#10b981" : fps >= 30 ? "#f59e0b" : "#ef4444"
                 }}
               >
@@ -305,19 +305,19 @@ export default function ChaosBenchmarkModal({
             </div>
 
             <div>
-              <div style={{ fontSize: "10px", fontWeight: "800", color: textSub, textTransform: "uppercase" }}>
+              <div style={{ fontSize: "10px", fontWeight: "400", color: textSub, textTransform: "uppercase" }}>
                 Bots Actifs
               </div>
-              <div style={{ fontSize: "20px", fontWeight: "900", color: activeBotsCount > 0 ? "#3b82f6" : textMain }}>
+              <div style={{ fontSize: "20px", fontWeight: "400", color: activeBotsCount > 0 ? "#3b82f6" : textMain }}>
                 {activeBotsCount}
               </div>
             </div>
 
             <div>
-              <div style={{ fontSize: "10px", fontWeight: "800", color: textSub, textTransform: "uppercase" }}>
+              <div style={{ fontSize: "10px", fontWeight: "400", color: textSub, textTransform: "uppercase" }}>
                 Mémoire JS
               </div>
-              <div style={{ fontSize: "20px", fontWeight: "900", color: textMain }}>
+              <div style={{ fontSize: "20px", fontWeight: "400", color: textMain }}>
                 {memoryMB ? `${memoryMB} MB` : "N/A"}
               </div>
             </div>
@@ -337,7 +337,7 @@ export default function ChaosBenchmarkModal({
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
-                <div style={{ fontSize: "13px", fontWeight: "800", color: textMain }}>
+                <div style={{ fontSize: "13px", fontWeight: "400", color: textMain }}>
                   🤖 Simulation de Prospecteurs ({activeBotsCount} actifs)
                 </div>
                 <div style={{ fontSize: "11px", color: textSub }}>
@@ -354,7 +354,7 @@ export default function ChaosBenchmarkModal({
                     background: "#ef4444",
                     color: "#ffffff",
                     fontSize: "11px",
-                    fontWeight: "700",
+                    fontWeight: "400",
                     cursor: "pointer"
                   }}
                 >
@@ -375,7 +375,7 @@ export default function ChaosBenchmarkModal({
                     background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
                     color: "#ffffff",
                     fontSize: "11px",
-                    fontWeight: "700",
+                    fontWeight: "400",
                     cursor: "pointer"
                   }}
                 >
@@ -391,7 +391,7 @@ export default function ChaosBenchmarkModal({
                     background: "linear-gradient(135deg, #3b82f6, #2563eb)",
                     color: "#ffffff",
                     fontSize: "11px",
-                    fontWeight: "700",
+                    fontWeight: "400",
                     cursor: "pointer"
                   }}
                 >
@@ -407,7 +407,7 @@ export default function ChaosBenchmarkModal({
                     background: "linear-gradient(135deg, #f59e0b, #d97706)",
                     color: "#ffffff",
                     fontSize: "11px",
-                    fontWeight: "800",
+                    fontWeight: "400",
                     cursor: "pointer"
                   }}
                 >
@@ -431,7 +431,7 @@ export default function ChaosBenchmarkModal({
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
-                <div style={{ fontSize: "13px", fontWeight: "800", color: textMain }}>
+                <div style={{ fontSize: "13px", fontWeight: "400", color: textMain }}>
                   🗺️ Charge Massive de Repères ({injectedFindsCount} injectés)
                 </div>
                 <div style={{ fontSize: "11px", color: textSub }}>
@@ -451,7 +451,7 @@ export default function ChaosBenchmarkModal({
                   background: isLight ? "#ffffff" : "rgba(255,255,255,0.06)",
                   color: textMain,
                   fontSize: "11px",
-                  fontWeight: "700",
+                  fontWeight: "400",
                   cursor: "pointer"
                 }}
               >
@@ -467,7 +467,7 @@ export default function ChaosBenchmarkModal({
                   background: isLight ? "#ffffff" : "rgba(255,255,255,0.06)",
                   color: textMain,
                   fontSize: "11px",
-                  fontWeight: "700",
+                  fontWeight: "400",
                   cursor: "pointer"
                 }}
               >
@@ -483,7 +483,7 @@ export default function ChaosBenchmarkModal({
                   background: isLight ? "#ffffff" : "rgba(255,255,255,0.06)",
                   color: textMain,
                   fontSize: "11px",
-                  fontWeight: "800",
+                  fontWeight: "400",
                   cursor: "pointer"
                 }}
               >
@@ -505,7 +505,7 @@ export default function ChaosBenchmarkModal({
             }}
           >
             <div>
-              <div style={{ fontSize: "13px", fontWeight: "800", color: textMain }}>
+              <div style={{ fontSize: "13px", fontWeight: "400", color: textMain }}>
                 💾 File d'Attente Hors-Ligne ({offlinePendingCount} en attente)
               </div>
               <div style={{ fontSize: "11px", color: textSub }}>
@@ -521,7 +521,7 @@ export default function ChaosBenchmarkModal({
                 background: "#f59e0b",
                 color: "#ffffff",
                 fontSize: "11px",
-                fontWeight: "700",
+                fontWeight: "400",
                 cursor: "pointer"
               }}
             >
@@ -542,7 +542,7 @@ export default function ChaosBenchmarkModal({
             }}
           >
             <div>
-              <div style={{ fontSize: "13px", fontWeight: "800", color: "#ef4444" }}>
+              <div style={{ fontSize: "13px", fontWeight: "400", color: "#ef4444" }}>
                 🧹 Nettoyage Total (1-Clic)
               </div>
               <div style={{ fontSize: "11px", color: textSub }}>
@@ -558,7 +558,7 @@ export default function ChaosBenchmarkModal({
                 background: "#ef4444",
                 color: "#ffffff",
                 fontSize: "12px",
-                fontWeight: "800",
+                fontWeight: "400",
                 cursor: "pointer",
                 boxShadow: "0 2px 8px rgba(239, 68, 68, 0.3)"
               }}
@@ -583,7 +583,7 @@ export default function ChaosBenchmarkModal({
               gap: "4px"
             }}
           >
-            <div style={{ color: "#94a3b8", fontWeight: "bold" }}>Console d'événements :</div>
+            <div style={{ color: "#94a3b8", fontWeight: "400"}}>Console d'événements :</div>
             {logMessages.length === 0 ? (
               <div style={{ color: "#64748b" }}>Prêt. Lancez une action pour observer les logs.</div>
             ) : (

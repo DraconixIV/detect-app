@@ -82,7 +82,7 @@ export default function ConfirmModal({
             {icon}
           </div>
           <div>
-            <h4 style={{ margin: 0, color: "#ffffff", fontSize: "16px", fontWeight: "800", letterSpacing: "-0.2px" }}>
+            <h4 style={{ margin: 0, color: "#ffffff", fontSize: "16px", fontWeight: "400", letterSpacing: "-0.2px" }}>
               {title}
             </h4>
           </div>
@@ -95,7 +95,7 @@ export default function ConfirmModal({
             color: "#cbd5e1",
             fontSize: "13.5px",
             lineHeight: "1.55",
-            fontWeight: "500"
+            fontWeight: "400"
           }}
         >
           {message}
@@ -117,7 +117,7 @@ export default function ConfirmModal({
               background: "rgba(255, 255, 255, 0.06)",
               color: "#e2e8f0",
               fontSize: "13px",
-              fontWeight: "700",
+              fontWeight: "400",
               cursor: "pointer",
               transition: "background 0.2s"
             }}
@@ -138,7 +138,7 @@ export default function ConfirmModal({
               background: confirmColor,
               color: "#ffffff",
               fontSize: "13px",
-              fontWeight: "700",
+              fontWeight: "400",
               cursor: "pointer",
               boxShadow: confirmColor === "#ef4444" ? "0 4px 14px rgba(239, 68, 68, 0.35)" : "0 4px 14px rgba(37, 99, 235, 0.35)",
               transition: "transform 0.15s, filter 0.15s"

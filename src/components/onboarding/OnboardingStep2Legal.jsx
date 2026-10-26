@@ -23,7 +23,7 @@ export default function OnboardingStep2Legal({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       <div>
-        <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
+        <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "400", color: textMain, letterSpacing: "-0.5px" }}>
           ⚖️ Cadre légal
         </h1>
         <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
@@ -47,7 +47,7 @@ export default function OnboardingStep2Legal({
         }}
       >
         <div>
-          <div style={{ fontWeight: "800", color: textMain, marginBottom: "3px" }}>
+          <div style={{ fontWeight: "400", color: textMain, marginBottom: "3px" }}>
             Articles 544 et 552 du Code civil
           </div>
           <div style={{ color: textSub, fontSize: "11px" }}>
@@ -56,7 +56,7 @@ export default function OnboardingStep2Legal({
         </div>
 
         <div style={{ borderTop: `1px solid ${cardBorder}`, paddingTop: "8px" }}>
-          <div style={{ fontWeight: "800", color: textMain, marginBottom: "3px" }}>
+          <div style={{ fontWeight: "400", color: textMain, marginBottom: "3px" }}>
             Article L. 542-1 du Code du patrimoine
           </div>
           <div style={{ color: textSub, fontStyle: "italic", fontSize: "11px" }}>
@@ -65,7 +65,7 @@ export default function OnboardingStep2Legal({
         </div>
 
         <div style={{ borderTop: `1px solid ${cardBorder}`, paddingTop: "8px" }}>
-          <div style={{ fontWeight: "800", color: textMain, marginBottom: "3px" }}>
+          <div style={{ fontWeight: "400", color: textMain, marginBottom: "3px" }}>
             Article L. 531-14 du Code du patrimoine
           </div>
           <div style={{ color: textSub, fontSize: "11px" }}>
@@ -214,7 +214,7 @@ export default function OnboardingStep2Legal({
             background: isDark ? "#1e293b" : "#ffffff",
             color: textSub,
             fontSize: "13px",
-            fontWeight: "600",
+            fontWeight: "400",
             cursor: "pointer"
           }}
         >
@@ -233,7 +233,7 @@ export default function OnboardingStep2Legal({
             background: allLegalChecked ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : (isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"),
             color: allLegalChecked ? "#ffffff" : (isDark ? "rgba(255,255,255,0.3)" : "#94a3b8"),
             fontSize: "13px",
-            fontWeight: "700",
+            fontWeight: "400",
             cursor: allLegalChecked ? "pointer" : "not-allowed",
             boxShadow: allLegalChecked ? "0 2px 10px rgba(37, 99, 235, 0.25)" : "none",
             transition: "all 0.2s ease"

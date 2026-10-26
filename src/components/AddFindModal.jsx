@@ -106,7 +106,7 @@ export default function AddFindModal({
                   margin: 0,
                   color: "#ffffff",
                   fontSize: "17px",
-                  fontWeight: "800",
+                  fontWeight: "400",
                   letterSpacing: "-0.3px"
                 }}
               >

@@ -235,7 +235,7 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
         >
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: textMain }}>
+              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: textMain }}>
                 Guide des fonctionnalités
               </h3>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
@@ -317,7 +317,7 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
                   : "transparent",
                 color: activeCategory === "all" ? "#ffffff" : textSub,
                 fontSize: "11px",
-                fontWeight: "700",
+                fontWeight: "400",
                 cursor: "pointer",
                 whiteSpace: "nowrap"
               }}
@@ -342,7 +342,7 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
                       : "transparent",
                     color: isSelected ? "#ffffff" : textSub,
                     fontSize: "11px",
-                    fontWeight: "700",
+                    fontWeight: "400",
                     cursor: "pointer",
                     whiteSpace: "nowrap",
                     display: "flex",
@@ -369,7 +369,7 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
         >
           {filteredCategories.length === 0 ? (
             <div style={{ textAlign: "center", padding: "30px 10px", color: textSub }}>
-              <div style={{ fontWeight: "700", fontSize: "14px", color: textMain }}>
+              <div style={{ fontWeight: "400", fontSize: "14px", color: textMain }}>
                 Aucune fonctionnalité trouvée
               </div>
               <div style={{ fontSize: "12px", marginTop: "4px" }}>
@@ -380,10 +380,10 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
             filteredCategories.map((cat) => (
               <div key={cat.category} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <span style={{ fontSize: "13px", fontWeight: "800", color: textMain, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  <span style={{ fontSize: "13px", fontWeight: "400", color: textMain, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                     {cat.categoryLabel}
                   </span>
-                  <span style={{ fontSize: "11px", color: textSub, fontWeight: "600" }}>
+                  <span style={{ fontSize: "11px", color: textSub, fontWeight: "400"}}>
                     ({cat.features.length})
                   </span>
                 </div>
@@ -403,7 +403,7 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
                       }}
                     >
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: "13px", fontWeight: "800", color: textMain, marginBottom: "3px" }}>
+                        <div style={{ fontSize: "13px", fontWeight: "400", color: textMain, marginBottom: "3px" }}>
                           {f.title}
                         </div>
                         <p style={{ margin: 0, fontSize: "11.5px", color: textSub, lineHeight: "1.45" }}>
@@ -437,7 +437,7 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
               background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.12)",
               color: "#ffffff",
               fontSize: "13px",
-              fontWeight: "700",
+              fontWeight: "400",
               cursor: "pointer"
             }}
           >

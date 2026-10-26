@@ -113,7 +113,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
         >
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: textMain }}>
+              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: textMain }}>
                 Formulaire de retour
               </h3>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
@@ -163,7 +163,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
               >
                 ✓
               </div>
-              <h4 style={{ fontSize: "18px", fontWeight: "900", color: textMain, margin: "0 0 8px 0" }}>
+              <h4 style={{ fontSize: "18px", fontWeight: "400", color: textMain, margin: "0 0 8px 0" }}>
                 Merci pour votre retour !
               </h4>
               <p style={{ fontSize: "13px", color: textSub, lineHeight: "1.5", margin: "0 0 24px 0" }}>
@@ -179,7 +179,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
                   border: "none",
                   color: "#ffffff",
                   fontSize: "13px",
-                  fontWeight: "800",
+                  fontWeight: "400",
                   cursor: "pointer"
                 }}
               >
@@ -190,7 +190,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               {/* Category selector */}
               <div>
-                <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: textSub, marginBottom: "8px" }}>
+                <label style={{ display: "block", fontSize: "12px", fontWeight: "400", color: textSub, marginBottom: "8px" }}>
                   Type de message :
                 </label>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
@@ -212,7 +212,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
                             : `1px solid ${cardBorder}`,
                           color: active ? "#ffffff" : textSub,
                           fontSize: "12px",
-                          fontWeight: active ? "800" : "600",
+                          fontWeight: "400",
                           cursor: "pointer",
                           display: "flex",
                           alignItems: "center",
@@ -229,7 +229,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
 
               {/* Message field */}
               <div>
-                <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
+                <label style={{ display: "block", fontSize: "12px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
                   Votre message <span style={{ color: "#ef4444" }}>*</span>
                 </label>
                 <textarea
@@ -256,7 +256,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
               </div>
 
               {errorMsg && (
-                <div style={{ padding: "8px 12px", borderRadius: "10px", background: "rgba(239, 68, 68, 0.15)", border: "1px solid rgba(239, 68, 68, 0.4)", color: "#f87171", fontSize: "11.5px", fontWeight: "700" }}>
+                <div style={{ padding: "8px 12px", borderRadius: "10px", background: "rgba(239, 68, 68, 0.15)", border: "1px solid rgba(239, 68, 68, 0.4)", color: "#f87171", fontSize: "11.5px", fontWeight: "400"}}>
                   {errorMsg}
                 </div>
               )}
@@ -273,7 +273,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
                   border: "none",
                   color: "#ffffff",
                   fontSize: "13.5px",
-                  fontWeight: "800",
+                  fontWeight: "400",
                   cursor: isSubmitting || !message.trim() ? "not-allowed" : "pointer",
                   boxShadow: isSubmitting || !message.trim() ? "none" : "0 6px 20px rgba(37, 99, 235, 0.4)",
                   display: "flex",

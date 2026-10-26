@@ -16,7 +16,7 @@ export default function LoadingScreen() {
       }}
     >
       <div style={{ fontSize: "28px" }}>🧭</div>
-      <div style={{ fontSize: "14px", fontWeight: "600", color: "#64748b" }}>
+      <div style={{ fontSize: "14px", fontWeight: "400", color: "#64748b" }}>
         Chargement de la carte...
       </div>
     </div>

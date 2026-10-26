@@ -54,7 +54,7 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
         >
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: textMain }}>
+              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: textMain }}>
                 À propos de GeoProspect
               </h3>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
@@ -126,8 +126,8 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>
-            <div style={{ fontSize: "16px", fontWeight: "900", color: textMain }}>GeoProspect</div>
-            <div style={{ fontSize: "11px", fontWeight: "700", color: textSub }}>
+            <div style={{ fontSize: "16px", fontWeight: "400", color: textMain }}>GeoProspect</div>
+            <div style={{ fontSize: "11px", fontWeight: "400", color: textSub }}>
               Le carnet de détection GPS des détectoristes
             </div>
             <p style={{ margin: "4px 0 0 0", fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
@@ -147,7 +147,7 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
               gap: "8px"
             }}
           >
-            <div style={{ fontSize: "12px", fontWeight: "800", color: textMain, textTransform: "uppercase" }}>
+            <div style={{ fontSize: "12px", fontWeight: "400", color: textMain, textTransform: "uppercase" }}>
               Nos engagements
             </div>
             <div style={{ fontSize: "11px", color: textSub, lineHeight: "1.4" }}>
@@ -173,7 +173,7 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
               gap: "10px"
             }}
           >
-            <div style={{ fontSize: "12px", fontWeight: "800", color: textMain, textTransform: "uppercase" }}>
+            <div style={{ fontSize: "12px", fontWeight: "400", color: textMain, textTransform: "uppercase" }}>
               Soutenir le projet
             </div>
             <p style={{ margin: 0, fontSize: "11px", color: textSub, lineHeight: "1.4" }}>
@@ -192,7 +192,7 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
                   border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
                   color: isLight ? "#0f172a" : "#ffffff",
                   fontSize: "11px",
-                  fontWeight: "800",
+                  fontWeight: "400",
                   textDecoration: "none",
                   textAlign: "center"
                 }}
@@ -211,7 +211,7 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
                   border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
                   color: isLight ? "#0f172a" : "#ffffff",
                   fontSize: "11px",
-                  fontWeight: "800",
+                  fontWeight: "400",
                   textDecoration: "none",
                   textAlign: "center"
                 }}

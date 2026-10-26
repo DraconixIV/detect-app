@@ -55,7 +55,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
         >
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: textMain }}>
+              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: textMain }}>
                 Conditions générales d'utilisation
               </h3>
               <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: textSub }}>
@@ -106,7 +106,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
               border: `1px solid ${cardBorder}`
             }}
           >
-            <div style={{ fontSize: "13.5px", fontWeight: "800", color: textMain, marginBottom: "8px" }}>
+            <div style={{ fontSize: "13.5px", fontWeight: "400", color: textMain, marginBottom: "8px" }}>
               1 — Nature du service
             </div>
             <p style={{ margin: 0 }}>
@@ -123,7 +123,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
               border: `1px solid ${cardBorder}`
             }}
           >
-            <div style={{ fontSize: "13.5px", fontWeight: "800", color: textMain, marginBottom: "8px" }}>
+            <div style={{ fontSize: "13.5px", fontWeight: "400", color: textMain, marginBottom: "8px" }}>
               2 — Responsabilité de l'utilisateur
             </div>
             <p style={{ margin: "0 0 10px 0" }}>
@@ -154,7 +154,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
               border: `1px solid ${cardBorder}`
             }}
           >
-            <div style={{ fontSize: "13.5px", fontWeight: "800", color: textMain, marginBottom: "8px" }}>
+            <div style={{ fontSize: "13.5px", fontWeight: "400", color: textMain, marginBottom: "8px" }}>
               3 — Données personnelles et confidentialité
             </div>
             <p style={{ margin: "0 0 10px 0" }}>
@@ -182,7 +182,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
               border: `1px solid ${cardBorder}`
             }}
           >
-            <div style={{ fontSize: "13.5px", fontWeight: "800", color: textMain, marginBottom: "8px" }}>
+            <div style={{ fontSize: "13.5px", fontWeight: "400", color: textMain, marginBottom: "8px" }}>
               4 — Traceurs et cookies publicitaires
             </div>
             <p style={{ margin: 0 }}>
@@ -199,7 +199,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
               border: `1px solid ${cardBorder}`
             }}
           >
-            <div style={{ fontSize: "13.5px", fontWeight: "800", color: textMain, marginBottom: "8px" }}>
+            <div style={{ fontSize: "13.5px", fontWeight: "400", color: textMain, marginBottom: "8px" }}>
               5 — Droit à l'oubli et suppression
             </div>
             <p style={{ margin: 0 }}>
@@ -216,7 +216,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
               border: `1px solid ${cardBorder}`
             }}
           >
-            <div style={{ fontSize: "13.5px", fontWeight: "800", color: textMain, marginBottom: "8px" }}>
+            <div style={{ fontSize: "13.5px", fontWeight: "400", color: textMain, marginBottom: "8px" }}>
               6 — Fonctionnement et gratuité du service
             </div>
             <p style={{ margin: 0 }}>
@@ -233,7 +233,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
               border: `1px solid ${cardBorder}`
             }}
           >
-            <div style={{ fontSize: "13.5px", fontWeight: "800", color: textMain, marginBottom: "8px" }}>
+            <div style={{ fontSize: "13.5px", fontWeight: "400", color: textMain, marginBottom: "8px" }}>
               7 — Hébergement et sécurité des données
             </div>
             <p style={{ margin: 0 }}>
@@ -261,7 +261,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
               background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.12)",
               color: "#ffffff",
               fontSize: "13px",
-              fontWeight: "700",
+              fontWeight: "400",
               cursor: "pointer"
             }}
           >

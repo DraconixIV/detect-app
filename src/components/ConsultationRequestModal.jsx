@@ -62,10 +62,10 @@ export default function ConsultationRequestModal({
             🛡️
           </div>
           <div>
-            <div style={{ fontSize: "11px", fontWeight: "800", textTransform: "uppercase", color: "#3b82f6", letterSpacing: "0.5px" }}>
+            <div style={{ fontSize: "11px", fontWeight: "400", textTransform: "uppercase", color: "#3b82f6", letterSpacing: "0.5px" }}>
               Autorisation requise
             </div>
-            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: isLight ? "#0f172a" : "#ffffff" }}>
+            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: isLight ? "#0f172a" : "#ffffff" }}>
               Consultation de votre carte
             </h3>
           </div>
@@ -84,7 +84,7 @@ export default function ConsultationRequestModal({
           }}
         >
           <div style={{ fontSize: "13px", lineHeight: "1.5", color: isLight ? "#1e293b" : "#f1f5f9" }}>
-            <span style={{ fontWeight: "800", color: isLight ? "#0f172a" : "#60a5fa" }}>
+            <span style={{ fontWeight: "400", color: isLight ? "#0f172a" : "#60a5fa" }}>
               {request.requesterName}
             </span>{" "}
             <span style={{ fontFamily: "ui-monospace, monospace", fontSize: "12px", background: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.1)", padding: "2px 6px", borderRadius: "4px" }}>
@@ -111,7 +111,7 @@ export default function ConsultationRequestModal({
               background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
               color: "#ffffff",
               fontSize: "13px",
-              fontWeight: "800",
+              fontWeight: "400",
               cursor: "pointer",
               boxShadow: "0 4px 14px rgba(16, 185, 129, 0.35)",
               display: "flex",
@@ -136,7 +136,7 @@ export default function ConsultationRequestModal({
               background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.06)",
               color: isLight ? "#475569" : "#cbd5e1",
               fontSize: "12px",
-              fontWeight: "700",
+              fontWeight: "400",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",

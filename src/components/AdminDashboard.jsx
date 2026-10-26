@@ -244,7 +244,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
             🔒
           </div>
 
-          <h2 style={{ margin: "0 0 6px 0", fontSize: "18px", fontWeight: "900", letterSpacing: "-0.3px" }}>
+          <h2 style={{ margin: "0 0 6px 0", fontSize: "18px", fontWeight: "400", letterSpacing: "-0.3px" }}>
             Console développeur
           </h2>
           <p style={{ margin: "0 0 24px 0", fontSize: "12px", color: "#94a3b8" }}>
@@ -274,14 +274,14 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                   border: pinError ? "2px solid #ef4444" : "1px solid rgba(255, 255, 255, 0.15)",
                   color: "#ffffff",
                   fontSize: "20px",
-                  fontWeight: "900",
+                  fontWeight: "400",
                   textAlign: "center",
                   letterSpacing: "6px",
                   outline: "none"
                 }}
               />
               {pinError && (
-                <div style={{ color: "#ef4444", fontSize: "11px", fontWeight: "700", marginTop: "6px" }}>
+                <div style={{ color: "#ef4444", fontSize: "11px", fontWeight: "400", marginTop: "6px" }}>
                   Code PIN invalide
                 </div>
               )}
@@ -297,7 +297,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                 border: "none",
                 color: "#ffffff",
                 fontSize: "14px",
-                fontWeight: "800",
+                fontWeight: "400",
                 cursor: "pointer",
                 boxShadow: "0 6px 20px rgba(37, 99, 235, 0.4)",
                 transition: "all 0.2s"
@@ -317,7 +317,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
               color: "#64748b",
               fontSize: "12px",
               cursor: "pointer",
-              fontWeight: "600"
+              fontWeight: "400"
             }}
           >
             ← Retour à l'application
@@ -373,12 +373,12 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
               🧭
             </div>
             <div>
-              <div style={{ fontSize: "16px", fontWeight: "900", color: "#ffffff", display: "flex", alignItems: "center", gap: "8px" }}>
+              <div style={{ fontSize: "16px", fontWeight: "400", color: "#ffffff", display: "flex", alignItems: "center", gap: "8px" }}>
                 GeoProspect Analytics
                 <span
                   style={{
                     fontSize: "10px",
-                    fontWeight: "800",
+                    fontWeight: "400",
                     padding: "2px 8px",
                     borderRadius: "12px",
                     background: "rgba(16, 185, 129, 0.15)",
@@ -406,7 +406,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                 border: "1px solid rgba(255, 255, 255, 0.15)",
                 color: "#ffffff",
                 fontSize: "12px",
-                fontWeight: "700",
+                fontWeight: "400",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -425,7 +425,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                 border: "1px solid rgba(37, 99, 235, 0.4)",
                 color: "#93c5fd",
                 fontSize: "12px",
-                fontWeight: "700",
+                fontWeight: "400",
                 cursor: "pointer"
               }}
             >
@@ -441,7 +441,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                 border: "1px solid rgba(239, 68, 68, 0.3)",
                 color: "#f87171",
                 fontSize: "12px",
-                fontWeight: "700",
+                fontWeight: "400",
                 cursor: "pointer"
               }}
               title="Verrouiller"
@@ -469,7 +469,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "12px" }}>
             <span style={{ fontSize: "20px" }}>🛡️</span>
             <div>
-              <div style={{ fontWeight: "900", color: "#38bdf8", letterSpacing: "-0.2px" }}>
+              <div style={{ fontWeight: "400", color: "#38bdf8", letterSpacing: "-0.2px" }}>
                 Mode développeur actif sur cet appareil
               </div>
               <div style={{ fontSize: "11px", color: "#cbd5e1", marginTop: "2px" }}>
@@ -487,7 +487,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
               border: "1px solid rgba(239, 68, 68, 0.4)",
               color: "#fca5a5",
               fontSize: "11px",
-              fontWeight: "800",
+              fontWeight: "400",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
@@ -510,7 +510,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
               marginBottom: "20px"
             }}
           >
-            <div style={{ fontSize: "13px", fontWeight: "900", color: "#fbbf24", marginBottom: "6px" }}>
+            <div style={{ fontSize: "13px", fontWeight: "400", color: "#fbbf24", marginBottom: "6px" }}>
               ⚡ Configuration Supabase (Optionnel en 1 clic)
             </div>
             <p style={{ margin: "0 0 10px 0", fontSize: "11.5px", color: "#fef3c7", lineHeight: "1.4" }}>
@@ -525,7 +525,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                 border: "none",
                 color: "#ffffff",
                 fontSize: "11px",
-                fontWeight: "800",
+                fontWeight: "400",
                 cursor: "pointer"
               }}
             >
@@ -539,13 +539,13 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           {/* Card 1: Estimated Real Prospectors */}
           <div style={metricCardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Prospecteurs réels estimés</span>
+              <span style={{ fontSize: "11px", fontWeight: "400", color: "#94a3b8", textTransform: "uppercase" }}>Prospecteurs réels estimés</span>
               <span style={{ fontSize: "16px" }}>👥</span>
             </div>
-            <div style={{ fontSize: "28px", fontWeight: "900", color: "#ffffff", letterSpacing: "-0.5px" }}>
+            <div style={{ fontSize: "28px", fontWeight: "400", color: "#ffffff", letterSpacing: "-0.5px" }}>
               {data?.estimatedRealVisitors || data?.uniqueVisitors || 0}
             </div>
-            <div style={{ fontSize: "11px", color: "#10b981", marginTop: "4px", fontWeight: "700" }}>
+            <div style={{ fontSize: "11px", color: "#10b981", marginTop: "4px", fontWeight: "400"}}>
               Dédoublonné sur {data?.uniqueVisitors ?? 0} navigateurs (+{data?.uniqueVisitorsToday ?? 0} aujourd'hui)
             </div>
           </div>
@@ -553,13 +553,13 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           {/* Card 2: Total Visits / Clicks */}
           <div style={metricCardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Ouvertures et clics</span>
+              <span style={{ fontSize: "11px", fontWeight: "400", color: "#94a3b8", textTransform: "uppercase" }}>Ouvertures et clics</span>
               <span style={{ fontSize: "16px" }}>📈</span>
             </div>
-            <div style={{ fontSize: "28px", fontWeight: "900", color: "#ffffff", letterSpacing: "-0.5px" }}>
+            <div style={{ fontSize: "28px", fontWeight: "400", color: "#ffffff", letterSpacing: "-0.5px" }}>
               {data?.totalVisits ?? 0}
             </div>
-            <div style={{ fontSize: "11px", color: "#38bdf8", marginTop: "4px", fontWeight: "700" }}>
+            <div style={{ fontSize: "11px", color: "#38bdf8", marginTop: "4px", fontWeight: "400"}}>
               +{data?.todayVisits ?? 0} aujourd'hui
             </div>
           </div>
@@ -567,13 +567,13 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           {/* Card 3: Total Finds */}
           <div style={metricCardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Trouvailles utilisateurs</span>
+              <span style={{ fontSize: "11px", fontWeight: "400", color: "#94a3b8", textTransform: "uppercase" }}>Trouvailles utilisateurs</span>
               <span style={{ fontSize: "16px" }}>🪙</span>
             </div>
-            <div style={{ fontSize: "28px", fontWeight: "900", color: "#ffffff", letterSpacing: "-0.5px" }}>
+            <div style={{ fontSize: "28px", fontWeight: "400", color: "#ffffff", letterSpacing: "-0.5px" }}>
               {data?.totalFinds ?? 0}
             </div>
-            <div style={{ fontSize: "10.5px", color: data?.totalFinds > 0 ? "#facc15" : "#64748b", marginTop: "4px", fontWeight: "700" }}>
+            <div style={{ fontSize: "10.5px", color: data?.totalFinds > 0 ? "#facc15" : "#64748b", marginTop: "4px", fontWeight: "400"}}>
               {data?.totalFinds > 0 ? `par ${data?.uniqueFinders ?? 0} prospecteur(s)` : "En attente des premiers partages"}
             </div>
           </div>
@@ -581,13 +581,13 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           {/* Card 4: Total Tracks */}
           <div style={metricCardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Sorties GPS</span>
+              <span style={{ fontSize: "11px", fontWeight: "400", color: "#94a3b8", textTransform: "uppercase" }}>Sorties GPS</span>
               <span style={{ fontSize: "16px" }}>📍</span>
             </div>
-            <div style={{ fontSize: "28px", fontWeight: "900", color: "#ffffff", letterSpacing: "-0.5px" }}>
+            <div style={{ fontSize: "28px", fontWeight: "400", color: "#ffffff", letterSpacing: "-0.5px" }}>
               {data?.totalTracks ?? 0}
             </div>
-            <div style={{ fontSize: "10.5px", color: "#a855f7", marginTop: "4px", fontWeight: "700" }}>
+            <div style={{ fontSize: "10.5px", color: "#a855f7", marginTop: "4px", fontWeight: "400"}}>
               tracés enregistrés (terrain)
             </div>
           </div>
@@ -597,7 +597,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px", marginBottom: "20px" }}>
           {/* Sources breakdown */}
           <div style={sectionCardStyle}>
-            <div style={{ fontSize: "13px", fontWeight: "900", color: "#ffffff", marginBottom: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
+            <div style={{ fontSize: "13px", fontWeight: "400", color: "#ffffff", marginBottom: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
               <span>🌐</span> Détail de la provenance du trafic
             </div>
 
@@ -624,10 +624,10 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                   return (
                     <div key={src}>
                       <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11.5px", marginBottom: "4px" }}>
-                        <span style={{ fontWeight: "700", color: "#e2e8f0" }}>
+                        <span style={{ fontWeight: "400", color: "#e2e8f0" }}>
                           {icon} {displayLabel}
                         </span>
-                        <span style={{ color: "#94a3b8", fontWeight: "800" }}>{count} ({pct}%)</span>
+                        <span style={{ color: "#94a3b8", fontWeight: "400"}}>{count} ({pct}%)</span>
                       </div>
                       <div style={{ height: "6px", borderRadius: "3px", background: "rgba(255, 255, 255, 0.08)", overflow: "hidden" }}>
                         <div
@@ -656,7 +656,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
 
           {/* Devices breakdown */}
           <div style={sectionCardStyle}>
-            <div style={{ fontSize: "13px", fontWeight: "900", color: "#ffffff", marginBottom: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
+            <div style={{ fontSize: "13px", fontWeight: "400", color: "#ffffff", marginBottom: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
               <span>📱</span> Appareils et navigateurs
             </div>
 
@@ -667,8 +667,8 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                   return (
                     <div key={dev}>
                       <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11.5px", marginBottom: "4px" }}>
-                        <span style={{ fontWeight: "700", color: "#e2e8f0" }}>{dev}</span>
-                        <span style={{ color: "#94a3b8", fontWeight: "800" }}>{count} ({pct}%)</span>
+                        <span style={{ fontWeight: "400", color: "#e2e8f0" }}>{dev}</span>
+                        <span style={{ color: "#94a3b8", fontWeight: "400"}}>{count} ({pct}%)</span>
                       </div>
                       <div style={{ height: "6px", borderRadius: "3px", background: "rgba(255, 255, 255, 0.08)", overflow: "hidden" }}>
                         <div style={{ height: "100%", width: `${pct}%`, background: "linear-gradient(90deg, #10b981, #34d399)", borderRadius: "3px" }} />
@@ -688,12 +688,12 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
         {/* User Feedbacks Section */}
         <div style={{ ...sectionCardStyle, marginBottom: "20px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "8px" }}>
-            <div style={{ fontSize: "13.5px", fontWeight: "900", color: "#38bdf8", display: "flex", alignItems: "center", gap: "8px" }}>
+            <div style={{ fontSize: "13.5px", fontWeight: "400", color: "#38bdf8", display: "flex", alignItems: "center", gap: "8px" }}>
               <span>💬</span> Messages et retours utilisateurs
               <span
                 style={{
                   fontSize: "10.5px",
-                  fontWeight: "800",
+                  fontWeight: "400",
                   padding: "2px 8px",
                   borderRadius: "10px",
                   background: feedbacks.length > 0 ? "rgba(56, 189, 248, 0.2)" : "rgba(255, 255, 255, 0.08)",
@@ -744,7 +744,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                             border: `1px solid ${catBadge.border}`,
                             color: catBadge.text,
                             fontSize: "11px",
-                            fontWeight: "800",
+                            fontWeight: "400",
                             display: "inline-flex",
                             alignItems: "center",
                             gap: "4px"
@@ -757,7 +757,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                           {fb.user_code || "ANON"}
                         </span>
                         {fb.contact && (
-                          <span style={{ fontSize: "11px", color: "#e2e8f0", fontWeight: "700", background: "rgba(255, 255, 255, 0.08)", padding: "2px 8px", borderRadius: "6px" }}>
+                          <span style={{ fontSize: "11px", color: "#e2e8f0", fontWeight: "400", background: "rgba(255, 255, 255, 0.08)", padding: "2px 8px", borderRadius: "6px" }}>
                             👤 {fb.contact}
                           </span>
                         )}
@@ -778,7 +778,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                             border: "1px solid rgba(239, 68, 68, 0.3)",
                             color: "#f87171",
                             fontSize: "11px",
-                            fontWeight: "700",
+                            fontWeight: "400",
                             cursor: "pointer"
                           }}
                         >
@@ -811,7 +811,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
         {/* Live Visitor Feed */}
         <div style={sectionCardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "8px" }}>
-            <div style={{ fontSize: "13.5px", fontWeight: "900", color: "#ffffff", display: "flex", alignItems: "center", gap: "8px" }}>
+            <div style={{ fontSize: "13.5px", fontWeight: "400", color: "#ffffff", display: "flex", alignItems: "center", gap: "8px" }}>
               <span>⚡</span> Journal des clics et visites en direct
             </div>
             <div style={{ fontSize: "11px", color: "#94a3b8" }}>
@@ -864,11 +864,11 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                         {/* Heure exacte */}
                         <td style={{ padding: "10px 8px", whiteSpace: "nowrap" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                            <span style={{ fontWeight: "800", color: "#ffffff", fontSize: "12px" }}>
+                            <span style={{ fontWeight: "400", color: "#ffffff", fontSize: "12px" }}>
                               ⏱️ {timeStr}
                             </span>
                             {relativeBadge && (
-                              <span style={{ fontSize: "9.5px", fontWeight: "700", padding: "1px 5px", borderRadius: "4px", background: relativeBadge.includes("instant") || relativeBadge.includes("min") ? "rgba(16, 185, 129, 0.2)" : "rgba(255, 255, 255, 0.08)", color: relativeBadge.includes("instant") || relativeBadge.includes("min") ? "#10b981" : "#94a3b8" }}>
+                              <span style={{ fontSize: "9.5px", fontWeight: "400", padding: "1px 5px", borderRadius: "4px", background: relativeBadge.includes("instant") || relativeBadge.includes("min") ? "rgba(16, 185, 129, 0.2)" : "rgba(255, 255, 255, 0.08)", color: relativeBadge.includes("instant") || relativeBadge.includes("min") ? "#10b981" : "#94a3b8" }}>
                                 {relativeBadge}
                               </span>
                             )}
@@ -880,7 +880,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
 
                         {/* Appareil & Écran */}
                         <td style={{ padding: "10px 8px", whiteSpace: "nowrap" }}>
-                          <div style={{ fontWeight: "700", color: "#e2e8f0" }}>
+                          <div style={{ fontWeight: "400", color: "#e2e8f0" }}>
                             {v.device?.includes("iPhone") ? "📱 iPhone (iOS)" : v.device?.includes("Android") ? "🤖 Android" : v.device?.includes("Windows") ? "💻 PC Windows" : v.device?.includes("Mac") ? "🍎 Mac" : v.device || "Mobile"}
                           </div>
                           {v.screen_size && v.screen_size !== "0x0" && (
@@ -892,7 +892,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
 
                         {/* Navigateur */}
                         <td style={{ padding: "10px 8px", whiteSpace: "nowrap" }}>
-                          <span style={{ color: "#cbd5e1", fontWeight: "600" }}>
+                          <span style={{ color: "#cbd5e1", fontWeight: "400"}}>
                             {v.browser || "Inconnu"}
                           </span>
                         </td>
@@ -905,7 +905,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                               padding: "3px 8px",
                               borderRadius: "6px",
                               fontSize: "11px",
-                              fontWeight: "800",
+                              fontWeight: "400",
                               background: v.source?.toLowerCase().includes("facebook") ? "rgba(59, 130, 246, 0.2)" : "rgba(255, 255, 255, 0.08)",
                               color: v.source?.toLowerCase().includes("facebook") ? "#60a5fa" : "#e2e8f0",
                               border: v.source?.toLowerCase().includes("facebook") ? "1px solid rgba(59, 130, 246, 0.4)" : "1px solid rgba(255, 255, 255, 0.1)"
@@ -933,7 +933,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                               border: "1px solid rgba(239, 68, 68, 0.3)",
                               color: "#f87171",
                               fontSize: "11px",
-                              fontWeight: "700",
+                              fontWeight: "400",
                               cursor: "pointer",
                               display: "inline-flex",
                               alignItems: "center",
@@ -987,7 +987,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
               onClick={(e) => e.stopPropagation()}
             >
               <div style={{ fontSize: "28px", textAlign: "center", marginBottom: "12px" }}>🗑️</div>
-              <h3 style={{ margin: "0 0 8px 0", fontSize: "16px", fontWeight: "900", textAlign: "center" }}>
+              <h3 style={{ margin: "0 0 8px 0", fontSize: "16px", fontWeight: "400", textAlign: "center" }}>
                 Remettre les clics à zéro ?
               </h3>
               <p style={{ margin: "0 0 20px 0", fontSize: "12px", color: "#94a3b8", lineHeight: "1.5", textAlign: "center" }}>
@@ -1006,7 +1006,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                     border: "1px solid rgba(255, 255, 255, 0.15)",
                     color: "#ffffff",
                     fontSize: "12px",
-                    fontWeight: "700",
+                    fontWeight: "400",
                     cursor: "pointer"
                   }}
                 >
@@ -1023,7 +1023,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                     border: "none",
                     color: "#ffffff",
                     fontSize: "12px",
-                    fontWeight: "800",
+                    fontWeight: "400",
                     cursor: "pointer"
                   }}
                 >

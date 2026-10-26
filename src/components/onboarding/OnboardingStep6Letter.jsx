@@ -12,7 +12,7 @@ export default function OnboardingStep6Letter({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       <div>
-        <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
+        <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "400", color: textMain, letterSpacing: "-0.5px" }}>
           Bienvenue dans l'aventure 🧭
         </h1>
         <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
@@ -52,7 +52,7 @@ export default function OnboardingStep6Letter({
         <p style={{ margin: 0 }}>
           Enfin, j'aimerais souligner que notre loisir est encadré par des lois. À ce titre, il demeure essentiel de se renseigner sur la législation française afin d'éviter de ternir notre réputation et d'amputer la communauté responsable qui ne souhaite que plus de visibilité. <em>Prospecter exige une déontologie.</em>
         </p>
-        <div style={{ marginTop: "4px", padding: "12px 14px", borderRadius: "12px", background: isDark ? "rgba(59, 130, 246, 0.12)" : "#eff6ff", border: isDark ? "1px solid rgba(59, 130, 246, 0.25)" : "1px solid #dbeafe", fontWeight: "600", color: isDark ? "#93c5fd" : "#1e40af", fontSize: "13px", textAlign: "center", lineHeight: "1.5" }}>
+        <div style={{ marginTop: "4px", padding: "12px 14px", borderRadius: "12px", background: isDark ? "rgba(59, 130, 246, 0.12)" : "#eff6ff", border: isDark ? "1px solid rgba(59, 130, 246, 0.25)" : "1px solid #dbeafe", fontWeight: "400", color: isDark ? "#93c5fd" : "#1e40af", fontSize: "13px", textAlign: "center", lineHeight: "1.5" }}>
           Allez, je vous laisse profiter ! Merci pour votre lecture, bonnes recherches :)
         </div>
       </div>
@@ -69,7 +69,7 @@ export default function OnboardingStep6Letter({
             background: isDark ? "#1e293b" : "#ffffff",
             color: textSub,
             fontSize: "13px",
-            fontWeight: "600",
+            fontWeight: "400",
             cursor: "pointer"
           }}
         >
@@ -87,7 +87,7 @@ export default function OnboardingStep6Letter({
             background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
             color: "#ffffff",
             fontSize: "14px",
-            fontWeight: "700",
+            fontWeight: "400",
             cursor: "pointer",
             boxShadow: "0 2px 10px rgba(37, 99, 235, 0.25)",
             transition: "all 0.2s ease"

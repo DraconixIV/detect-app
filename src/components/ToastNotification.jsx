@@ -112,7 +112,7 @@ export default function ToastNotification({
           justifyContent: "center",
           color: config.color,
           fontSize: type === "success" ? "16px" : "13px",
-          fontWeight: "bold",
+          fontWeight: "400",
           border: `1px solid ${config.color}33`,
           flexShrink: 0
         }}
@@ -125,7 +125,7 @@ export default function ToastNotification({
         style={{
           color: "#f3f4f6",
           fontSize: "13.5px",
-          fontWeight: "600",
+          fontWeight: "400",
           lineHeight: "1.4",
           flex: 1
         }}

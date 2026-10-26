@@ -70,7 +70,7 @@ export default function GpsMarker({ position }) {
           margin: 6px 12px !important;
           font-family: system-ui, -apple-system, sans-serif !important;
           font-size: 11px !important;
-          font-weight: 700 !important;
+          font-weight: 400 !important;
           color: white !important;
           text-align: center !important;
         }

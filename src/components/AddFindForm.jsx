@@ -124,7 +124,7 @@ export default function AddFindForm({
     color: "#ffffff",
     width: "100%",
     boxSizing: "border-box",
-    fontWeight: "500",
+    fontWeight: "400",
     transition: "all 0.2s ease"
   };
 
@@ -166,7 +166,7 @@ export default function AddFindForm({
             border: "none",
             background: !isManualMode ? "linear-gradient(135deg, #10b981, #059669)" : "transparent",
             color: !isManualMode ? "#ffffff" : "#9ca3af",
-            fontWeight: !isManualMode ? "700" : "500",
+            fontWeight: "400",
             fontSize: "12px",
             cursor: "pointer",
             transition: "all 0.2s ease",
@@ -189,7 +189,7 @@ export default function AddFindForm({
             border: "none",
             background: isManualMode ? "linear-gradient(135deg, #3b82f6, #2563eb)" : "transparent",
             color: isManualMode ? "#ffffff" : "#9ca3af",
-            fontWeight: isManualMode ? "700" : "500",
+            fontWeight: "400",
             fontSize: "12px",
             cursor: "pointer",
             transition: "all 0.2s ease",
@@ -228,7 +228,7 @@ export default function AddFindForm({
 
       {/* TITRE (SANS EXEMPLE) */}
       <div>
-        <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
+        <label style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "4px", display: "block" }}>
           Titre de l'objet *
         </label>
         <input
@@ -254,7 +254,7 @@ export default function AddFindForm({
             textAlign: "center"
           }}
         >
-          <div style={{ fontSize: "12px", fontWeight: "700", color: "#ffffff" }}>
+          <div style={{ fontSize: "12px", fontWeight: "400", color: "#ffffff" }}>
             🏷️ Aucune catégorie configurée
           </div>
           <div style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.75)" }}>
@@ -273,7 +273,7 @@ export default function AddFindForm({
                 background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
                 color: "#ffffff",
                 fontSize: "12px",
-                fontWeight: "700",
+                fontWeight: "400",
                 cursor: "pointer",
                 boxShadow: "0 2px 8px rgba(37, 99, 235, 0.3)"
               }}
@@ -385,7 +385,7 @@ export default function AddFindForm({
                     background: "#10b981",
                     color: "#ffffff",
                     fontSize: "11px",
-                    fontWeight: "bold",
+                    fontWeight: "400",
                     cursor: "pointer"
                   }}
                 >
@@ -398,7 +398,7 @@ export default function AddFindForm({
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: availableSubCats.length > 0 ? "1fr 1fr" : "1fr", gap: "8px" }}>
           <div>
-            <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
+            <label style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "4px", display: "block" }}>
               Catégorie
             </label>
             <select
@@ -420,7 +420,7 @@ export default function AddFindForm({
 
           {availableSubCats.length > 0 && (
             <div>
-              <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
+              <label style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "4px", display: "block" }}>
                 Sous-catégorie
               </label>
               <select
@@ -444,7 +444,7 @@ export default function AddFindForm({
 
       {/* METAL */}
       <div>
-        <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
+        <label style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "4px", display: "block" }}>
           Métal
         </label>
         <select
@@ -477,7 +477,7 @@ export default function AddFindForm({
           }}
         >
           <div>
-            <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
+            <label style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "4px", display: "block" }}>
               📅 Date de découverte
             </label>
             <input
@@ -490,7 +490,7 @@ export default function AddFindForm({
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
             <div>
-              <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
+              <label style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "4px", display: "block" }}>
                 🌐 Latitude
               </label>
               <input
@@ -503,7 +503,7 @@ export default function AddFindForm({
               />
             </div>
             <div>
-              <label style={{ fontSize: "11px", fontWeight: "600", color: "#ffffff", marginBottom: "4px", display: "block" }}>
+              <label style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "4px", display: "block" }}>
                 🌐 Longitude
               </label>
               <input
@@ -577,7 +577,7 @@ export default function AddFindForm({
             alignItems: "center",
             gap: "3px",
             fontSize: "11px",
-            fontWeight: "700",
+            fontWeight: "400",
             transition: "all 0.15s"
           }}
         >
@@ -602,7 +602,7 @@ export default function AddFindForm({
             alignItems: "center",
             gap: "3px",
             fontSize: "11px",
-            fontWeight: "700",
+            fontWeight: "400",
             transition: "all 0.15s"
           }}
         >
@@ -627,7 +627,7 @@ export default function AddFindForm({
             alignItems: "center",
             gap: "3px",
             fontSize: "11px",
-            fontWeight: "700",
+            fontWeight: "400",
             transition: "all 0.15s"
           }}
         >
@@ -684,7 +684,7 @@ export default function AddFindForm({
             alignItems: "center",
             gap: "3px",
             fontSize: "11px",
-            fontWeight: "700",
+            fontWeight: "400",
             transition: "all 0.15s"
           }}
         >
@@ -739,7 +739,7 @@ export default function AddFindForm({
               color: "#fca5a5",
               cursor: "pointer",
               fontSize: "12px",
-              fontWeight: "600"
+              fontWeight: "400"
             }}
           >
             ❌ Retirer photo
@@ -750,7 +750,7 @@ export default function AddFindForm({
       {/* PREVIEW NOTE VOCALE AUDIO */}
       {activeAudio && (
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <div style={{ fontSize: "11px", fontWeight: "700", color: "#e2e8f0", display: "flex", alignItems: "center", gap: "6px" }}>
+          <div style={{ fontSize: "11px", fontWeight: "400", color: "#e2e8f0", display: "flex", alignItems: "center", gap: "6px" }}>
             <span>🎙️</span> Note vocale
           </div>
           <AudioNotePlayer
@@ -780,7 +780,7 @@ export default function AddFindForm({
           }}
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "12px", color: "#ffffff", fontWeight: "700" }}>🎥 Vidéo</span>
+            <span style={{ fontSize: "12px", color: "#ffffff", fontWeight: "400"}}>🎥 Vidéo</span>
             <button
               type="button"
               onClick={() => updateVideo(null)}
@@ -792,7 +792,7 @@ export default function AddFindForm({
                 padding: "3px 8px",
                 fontSize: "11px",
                 cursor: "pointer",
-                fontWeight: "bold"
+                fontWeight: "400"
               }}
             >
               ✕ Retirer
@@ -839,7 +839,7 @@ export default function AddFindForm({
             : "#10b981",
           color: "white",
           fontSize: "14px",
-          fontWeight: "700",
+          fontWeight: "400",
           cursor: addingFind || !newTitle.trim() ? "not-allowed" : "pointer",
           transition: "all 0.2s ease",
           boxShadow: addingFind || !newTitle.trim() ? "none" : "0 4px 14px rgba(16,185,129,0.25)",

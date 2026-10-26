@@ -206,7 +206,7 @@ export default function MapTopBar({
                     background: "#ef4444",
                     color: "#ffffff",
                     fontSize: "9.5px",
-                    fontWeight: "900",
+                    fontWeight: "400",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -251,7 +251,7 @@ export default function MapTopBar({
             <span
               style={{
                 fontSize: "12px",
-                fontWeight: "900",
+                fontWeight: "400",
                 letterSpacing: "-0.3px",
                 color: textMain,
                 display: "flex",
@@ -266,7 +266,7 @@ export default function MapTopBar({
             <span
               style={{
                 fontSize: "8px",
-                fontWeight: "700",
+                fontWeight: "400",
                 color: isOnline ? "#34d399" : "#fbbf24",
                 letterSpacing: "0.2px",
                 lineHeight: "1.1"
@@ -302,7 +302,7 @@ export default function MapTopBar({
           <span
             style={{
               fontSize: "9px",
-              fontWeight: "800",
+              fontWeight: "400",
               color: textMain,
               fontFamily: "monospace"
             }}
@@ -386,7 +386,7 @@ export default function MapTopBar({
               background: isRecordingSortie ? "rgba(239, 68, 68, 0.2)" : (isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)"),
               color: isRecordingSortie ? "#ef4444" : textMain,
               fontSize: "9.5px",
-              fontWeight: "800",
+              fontWeight: "400",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
@@ -468,7 +468,7 @@ export default function MapTopBar({
                   background: isLight ? "#e2e8f0" : "rgba(255,255,255,0.1)",
                   color: textMain,
                   fontSize: "11px",
-                  fontWeight: "700",
+                  fontWeight: "400",
                   cursor: "pointer"
                 }}
               >
@@ -502,7 +502,7 @@ export default function MapTopBar({
                     background: active ? (isLight ? "#eff6ff" : "rgba(56, 189, 248, 0.2)") : inputBg,
                     color: active ? (isLight ? "#0369a1" : "#38bdf8") : textSub,
                     fontSize: "11px",
-                    fontWeight: active ? "700" : "500",
+                    fontWeight: "400",
                     whiteSpace: "nowrap",
                     cursor: "pointer",
                     transition: "all 0.15s ease"
@@ -530,7 +530,7 @@ export default function MapTopBar({
               {/* SECTION: Matching Finds */}
               {matchingFinds.length > 0 && (
                 <div>
-                  <div style={{ fontSize: "10px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "4px" }}>
+                  <div style={{ fontSize: "10px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "4px" }}>
                     Trouvailles ({matchingFinds.length})
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -564,7 +564,7 @@ export default function MapTopBar({
                           <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
                             <span style={{ fontSize: "18px", flexShrink: 0 }}>{em}</span>
                             <div style={{ minWidth: 0 }}>
-                              <div style={{ fontSize: "12px", fontWeight: "800", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              <div style={{ fontSize: "12px", fontWeight: "400", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                 {f.title || "Trouvaille sans titre"}
                               </div>
                               <div style={{ fontSize: "10px", color: textSub }}>
@@ -572,7 +572,7 @@ export default function MapTopBar({
                               </div>
                             </div>
                           </div>
-                          <span style={{ fontSize: "11px", fontWeight: "700", color: "#38bdf8", flexShrink: 0 }}>
+                          <span style={{ fontSize: "11px", fontWeight: "400", color: "#38bdf8", flexShrink: 0 }}>
                             Voir
                           </span>
                         </div>
@@ -585,7 +585,7 @@ export default function MapTopBar({
               {/* SECTION: Geocoding Places */}
               {places.length > 0 && (
                 <div style={{ marginTop: matchingFinds.length > 0 ? "6px" : "0" }}>
-                  <div style={{ fontSize: "10px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "4px" }}>
+                  <div style={{ fontSize: "10px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "4px" }}>
                     Lieux et villes ({places.length})
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -621,11 +621,11 @@ export default function MapTopBar({
                               <circle cx="12" cy="10" r="3" />
                             </svg>
                           </span>
-                          <div style={{ fontSize: "12px", fontWeight: "600", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          <div style={{ fontSize: "12px", fontWeight: "400", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             {p.display_name}
                           </div>
                         </div>
-                        <span style={{ fontSize: "11px", fontWeight: "700", color: "#38bdf8", flexShrink: 0 }}>
+                        <span style={{ fontSize: "11px", fontWeight: "400", color: "#38bdf8", flexShrink: 0 }}>
                           Aller
                         </span>
                       </div>

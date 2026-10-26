@@ -171,7 +171,7 @@ export default function CropperModal({
       >
         {/* Title */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h4 style={{ margin: 0, color: "white", fontSize: "15px", fontWeight: "800" }}>
+          <h4 style={{ margin: 0, color: "white", fontSize: "15px", fontWeight: "400"}}>
             📐 Centrer et aligner la trouvaille
           </h4>
           <button
@@ -262,7 +262,7 @@ export default function CropperModal({
                 background: maskShape === "circle" ? "#2563eb" : "rgba(255,255,255,0.06)",
                 color: "white",
                 fontSize: "11px",
-                fontWeight: "bold",
+                fontWeight: "400",
                 cursor: "pointer"
               }}
             >
@@ -278,7 +278,7 @@ export default function CropperModal({
                 background: maskShape === "rect" ? "#2563eb" : "rgba(255,255,255,0.06)",
                 color: "white",
                 fontSize: "11px",
-                fontWeight: "bold",
+                fontWeight: "400",
                 cursor: "pointer"
               }}
             >
@@ -338,7 +338,7 @@ export default function CropperModal({
               background: "transparent",
               color: "white",
               fontSize: "12px",
-              fontWeight: "bold",
+              fontWeight: "400",
               cursor: "pointer"
             }}
           >
@@ -356,7 +356,7 @@ export default function CropperModal({
               background: "rgba(255, 255, 255, 0.06)",
               color: "#d1d5db",
               fontSize: "12px",
-              fontWeight: "bold",
+              fontWeight: "400",
               cursor: "pointer"
             }}
           >
@@ -374,7 +374,7 @@ export default function CropperModal({
               background: "#2563eb",
               color: "white",
               fontSize: "12px",
-              fontWeight: "bold",
+              fontWeight: "400",
               cursor: "pointer"
             }}
           >

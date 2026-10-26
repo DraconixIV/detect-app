@@ -73,7 +73,7 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
         >
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: textMain }}>
+              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: textMain }}>
                 Mises à jour
               </h3>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
@@ -116,7 +116,7 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
             gap: "10px"
           }}
         >
-          <div style={{ fontSize: "12.5px", color: textMain, fontWeight: "700", textAlign: "center" }}>
+          <div style={{ fontSize: "12.5px", color: textMain, fontWeight: "400", textAlign: "center" }}>
             Une idée ou un bug à signaler ?
           </div>
           <button
@@ -129,7 +129,7 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
               border: "none",
               color: "#ffffff",
               fontSize: "12px",
-              fontWeight: "800",
+              fontWeight: "400",
               cursor: "pointer",
               boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)"
             }}
@@ -162,13 +162,13 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
               }}
             >
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span style={{ fontSize: "12px", fontWeight: "800", color: textMain }}>
+                <span style={{ fontSize: "12px", fontWeight: "400", color: textMain }}>
                   {item.version}
                 </span>
-                <span style={{ fontSize: "11px", color: textSub, fontWeight: "600" }}>{item.date}</span>
+                <span style={{ fontSize: "11px", color: textSub, fontWeight: "400"}}>{item.date}</span>
               </div>
 
-              <div style={{ fontSize: "14px", fontWeight: "900", color: textMain }}>
+              <div style={{ fontSize: "14px", fontWeight: "400", color: textMain }}>
                 {item.title}
               </div>
 

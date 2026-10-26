@@ -292,7 +292,7 @@ ${contexte}
           justifyContent: center;
           background: rgba(255,255,255,0.05);
           font-size: 11px;
-          font-weight: bold;
+          font-weight: 400;
           color: #9ca3af;
           text-align: center;
           padding: 8px;
@@ -303,7 +303,7 @@ ${contexte}
 
       {/* Header section with Museum Title */}
       <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-        <h2 style={{ margin: 0, fontSize: "22px", fontWeight: "900", letterSpacing: "-0.5px" }}>
+        <h2 style={{ margin: 0, fontSize: "22px", fontWeight: "400", letterSpacing: "-0.5px" }}>
           🏛️ Musée numismatique
         </h2>
         <p style={{ margin: 0, fontSize: "12px", opacity: 0.7 }}>
@@ -324,20 +324,20 @@ ${contexte}
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-          <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "bold", textTransform: "uppercase" }}>Total monnaies</span>
-          <span style={{ fontSize: "24px", fontWeight: "900" }}>{stats.total} 🪙</span>
+          <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "400", textTransform: "uppercase" }}>Total monnaies</span>
+          <span style={{ fontSize: "24px", fontWeight: "400"}}>{stats.total} 🪙</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-          <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "bold", textTransform: "uppercase", color: "#fbbf24" }}>Or</span>
-          <span style={{ fontSize: "24px", fontWeight: "900", color: "#fbbf24" }}>{stats.goldCount} ✨</span>
+          <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "400", textTransform: "uppercase", color: "#fbbf24" }}>Or</span>
+          <span style={{ fontSize: "24px", fontWeight: "400", color: "#fbbf24" }}>{stats.goldCount} ✨</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-          <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "bold", textTransform: "uppercase", color: "#9ca3af" }}>Argent</span>
-          <span style={{ fontSize: "24px", fontWeight: "900", color: "#e5e7eb" }}>{stats.silverCount} 🥈</span>
+          <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "400", textTransform: "uppercase", color: "#9ca3af" }}>Argent</span>
+          <span style={{ fontSize: "24px", fontWeight: "400", color: "#e5e7eb" }}>{stats.silverCount} 🥈</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-          <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "bold", textTransform: "uppercase", color: "#f97316" }}>Bronze / Cuivre</span>
-          <span style={{ fontSize: "24px", fontWeight: "900", color: "#fdba74" }}>{stats.bronzeCount} 🥉</span>
+          <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "400", textTransform: "uppercase", color: "#f97316" }}>Bronze / Cuivre</span>
+          <span style={{ fontSize: "24px", fontWeight: "400", color: "#fdba74" }}>{stats.bronzeCount} 🥉</span>
         </div>
       </div>
 
@@ -457,10 +457,10 @@ ${contexte}
 
                 {/* Card description */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "2px", width: "100%", textAlign: "center" }}>
-                  <span style={{ fontSize: "13px", fontWeight: "bold", color: "white", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <span style={{ fontSize: "13px", fontWeight: "400", color: "white", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {coin.title || "Monnaie sans titre"}
                   </span>
-                  <span style={{ fontSize: "10px", color: "#fbbf24", fontWeight: "700", textTransform: "uppercase" }}>
+                  <span style={{ fontSize: "10px", color: "#fbbf24", fontWeight: "400", textTransform: "uppercase" }}>
                     {coin.description || "Inconnu"}
                   </span>
                   <span style={{ fontSize: "10px", opacity: 0.6 }}>
@@ -513,7 +513,7 @@ ${contexte}
           >
             {/* Header */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "11px", opacity: 0.6, fontWeight: "700", textTransform: "uppercase", letterSpacing: "1px" }}>
+              <span style={{ fontSize: "11px", opacity: 0.6, fontWeight: "400", textTransform: "uppercase", letterSpacing: "1px" }}>
                 🏛️ Exposition collection
               </span>
               <button
@@ -564,14 +564,14 @@ ${contexte}
 
             {/* Title & Metadata */}
             <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: "4px" }}>
-              <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "900" }}>
+              <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "400"}}>
                 {selectedCoin.title || "Monnaie sans titre"}
               </h3>
               <div style={{ display: "flex", justifyContent: "center", gap: "6px", flexWrap: "wrap", marginTop: "4px" }}>
-                <span style={{ padding: "4px 8px", borderRadius: "8px", background: "rgba(251, 191, 36, 0.15)", color: "#fbbf24", fontSize: "10px", fontWeight: "bold" }}>
+                <span style={{ padding: "4px 8px", borderRadius: "8px", background: "rgba(251, 191, 36, 0.15)", color: "#fbbf24", fontSize: "10px", fontWeight: "400"}}>
                   {selectedCoin.description || "Métal inconnu"}
                 </span>
-                <span style={{ padding: "4px 8px", borderRadius: "8px", background: "rgba(255, 255, 255, 0.08)", color: "#e5e7eb", fontSize: "10px", fontWeight: "bold" }}>
+                <span style={{ padding: "4px 8px", borderRadius: "8px", background: "rgba(255, 255, 255, 0.08)", color: "#e5e7eb", fontSize: "10px", fontWeight: "400"}}>
                   {selectedCoin.epoch}
                 </span>
               </div>
@@ -579,7 +579,7 @@ ${contexte}
 
             {/* Notice header block */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "11px", opacity: 0.6, fontWeight: "700", textTransform: "uppercase" }}>
+              <span style={{ fontSize: "11px", opacity: 0.6, fontWeight: "400", textTransform: "uppercase" }}>
                 📜 Notice historique
               </span>
               {!isEditing && selectedCoin.clean_description && (
@@ -590,7 +590,7 @@ ${contexte}
                     border: "none",
                     color: "#60a5fa",
                     fontSize: "11px",
-                    fontWeight: "bold",
+                    fontWeight: "400",
                     cursor: "pointer",
                     padding: 0
                   }}
@@ -611,7 +611,7 @@ ${contexte}
                 background: "linear-gradient(135deg, #a855f7, #6b21a8)",
                 color: "white",
                 fontSize: "11.5px",
-                fontWeight: "bold",
+                fontWeight: "400",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -654,7 +654,7 @@ ${contexte}
                       background: "#10b981",
                       color: "white",
                       border: "none",
-                      fontWeight: "bold",
+                      fontWeight: "400",
                       fontSize: "11px",
                       cursor: "pointer"
                     }}
@@ -720,7 +720,7 @@ ${contexte}
                   background: "#2563eb",
                   color: "white",
                   fontSize: "12px",
-                  fontWeight: "bold",
+                  fontWeight: "400",
                   cursor: "pointer"
                 }}
               >
@@ -740,7 +740,7 @@ ${contexte}
                     background: "rgba(59, 130, 246, 0.1)",
                     color: "#60a5fa",
                     fontSize: "12px",
-                    fontWeight: "bold",
+                    fontWeight: "400",
                     textDecoration: "none",
                     textAlign: "center",
                     display: "flex",

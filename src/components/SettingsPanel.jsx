@@ -142,7 +142,7 @@ export default function SettingsPanel({
 
   const sectionTitleStyle = {
     fontSize: "12px",
-    fontWeight: "800",
+    fontWeight: "400",
     textTransform: "uppercase",
     letterSpacing: "0.5px",
     marginBottom: "12px",
@@ -156,7 +156,7 @@ export default function SettingsPanel({
     <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: isFirst ? "0 0 10px 0" : "24px 0 10px 0" }}>
       <div style={{
         fontSize: "11px",
-        fontWeight: "900",
+        fontWeight: "400",
         textTransform: "uppercase",
         letterSpacing: "1.2px",
         color: color,
@@ -189,7 +189,7 @@ export default function SettingsPanel({
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
           <div style={{ fontSize: "28px" }}>⚙️</div>
           <div>
-            <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: textMain }}>
+            <h1 style={{ margin: 0, fontSize: "20px", fontWeight: "400", color: textMain }}>
               Paramètres
             </h1>
             <p style={{ margin: 0, fontSize: "12px", color: textSub }}>
@@ -212,7 +212,7 @@ export default function SettingsPanel({
               <span
                 style={{
                   fontSize: "10px",
-                  fontWeight: "800",
+                  fontWeight: "400",
                   padding: "3px 8px",
                   borderRadius: "6px",
                   background: workspace.mode === "session" ? "#10b981" : "#3b82f6",
@@ -241,16 +241,16 @@ export default function SettingsPanel({
             }}
           >
             <div>
-              <div style={{ fontSize: "10px", color: textSub, fontWeight: "700", textTransform: "uppercase" }}>
+              <div style={{ fontSize: "10px", color: textSub, fontWeight: "400", textTransform: "uppercase" }}>
                 Mon Code Unique
               </div>
-              <div style={{ fontSize: "18px", fontWeight: "900", letterSpacing: "1.5px", color: isLight ? "#000000" : "#ffffff" }}>
+              <div style={{ fontSize: "18px", fontWeight: "400", letterSpacing: "1.5px", color: isLight ? "#000000" : "#ffffff" }}>
                 {myCode}
               </div>
               {myName && (
-                <div style={{ fontSize: "11px", color: textSub, fontWeight: "600", marginTop: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
+                <div style={{ fontSize: "11px", color: textSub, fontWeight: "400", marginTop: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
                   <span>👤 Pseudo : <strong style={{ color: textMain }}>{myName}</strong></span>
-                  <span style={{ fontSize: "9px", background: "rgba(16, 185, 129, 0.15)", color: "#10b981", padding: "1px 5px", borderRadius: "4px", fontWeight: "700" }}>🔒</span>
+                  <span style={{ fontSize: "9px", background: "rgba(16, 185, 129, 0.15)", color: "#10b981", padding: "1px 5px", borderRadius: "4px", fontWeight: "400"}}>🔒</span>
                 </div>
               )}
             </div>
@@ -269,7 +269,7 @@ export default function SettingsPanel({
                 borderRadius: "10px",
                 padding: "8px 12px",
                 fontSize: "11px",
-                fontWeight: "700",
+                fontWeight: "400",
                 cursor: "pointer",
                 transition: "all 0.2s"
               }}
@@ -289,7 +289,7 @@ export default function SettingsPanel({
                   padding: "8px 12px",
                   borderRadius: "10px",
                   fontSize: "12px",
-                  fontWeight: "700",
+                  fontWeight: "400",
                   marginBottom: "8px"
                 }}
               >
@@ -306,7 +306,7 @@ export default function SettingsPanel({
                   border: "none",
                   color: isLight ? "#2563eb" : "#60a5fa",
                   fontSize: "11px",
-                  fontWeight: "700",
+                  fontWeight: "400",
                   cursor: "pointer",
                   padding: "4px 0",
                   display: "flex",
@@ -327,12 +327,12 @@ export default function SettingsPanel({
                   padding: "10px 12px"
                 }}
               >
-                <div style={{ fontSize: "11px", color: textSub, marginBottom: "8px", fontWeight: "600" }}>
+                <div style={{ fontSize: "11px", color: textSub, marginBottom: "8px", fontWeight: "400"}}>
                   Saisissez votre code pour recharger instantanément toutes vos trouvailles :
                 </div>
 
                 {restoreErrorMsg && (
-                  <div style={{ color: "#ef4444", fontSize: "11px", fontWeight: "700", marginBottom: "6px" }}>
+                  <div style={{ color: "#ef4444", fontSize: "11px", fontWeight: "400", marginBottom: "6px" }}>
                     ⚠️ {restoreErrorMsg}
                   </div>
                 )}
@@ -351,7 +351,7 @@ export default function SettingsPanel({
                       background: inputBg,
                       color: textMain,
                       fontSize: "12px",
-                      fontWeight: "700",
+                      fontWeight: "400",
                       textTransform: "uppercase"
                     }}
                   />
@@ -364,7 +364,7 @@ export default function SettingsPanel({
                       borderRadius: "8px",
                       padding: "8px 14px",
                       fontSize: "11px",
-                      fontWeight: "800",
+                      fontWeight: "400",
                       cursor: "pointer"
                     }}
                   >
@@ -405,7 +405,7 @@ export default function SettingsPanel({
                 background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
                 color: isLight ? "#0f172a" : "#ffffff",
                 fontSize: "13px",
-                fontWeight: "800",
+                fontWeight: "400",
                 cursor: "pointer",
                 boxShadow: isLight ? "0 2px 8px rgba(0, 0, 0, 0.04)" : "none",
                 display: "flex",
@@ -441,7 +441,7 @@ export default function SettingsPanel({
                 border: theme === "dark" ? (isLight ? "2px solid #3b82f6" : "2px solid #38bdf8") : `1px solid ${cardBorder}`,
                 background: theme === "dark" ? (isLight ? "rgba(59, 130, 246, 0.1)" : "rgba(56, 189, 248, 0.12)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
                 color: textMain,
-                fontWeight: "bold",
+                fontWeight: "400",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -463,7 +463,7 @@ export default function SettingsPanel({
                 border: theme === "light" ? (isLight ? "2px solid #3b82f6" : "2px solid #38bdf8") : `1px solid ${cardBorder}`,
                 background: theme === "light" ? (isLight ? "rgba(59, 130, 246, 0.1)" : "rgba(56, 189, 248, 0.12)") : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
                 color: textMain,
-                fontWeight: "bold",
+                fontWeight: "400",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -510,7 +510,7 @@ export default function SettingsPanel({
                       ? (isLight ? "rgba(59, 130, 246, 0.12)" : "rgba(56, 189, 248, 0.15)")
                       : (isLight ? "#f8fafc" : "rgba(255,255,255,0.04)"),
                     color: textMain,
-                    fontWeight: isSelected ? "800" : "600",
+                    fontWeight: "400",
                     fontSize: "12px",
                     cursor: "pointer",
                     display: "flex",
@@ -546,7 +546,7 @@ export default function SettingsPanel({
                     color: isLight ? "#0f172a" : "#ffffff",
                     fontSize: "11px",
                     cursor: "pointer",
-                    fontWeight: "bold"
+                    fontWeight: "400"
                   }}
                 >
                   ⚙️ Gestionnaire
@@ -562,7 +562,7 @@ export default function SettingsPanel({
                   color: textMain,
                   fontSize: "11px",
                   cursor: "pointer",
-                  fontWeight: "bold"
+                  fontWeight: "400"
                 }}
               >
                 {showCatManager ? "Masquer" : "Édition rapide ▾"}
@@ -590,7 +590,7 @@ export default function SettingsPanel({
                 />
                 <button
                   onClick={handleAddCategory}
-                  style={{ padding: "8px 14px", borderRadius: "10px", border: "none", background: "#10b981", color: "white", fontWeight: "bold", fontSize: "12px", cursor: "pointer" }}
+                  style={{ padding: "8px 14px", borderRadius: "10px", border: "none", background: "#10b981", color: "white", fontWeight: "400", fontSize: "12px", cursor: "pointer" }}
                 >
                   ➕ Ajouter
                 </button>
@@ -628,14 +628,14 @@ export default function SettingsPanel({
                             boxShadow: `0 0 4px ${categoriesData.colors?.[cat] || defaultCategoryColors[cat] || "#3b82f6"}88`
                           }}
                         />
-                        <span style={{ fontSize: "13px", fontWeight: "bold", color: textMain }}>
+                        <span style={{ fontSize: "13px", fontWeight: "400", color: textMain }}>
                           {categoriesData.emojis[cat] || "📦"} {cat}
                         </span>
                       </div>
                       <div style={{ display: "flex", gap: "6px" }}>
                         <button
                           onClick={() => setSelectedCatForSub(selectedCatForSub === cat ? "" : cat)}
-                          style={{ padding: "3px 8px", borderRadius: "8px", border: "none", background: isLight ? "rgba(0, 0, 0, 0.08)" : "rgba(255, 255, 255, 0.12)", color: textMain, fontSize: "10px", fontWeight: "bold", cursor: "pointer" }}
+                          style={{ padding: "3px 8px", borderRadius: "8px", border: "none", background: isLight ? "rgba(0, 0, 0, 0.08)" : "rgba(255, 255, 255, 0.12)", color: textMain, fontSize: "10px", fontWeight: "400", cursor: "pointer" }}
                         >
                           + Sous-catégorie
                         </button>
@@ -667,7 +667,7 @@ export default function SettingsPanel({
                           {sub}
                           <span
                             onClick={() => removeSubCategory(cat, sub)}
-                            style={{ cursor: "pointer", color: "#ef4444", fontWeight: "bold" }}
+                            style={{ cursor: "pointer", color: "#ef4444", fontWeight: "400"}}
                           >
                             ×
                           </span>
@@ -687,7 +687,7 @@ export default function SettingsPanel({
                         />
                         <button
                           onClick={() => handleAddSub(cat)}
-                          style={{ padding: "6px 10px", borderRadius: "8px", border: isLight ? "1px solid #cbd5e1" : "none", background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.15)", color: isLight ? "#0f172a" : "white", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}
+                          style={{ padding: "6px 10px", borderRadius: "8px", border: isLight ? "1px solid #cbd5e1" : "none", background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.15)", color: isLight ? "#0f172a" : "white", fontSize: "11px", fontWeight: "400", cursor: "pointer" }}
                         >
                           OK
                         </button>
@@ -714,7 +714,7 @@ export default function SettingsPanel({
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: showAuthBox ? "14px" : "12px" }}>
             <div>
-              <div style={{ fontSize: "12px", fontWeight: "bold", color: textMain }}>
+              <div style={{ fontSize: "12px", fontWeight: "400", color: textMain }}>
                 {user ? user.email : "Mode 100 % local / invité"}
               </div>
               <div style={{ fontSize: "10px", color: textSub }}>
@@ -733,7 +733,7 @@ export default function SettingsPanel({
                   background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
                   color: isLight ? "#0f172a" : "#ffffff",
                   fontSize: "11px",
-                  fontWeight: "bold",
+                  fontWeight: "400",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
@@ -753,7 +753,7 @@ export default function SettingsPanel({
                   background: showAuthBox ? (isLight ? "#e2e8f0" : "rgba(255,255,255,0.12)") : (isLight ? "#f1f5f9" : "rgba(255,255,255,0.08)"),
                   color: isLight ? "#0f172a" : "white",
                   fontSize: "11px",
-                  fontWeight: "bold",
+                  fontWeight: "400",
                   cursor: "pointer"
                 }}
               >
@@ -787,7 +787,7 @@ export default function SettingsPanel({
                 background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
                 color: isLight ? "#0f172a" : "white",
                 fontSize: "11px",
-                fontWeight: "bold",
+                fontWeight: "400",
                 cursor: "pointer"
               }}
             >
@@ -802,7 +802,7 @@ export default function SettingsPanel({
                 background: isLight ? "#f8fafc" : "rgba(255,255,255,0.04)",
                 color: textMain,
                 fontSize: "11px",
-                fontWeight: "bold",
+                fontWeight: "400",
                 cursor: "pointer"
               }}
             >
@@ -846,7 +846,7 @@ export default function SettingsPanel({
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <span style={{ fontSize: "18px" }}>☕</span>
                 <div>
-                  <div style={{ fontSize: "12px", fontWeight: "700", color: isLight ? "#0f172a" : "#ffffff" }}>
+                  <div style={{ fontSize: "12px", fontWeight: "400", color: isLight ? "#0f172a" : "#ffffff" }}>
                     Ko-fi
                   </div>
                   <div style={{ fontSize: "10px", color: textSub }}>
@@ -854,7 +854,7 @@ export default function SettingsPanel({
                   </div>
                 </div>
               </div>
-              <span style={{ fontSize: "13px", color: textSub, fontWeight: "bold" }}>↗</span>
+              <span style={{ fontSize: "13px", color: textSub, fontWeight: "400"}}>↗</span>
             </a>
 
             {/* PayPal */}
@@ -878,7 +878,7 @@ export default function SettingsPanel({
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <span style={{ fontSize: "18px" }}>💳</span>
                 <div>
-                  <div style={{ fontSize: "12px", fontWeight: "700", color: isLight ? "#0f172a" : "#ffffff" }}>
+                  <div style={{ fontSize: "12px", fontWeight: "400", color: isLight ? "#0f172a" : "#ffffff" }}>
                     PayPal.me
                   </div>
                   <div style={{ fontSize: "10px", color: textSub }}>
@@ -886,7 +886,7 @@ export default function SettingsPanel({
                   </div>
                 </div>
               </div>
-              <span style={{ fontSize: "13px", color: textSub, fontWeight: "bold" }}>↗</span>
+              <span style={{ fontSize: "13px", color: textSub, fontWeight: "400"}}>↗</span>
             </a>
           </div>
         </div>
@@ -924,7 +924,7 @@ export default function SettingsPanel({
                       background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
                       color: isLight ? "#0f172a" : "white",
                       fontSize: "11px",
-                      fontWeight: "bold",
+                      fontWeight: "400",
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
@@ -946,7 +946,7 @@ export default function SettingsPanel({
                       background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
                       color: isLight ? "#0f172a" : "white",
                       fontSize: "11px",
-                      fontWeight: "bold",
+                      fontWeight: "400",
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
@@ -996,7 +996,7 @@ export default function SettingsPanel({
                 background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
                 color: textMain,
                 fontSize: "13px",
-                fontWeight: "700",
+                fontWeight: "400",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -1020,7 +1020,7 @@ export default function SettingsPanel({
                 background: "#ef4444",
                 color: "#ffffff",
                 fontSize: "13px",
-                fontWeight: "800",
+                fontWeight: "400",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -1078,7 +1078,7 @@ export default function SettingsPanel({
             {deleteSuccess ? (
               <div style={{ textAlign: "center", padding: "20px 0", display: "flex", flexDirection: "column", gap: "12px", alignItems: "center" }}>
                 <div style={{ fontSize: "40px" }}>✅</div>
-                <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "800", color: "#10b981" }}>
+                <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "400", color: "#10b981" }}>
                   Compte et données supprimés
                 </h3>
                 <p style={{ margin: 0, fontSize: "13px", color: textSub }}>
@@ -1088,7 +1088,7 @@ export default function SettingsPanel({
             ) : isDeleting ? (
               <div style={{ textAlign: "center", padding: "24px 0", display: "flex", flexDirection: "column", gap: "14px", alignItems: "center" }}>
                 <div style={{ fontSize: "36px", animation: "pulse 1.5s infinite" }}>⏳</div>
-                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800" }}>
+                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400"}}>
                   Suppression en cours...
                 </h3>
                 <p style={{ margin: 0, fontSize: "12px", color: textSub }}>
@@ -1115,7 +1115,7 @@ export default function SettingsPanel({
                     ⚠️
                   </div>
                   <div>
-                    <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "900", color: isLight ? "#991b1b" : "#ef4444" }}>
+                    <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: isLight ? "#991b1b" : "#ef4444" }}>
                       Êtes-vous bien sûr de vouloir supprimer votre compte ?
                     </h3>
                   </div>
@@ -1134,7 +1134,7 @@ export default function SettingsPanel({
                     lineHeight: "1.45"
                   }}
                 >
-                  <div style={{ fontWeight: "800", color: isLight ? "#991b1b" : "#fca5a5", marginBottom: "2px" }}>
+                  <div style={{ fontWeight: "400", color: isLight ? "#991b1b" : "#fca5a5", marginBottom: "2px" }}>
                     Cette opération est définitive et irréversible. Voici ce qui sera supprimé :
                   </div>
                   <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
@@ -1171,7 +1171,7 @@ export default function SettingsPanel({
                       background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
                       color: isLight ? "#0f172a" : "#ffffff",
                       fontSize: "13px",
-                      fontWeight: "700",
+                      fontWeight: "400",
                       cursor: "pointer"
                     }}
                   >
@@ -1192,7 +1192,7 @@ export default function SettingsPanel({
                       background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
                       color: textMain,
                       fontSize: "12px",
-                      fontWeight: "700",
+                      fontWeight: "400",
                       cursor: "pointer"
                     }}
                   >
@@ -1224,7 +1224,7 @@ export default function SettingsPanel({
                       background: "#ef4444",
                       color: "#ffffff",
                       fontSize: "13px",
-                      fontWeight: "800",
+                      fontWeight: "400",
                       cursor: "pointer",
                       boxShadow: "0 4px 14px rgba(239, 68, 68, 0.35)"
                     }}

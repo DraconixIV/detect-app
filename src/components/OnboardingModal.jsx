@@ -383,7 +383,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
                 />
               ))}
             </div>
-            <span style={{ fontSize: "12px", fontWeight: "700", color: textSub, marginLeft: "4px" }}>
+            <span style={{ fontSize: "12px", fontWeight: "400", color: textSub, marginLeft: "4px" }}>
               Étape {step} sur 6
             </span>
           </div>

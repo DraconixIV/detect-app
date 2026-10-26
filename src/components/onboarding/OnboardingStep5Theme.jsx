@@ -16,7 +16,7 @@ export default function OnboardingStep5Theme({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       <div>
-        <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
+        <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "400", color: textMain, letterSpacing: "-0.5px" }}>
           Configuration initiale ⚙️
         </h1>
         <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
@@ -26,7 +26,7 @@ export default function OnboardingStep5Theme({
 
       {/* 1. Map Style */}
       <div>
-        <label style={{ fontSize: "11px", fontWeight: "800", textTransform: "uppercase", color: textSub, letterSpacing: "0.5px", marginBottom: "8px", display: "block" }}>
+        <label style={{ fontSize: "11px", fontWeight: "400", textTransform: "uppercase", color: textSub, letterSpacing: "0.5px", marginBottom: "8px", display: "block" }}>
           Fond de carte par défaut
         </label>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
@@ -42,7 +42,7 @@ export default function OnboardingStep5Theme({
               transition: "all 0.2s ease"
             }}
           >
-            <div style={{ fontSize: "14px", fontWeight: "800", color: selectedMapStyle === "satellite" ? (isDark ? "#60a5fa" : "#1e3a8a") : textMain }}>
+            <div style={{ fontSize: "14px", fontWeight: "400", color: selectedMapStyle === "satellite" ? (isDark ? "#60a5fa" : "#1e3a8a") : textMain }}>
               🛰️ Satellite HD
             </div>
             <div style={{ fontSize: "11px", color: textSub, marginTop: "2px" }}>
@@ -62,7 +62,7 @@ export default function OnboardingStep5Theme({
               transition: "all 0.2s ease"
             }}
           >
-            <div style={{ fontSize: "14px", fontWeight: "800", color: selectedMapStyle === "streets" ? (isDark ? "#60a5fa" : "#1e3a8a") : textMain }}>
+            <div style={{ fontSize: "14px", fontWeight: "400", color: selectedMapStyle === "streets" ? (isDark ? "#60a5fa" : "#1e3a8a") : textMain }}>
               🏔️ Relief topographique
             </div>
             <div style={{ fontSize: "11px", color: textSub, marginTop: "2px" }}>
@@ -74,7 +74,7 @@ export default function OnboardingStep5Theme({
 
       {/* 2. Dark / Light Mode with Live Preview */}
       <div>
-        <label style={{ fontSize: "11px", fontWeight: "800", textTransform: "uppercase", color: textSub, letterSpacing: "0.5px", marginBottom: "8px", display: "block" }}>
+        <label style={{ fontSize: "11px", fontWeight: "400", textTransform: "uppercase", color: textSub, letterSpacing: "0.5px", marginBottom: "8px", display: "block" }}>
           Mode d'affichage
         </label>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
@@ -88,7 +88,7 @@ export default function OnboardingStep5Theme({
               background: selectedAppTheme === "dark" ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : cardBg,
               color: selectedAppTheme === "dark" ? (isDark ? "#60a5fa" : "#1e3a8a") : textSub,
               fontSize: "13px",
-              fontWeight: "700",
+              fontWeight: "400",
               cursor: "pointer",
               transition: "all 0.2s ease"
             }}
@@ -105,7 +105,7 @@ export default function OnboardingStep5Theme({
               background: selectedAppTheme === "light" ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : cardBg,
               color: selectedAppTheme === "light" ? (isDark ? "#60a5fa" : "#1e3a8a") : textSub,
               fontSize: "13px",
-              fontWeight: "700",
+              fontWeight: "400",
               cursor: "pointer",
               transition: "all 0.2s ease"
             }}
@@ -127,7 +127,7 @@ export default function OnboardingStep5Theme({
             background: isDark ? "#1e293b" : "#ffffff",
             color: textSub,
             fontSize: "13px",
-            fontWeight: "600",
+            fontWeight: "400",
             cursor: "pointer"
           }}
         >
@@ -145,7 +145,7 @@ export default function OnboardingStep5Theme({
             background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
             color: "#ffffff",
             fontSize: "14px",
-            fontWeight: "700",
+            fontWeight: "400",
             cursor: "pointer",
             boxShadow: "0 2px 10px rgba(37, 99, 235, 0.25)",
             transition: "all 0.2s ease"

@@ -213,7 +213,7 @@ export default function StatsPanel({
             background: "#ef4444",
             color: "white",
             fontSize: "16px",
-            fontWeight: "bold",
+            fontWeight: "400",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
@@ -227,7 +227,7 @@ export default function StatsPanel({
       {/* Top Title */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
         <div>
-          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "800", color: textMain }}>
+          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "400", color: textMain }}>
             📊 Statistiques
           </h2>
           <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
@@ -244,7 +244,7 @@ export default function StatsPanel({
               background: cardBg,
               color: textMain,
               fontSize: "11px",
-              fontWeight: "700",
+              fontWeight: "400",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
@@ -260,18 +260,18 @@ export default function StatsPanel({
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", marginBottom: "16px" }}>
         <div style={{ background: cardBg, border: `1px solid ${cardBorder}`, boxShadow: cardShadow, padding: "10px", borderRadius: "14px", textAlign: "center" }}>
           <div style={{ fontSize: "18px" }}>📍</div>
-          <div style={{ fontSize: "9px", color: textSub, marginTop: "2px", fontWeight: "700", textTransform: "uppercase" }}>Trouvailles</div>
-          <div style={{ fontSize: "16px", fontWeight: "800", marginTop: "2px", color: isLight ? "#000000" : "#facc15" }}>{totalFinds}</div>
+          <div style={{ fontSize: "9px", color: textSub, marginTop: "2px", fontWeight: "400", textTransform: "uppercase" }}>Trouvailles</div>
+          <div style={{ fontSize: "16px", fontWeight: "400", marginTop: "2px", color: textMain }}>{totalFinds}</div>
         </div>
         <div style={{ background: cardBg, border: `1px solid ${cardBorder}`, boxShadow: cardShadow, padding: "10px", borderRadius: "14px", textAlign: "center" }}>
           <div style={{ fontSize: "18px" }}>⭐</div>
-          <div style={{ fontSize: "9px", color: textSub, marginTop: "2px", fontWeight: "700", textTransform: "uppercase" }}>Favoris</div>
-          <div style={{ fontSize: "16px", fontWeight: "800", marginTop: "2px", color: isLight ? "#000000" : "#ec4899" }}>{finds.filter(f => f.favorite).length}</div>
+          <div style={{ fontSize: "9px", color: textSub, marginTop: "2px", fontWeight: "400", textTransform: "uppercase" }}>Favoris</div>
+          <div style={{ fontSize: "16px", fontWeight: "400", marginTop: "2px", color: textMain }}>{finds.filter(f => f.favorite).length}</div>
         </div>
         <div style={{ background: cardBg, border: `1px solid ${cardBorder}`, boxShadow: cardShadow, padding: "10px", borderRadius: "14px", textAlign: "center" }}>
           <div style={{ fontSize: "18px" }}>🚶</div>
-          <div style={{ fontSize: "9px", color: textSub, marginTop: "2px", fontWeight: "700", textTransform: "uppercase" }}>Sorties</div>
-          <div style={{ fontSize: "16px", fontWeight: "800", marginTop: "2px", color: isLight ? "#000000" : "#10b981" }}>{savedTracks.length}</div>
+          <div style={{ fontSize: "9px", color: textSub, marginTop: "2px", fontWeight: "400", textTransform: "uppercase" }}>Sorties</div>
+          <div style={{ fontSize: "16px", fontWeight: "400", marginTop: "2px", color: textMain }}>{savedTracks.length}</div>
         </div>
       </div>
 
@@ -287,7 +287,7 @@ export default function StatsPanel({
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-          <span style={{ fontSize: "12px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px", color: textMain }}>
+          <span style={{ fontSize: "12px", fontWeight: "400", textTransform: "uppercase", letterSpacing: "0.5px", color: textMain }}>
             🏆 Organigrammes
           </span>
         </div>
@@ -321,7 +321,7 @@ export default function StatsPanel({
                   background: isSel ? (isLight ? "#ffffff" : "#2563eb") : "transparent",
                   color: isSel ? (isLight ? "#1e293b" : "#ffffff") : textSub,
                   boxShadow: isSel && isLight ? "0 2px 4px rgba(0,0,0,0.1)" : "none",
-                  fontWeight: isSel ? "800" : "600",
+                  fontWeight: "400",
                   fontSize: "10px",
                   cursor: "pointer",
                   display: "flex",
@@ -365,14 +365,28 @@ export default function StatsPanel({
                   position: "absolute",
                   inset: 0,
                   display: "flex",
-                  flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
                   pointerEvents: "none"
                 }}
               >
-                <span style={{ fontSize: "16px", fontWeight: "900", color: isLight ? "#0f172a" : "#facc15" }}>{totalFinds}</span>
-                <span style={{ fontSize: "8px", fontWeight: "700", color: textSub, textTransform: "uppercase" }}>Objets</span>
+                <div
+                  style={{
+                    width: "66px",
+                    height: "66px",
+                    borderRadius: "50%",
+                    background: "#f8fafc",
+                    border: "1px solid rgba(255, 255, 255, 0.25)",
+                    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.35)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <span style={{ fontSize: "16px", fontWeight: "400", color: "#000000", lineHeight: "1.1" }}>{totalFinds}</span>
+                  <span style={{ fontSize: "7.5px", fontWeight: "400", color: "#000000", opacity: 0.75, textTransform: "uppercase", marginTop: "1px" }}>Objets</span>
+                </div>
               </div>
             </div>
 
@@ -390,7 +404,7 @@ export default function StatsPanel({
                     background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.06)",
                     border: `1px solid ${cardBorder}`,
                     fontSize: "10px",
-                    fontWeight: "600"
+                    fontWeight: "400"
                   }}
                 >
                   <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: seg.color }} />
@@ -412,7 +426,7 @@ export default function StatsPanel({
 
               return (
                 <div key={category}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", fontWeight: "700", marginBottom: "3px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", fontWeight: "400", marginBottom: "3px" }}>
                     <span>{categoryEmojis[category] || "🏷️"} {category}</span>
                     <span style={{ color: textSub }}>{count} ({pct}%)</span>
                   </div>
@@ -446,15 +460,18 @@ export default function StatsPanel({
                 );
               }
 
-              const size = 180;
-              const center = size / 2;
-              const maxR = size * 0.38;
+              const svgW = 310;
+              const svgH = 260;
+              const cx = svgW / 2;
+              const cy = svgH / 2;
+              const maxR = 72;
               const totalAxes = topCategories.length;
 
               const getPoint = (val, idx) => {
                 const angle = (Math.PI * 2 / totalAxes) * idx - Math.PI / 2;
-                const distance = (val / maxCount) * maxR;
-                return [center + Math.cos(angle) * distance, center + Math.sin(angle) * distance];
+                const ratio = maxCount > 0 ? Math.max(val / maxCount, val > 0 ? 0.12 : 0) : 0;
+                const distance = ratio * maxR;
+                return [cx + Math.cos(angle) * distance, cy + Math.sin(angle) * distance];
               };
 
               const polygonPoints = topCategories
@@ -462,50 +479,81 @@ export default function StatsPanel({
                 .join(" ");
 
               return (
-                <div style={{ position: "relative", width: `${size}px`, height: `${size}px` }}>
-                  <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-                    {/* Concentric grid lines */}
+                <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                  <div style={{ fontSize: "10.5px", color: textSub, opacity: 0.85, textAlign: "center", marginBottom: "4px" }}>
+                    Comparaison des 6 catégories principales (échelle de 0 à {maxCount})
+                  </div>
+                  <svg width="100%" height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ maxWidth: "320px", overflow: "visible" }}>
+                    {/* Concentric grid polygons with scale labels */}
                     {[0.25, 0.5, 0.75, 1].map((scale, i) => {
                       const gridPoints = topCategories
                         .map((_, idx) => {
                           const angle = (Math.PI * 2 / totalAxes) * idx - Math.PI / 2;
-                          return `${center + Math.cos(angle) * maxR * scale},${center + Math.sin(angle) * maxR * scale}`;
+                          return `${cx + Math.cos(angle) * maxR * scale},${cy + Math.sin(angle) * maxR * scale}`;
                         })
                         .join(" ");
                       return (
                         <polygon
                           key={i}
                           points={gridPoints}
-                          fill="transparent"
-                          stroke={isLight ? "#cbd5e1" : "rgba(255,255,255,0.12)"}
+                          fill={i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent"}
+                          stroke={isLight ? "#cbd5e1" : "rgba(255,255,255,0.16)"}
                           strokeWidth="1"
+                          strokeDasharray={i < 3 ? "2 2" : "none"}
                         />
                       );
                     })}
 
-                    {/* Axis rays */}
-                    {topCategories.map((_, idx) => {
+                    {/* Axis rays and outer vertex labels */}
+                    {topCategories.map(([cat, count], idx) => {
                       const angle = (Math.PI * 2 / totalAxes) * idx - Math.PI / 2;
-                      const x2 = center + Math.cos(angle) * maxR;
-                      const y2 = center + Math.sin(angle) * maxR;
+                      const x2 = cx + Math.cos(angle) * maxR;
+                      const y2 = cy + Math.sin(angle) * maxR;
+                      const labelR = maxR + 28;
+                      const lx = cx + Math.cos(angle) * labelR;
+                      const ly = cy + Math.sin(angle) * labelR;
+                      const pct = Math.round((count / (totalFinds || 1)) * 100);
+
                       return (
-                        <line
-                          key={idx}
-                          x1={center}
-                          y1={center}
-                          x2={x2}
-                          y2={y2}
-                          stroke={isLight ? "#cbd5e1" : "rgba(255,255,255,0.15)"}
-                          strokeWidth="1"
-                        />
+                        <g key={cat}>
+                          <line
+                            x1={cx}
+                            y1={cy}
+                            x2={x2}
+                            y2={y2}
+                            stroke={isLight ? "#cbd5e1" : "rgba(255,255,255,0.2)"}
+                            strokeWidth="1"
+                          />
+                          <text
+                            x={lx}
+                            y={ly - 5}
+                            textAnchor="middle"
+                            dominantBaseline="central"
+                            fill={textMain}
+                            fontSize="10"
+                          >
+                            {categoryEmojis[cat] || ""} {cat}
+                          </text>
+                          <text
+                            x={lx}
+                            y={ly + 8}
+                            textAnchor="middle"
+                            dominantBaseline="central"
+                            fill={textSub}
+                            opacity="0.85"
+                            fontSize="9.5"
+                          >
+                            {count} obj. ({pct}%)
+                          </text>
+                        </g>
                       );
                     })}
 
                     {/* Shaded radar area */}
                     <polygon
                       points={polygonPoints}
-                      fill={isLight ? "rgba(37, 99, 235, 0.25)" : "rgba(250, 204, 21, 0.3)"}
-                      stroke={isLight ? "#2563eb" : "#facc15"}
+                      fill="rgba(59, 130, 246, 0.28)"
+                      stroke="#3b82f6"
                       strokeWidth="2"
                     />
 
@@ -518,9 +566,9 @@ export default function StatsPanel({
                           cx={px}
                           cy={py}
                           r="4"
-                          fill={isLight ? "#2563eb" : "#facc15"}
-                          stroke={isLight ? "#ffffff" : "#0f172a"}
-                          strokeWidth="1.5"
+                          fill="#ffffff"
+                          stroke="#2563eb"
+                          strokeWidth="2"
                         />
                       );
                     })}
@@ -528,31 +576,11 @@ export default function StatsPanel({
                 </div>
               );
             })()}
-
-            {/* Radar labels */}
-            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px", marginTop: "8px" }}>
-              {categoryData.slice(0, 6).map(([cat, count], idx) => (
-                <span
-                  key={cat}
-                  style={{
-                    fontSize: "10px",
-                    fontWeight: "700",
-                    padding: "2px 6px",
-                    borderRadius: "8px",
-                    background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.06)",
-                    color: textMain,
-                    border: `1px solid ${cardBorder}`
-                  }}
-                >
-                  {categoryEmojis[cat] || "🏷️"} {cat}: <strong>{count}</strong>
-                </span>
-              ))}
-            </div>
           </div>
         )}
       </div>
 
-      {/* SECTION ACCORDÉON DÉTAILLÉ DES CATÉGORIES ET SOUS-SECTIONS */}
+      {/* SECTION ACCORDÉON DÉTAILLÉ DES CATÉGORIES ET SOUS-CATÉGORIES */}
       <div
         style={{
           background: cardBg,
@@ -564,8 +592,8 @@ export default function StatsPanel({
         }}
       >
         <div style={{ textAlign: "center", marginBottom: "14px" }}>
-          <h3 style={{ margin: 0, fontSize: "13.5px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px", color: isLight ? "#0f172a" : "#ffffff", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <span>📂</span> Détails par sous-sections
+          <h3 style={{ margin: 0, fontSize: "13.5px", fontWeight: "400", textTransform: "uppercase", letterSpacing: "0.5px", color: isLight ? "#0f172a" : "#ffffff", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            <span>📂</span> Détails par sous-catégories
           </h3>
           <p style={{ margin: "4px 0 10px 0", fontSize: "11px", color: textSub }}>
             Touchez une catégorie pour déplier ou replier ses sous-catégories
@@ -584,7 +612,7 @@ export default function StatsPanel({
                     background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.08)",
                     color: textMain,
                     fontSize: "11px",
-                    fontWeight: "700",
+                    fontWeight: "400",
                     cursor: "pointer",
                     display: "inline-flex",
                     alignItems: "center",
@@ -655,10 +683,10 @@ export default function StatsPanel({
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                     <span style={{ fontSize: "18px" }}>{categoryEmojis[category] || "🏷️"}</span>
                     <div>
-                      <span style={{ fontWeight: "700", fontSize: "13px", color: textMain }}>
+                      <span style={{ fontWeight: "400", fontSize: "13px", color: textMain }}>
                         {category}
                       </span>
-                      <span style={{ marginLeft: "6px", fontSize: "11px", fontWeight: "800", color }}>
+                      <span style={{ marginLeft: "6px", fontSize: "11px", fontWeight: "400", color }}>
                         {count} ({pct}%)
                       </span>
                     </div>
@@ -668,7 +696,7 @@ export default function StatsPanel({
                     <span
                       style={{
                         fontSize: "9px",
-                        fontWeight: "700",
+                        fontWeight: "400",
                         padding: "2px 6px",
                         borderRadius: "6px",
                         background: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.1)",
@@ -709,7 +737,7 @@ export default function StatsPanel({
 
                         return (
                           <div key={subCat} style={{ padding: "4px 0" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", fontWeight: "600", marginBottom: "2px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", fontWeight: "400", marginBottom: "2px" }}>
                               <span style={{ color: textMain }}>↳ {subCat}</span>
                               <span style={{ color: textSub }}>{subCount} ({subPct}%)</span>
                             </div>
@@ -774,7 +802,7 @@ export default function StatsPanel({
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-          <h3 style={{ margin: 0, fontSize: "13px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px", color: isLight ? "#0f172a" : "#ffffff" }}>
+          <h3 style={{ margin: 0, fontSize: "13px", fontWeight: "400", textTransform: "uppercase", letterSpacing: "0.5px", color: isLight ? "#0f172a" : "#ffffff" }}>
             📅 Journal des sorties
           </h3>
           <button
@@ -784,7 +812,7 @@ export default function StatsPanel({
               borderRadius: "8px",
               border: `1px solid ${cardBorder}`,
               fontSize: "10px",
-              fontWeight: "bold",
+              fontWeight: "400",
               cursor: "pointer",
               background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
               color: textMain
@@ -820,10 +848,10 @@ export default function StatsPanel({
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
-                  <div style={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                  <div style={{ fontWeight: "400", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
                     <span style={{ color: textMain }}>📅 {dateStr}</span>
                     {dayFinds.length > 0 && (
-                      <span style={{ color: isLight ? "#000000" : "#facc15", fontWeight: "bold" }}>
+                      <span style={{ color: isLight ? "#000000" : "#facc15", fontWeight: "400"}}>
                         🪙 {dayFinds.length} trouvaille{dayFinds.length > 1 ? "s" : ""}
                       </span>
                     )}
@@ -844,7 +872,7 @@ export default function StatsPanel({
                         borderRadius: "6px",
                         padding: "2px 6px",
                         fontSize: "11px",
-                        fontWeight: "700",
+                        fontWeight: "400",
                         cursor: "pointer",
                         display: "inline-flex",
                         alignItems: "center",
@@ -866,7 +894,7 @@ export default function StatsPanel({
                             🚶 {t.session_name || `Parcours ${i + 1}`}
                           </span>
                           {t.session_code && (
-                            <span style={{ fontSize: "9px", background: "rgba(16, 185, 129, 0.2)", color: "#10b981", padding: "1px 5px", borderRadius: "4px", fontWeight: "700", flexShrink: 0 }}>
+                            <span style={{ fontSize: "9px", background: "rgba(16, 185, 129, 0.2)", color: "#10b981", padding: "1px 5px", borderRadius: "4px", fontWeight: "400", flexShrink: 0 }}>
                               👥 Équipe
                             </span>
                           )}
@@ -924,7 +952,7 @@ export default function StatsPanel({
             padding: "10px",
             borderRadius: "12px",
             fontSize: "12px",
-            fontWeight: "bold",
+            fontWeight: "400",
             cursor: "pointer",
             background: isLight ? "#ffffff" : "rgba(255,255,255,0.08)",
             border: `1px solid ${cardBorder}`,
@@ -942,7 +970,7 @@ export default function StatsPanel({
             padding: "10px",
             borderRadius: "12px",
             fontSize: "12px",
-            fontWeight: "bold",
+            fontWeight: "400",
             cursor: "pointer",
             background: isLight ? "#ffffff" : "rgba(255,255,255,0.08)",
             border: `1px solid ${cardBorder}`,

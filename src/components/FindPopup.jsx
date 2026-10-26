@@ -604,7 +604,7 @@ export default function FindPopup({
     padding: "10px",
     background: "#1f2937",
     color: "white",
-    fontWeight: "bold",
+    fontWeight: "400",
     fontSize: "13px",
     cursor: "pointer",
     transition: "background 0.2s"
@@ -636,18 +636,18 @@ export default function FindPopup({
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "6px" }}>
-          <h4 style={{ margin: 0, fontSize: "14px", fontWeight: "800", color: "#1f2937", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
+          <h4 style={{ margin: 0, fontSize: "14px", fontWeight: "400", color: "#1f2937", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
             {title || "Sans titre"}
           </h4>
           {isReadOnly && (
-            <span style={{ fontSize: "10px", background: "#fef3c7", color: "#b45309", padding: "1px 6px", borderRadius: "6px", fontWeight: "700", whiteSpace: "nowrap" }}>
+            <span style={{ fontSize: "10px", background: "#fef3c7", color: "#b45309", padding: "1px 6px", borderRadius: "6px", fontWeight: "400", whiteSpace: "nowrap" }}>
               🔒 Lecture
             </span>
           )}
         </div>
 
         {finderText && (
-          <div style={{ fontSize: "10px", color: "#374151", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px" }}>
+          <div style={{ fontSize: "10px", color: "#374151", fontWeight: "400", display: "flex", alignItems: "center", gap: "4px" }}>
             <span>👤</span>
             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               Trouvé par : {finderText}
@@ -656,13 +656,13 @@ export default function FindPopup({
         )}
 
         {find.session_code && (
-          <div style={{ fontSize: "9px", background: "rgba(16, 185, 129, 0.12)", color: "#059669", padding: "2px 6px", borderRadius: "5px", fontWeight: "700", display: "inline-flex", alignItems: "center", gap: "4px", width: "fit-content" }}>
+          <div style={{ fontSize: "9px", background: "rgba(16, 185, 129, 0.12)", color: "#059669", padding: "2px 6px", borderRadius: "5px", fontWeight: "400", display: "inline-flex", alignItems: "center", gap: "4px", width: "fit-content" }}>
             <span>👥</span>
             <span>Session Équipe ({find.session_code})</span>
           </div>
         )}
 
-        <div style={{ fontSize: "11px", color: "#6b7280", fontWeight: "700" }}>
+        <div style={{ fontSize: "11px", color: "#6b7280", fontWeight: "400"}}>
           {categoryEmojis[category] || "📍"} {category} {subCategory ? `• ${subCategory}` : ""}
           {material && material !== "Indéterminé" ? ` • ${materialEmojis[material] || "🪙"} ${material}` : ""}
         </div>
@@ -757,7 +757,7 @@ export default function FindPopup({
               background: "#111827",
               color: "white",
               fontSize: "11px",
-              fontWeight: "bold",
+              fontWeight: "400",
               cursor: "pointer"
             }}
           >
@@ -810,21 +810,21 @@ export default function FindPopup({
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "12px", gap: "8px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", letterSpacing: "-0.5px" }}>
+            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", letterSpacing: "-0.5px" }}>
               {isReadOnly ? "🔍 Fiche trouvaille" : "🔍 Détails de la trouvaille"}
             </h3>
             {isReadOnly && (
-              <span style={{ fontSize: "10px", background: "rgba(234, 179, 8, 0.15)", color: "#facc15", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>
+              <span style={{ fontSize: "10px", background: "rgba(234, 179, 8, 0.15)", color: "#facc15", padding: "2px 6px", borderRadius: "6px", fontWeight: "400"}}>
                 🔒 Lecture
               </span>
             )}
             {finderText && (
-              <span style={{ fontSize: "10px", background: "rgba(255, 255, 255, 0.08)", color: "#e2e8f0", border: "1px solid rgba(255, 255, 255, 0.1)", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>
+              <span style={{ fontSize: "10px", background: "rgba(255, 255, 255, 0.08)", color: "#e2e8f0", border: "1px solid rgba(255, 255, 255, 0.1)", padding: "2px 6px", borderRadius: "6px", fontWeight: "400"}}>
                 👤 {finderText}
               </span>
             )}
             {find.session_code && (
-              <span style={{ fontSize: "10px", background: "rgba(16, 185, 129, 0.15)", color: "#10b981", border: "1px solid rgba(16, 185, 129, 0.25)", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>
+              <span style={{ fontSize: "10px", background: "rgba(16, 185, 129, 0.15)", color: "#10b981", border: "1px solid rgba(16, 185, 129, 0.25)", padding: "2px 6px", borderRadius: "6px", fontWeight: "400"}}>
                 👥 Session {find.session_code}
               </span>
             )}
@@ -862,7 +862,7 @@ export default function FindPopup({
                 borderRadius: "10px",
                 background: activeTab === "discovery" ? "#1e293b" : "rgba(255,255,255,0.04)",
                 color: activeTab === "discovery" ? "#ffffff" : "#94a3b8",
-                fontWeight: activeTab === "discovery" ? "700" : "600",
+                fontWeight: "400",
                 fontSize: "11px",
                 cursor: "pointer"
               }}
@@ -879,7 +879,7 @@ export default function FindPopup({
                 borderRadius: "10px",
                 background: activeTab === "clean" ? "#1e293b" : "rgba(255,255,255,0.04)",
                 color: activeTab === "clean" ? "#ffffff" : "#94a3b8",
-                fontWeight: activeTab === "clean" ? "700" : "600",
+                fontWeight: "400",
                 fontSize: "11px",
                 cursor: "pointer"
               }}
@@ -896,7 +896,7 @@ export default function FindPopup({
                 borderRadius: "10px",
                 background: activeTab === "identification" ? "#1e293b" : "rgba(255,255,255,0.04)",
                 color: activeTab === "identification" ? "#ffffff" : "#94a3b8",
-                fontWeight: activeTab === "identification" ? "700" : "600",
+                fontWeight: "400",
                 fontSize: "11px",
                 cursor: "pointer"
               }}
@@ -909,7 +909,7 @@ export default function FindPopup({
           {activeTab === "discovery" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               <div>
-                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Titre</label>
+                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "400", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Titre</label>
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -919,7 +919,7 @@ export default function FindPopup({
               </div>
 
               <div>
-                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Date</label>
+                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "400", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Date</label>
                 <input
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
@@ -930,7 +930,7 @@ export default function FindPopup({
 
               <div style={{ display: "flex", gap: "8px" }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Latitude</label>
+                  <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "400", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Latitude</label>
                   <input
                     type="number"
                     step="any"
@@ -941,7 +941,7 @@ export default function FindPopup({
                   />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Longitude</label>
+                  <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "400", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Longitude</label>
                   <input
                     type="number"
                     step="any"
@@ -956,7 +956,7 @@ export default function FindPopup({
               {/* Note Vocale Audio Player */}
               {(find.audio_url || find.audio) && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                  <span style={{ fontSize: "11px", fontWeight: "700", color: "#e2e8f0", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span style={{ fontSize: "11px", fontWeight: "400", color: "#e2e8f0", display: "flex", alignItems: "center", gap: "6px" }}>
                     <span>🎙️</span> Note vocale
                   </span>
                   <AudioNotePlayer
@@ -968,7 +968,7 @@ export default function FindPopup({
               )}
 
               <div>
-                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Catégorie</label>
+                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "400", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Catégorie</label>
                 <select
                   value={category}
                   onChange={handleCategoryChange}
@@ -983,7 +983,7 @@ export default function FindPopup({
               </div>
 
               <div>
-                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Sous-catégorie</label>
+                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "400", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Sous-catégorie</label>
                 {availableSubCats.length > 0 ? (
                   <select
                     value={subCategory}
@@ -1007,7 +1007,7 @@ export default function FindPopup({
               </div>
 
               <div>
-                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Métal</label>
+                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "400", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Métal</label>
                 <select
                   value={material || "Indéterminé"}
                   onChange={(e) => setMaterial(e.target.value)}
@@ -1111,7 +1111,7 @@ export default function FindPopup({
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "12px", fontWeight: "800", color: "#f1f5f9", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span style={{ fontSize: "12px", fontWeight: "400", color: "#f1f5f9", display: "flex", alignItems: "center", gap: "6px" }}>
                       <span>🎥</span> Vidéo de la trouvaille
                     </span>
                     {!isReadOnly && (
@@ -1128,7 +1128,7 @@ export default function FindPopup({
                             padding: "4px 9px",
                             fontSize: "11px",
                             cursor: "pointer",
-                            fontWeight: "bold"
+                            fontWeight: "400"
                           }}
                         >
                           🔄 Remplacer
@@ -1145,7 +1145,7 @@ export default function FindPopup({
                             padding: "4px 9px",
                             fontSize: "11px",
                             cursor: "pointer",
-                            fontWeight: "bold"
+                            fontWeight: "400"
                           }}
                         >
                           🗑️ Supprimer
@@ -1182,7 +1182,7 @@ export default function FindPopup({
                     gap: "8px"
                   }}
                 >
-                  <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: "600", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: "400", display: "flex", alignItems: "center", gap: "6px" }}>
                     <span>🎥</span> Vidéo de la trouvaille : Aucune
                   </span>
                   {!isReadOnly && !find.isOfflinePending && (
@@ -1198,7 +1198,7 @@ export default function FindPopup({
                         padding: "6px 12px",
                         fontSize: "11px",
                         cursor: "pointer",
-                        fontWeight: "bold"
+                        fontWeight: "400"
                       }}
                     >
                       {uploading ? "Envoi..." : "🎥 + Ajouter vidéo"}
@@ -1208,7 +1208,7 @@ export default function FindPopup({
               )}
 
               <div>
-                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Description</label>
+                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "400", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Description</label>
                 <textarea
                   value={cleanDescription}
                   onChange={(e) => setCleanDescription(e.target.value)}
@@ -1291,7 +1291,7 @@ export default function FindPopup({
           {activeTab === "identification" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               <div>
-                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "700", textTransform: "uppercase", display: "block", marginBottom: "4px", color: "#9ca3af" }}>
+                <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "400", textTransform: "uppercase", display: "block", marginBottom: "4px", color: "#9ca3af" }}>
                   Lien d'identification (URL de référence)
                 </label>
                 <input
@@ -1331,7 +1331,7 @@ export default function FindPopup({
                       color: "#ffffff",
                       textDecoration: "none",
                       fontSize: "13px",
-                      fontWeight: "700",
+                      fontWeight: "400",
                       textAlign: "center",
                       transition: "0.2s"
                     }}
@@ -1476,7 +1476,7 @@ export default function FindPopup({
           }}
         >
           <span style={{ fontSize: "36px", marginBottom: "16px" }}>⚙️</span>
-          <span style={{ fontSize: "16px", fontWeight: "bold" }}>Alignement et compression des photos en cours...</span>
+          <span style={{ fontSize: "16px", fontWeight: "400"}}>Alignement et compression des photos en cours...</span>
         </div>
       )}
       {confirmConfig && (

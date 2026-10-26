@@ -19,7 +19,7 @@ export default function ModernButton({
 
         borderRadius: "14px",
 
-        fontWeight: "bold",
+        fontWeight: "400",
 
         cursor: "pointer",
 

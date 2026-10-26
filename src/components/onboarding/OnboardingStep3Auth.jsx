@@ -15,7 +15,7 @@ export default function OnboardingStep3Auth({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       <div>
-        <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
+        <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "400", color: textMain, letterSpacing: "-0.5px" }}>
           Votre espace prospecteur 👤
         </h1>
         <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
@@ -46,14 +46,14 @@ export default function OnboardingStep3Auth({
                 alignItems: "center",
                 justifyContent: "center",
                 color: "white",
-                fontWeight: "bold",
+                fontWeight: "400",
                 fontSize: "18px"
               }}
             >
               ✓
             </div>
             <div>
-              <div style={{ fontSize: "14px", fontWeight: "800", color: isDark ? "#34d399" : "#065f46" }}>
+              <div style={{ fontSize: "14px", fontWeight: "400", color: isDark ? "#34d399" : "#065f46" }}>
                 Connecté avec succès
               </div>
               <div style={{ fontSize: "13px", color: isDark ? "#a7f3d0" : "#047857" }}>
@@ -73,7 +73,7 @@ export default function OnboardingStep3Auth({
               background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
               color: "white",
               fontSize: "14px",
-              fontWeight: "700",
+              fontWeight: "400",
               cursor: "pointer",
               boxShadow: "0 2px 10px rgba(37, 99, 235, 0.25)"
             }}
@@ -101,7 +101,7 @@ export default function OnboardingStep3Auth({
                 border: "none",
                 color: textSub,
                 fontSize: "13px",
-                fontWeight: "600",
+                fontWeight: "400",
                 cursor: "pointer",
                 padding: "6px 10px",
                 textDecoration: "underline",
@@ -127,7 +127,7 @@ export default function OnboardingStep3Auth({
             background: isDark ? "#1e293b" : "#ffffff",
             color: textSub,
             fontSize: "12px",
-            fontWeight: "600",
+            fontWeight: "400",
             cursor: "pointer"
           }}
         >

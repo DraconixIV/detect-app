@@ -153,7 +153,7 @@ export default function FlipCoinModal({
         {/* Modal Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "800", color: "#ffffff", display: "flex", alignItems: "center", gap: "8px" }}>
+            <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "400", color: "#ffffff", display: "flex", alignItems: "center", gap: "8px" }}>
               <span>🪙</span> Configuration de la vue 3D
             </h2>
             <p style={{ margin: "4px 0 0 0", fontSize: "12px", color: textSub }}>
@@ -170,7 +170,7 @@ export default function FlipCoinModal({
               height: "32px",
               color: "#ffffff",
               fontSize: "14px",
-              fontWeight: "bold",
+              fontWeight: "400",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
@@ -194,7 +194,7 @@ export default function FlipCoinModal({
             justifyContent: "center"
           }}
         >
-          <div style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "1px", color: "#facc15", marginBottom: "8px" }}>
+          <div style={{ fontSize: "11px", fontWeight: "400", textTransform: "uppercase", letterSpacing: "1px", color: "#facc15", marginBottom: "8px" }}>
             Aperçu 3D interactif (Tapez pour tourner)
           </div>
 
@@ -245,7 +245,7 @@ export default function FlipCoinModal({
               justifyContent: center;
               color: #facc15;
               font-size: 11px;
-              font-weight: bold;
+              font-weight: 400;
               text-align: center;
               padding: 10px;
               box-sizing: border-box;
@@ -301,7 +301,7 @@ export default function FlipCoinModal({
               gap: "8px"
             }}
           >
-            <div style={{ fontSize: "12px", fontWeight: "800", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ fontSize: "12px", fontWeight: "400", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span>1. Avers (Avant)</span>
               {aversUrl && <span style={{ color: "#10b981", fontSize: "11px" }}>✓ Choisi</span>}
             </div>
@@ -321,7 +321,7 @@ export default function FlipCoinModal({
                     borderRadius: "6px",
                     padding: "2px 6px",
                     fontSize: "10px",
-                    fontWeight: "bold",
+                    fontWeight: "400",
                     cursor: "pointer"
                   }}
                 >
@@ -340,7 +340,7 @@ export default function FlipCoinModal({
                     background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
                     color: "white",
                     fontSize: "11px",
-                    fontWeight: "700",
+                    fontWeight: "400",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
@@ -362,7 +362,7 @@ export default function FlipCoinModal({
                     background: "rgba(255,255,255,0.08)",
                     color: "#ffffff",
                     fontSize: "11px",
-                    fontWeight: "700",
+                    fontWeight: "400",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
@@ -389,7 +389,7 @@ export default function FlipCoinModal({
               gap: "8px"
             }}
           >
-            <div style={{ fontSize: "12px", fontWeight: "800", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ fontSize: "12px", fontWeight: "400", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span>2. Revers (Arrière)</span>
               {reversUrl && <span style={{ color: "#10b981", fontSize: "11px" }}>✓ Choisi</span>}
             </div>
@@ -409,7 +409,7 @@ export default function FlipCoinModal({
                     borderRadius: "6px",
                     padding: "2px 6px",
                     fontSize: "10px",
-                    fontWeight: "bold",
+                    fontWeight: "400",
                     cursor: "pointer"
                   }}
                 >
@@ -428,7 +428,7 @@ export default function FlipCoinModal({
                     background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
                     color: "white",
                     fontSize: "11px",
-                    fontWeight: "700",
+                    fontWeight: "400",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
@@ -450,7 +450,7 @@ export default function FlipCoinModal({
                     background: "rgba(255,255,255,0.08)",
                     color: "#ffffff",
                     fontSize: "11px",
-                    fontWeight: "700",
+                    fontWeight: "400",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
@@ -469,7 +469,7 @@ export default function FlipCoinModal({
         {/* Existing photos quick selector */}
         {candidatePhotos.length > 0 && (
           <div>
-            <div style={{ fontSize: "11px", fontWeight: "700", color: "#ffffff", marginBottom: "6px" }}>
+            <div style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "6px" }}>
               Ou assigner depuis les photos existantes de l'objet :
             </div>
             <div style={{ display: "flex", gap: "8px", overflowX: "auto", paddingBottom: "4px" }}>
@@ -489,13 +489,13 @@ export default function FlipCoinModal({
                   <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "2px" }}>
                     <button
                       onClick={() => setAversUrl(url)}
-                      style={{ background: "#2563eb", color: "white", border: "none", borderRadius: "4px", fontSize: "9px", fontWeight: "bold", cursor: "pointer", padding: "2px" }}
+                      style={{ background: "#2563eb", color: "white", border: "none", borderRadius: "4px", fontSize: "9px", fontWeight: "400", cursor: "pointer", padding: "2px" }}
                     >
                       + Avers
                     </button>
                     <button
                       onClick={() => setReversUrl(url)}
-                      style={{ background: "#059669", color: "white", border: "none", borderRadius: "4px", fontSize: "9px", fontWeight: "bold", cursor: "pointer", padding: "2px" }}
+                      style={{ background: "#059669", color: "white", border: "none", borderRadius: "4px", fontSize: "9px", fontWeight: "400", cursor: "pointer", padding: "2px" }}
                     >
                       + Revers
                     </button>
@@ -522,7 +522,7 @@ export default function FlipCoinModal({
                 : "linear-gradient(135deg, #10b981, #059669)",
               color: !aversUrl || !reversUrl ? "rgba(255,255,255,0.4)" : "#ffffff",
               fontSize: "14px",
-              fontWeight: "800",
+              fontWeight: "400",
               cursor: !aversUrl || !reversUrl ? "not-allowed" : "pointer",
               boxShadow: !aversUrl || !reversUrl ? "none" : "0 4px 14px rgba(16, 185, 129, 0.35)",
               display: "flex",
@@ -547,7 +547,7 @@ export default function FlipCoinModal({
                 background: "rgba(239, 68, 68, 0.15)",
                 color: "#ef4444",
                 fontSize: "12px",
-                fontWeight: "700",
+                fontWeight: "400",
                 cursor: "pointer"
               }}
             >

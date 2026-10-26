@@ -68,7 +68,7 @@ export default function OnboardingStep4Categories({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       <div>
-        <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
+        <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "400", color: textMain, letterSpacing: "-0.5px" }}>
           Votre classification :
         </h1>
         <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
@@ -97,7 +97,7 @@ export default function OnboardingStep4Categories({
             border: "none",
             background: step4Tab === "categories" ? (isDark ? "#2563eb" : "#ffffff") : "transparent",
             color: step4Tab === "categories" ? "#ffffff" : textSub,
-            fontWeight: step4Tab === "categories" ? "800" : "600",
+            fontWeight: "400",
             fontSize: "12px",
             cursor: "pointer",
             boxShadow: step4Tab === "categories" ? "0 2px 4px rgba(0,0,0,0.15)" : "none",
@@ -116,7 +116,7 @@ export default function OnboardingStep4Categories({
             border: "none",
             background: step4Tab === "metals" ? (isDark ? "#2563eb" : "#ffffff") : "transparent",
             color: step4Tab === "metals" ? "#ffffff" : textSub,
-            fontWeight: step4Tab === "metals" ? "800" : "600",
+            fontWeight: "400",
             fontSize: "12px",
             cursor: "pointer",
             boxShadow: step4Tab === "metals" ? "0 2px 4px rgba(0,0,0,0.15)" : "none",
@@ -139,7 +139,7 @@ export default function OnboardingStep4Categories({
               padding: "12px 14px"
             }}
           >
-            <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+            <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
               💡 Suggestions en 1 clic (cliquez pour activer / désactiver) :
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
@@ -158,7 +158,7 @@ export default function OnboardingStep4Categories({
                       background: isAlreadyAdded ? (isDark ? "rgba(37,99,235,0.25)" : "#eff6ff") : (isDark ? "#1e293b" : "#ffffff"),
                       color: isAlreadyAdded ? (isDark ? "#93c5fd" : "#1e3a8a") : textSub,
                       fontSize: "12px",
-                      fontWeight: isAlreadyAdded ? "700" : "500",
+                      fontWeight: "400",
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
@@ -182,7 +182,7 @@ export default function OnboardingStep4Categories({
                     <span
                       style={{
                         color: isAlreadyAdded ? "#10b981" : (isDark ? "#64748b" : "#94a3b8"),
-                        fontWeight: "900",
+                        fontWeight: "400",
                         fontSize: "11px"
                       }}
                     >
@@ -207,7 +207,7 @@ export default function OnboardingStep4Categories({
               gap: "10px"
             }}
           >
-            <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+            <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
               Créer une catégorie :
             </div>
 
@@ -232,7 +232,7 @@ export default function OnboardingStep4Categories({
 
             {/* Grille complète d'émojis */}
             <div>
-              <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
+              <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
                 Émoji associé :
               </div>
               <div
@@ -282,7 +282,7 @@ export default function OnboardingStep4Categories({
             {/* Sous-catégories avec libellé et placeholder harmonisé */}
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
-                <div style={{ fontSize: "11px", fontWeight: "700", color: textSub }}>
+                <div style={{ fontSize: "11px", fontWeight: "400", color: textSub }}>
                   Sous-catégories :
                 </div>
                 {Object.keys(categories).length > 0 && (
@@ -298,7 +298,7 @@ export default function OnboardingStep4Categories({
                         background: inputBg,
                         color: textMain,
                         fontSize: "11px",
-                        fontWeight: "700",
+                        fontWeight: "400",
                         outline: "none",
                         cursor: "pointer"
                       }}
@@ -333,7 +333,7 @@ export default function OnboardingStep4Categories({
 
             {/* Color Swatch Picker */}
             <div>
-              <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
+              <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
                 🎨 Couleur du repère carte :
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
@@ -361,7 +361,7 @@ export default function OnboardingStep4Categories({
                       }}
                       title={colorHex}
                     >
-                      {isSelected && <span style={{ color: "#ffffff", fontSize: "10px", fontWeight: "900" }}>✓</span>}
+                      {isSelected && <span style={{ color: "#ffffff", fontSize: "10px", fontWeight: "400"}}>✓</span>}
                     </button>
                   );
                 })}
@@ -378,7 +378,7 @@ export default function OnboardingStep4Categories({
                 background: newCatName.trim() ? "linear-gradient(135deg, #10b981, #059669)" : (isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"),
                 color: newCatName.trim() ? "#ffffff" : (isDark ? "rgba(255,255,255,0.3)" : "#94a3b8"),
                 fontSize: "13px",
-                fontWeight: "700",
+                fontWeight: "400",
                 cursor: newCatName.trim() ? "pointer" : "not-allowed",
                 transition: "all 0.2s ease"
               }}
@@ -397,7 +397,7 @@ export default function OnboardingStep4Categories({
                 background: newSubText.trim() && Object.keys(categories).length > 0 ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : (isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9"),
                 color: newSubText.trim() && Object.keys(categories).length > 0 ? (isDark ? "#93c5fd" : "#1d4ed8") : (isDark ? "rgba(255,255,255,0.3)" : "#94a3b8"),
                 fontSize: "13px",
-                fontWeight: "700",
+                fontWeight: "400",
                 cursor: newSubText.trim() && Object.keys(categories).length > 0 ? "pointer" : "not-allowed",
                 transition: "all 0.2s ease"
               }}
@@ -409,11 +409,11 @@ export default function OnboardingStep4Categories({
           {/* Configured Categories List */}
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "12px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              <span style={{ fontSize: "12px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Vos Catégories ({Object.keys(categories).length})
               </span>
               {Object.keys(categories).length > 0 && (
-                <span style={{ fontSize: "11px", color: "#10b981", fontWeight: "700" }}>
+                <span style={{ fontSize: "11px", color: "#10b981", fontWeight: "400"}}>
                   ✓ Prêt pour l'inventaire
                 </span>
               )}
@@ -432,7 +432,7 @@ export default function OnboardingStep4Categories({
                 }}
               >
                 <div style={{ fontSize: "24px", marginBottom: "4px" }}>🏷️</div>
-                <div style={{ fontWeight: "700", color: textMain, marginBottom: "2px" }}>
+                <div style={{ fontWeight: "400", color: textMain, marginBottom: "2px" }}>
                   0 catégorie pour le moment
                 </div>
                 <div>
@@ -486,10 +486,10 @@ export default function OnboardingStep4Categories({
                             }}
                           />
                           <span style={{ fontSize: "16px", flexShrink: 0 }}>{em}</span>
-                          <span style={{ fontSize: "13px", fontWeight: "700", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          <span style={{ fontSize: "13px", fontWeight: "400", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             {catName}
                           </span>
-                          <span style={{ fontSize: "10px", fontWeight: "700", padding: "2px 6px", borderRadius: "8px", background: isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0", color: textSub, flexShrink: 0 }}>
+                          <span style={{ fontSize: "10px", fontWeight: "400", padding: "2px 6px", borderRadius: "8px", background: isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0", color: textSub, flexShrink: 0 }}>
                             {safeSubCats.length} sous-catégories
                           </span>
                         </div>
@@ -547,7 +547,7 @@ export default function OnboardingStep4Categories({
                                 {sub}
                                 <span
                                   onClick={() => handleRemoveSubInline(catName, sub)}
-                                  style={{ cursor: "pointer", color: "#ef4444", fontWeight: "bold", fontSize: "10px" }}
+                                  style={{ cursor: "pointer", color: "#ef4444", fontWeight: "400", fontSize: "10px" }}
                                 >
                                   ×
                                 </span>
@@ -589,7 +589,7 @@ export default function OnboardingStep4Categories({
                                 background: "#3b82f6",
                                 color: "white",
                                 fontSize: "11px",
-                                fontWeight: "bold",
+                                fontWeight: "400",
                                 cursor: "pointer"
                               }}
                             >
@@ -619,7 +619,7 @@ export default function OnboardingStep4Categories({
               padding: "12px 14px"
             }}
           >
-            <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+            <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
               💡 Métaux recommandés par GeoProspect (Cliquez pour activer / désactiver) :
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
@@ -637,7 +637,7 @@ export default function OnboardingStep4Categories({
                       background: isActif ? (isDark ? "rgba(37,99,235,0.25)" : "#eff6ff") : (isDark ? "#1e293b" : "#ffffff"),
                       color: isActif ? (isDark ? "#93c5fd" : "#1e3a8a") : textMain,
                       fontSize: "12px",
-                      fontWeight: isActif ? "700" : "500",
+                      fontWeight: "400",
                       cursor: "pointer",
                       display: "flex",
                       alignItems: "center",
@@ -650,7 +650,7 @@ export default function OnboardingStep4Categories({
                     <span style={{ fontSize: "14px" }}>{materialEmojis[rec.name] || rec.emoji}</span>
                     <span>{rec.name}</span>
                     {isActif ? (
-                      <span style={{ color: "#10b981", fontWeight: "900", fontSize: "11px" }}>✓</span>
+                      <span style={{ color: "#10b981", fontWeight: "400", fontSize: "11px" }}>✓</span>
                     ) : (
                       <span style={{ color: textSub, fontSize: "10px" }}>+</span>
                     )}
@@ -673,7 +673,7 @@ export default function OnboardingStep4Categories({
               gap: "10px"
             }}
           >
-            <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+            <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
               Ajouter un métal et/ou un alliage :
             </div>
 
@@ -698,7 +698,7 @@ export default function OnboardingStep4Categories({
 
             {/* Grille complète d'émojis pour les métaux */}
             <div>
-              <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
+              <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
                 Émoji associé :
               </div>
               <div
@@ -755,7 +755,7 @@ export default function OnboardingStep4Categories({
                 background: newMetalName.trim() ? "linear-gradient(135deg, #10b981, #059669)" : (isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"),
                 color: newMetalName.trim() ? "#ffffff" : (isDark ? "rgba(255,255,255,0.3)" : "#94a3b8"),
                 fontSize: "13px",
-                fontWeight: "700",
+                fontWeight: "400",
                 cursor: newMetalName.trim() ? "pointer" : "not-allowed",
                 transition: "all 0.2s ease"
               }}
@@ -767,11 +767,11 @@ export default function OnboardingStep4Categories({
           {/* Liste des métaux actifs */}
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "12px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              <span style={{ fontSize: "12px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Vos Métaux Actifs ({materials.length})
               </span>
               {materials.length > 0 && (
-                <span style={{ fontSize: "11px", color: "#10b981", fontWeight: "700" }}>
+                <span style={{ fontSize: "11px", color: "#10b981", fontWeight: "400"}}>
                   ✓ Enregistrement prêt
                 </span>
               )}
@@ -790,7 +790,7 @@ export default function OnboardingStep4Categories({
                 }}
               >
                 <div style={{ fontSize: "24px", marginBottom: "4px" }}>🪙</div>
-                <div style={{ fontWeight: "700", color: textMain, marginBottom: "2px" }}>
+                <div style={{ fontWeight: "400", color: textMain, marginBottom: "2px" }}>
                   Aucun métal sélectionné
                 </div>
                 <div>
@@ -828,7 +828,7 @@ export default function OnboardingStep4Categories({
                         <span
                           style={{
                             fontSize: "12px",
-                            fontWeight: "700",
+                            fontWeight: "400",
                             color: textMain,
                             whiteSpace: "nowrap",
                             overflow: "hidden",
@@ -874,7 +874,7 @@ export default function OnboardingStep4Categories({
             background: isDark ? "#1e293b" : "#ffffff",
             color: textSub,
             fontSize: "13px",
-            fontWeight: "600",
+            fontWeight: "400",
             cursor: "pointer"
           }}
         >
@@ -892,7 +892,7 @@ export default function OnboardingStep4Categories({
             background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
             color: "#ffffff",
             fontSize: "13px",
-            fontWeight: "700",
+            fontWeight: "400",
             cursor: "pointer",
             boxShadow: "0 2px 10px rgba(37, 99, 235, 0.25)",
             transition: "all 0.2s ease"

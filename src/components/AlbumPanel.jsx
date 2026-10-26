@@ -235,7 +235,7 @@ function ZoomableImage({ src, alt, onReset }) {
             height: "28px",
             color: scale <= 1 ? "rgba(255,255,255,0.3)" : "#ffffff",
             fontSize: "14px",
-            fontWeight: "bold",
+            fontWeight: "400",
             cursor: scale <= 1 ? "not-allowed" : "pointer",
             display: "flex",
             alignItems: "center",
@@ -246,7 +246,7 @@ function ZoomableImage({ src, alt, onReset }) {
           −
         </button>
 
-        <span style={{ fontSize: "11px", fontWeight: "800", color: "#ffffff", minWidth: "42px", textAlign: "center" }}>
+        <span style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", minWidth: "42px", textAlign: "center" }}>
           {Math.round(scale * 100)}%
         </span>
 
@@ -262,7 +262,7 @@ function ZoomableImage({ src, alt, onReset }) {
             height: "28px",
             color: scale >= 4 ? "rgba(255,255,255,0.3)" : "#ffffff",
             fontSize: "14px",
-            fontWeight: "bold",
+            fontWeight: "400",
             cursor: scale >= 4 ? "not-allowed" : "pointer",
             display: "flex",
             alignItems: "center",
@@ -284,7 +284,7 @@ function ZoomableImage({ src, alt, onReset }) {
               padding: "2px 8px",
               color: "#ffffff",
               fontSize: "11px",
-              fontWeight: "700",
+              fontWeight: "400",
               cursor: "pointer",
               marginLeft: "4px"
             }}
@@ -340,6 +340,7 @@ export default function AlbumPanel({
   const [albumFilter, setAlbumFilter] = useState("Tous");
   const [albumSearch, setAlbumSearch] = useState("");
   const [albumSort, setAlbumSort] = useState("recent");
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [selectedAlbumPhoto, setSelectedAlbumPhoto] = useState(null);
   const [lightboxCoinFlipped, setLightboxCoinFlipped] = useState(false);
 
@@ -524,7 +525,7 @@ export default function AlbumPanel({
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: "20px", fontWeight: "800", color: textMain }}>
+            <h2 style={{ margin: 0, fontSize: "20px", fontWeight: "400", color: textMain }}>
               🖼️ Album de collection
             </h2>
             <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
@@ -547,7 +548,7 @@ export default function AlbumPanel({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontWeight: "bold"
+                  fontWeight: "400"
                 }}
               >
                 ✕
@@ -557,7 +558,7 @@ export default function AlbumPanel({
         </div>
 
         {/* Search & Sort Panel */}
-        <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
+        <div style={{ display: "flex", gap: "8px", marginBottom: "12px", position: "relative" }}>
           <input
             type="text"
             placeholder="🔍 Rechercher titre, métal, lieu..."
@@ -574,25 +575,96 @@ export default function AlbumPanel({
               outline: "none"
             }}
           />
-          <select
-            value={albumSort}
-            onChange={(e) => setAlbumSort(e.target.value)}
-            style={{
-              padding: "9px 10px",
-              borderRadius: "12px",
-              border: `1px solid ${inputBorder}`,
-              background: inputBg,
-              color: "#ffffff",
-              fontSize: "12px",
-              fontWeight: "bold",
-              outline: "none",
-              cursor: "pointer"
-            }}
-          >
-            <option value="recent" style={{ background: isLight ? "#ffffff" : "#1f2937", color: textMain }}>📅 Récentes</option>
-            <option value="old" style={{ background: isLight ? "#ffffff" : "#1f2937", color: textMain }}>📅 Anciennes</option>
-            <option value="fav" style={{ background: isLight ? "#ffffff" : "#1f2937", color: textMain }}>⭐ Favoris</option>
-          </select>
+          <div style={{ position: "relative" }}>
+            <button
+              type="button"
+              onClick={() => setShowSortDropdown((prev) => !prev)}
+              style={{
+                height: "100%",
+                padding: "9px 12px",
+                borderRadius: "12px",
+                border: `1px solid ${inputBorder}`,
+                background: inputBg,
+                color: "#ffffff",
+                fontSize: "12px",
+                fontWeight: "400",
+                outline: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                whiteSpace: "nowrap"
+              }}
+            >
+              <span>
+                {albumSort === "recent" ? "📅 Récentes" : albumSort === "old" ? "📅 Anciennes" : "⭐ Favoris"}
+              </span>
+              <span style={{ fontSize: "10px", opacity: 0.75 }}>{showSortDropdown ? "▴" : "▾"}</span>
+            </button>
+
+            {showSortDropdown && (
+              <>
+                <div
+                  style={{ position: "fixed", inset: 0, zIndex: 7000 }}
+                  onClick={() => setShowSortDropdown(false)}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "calc(100% + 6px)",
+                    right: 0,
+                    minWidth: "160px",
+                    background: isLight ? "#ffffff" : "#111827",
+                    border: `1px solid ${cardBorder}`,
+                    borderRadius: "14px",
+                    boxShadow: "0 12px 30px rgba(0, 0, 0, 0.65)",
+                    padding: "6px",
+                    zIndex: 7001,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px"
+                  }}
+                >
+                  {[
+                    { id: "recent", label: "📅 Récentes" },
+                    { id: "old", label: "📅 Anciennes" },
+                    { id: "fav", label: "⭐ Favoris" }
+                  ].map((opt) => {
+                    const isSelected = albumSort === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => {
+                          setAlbumSort(opt.id);
+                          setShowSortDropdown(false);
+                        }}
+                        style={{
+                          width: "100%",
+                          padding: "8px 10px",
+                          borderRadius: "10px",
+                          border: isSelected ? "1px solid rgba(255,255,255,0.22)" : "1px solid transparent",
+                          background: isSelected ? "rgba(255, 255, 255, 0.1)" : "transparent",
+                          color: textMain,
+                          fontSize: "12px",
+                          fontWeight: "400",
+                          textAlign: "left",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: "8px"
+                        }}
+                      >
+                        <span>{opt.label}</span>
+                        {isSelected && <span style={{ fontSize: "11px", opacity: 0.9 }}>✓</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Category Filters Carousel */}
@@ -610,7 +682,7 @@ export default function AlbumPanel({
                   padding: "6px 12px",
                   borderRadius: "12px",
                   fontSize: "11px",
-                  fontWeight: "700",
+                  fontWeight: "400",
                   whiteSpace: "nowrap",
                   cursor: "pointer",
                   boxShadow: isSel ? "0 2px 8px rgba(37, 99, 235, 0.3)" : "none",
@@ -638,7 +710,7 @@ export default function AlbumPanel({
             }}
           >
             <span style={{ fontSize: "40px", marginBottom: "10px" }}>📷</span>
-            <div style={{ fontWeight: "700", fontSize: "14px", color: "#ffffff", marginBottom: "4px" }}>
+            <div style={{ fontWeight: "400", fontSize: "14px", color: "#ffffff", marginBottom: "4px" }}>
               Aucune trouvaille photographiée
             </div>
             <div style={{ fontSize: "12px", color: "#ffffff", opacity: 0.85 }}>
@@ -671,25 +743,25 @@ export default function AlbumPanel({
 
                   {/* 3D Coin Badge if configured */}
                   {hasFlipCoin && (
-                    <div style={{ position: "absolute", bottom: "6px", right: "6px", background: "rgba(245, 158, 11, 0.85)", padding: "2px 5px", borderRadius: "5px", fontSize: "8px", fontWeight: "900", color: "#000000", display: "flex", alignItems: "center", gap: "2px" }}>
+                    <div style={{ position: "absolute", bottom: "6px", right: "6px", background: "rgba(245, 158, 11, 0.85)", padding: "2px 5px", borderRadius: "5px", fontSize: "8px", fontWeight: "400", color: "#000000", display: "flex", alignItems: "center", gap: "2px" }}>
                       🪙 3D
                     </div>
                   )}
 
                   {/* Favorite Badge */}
                   {find.favorite && (
-                    <div style={{ position: "absolute", top: "6px", right: "6px", background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", color: "#ffffff", fontWeight: "700" }}>
+                    <div style={{ position: "absolute", top: "6px", right: "6px", background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)", padding: "3px 5px", borderRadius: "6px", fontSize: "9px", color: "#ffffff", fontWeight: "400"}}>
                       ⭐
                     </div>
                   )}
 
                   {/* Hover Details Overlay */}
                   <div className="album-grid-overlay">
-                    <div style={{ fontSize: "10px", fontWeight: "800", color: "#ffffff", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                    <div style={{ fontSize: "10px", fontWeight: "400", color: "#ffffff", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
                       {find.title || "Sans titre"}
                     </div>
                     {find.finder_name && (
-                      <div style={{ fontSize: "8px", color: "#38bdf8", fontWeight: "700", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                      <div style={{ fontSize: "8px", color: "#38bdf8", fontWeight: "400", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
                         👤 {find.finder_name}
                       </div>
                     )}
@@ -729,8 +801,8 @@ export default function AlbumPanel({
               style={{
                 position: "fixed",
                 inset: 0,
-                background: "rgba(0, 0, 0, 0.95)",
-                zIndex: 99999,
+                background: "#070a12",
+                zIndex: 999999,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -765,7 +837,7 @@ export default function AlbumPanel({
                         padding: "6px 12px",
                         color: "#ffffff",
                         fontSize: "11px",
-                        fontWeight: "800",
+                        fontWeight: "400",
                         cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
@@ -932,7 +1004,7 @@ export default function AlbumPanel({
                         </div>
                       </div>
                     </div>
-                    <div style={{ fontSize: "12px", color: "#ffffff", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px" }}>
+                    <div style={{ fontSize: "12px", color: "#ffffff", fontWeight: "400", display: "flex", alignItems: "center", gap: "4px" }}>
                       <span>👆</span>
                       <span>Tapez sur la pièce pour voir l'autre face ({lightboxCoinFlipped ? "Revers" : "Avers"})</span>
                     </div>
@@ -960,7 +1032,7 @@ export default function AlbumPanel({
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <h3 style={{ margin: 0, fontSize: "17px", fontWeight: "800", color: "#ffffff" }}>
+                <h3 style={{ margin: 0, fontSize: "17px", fontWeight: "400", color: "#ffffff" }}>
                   {selectedAlbumPhoto.find.title || "Sans titre"}
                 </h3>
                 <p style={{ margin: 0, fontSize: "13px", color: "#ffffff", opacity: 0.9 }}>
@@ -984,7 +1056,7 @@ export default function AlbumPanel({
                     padding: "11px 20px",
                     background: "#2563eb",
                     color: "#ffffff",
-                    fontWeight: "800",
+                    fontWeight: "400",
                     fontSize: "13px",
                     cursor: "pointer",
                     boxShadow: "0 4px 14px rgba(37, 99, 235, 0.4)",
@@ -1009,7 +1081,7 @@ export default function AlbumPanel({
                     padding: "10px 16px",
                     background: "rgba(255, 255, 255, 0.1)",
                     color: "#ffffff",
-                    fontWeight: "800",
+                    fontWeight: "400",
                     fontSize: "13px",
                     cursor: "pointer",
                     display: "flex",

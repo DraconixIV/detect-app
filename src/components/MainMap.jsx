@@ -163,7 +163,7 @@ const createClusterCustomIcon = (cluster) => {
         border: 2px solid #ffffff;
         border-radius: 50%;
         color: #ffffff;
-        font-weight: 900;
+        font-weight: 400;
         font-size: 14px;
         font-family: system-ui, -apple-system, sans-serif;
         display: flex;
@@ -342,7 +342,7 @@ export default function MainMap({
                 background: #10b981;
                 color: #ffffff;
                 font-size: 11px;
-                font-weight: 800;
+                font-weight: 400;
                 padding: 3px 8px;
                 border-radius: 8px;
                 box-shadow: 0 3px 10px rgba(0,0,0,0.5);

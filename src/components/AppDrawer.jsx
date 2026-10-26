@@ -181,7 +181,7 @@ export default function AppDrawer({
                 />
               </div>
               <div>
-                <div style={{ fontSize: "14px", fontWeight: "800", color: textMain }}>
+                <div style={{ fontSize: "14px", fontWeight: "400", color: textMain }}>
                   {myName}
                 </div>
                 <div style={{ fontSize: "11px", color: textSub, display: "flex", alignItems: "center", gap: "4px" }}>
@@ -229,7 +229,7 @@ export default function AppDrawer({
                 border: "1px solid rgba(239, 68, 68, 0.3)",
                 color: "#ef4444",
                 fontSize: "11px",
-                fontWeight: "700",
+                fontWeight: "400",
                 display: "flex",
                 alignItems: "center",
                 gap: "6px"
@@ -267,7 +267,7 @@ export default function AppDrawer({
                 alignItems: "center",
                 gap: "12px",
                 fontSize: "13px",
-                fontWeight: "700",
+                fontWeight: "400",
                 cursor: "pointer",
                 textAlign: "left",
                 position: "relative",
@@ -286,7 +286,7 @@ export default function AppDrawer({
                     background: "#ef4444",
                     color: "#ffffff",
                     fontSize: "11.5px",
-                    fontWeight: "900",
+                    fontWeight: "400",
                     minWidth: "20px",
                     height: "20px",
                     padding: "0 5px",
@@ -319,7 +319,7 @@ export default function AppDrawer({
             justifyContent: "space-between"
           }}
         >
-          <div style={{ fontSize: "11px", color: textSub, fontWeight: "600" }}>
+          <div style={{ fontSize: "11px", color: textSub, fontWeight: "400"}}>
             GeoProspect • v{CURRENT_APP_VERSION}
           </div>
           <div style={{ display: "flex", gap: "6px" }}>
@@ -334,7 +334,7 @@ export default function AppDrawer({
                 borderRadius: "8px",
                 background: isLight ? "#e2e8f0" : "rgba(255,255,255,0.08)",
                 color: textMain,
-                fontWeight: "700"
+                fontWeight: "400"
               }}
             >
               Soutenir

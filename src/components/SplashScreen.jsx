@@ -238,7 +238,7 @@ export default function SplashScreen({ onFinish, duration = 1400 }) {
           style={{
             margin: 0,
             fontSize: "26px",
-            fontWeight: "900",
+            fontWeight: "400",
             letterSpacing: "-0.6px",
             color: "#0f172a",
             display: "flex",
@@ -254,7 +254,7 @@ export default function SplashScreen({ onFinish, duration = 1400 }) {
           style={{
             margin: 0,
             fontSize: "13px",
-            fontWeight: "500",
+            fontWeight: "400",
             color: "#64748b",
             letterSpacing: "0.2px",
             maxWidth: "270px",

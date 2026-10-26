@@ -87,7 +87,7 @@ export default function SortieLiveWidget({
         <span
           style={{
             fontSize: "11px",
-            fontWeight: "900",
+            fontWeight: "400",
             fontFamily: "monospace",
             color: isSortiePaused ? "#fbbf24" : "#f87171",
             letterSpacing: "0.3px"
@@ -105,19 +105,19 @@ export default function SortieLiveWidget({
           {/* Metrics : Distance & Finds */}
           <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
             <div>
-              <div style={{ fontSize: "7px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase", lineHeight: "1" }}>
+              <div style={{ fontSize: "7px", fontWeight: "400", color: "#94a3b8", textTransform: "uppercase", lineHeight: "1" }}>
                 Distance
               </div>
-              <div style={{ fontSize: "10.5px", fontWeight: "800", color: "#38bdf8", fontFamily: "monospace", marginTop: "1px" }}>
+              <div style={{ fontSize: "10.5px", fontWeight: "400", color: "#38bdf8", fontFamily: "monospace", marginTop: "1px" }}>
                 {formatDistance(sortieDistance)}
               </div>
             </div>
 
             <div>
-              <div style={{ fontSize: "7px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase", lineHeight: "1" }}>
+              <div style={{ fontSize: "7px", fontWeight: "400", color: "#94a3b8", textTransform: "uppercase", lineHeight: "1" }}>
                 Cibles
               </div>
-              <div style={{ fontSize: "10.5px", fontWeight: "800", color: "#fbbf24", fontFamily: "monospace", marginTop: "1px" }}>
+              <div style={{ fontSize: "10.5px", fontWeight: "400", color: "#fbbf24", fontFamily: "monospace", marginTop: "1px" }}>
                 {displayFindsCount}
               </div>
             </div>
@@ -139,7 +139,7 @@ export default function SortieLiveWidget({
                   : "rgba(15, 23, 42, 0.65)",
                 color: showLiveSortieTrack ? "#22d3ee" : "#94a3b8",
                 fontSize: "10px",
-                fontWeight: "800",
+                fontWeight: "400",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -175,7 +175,7 @@ export default function SortieLiveWidget({
                   : "rgba(245, 158, 11, 0.16)",
                 color: isSortiePaused ? "#34d399" : "#fbbf24",
                 fontSize: "10px",
-                fontWeight: "800",
+                fontWeight: "400",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -206,7 +206,7 @@ export default function SortieLiveWidget({
               background: "rgba(239, 68, 68, 0.2)",
               color: "#fca5a5",
               fontSize: "10px",
-              fontWeight: "800",
+              fontWeight: "400",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",

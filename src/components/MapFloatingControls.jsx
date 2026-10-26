@@ -173,7 +173,7 @@ export default function MapFloatingControls({
                   background: "#f59e0b",
                   color: "#000000",
                   fontSize: "10px",
-                  fontWeight: "900",
+                  fontWeight: "400",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -187,6 +187,7 @@ export default function MapFloatingControls({
 
           {/* 3. RECENTER & FOLLOW GPS */}
           <button
+            type="button"
             onClick={onRecenterGps}
             data-testid="recenter-gps-btn"
             aria-label="Recentrer GPS"
@@ -194,20 +195,16 @@ export default function MapFloatingControls({
               width: "44px",
               height: "44px",
               borderRadius: "50%",
-              border: `1.5px solid ${isLocatingGps ? "#38bdf8" : (followGps ? "#10b981" : "rgba(255, 255, 255, 0.18)")}`,
-              background: isLocatingGps
-                ? "rgba(14, 165, 233, 0.3)"
-                : (followGps ? "rgba(16, 185, 129, 0.25)" : "rgba(11, 19, 41, 0.82)"),
+              border: "1.5px solid rgba(255, 255, 255, 0.18)",
+              background: "rgba(11, 19, 41, 0.82)",
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
-              color: isLocatingGps ? "#38bdf8" : (followGps ? "#34d399" : "#ffffff"),
-              cursor: isLocatingGps ? "wait" : "pointer",
+              color: "#ffffff",
+              cursor: "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: isLocatingGps
-                ? "0 0 16px rgba(56, 189, 248, 0.6)"
-                : (followGps ? "0 0 16px rgba(16, 185, 129, 0.4)" : "0 4px 16px rgba(0, 0, 0, 0.45)"),
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.45)",
               transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
             }}
             title={
@@ -239,7 +236,7 @@ export default function MapFloatingControls({
               background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
               color: "#ffffff",
               fontSize: "24px",
-              fontWeight: "900",
+              fontWeight: "400",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",

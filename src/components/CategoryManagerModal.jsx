@@ -158,7 +158,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <span style={{ fontSize: "24px" }}>{modalTab === "categories" ? "🏷️" : "🪙"}</span>
             <div>
-              <h2 style={{ margin: 0, fontSize: "17px", fontWeight: "800", color: textMain }}>
+              <h2 style={{ margin: 0, fontSize: "17px", fontWeight: "400", color: textMain }}>
                 {modalTab === "categories" ? "Gestion des catégories" : "Gestion des métaux et alliages"}
               </h2>
               <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
@@ -180,7 +180,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
               background: cardBg,
               color: textMain,
               fontSize: "16px",
-              fontWeight: "bold",
+              fontWeight: "400",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
@@ -211,7 +211,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
               border: "none",
               background: modalTab === "categories" ? (isLight ? "#ffffff" : "#1e293b") : "transparent",
               color: modalTab === "categories" ? textMain : (isLight ? "#64748b" : "#94a3b8"),
-              fontWeight: modalTab === "categories" ? "800" : "600",
+              fontWeight: "400",
               fontSize: "12px",
               cursor: "pointer",
               boxShadow: modalTab === "categories" ? "0 2px 5px rgba(0,0,0,0.08)" : "none",
@@ -230,7 +230,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
               border: "none",
               background: modalTab === "metals" ? (isLight ? "#ffffff" : "#1e293b") : "transparent",
               color: modalTab === "metals" ? textMain : (isLight ? "#64748b" : "#94a3b8"),
-              fontWeight: modalTab === "metals" ? "800" : "600",
+              fontWeight: "400",
               fontSize: "12px",
               cursor: "pointer",
               boxShadow: modalTab === "metals" ? "0 2px 5px rgba(0,0,0,0.08)" : "none",
@@ -259,7 +259,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                   gap: "10px"
                 }}
               >
-                <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                   Créer une catégorie :
                 </div>
 
@@ -283,7 +283,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
 
                 {/* Grille complète d'émojis */}
                 <div>
-                  <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
+                  <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
                     Émoji associé :
                   </div>
                   <div
@@ -332,7 +332,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
 
                 {/* Color Swatches */}
                 <div>
-                  <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
+                  <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
                     Couleur du repère carte :
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
@@ -360,7 +360,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                           }}
                           title={colorHex}
                         >
-                          {isSelected && <span style={{ color: "#ffffff", fontSize: "10px", fontWeight: "900" }}>✓</span>}
+                          {isSelected && <span style={{ color: "#ffffff", fontSize: "10px", fontWeight: "400"}}>✓</span>}
                         </button>
                       );
                     })}
@@ -378,7 +378,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                     background: newCatName.trim() ? "linear-gradient(135deg, #3b82f6, #2563eb)" : (isLight ? "#e2e8f0" : "rgba(255,255,255,0.1)"),
                     color: newCatName.trim() ? "#ffffff" : textSub,
                     fontSize: "12px",
-                    fontWeight: "700",
+                    fontWeight: "400",
                     cursor: newCatName.trim() ? "pointer" : "not-allowed",
                     transition: "all 0.2s ease"
                   }}
@@ -389,7 +389,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
 
               {/* Categories List */}
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                   Catégories Actives ({Object.keys(categoriesData.categories || {}).length})
                 </div>
 
@@ -438,7 +438,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                             }}
                           />
                           <span style={{ fontSize: "18px" }}>{emoji}</span>
-                          <span style={{ fontWeight: "700", fontSize: "14px", color: textMain }}>
+                          <span style={{ fontWeight: "400", fontSize: "14px", color: textMain }}>
                             {catName}
                           </span>
                           <span style={{ fontSize: "11px", color: textSub }}>
@@ -480,7 +480,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                             borderTop: `1px solid ${cardBorder}`
                           }}
                         >
-                          <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
+                          <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
                             Choisir la couleur pour {catName} :
                           </div>
                           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
@@ -541,7 +541,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                                     color: "#ef4444",
                                     cursor: "pointer",
                                     fontSize: "10px",
-                                    fontWeight: "bold",
+                                    fontWeight: "400",
                                     padding: "0 2px"
                                   }}
                                 >
@@ -587,7 +587,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                                 background: "#3b82f6",
                                 color: "white",
                                 fontSize: "11px",
-                                fontWeight: "bold",
+                                fontWeight: "400",
                                 cursor: "pointer"
                               }}
                             >
@@ -614,7 +614,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                   marginBottom: "16px"
                 }}
               >
-                <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
                   💡 Métaux recommandés par GeoProspect (Cliquez pour activer / désactiver) :
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
@@ -632,7 +632,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                           background: isActif ? (isLight ? "#eff6ff" : "rgba(59, 130, 246, 0.2)") : inputBg,
                           color: isActif ? (isLight ? "#1e3a8a" : "#60a5fa") : textMain,
                           fontSize: "12px",
-                          fontWeight: isActif ? "700" : "500",
+                          fontWeight: "400",
                           cursor: "pointer",
                           display: "flex",
                           alignItems: "center",
@@ -644,7 +644,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                         <span style={{ fontSize: "14px" }}>{materialsData.emojis?.[rec.name] || rec.emoji}</span>
                         <span>{rec.name}</span>
                         {isActif ? (
-                          <span style={{ color: "#10b981", fontWeight: "900", fontSize: "11px" }}>✓</span>
+                          <span style={{ color: "#10b981", fontWeight: "400", fontSize: "11px" }}>✓</span>
                         ) : (
                           <span style={{ color: textSub, fontSize: "10px" }}>+</span>
                         )}
@@ -668,7 +668,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                   gap: "10px"
                 }}
               >
-                <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                   Ajouter un métal et/ou un alliage :
                 </div>
 
@@ -692,7 +692,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
 
                 {/* Grille complète d'émojis pour les métaux */}
                 <div>
-                  <div style={{ fontSize: "11px", fontWeight: "700", color: textSub, marginBottom: "6px" }}>
+                  <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
                     Émoji associé :
                   </div>
                   <div
@@ -749,7 +749,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                     background: newMetalName.trim() ? "linear-gradient(135deg, #10b981, #059669)" : (isLight ? "#e2e8f0" : "rgba(255,255,255,0.1)"),
                     color: newMetalName.trim() ? "#ffffff" : textSub,
                     fontSize: "12px",
-                    fontWeight: "700",
+                    fontWeight: "400",
                     cursor: newMetalName.trim() ? "pointer" : "not-allowed",
                     transition: "all 0.2s ease"
                   }}
@@ -760,7 +760,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
 
               {/* Active Metals List */}
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                <div style={{ fontSize: "11px", fontWeight: "800", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                   Vos Métaux Actifs ({(materialsData.materials || []).length})
                 </div>
 
@@ -792,7 +792,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                           <span
                             style={{
                               fontSize: "12px",
-                              fontWeight: "700",
+                              fontWeight: "400",
                               color: textMain,
                               whiteSpace: "nowrap",
                               overflow: "hidden",
@@ -844,7 +844,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
               background: "linear-gradient(135deg, #3b82f6, #2563eb)",
               color: "white",
               fontSize: "13px",
-              fontWeight: "bold",
+              fontWeight: "400",
               cursor: "pointer"
             }}
           >

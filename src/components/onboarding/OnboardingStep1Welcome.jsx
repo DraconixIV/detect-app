@@ -11,7 +11,7 @@ export default function OnboardingStep1Welcome({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
       <div>
-        <h1 style={{ margin: "0 0 8px 0", fontSize: "24px", fontWeight: "900", color: textMain, letterSpacing: "-0.5px" }}>
+        <h1 style={{ margin: "0 0 8px 0", fontSize: "24px", fontWeight: "400", color: textMain, letterSpacing: "-0.5px" }}>
           Bienvenue sur GeoProspect 🧭
         </h1>
         <p style={{ margin: 0, fontSize: "14px", color: textSub, lineHeight: "1.5" }}>
@@ -50,7 +50,7 @@ export default function OnboardingStep1Welcome({
             🗺️
           </div>
           <div>
-            <div style={{ fontSize: "14px", fontWeight: "800", color: textMain, marginBottom: "3px" }}>
+            <div style={{ fontSize: "14px", fontWeight: "400", color: textMain, marginBottom: "3px" }}>
               Cartes IGN et Tracé GPS en Direct
             </div>
             <div style={{ fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
@@ -88,7 +88,7 @@ export default function OnboardingStep1Welcome({
             🪙
           </div>
           <div>
-            <div style={{ fontSize: "14px", fontWeight: "800", color: textMain, marginBottom: "3px" }}>
+            <div style={{ fontSize: "14px", fontWeight: "400", color: textMain, marginBottom: "3px" }}>
               Journal de Trouvailles et Photos HD
             </div>
             <div style={{ fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
@@ -126,7 +126,7 @@ export default function OnboardingStep1Welcome({
             👥
           </div>
           <div>
-            <div style={{ fontSize: "14px", fontWeight: "800", color: textMain, marginBottom: "3px" }}>
+            <div style={{ fontSize: "14px", fontWeight: "400", color: textMain, marginBottom: "3px" }}>
               Sessions en Équipe et Sauvegarde
             </div>
             <div style={{ fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
@@ -148,7 +148,7 @@ export default function OnboardingStep1Welcome({
           background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
           color: "white",
           fontSize: "14px",
-          fontWeight: "700",
+          fontWeight: "400",
           cursor: "pointer",
           boxShadow: "0 4px 14px rgba(37, 99, 235, 0.25)",
           transition: "all 0.2s ease"

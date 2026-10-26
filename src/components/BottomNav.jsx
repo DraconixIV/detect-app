@@ -121,7 +121,7 @@ export default function BottomNav({
             <span
               style={{
                 fontSize: "11px",
-                fontWeight: isActive ? "800" : "600",
+                fontWeight: "400",
                 letterSpacing: "0.2px",
                 color: "#ffffff",
                 opacity: isActive ? 1 : 0.8
