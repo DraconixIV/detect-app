@@ -102,8 +102,8 @@ export default function AddFindForm({
 
   const categories = categoryData.categories || {};
   const emojis = categoryData.emojis || {};
-  const categoryKeys = Object.keys(categories);
-  const availableSubCats = categories[newCategory] || [];
+  const categoryKeys = Object.keys(categories).sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }));
+  const availableSubCats = [...(categories[newCategory] || [])].sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }));
 
   const handleModeToggle = (manual) => {
     setIsManualMode(manual);

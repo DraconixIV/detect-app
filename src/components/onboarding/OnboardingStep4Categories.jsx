@@ -159,7 +159,7 @@ export default function OnboardingStep4Categories({
             {/* Color Swatch Picker */}
             <div>
               <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
-                2. Couleur du contour sur la carte
+                2. Couleur du repère sur la carte
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "7px", alignItems: "center" }}>
                 {PRESET_CATEGORY_COLORS.map((colorHex) => {
@@ -228,7 +228,9 @@ export default function OnboardingStep4Categories({
                         cursor: "pointer"
                       }}
                     >
-                      {Object.keys(categories).map((c) => (
+                      {Object.keys(categories)
+                        .sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }))
+                        .map((c) => (
                         <option key={c} value={c} style={{ background: cardBg, color: textMain }}>
                           {c}
                         </option>
@@ -334,7 +336,9 @@ export default function OnboardingStep4Categories({
                   overflow: "hidden"
                 }}
               >
-                {Object.entries(categories).map(([catName, subCats], idx, arr) => {
+                {Object.entries(categories)
+                  .sort(([a], [b]) => a.localeCompare(b, "fr", { sensitivity: "base" }))
+                  .map(([catName, subCats], idx, arr) => {
                   const em = emojis[catName] || "🪙";
                   const col = colors[catName] || "#2c5e4c";
                   const isExpanded = expandedCat === catName;
@@ -402,7 +406,9 @@ export default function OnboardingStep4Categories({
                           }}
                         >
                           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px" }}>
-                            {safeSubCats.map((sub) => (
+                            {[...safeSubCats]
+                              .sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }))
+                              .map((sub) => (
                               <span
                                 key={sub}
                                 style={{

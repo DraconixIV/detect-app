@@ -274,7 +274,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                 {/* Color Swatches */}
                 <div>
                   <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "8px" }}>
-                    Couleur du repère carte
+                    Couleur du repère sur la carte
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "7px", alignItems: "center" }}>
                     {PRESET_CATEGORY_COLORS.map((colorHex) => {
@@ -348,7 +348,9 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                     overflow: "hidden"
                   }}
                 >
-                  {Object.entries(categoriesData.categories || {}).map(([catName, subCats], idx, arr) => {
+                  {Object.entries(categoriesData.categories || {})
+                    .sort(([a], [b]) => a.localeCompare(b, "fr", { sensitivity: "base" }))
+                    .map(([catName, subCats], idx, arr) => {
                     const emoji = categoriesData.emojis?.[catName] || "🏷️";
                     const color = categoriesData.colors?.[catName] || defaultCategoryColors[catName] || "#2c5e4c";
                     const isExpanded = expandedCat === catName;
@@ -469,7 +471,9 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                             }}
                           >
                             <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px" }}>
-                              {subCats.map((sub) => (
+                              {[...subCats]
+                                .sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }))
+                                .map((sub) => (
                                 <div
                                   key={sub}
                                   style={{

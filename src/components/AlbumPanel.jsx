@@ -335,7 +335,7 @@ export default function AlbumPanel({
   }, []);
 
   const categoryEmojis = categoriesData.emojis || {};
-  const categoriesList = useMemo(() => ["Tous", ...Object.keys(categoriesData.categories || {})], [categoriesData]);
+  const categoriesList = useMemo(() => ["Tous", ...Object.keys(categoriesData.categories || {}).sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }))], [categoriesData]);
 
   const [albumFilter, setAlbumFilter] = useState("Tous");
   const [albumSearch, setAlbumSearch] = useState("");

@@ -6,6 +6,7 @@ import { getMyUserCode, getMyDisplayName, setMyUserCode } from "../services/sess
 import { purgeAllUserDataAndAccount, logoutAndResetSession } from "../services/findsService";
 import AuthForm from "./AuthForm";
 import ConfirmModal from "./ConfirmModal";
+import TacticalPinIcon from "./TacticalPinIcon";
 
 const DONATION_LINKS = {
   kofi: "https://ko-fi.com/geoprospect",
@@ -306,8 +307,11 @@ export default function SettingsPanel({
                     padding: "9px 12px",
                     borderRadius: "10px",
                     border: `1px solid ${dividerCol}`,
+                    background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.05)",
+                    color: textMain,
                     fontSize: "13px",
-                    textTransform: "uppercase"
+                    textTransform: "uppercase",
+                    outline: "none"
                   }}
                 />
                 <button
@@ -467,7 +471,16 @@ export default function SettingsPanel({
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
                   placeholder="Nouvelle catégorie"
-                  style={{ flex: 1, padding: "8px 12px", borderRadius: "10px", border: `1px solid ${dividerCol}`, fontSize: "12px" }}
+                  style={{
+                    flex: 1,
+                    padding: "9px 12px",
+                    borderRadius: "10px",
+                    border: `1px solid ${dividerCol}`,
+                    background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.05)",
+                    color: textMain,
+                    fontSize: "12px",
+                    outline: "none"
+                  }}
                 />
                 <button
                   type="button"
@@ -479,7 +492,9 @@ export default function SettingsPanel({
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "6px", maxHeight: "240px", overflowY: "auto" }}>
-                {Object.keys(categoriesData.categories).map((cat) => (
+                {Object.keys(categoriesData.categories || {})
+                  .sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }))
+                  .map((cat) => (
                   <div
                     key={cat}
                     style={{
@@ -492,16 +507,14 @@ export default function SettingsPanel({
                     }}
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <span
-                          style={{
-                            width: "10px",
-                            height: "10px",
-                            borderRadius: "50%",
-                            background: categoriesData.colors?.[cat] || defaultCategoryColors[cat] || accentMint
-                          }}
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <TacticalPinIcon
+                          markerId={categoriesData.emojis?.[cat] || "autre"}
+                          color={categoriesData.colors?.[cat] || defaultCategoryColors[cat] || "#2c5e4c"}
+                          size={24}
+                          categoryName={cat}
                         />
-                        <span style={{ fontSize: "13px", color: textMain }}>{cat}</span>
+                        <span style={{ fontSize: "13.5px", color: textMain }}>{cat}</span>
                       </div>
                       <div style={{ display: "flex", gap: "6px" }}>
                         <button
@@ -521,15 +534,18 @@ export default function SettingsPanel({
                       </div>
                     </div>
 
-                    {categoriesData.categories[cat]?.length > 0 && (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                        {categoriesData.categories[cat].map((sub) => (
+                    {(categoriesData.categories[cat]?.length || 0) > 0 && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+                        {[...categoriesData.categories[cat]]
+                          .sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }))
+                          .map((sub) => (
                           <span
                             key={sub}
                             style={{
-                              padding: "2px 8px",
+                              padding: "3px 8px",
                               borderRadius: "6px",
                               background: isLight ? "#f3f4f2" : "rgba(255,255,255,0.06)",
+                              border: `1px solid ${dividerCol}`,
                               fontSize: "11px",
                               color: textSub,
                               display: "inline-flex",
@@ -551,7 +567,16 @@ export default function SettingsPanel({
                           value={newSubName}
                           onChange={(e) => setNewSubName(e.target.value)}
                           placeholder={`Sous-catégorie pour ${cat}...`}
-                          style={{ flex: 1, padding: "6px 10px", borderRadius: "8px", border: `1px solid ${dividerCol}`, fontSize: "12px" }}
+                          style={{
+                            flex: 1,
+                            padding: "7px 10px",
+                            borderRadius: "8px",
+                            border: `1px solid ${dividerCol}`,
+                            background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.05)",
+                            color: textMain,
+                            fontSize: "12px",
+                            outline: "none"
+                          }}
                         />
                         <button
                           type="button"

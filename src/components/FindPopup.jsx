@@ -79,11 +79,11 @@ export default function FindPopup({
   const availableCategories = Array.from(new Set([
     ...Object.keys(categoriesWithSub),
     ...(category ? [category] : [])
-  ]));
+  ])).sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }));
   const availableSubCats = Array.from(new Set([
     ...(categoriesWithSub[category] || []),
     ...(subCategory ? [subCategory] : [])
-  ]));
+  ])).sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }));
 
   useEffect(() => {
     loadPhotos();

@@ -459,7 +459,7 @@ export default function MapTopBar({
               scrollbarWidth: "none"
             }}
           >
-            {Object.keys(categoriesData.categories || {}).map((cat) => {
+            {Object.keys(categoriesData.categories || {}).sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" })).map((cat) => {
               const active = filters.includes(cat);
               const emoji = categoriesData.emojis?.[cat] || "🏷️";
               return (
