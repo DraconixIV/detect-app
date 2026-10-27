@@ -638,10 +638,6 @@ export default function TeamSessionModal({
                   </div>
                 )}
               </div>
-
-              <div style={{ fontSize: "11px", color: textSub, lineHeight: "1.5", padding: "0 4px" }}>
-                Un code aléatoire à 6 caractères combiné à une demande d'autorisation en temps réel protège vos lieux de détection contre les accès non sollicités.
-              </div>
             </div>
           )}
 

@@ -1456,21 +1456,19 @@ function App() {
             left: "50%",
             transform: "translateX(-50%)",
             zIndex: 4900,
-            background: "rgba(15, 23, 42, 0.94)",
-            backdropFilter: "blur(16px)",
-            WebkitBackdropFilter: "blur(16px)",
+            background: "#111915",
             color: "#ffffff",
             padding: "8px 14px",
-            borderRadius: "16px",
+            borderRadius: "14px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             gap: "10px",
-            boxShadow: "0 8px 30px rgba(0, 0, 0, 0.45), 0 0 16px rgba(59, 130, 246, 0.2)",
+            boxShadow: "0 8px 30px rgba(0, 0, 0, 0.5)",
             fontFamily: "system-ui, -apple-system, sans-serif",
             fontSize: "12px",
             fontWeight: "400",
-            border: "1.5px solid rgba(59, 130, 246, 0.5)",
+            border: "1px solid rgba(64, 145, 108, 0.35)",
             maxWidth: "480px",
             width: "calc(100% - 24px)",
             boxSizing: "border-box",
@@ -1483,16 +1481,15 @@ function App() {
                 width: "8px",
                 height: "8px",
                 borderRadius: "50%",
-                background: "#38bdf8",
-                boxShadow: "0 0 10px #38bdf8",
+                background: "#40916c",
                 flexShrink: 0
               }}
             />
             <div style={{ minWidth: 0 }}>
-              <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontSize: "12px", fontWeight: "400", color: "#38bdf8" }}>
-                👁️ Consultation : {workspace.targetCode}
+              <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontSize: "12px", fontWeight: "400", color: "#80b99c" }}>
+                Consultation : {workspace.sessionName || workspace.targetCode}
               </div>
-              <div style={{ fontSize: "10.5px", color: "#94a3b8", fontWeight: "400"}}>
+              <div style={{ fontSize: "10.5px", color: "rgba(255, 255, 255, 0.6)", fontWeight: "400" }}>
                 Mode lecture seule
               </div>
             </div>
@@ -1508,11 +1505,11 @@ function App() {
               });
             }}
             style={{
-              background: "rgba(239, 68, 68, 0.2)",
-              border: "1px solid rgba(239, 68, 68, 0.4)",
+              background: "rgba(220, 38, 38, 0.15)",
+              border: "1px solid rgba(220, 38, 38, 0.3)",
               color: "#f87171",
               borderRadius: "8px",
-              padding: "5px 9px",
+              padding: "5px 10px",
               display: "flex",
               alignItems: "center",
               gap: "4px",
@@ -1522,8 +1519,7 @@ function App() {
             }}
             title="Fermer la consultation"
           >
-            <span>✕</span>
-            <span>Fermer</span>
+            <span>✕ Fermer</span>
           </button>
         </div>
       )}

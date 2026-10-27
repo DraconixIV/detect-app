@@ -55,9 +55,6 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
             <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: "#ffffff" }}>
               À propos de GeoProspect
             </h3>
-            <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: "rgba(255,255,255,0.75)" }}>
-              Version 3.2.0 • 100 % indépendant et libre
-            </p>
           </div>
           <button
             type="button"

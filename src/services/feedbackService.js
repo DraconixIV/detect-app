@@ -2,7 +2,7 @@ import { supabase } from "../supabase.js";
 import { getMyUserCode, normalizeSessionCode } from "./sessionService.js";
 import { detectInAppBrowser } from "../components/InAppBrowserBanner.jsx";
 
-export const CURRENT_APP_VERSION = "1.4.0";
+export const CURRENT_APP_VERSION = "1.0.0";
 export const LAST_SEEN_VERSION_KEY = "geoprospect_last_seen_app_version";
 export const FIRST_INSTALLED_KEY = "geoprospect_first_installed";
 
