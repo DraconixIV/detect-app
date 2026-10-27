@@ -1,15 +1,8 @@
 import React from "react";
 import { PRESET_CATEGORY_COLORS, SUGGESTED_STARTER_CATEGORIES } from "../../subCategories";
 import { RECOMMENDED_METALS } from "../../services/materialsService";
-
-const DETECTORIST_EMOJIS = [
-  "🪙", "💰", "🥇", "🥈", "🥉", "💎", "💍", "👑", "📿", "🏆", "🎖️", "🏅", "⚜️",
-  "🏺", "🗿", "🏛️", "📜", "🗝️", "🔑", "🔒", "🪞", "🕯️", "⌛", "⏳", "🧱", "✝️",
-  "🛡️", "⚔️", "🗡️", "🏹", "💣", "🪖", "🎯", "🔫", "🪓", "🪚", "⚙️", "🥨",
-  "🔔", "⚓", "🧲", "🔨", "⛏️", "🔧", "🔩", "🪛", "🖇️", "📎", "✂️", "🪡", "🧷", "🥄", "🍴", "👞", "👝", "🏷️", "📦", "🔘", "🥫", "🎣", "⛓️", "🪜", "🪤", "🪨",
-  "🟫", "💿", "⚖️", "🧪", "🔬", "🪵", "🧭", "🔍", "⚡", "🌟", "✨",
-  "🟡", "⚪", "🟤", "🔴", "🟢", "🔵", "🟣", "⚫"
-];
+import CategoryIcon from "../CategoryIcon";
+import CategoryIconPicker from "../CategoryIconPicker";
 
 export default function OnboardingStep4Categories({
   isDark,
@@ -164,7 +157,10 @@ export default function OnboardingStep4Categories({
                         opacity: isAlreadyAdded ? 1 : 0.6
                       }}
                     />
-                    <span>{item.emoji} {starterName}</span>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                      <CategoryIcon name={item.emoji} color={isAlreadyAdded ? (isDark ? "#80b99c" : "#2c5e4c") : item.color} size={15} />
+                      {starterName}
+                    </span>
                     <span
                       style={{
                         color: isAlreadyAdded ? (isDark ? "#80b99c" : "#2c5e4c") : textSub,
@@ -215,51 +211,23 @@ export default function OnboardingStep4Categories({
               }}
             />
 
-            {/* Grille d'émojis */}
+            {/* Sélecteur d'icônes GeoProspect */}
             <div>
               <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
-                Symbole du repère carte
+                Icône de la catégorie
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "6px",
-                  maxHeight: "115px",
-                  overflowY: "auto",
-                  padding: "6px",
-                  background: inputBg,
-                  border: `1px solid ${inputBorder}`,
-                  borderRadius: "10px"
-                }}
-              >
-                {DETECTORIST_EMOJIS.map((em) => {
-                  const isSelected = newCatEmoji === em;
-                  return (
-                    <button
-                      key={em}
-                      type="button"
-                      onClick={() => setNewCatEmoji(em)}
-                      style={{
-                        width: "32px",
-                        height: "32px",
-                        borderRadius: "8px",
-                        border: isSelected ? "1.5px solid #2c5e4c" : `1px solid ${cardBorder}`,
-                        background: isSelected ? (isDark ? "rgba(44, 94, 76, 0.35)" : "#eef2ee") : cardBg,
-                        fontSize: "17px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        cursor: "pointer",
-                        padding: 0,
-                        transition: "all 0.12s ease"
-                      }}
-                    >
-                      {em}
-                    </button>
-                  );
-                })}
-              </div>
+              <CategoryIconPicker
+                selectedIcon={newCatEmoji}
+                onSelectIcon={setNewCatEmoji}
+                categoryColor={newCatColor}
+                isDark={isDark}
+                cardBg={cardBg}
+                cardBorder={cardBorder}
+                inputBg={inputBg}
+                inputBorder={inputBorder}
+                textMain={textMain}
+                textSub={textSub}
+              />
             </div>
 
             {/* Sous-catégories */}
@@ -458,7 +426,7 @@ export default function OnboardingStep4Categories({
                               flexShrink: 0
                             }}
                           />
-                          <span style={{ fontSize: "15px", flexShrink: 0 }}>{em}</span>
+                          <CategoryIcon name={em} color={col} size={16} />
                           <span style={{ fontSize: "13px", fontWeight: "400", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             {catName}
                           </span>
