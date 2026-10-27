@@ -194,7 +194,7 @@ export default function OnboardingStep4Categories({
             {/* Visual Marker Picker in GROS PLAN */}
             <div>
               <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
-                3. Choix du repère visuel (42 formes au choix)
+                3. Choix du repère visuel
               </div>
               <CategoryMarkerPicker
                 selectedMarkerId={newCatEmoji}

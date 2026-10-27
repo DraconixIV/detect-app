@@ -85,7 +85,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
 
   const [newCatName, setNewCatName] = useState("");
   const [newCatEmoji, setNewCatEmoji] = useState("monnaie");
-  const [newCatColor, setNewCatColor] = useState("#2c5e4c");
+  const [newCatColor, setNewCatColor] = useState("#facc15");
   const [newSubText, setNewSubText] = useState("");
   const [targetCategoryForSub, setTargetCategoryForSub] = useState("");
   const [expandedCat, setExpandedCat] = useState(null);
@@ -168,7 +168,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
 
     const updatedCats = { ...categories, [trimmed]: parsedSubs };
     const updatedEmojis = { ...emojis, [trimmed]: newCatEmoji || "autre" };
-    const updatedColors = { ...colors, [trimmed]: newCatColor || "#2c5e4c" };
+    const updatedColors = { ...colors, [trimmed]: newCatColor || "#facc15" };
 
     setCategories(updatedCats);
     setEmojis(updatedEmojis);

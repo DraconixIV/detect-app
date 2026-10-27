@@ -232,21 +232,17 @@ export const TACTICAL_MARKERS = [
   {
     id: "fleche",
     label: "Flèche",
-    keywords: ["fleche", "arc", "pointe", "barbele", "chasse"],
+    keywords: ["fleche", "arc", "pointe", "carreau", "barbele", "chasse", "trait"],
     svgInner: `
-      <path d="M18 9l5 7-3 1v7h-4v-7l-3-1 5-7z" fill="#ffffff"/>
-      <line x1="18" y1="10" x2="18" y2="24" stroke="#242c26" stroke-width="1.2"/>
-    `
-  },
-  {
-    id: "carreau",
-    label: "Carreau",
-    keywords: ["carreau", "arbalete", "trait", "pointe", "ogive", "pyramidal"],
-    svgInner: `
-      <polygon points="18,8 22.5,14 18,18 13.5,14" fill="#ffffff"/>
-      <line x1="18" y1="8" x2="18" y2="18" stroke="#242c26" stroke-width="1.2"/>
-      <rect x="16.5" y="18" width="3" height="7" fill="#ffffff"/>
-      <ellipse cx="18" cy="25" rx="1.5" ry="0.8" fill="#242c26"/>
+      <!-- Pointe réaliste effilée à barbillons et douille -->
+      <path d="M18 7 L22 14 L19.2 13.5 L19.2 16 L16.8 16 L16.8 13.5 L14 14 Z" fill="#ffffff"/>
+      <!-- Fût en bois de la flèche -->
+      <line x1="18" y1="13" x2="18" y2="26.5" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round"/>
+      <!-- Empennage à plumes réalistes -->
+      <path d="M18 19.5 L14.8 23.5 L15.5 25 L18 24 Z" fill="#ffffff"/>
+      <path d="M18 19.5 L21.2 23.5 L20.5 25 L18 24 Z" fill="#ffffff"/>
+      <!-- Encoche à la base -->
+      <line x1="17.2" y1="26.5" x2="18.8" y2="26.5" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round"/>
     `
   },
   {
@@ -505,6 +501,9 @@ export const EMOJI_TO_MARKER_MAP = {
  * Resolves a category's marker ID from its stored icon/emoji or name.
  */
 export function resolveMarkerId(iconOrEmoji, categoryName = "") {
+  if (iconOrEmoji === "carreau") {
+    return "fleche";
+  }
   if (iconOrEmoji && TACTICAL_MARKERS_BY_ID[iconOrEmoji]) {
     return iconOrEmoji;
   }

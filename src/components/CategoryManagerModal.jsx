@@ -34,7 +34,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
   const [materialsData, setMaterialsData] = useState(() => loadMaterialsData());
   const [newCatName, setNewCatName] = useState("");
   const [newCatEmoji, setNewCatEmoji] = useState("monnaie");
-  const [newCatColor, setNewCatColor] = useState("#2c5e4c");
+  const [newCatColor, setNewCatColor] = useState("#facc15");
   const [colorPickerCat, setColorPickerCat] = useState(null);
   const [selectedCatForSub, setSelectedCatForSub] = useState("");
   const [newSubName, setNewSubName] = useState("");
@@ -70,7 +70,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
     if (!newCatName.trim()) return;
     addCategory(newCatName, newCatEmoji, ["Indéterminé"], newCatColor);
     setNewCatName("");
-    setNewCatColor("#2c5e4c");
+    setNewCatColor("#facc15");
   };
 
   const handleAddSub = (catName, e) => {
@@ -243,10 +243,10 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                   background: sheetBg,
                   border: `1px solid ${cardBorder}`,
                   borderRadius: "16px",
-                  padding: "14px",
+                  padding: "16px",
                   display: "flex",
                   flexDirection: "column",
-                  gap: "10px"
+                  gap: "12px"
                 }}
               >
                 <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
@@ -255,13 +255,13 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
 
                 <input
                   type="text"
-                  placeholder="Nom de la catégorie"
+                  placeholder="Nom de votre catégorie (ex: Monnaies royales...)"
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
                   style={{
                     width: "100%",
-                    padding: "9px 12px",
-                    borderRadius: "10px",
+                    padding: "10px 14px",
+                    borderRadius: "12px",
                     border: `1px solid ${cardBorder}`,
                     background: inputBg,
                     color: textMain,
@@ -271,19 +271,12 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                   }}
                 />
 
-                <CategoryMarkerPicker
-                  selectedMarkerId={newCatEmoji}
-                  onSelectMarker={setNewCatEmoji}
-                  currentColor={newCatColor}
-                  theme={theme}
-                />
-
                 {/* Color Swatches */}
                 <div>
-                  <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
+                  <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "8px" }}>
                     Couleur du repère carte
                   </div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "7px", alignItems: "center" }}>
                     {PRESET_CATEGORY_COLORS.map((colorHex) => {
                       const isSelected = newCatColor === colorHex;
                       return (
@@ -292,8 +285,8 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                           type="button"
                           onClick={() => setNewCatColor(colorHex)}
                           style={{
-                            width: "22px",
-                            height: "22px",
+                            width: "24px",
+                            height: "24px",
                             borderRadius: "50%",
                             background: colorHex,
                             border: isSelected ? `2px solid ${textMain}` : "1.5px solid rgba(0,0,0,0.15)",
@@ -313,19 +306,28 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                   </div>
                 </div>
 
+                {/* Visual Marker Picker */}
+                <CategoryMarkerPicker
+                  selectedMarkerId={newCatEmoji}
+                  onSelectMarker={setNewCatEmoji}
+                  currentColor={newCatColor}
+                  theme={theme}
+                />
+
                 <button
                   type="submit"
                   disabled={!newCatName.trim()}
                   style={{
                     width: "100%",
-                    padding: "10px",
-                    borderRadius: "10px",
+                    padding: "11px",
+                    borderRadius: "12px",
                     border: "none",
                     background: newCatName.trim() ? "#2c5e4c" : (isLight ? "#dce2de" : "rgba(255,255,255,0.08)"),
                     color: newCatName.trim() ? "#ffffff" : textSub,
-                    fontSize: "12px",
+                    fontSize: "13px",
                     fontWeight: "400",
-                    cursor: newCatName.trim() ? "pointer" : "not-allowed"
+                    cursor: newCatName.trim() ? "pointer" : "not-allowed",
+                    transition: "all 0.2s ease"
                   }}
                 >
                   Ajouter cette catégorie
