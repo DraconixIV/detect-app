@@ -250,8 +250,8 @@ export default function StatsPanel({
 
       {/* SHEET 2: RÉPARTITION & GRAPHIQUES */}
       <div style={sheetStyle}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "15px", color: textMain }}>
+        <div style={{ marginBottom: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "15px", color: textMain, marginBottom: "12px" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
               <path d="M22 12A10 10 0 0 0 12 2v10z" />
@@ -266,7 +266,7 @@ export default function StatsPanel({
               background: isLight ? "#eef0ed" : "rgba(255, 255, 255, 0.06)",
               padding: "3px",
               borderRadius: "999px",
-              gap: "2px"
+              gap: "4px"
             }}
           >
             {[
@@ -281,13 +281,16 @@ export default function StatsPanel({
                   type="button"
                   onClick={() => setChartType(item.id)}
                   style={{
-                    padding: "4px 11px",
+                    flex: 1,
+                    padding: "6px 12px",
                     borderRadius: "999px",
                     border: "none",
                     background: isSel ? accentForest : "transparent",
                     color: isSel ? "#ffffff" : textSub,
-                    fontSize: "11.5px",
-                    cursor: "pointer"
+                    fontSize: "12px",
+                    cursor: "pointer",
+                    textAlign: "center",
+                    transition: "all 0.2s ease"
                   }}
                 >
                   {item.label}

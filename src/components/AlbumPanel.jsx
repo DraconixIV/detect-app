@@ -526,7 +526,7 @@ export default function AlbumPanel({
             {albumFilteredFinds.length} objet{albumFilteredFinds.length > 1 ? "s" : ""}
           </span>
           <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "400", color: "#ffffff", letterSpacing: "0.2px" }}>
-            Album de collection
+            Galerie
           </h2>
           <div style={{ minWidth: "50px", display: "flex", justifyContent: "flex-end" }}>
             {!isTab && onClose && (

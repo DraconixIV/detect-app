@@ -45,7 +45,7 @@ export default function ReportsPanel({
         }}
       >
         <h1 style={{ margin: 0, fontSize: "18px", fontWeight: "400", color: "#ffffff", letterSpacing: "0.2px" }}>
-          Statistiques et Chronologie
+          Journal
         </h1>
       </div>
 

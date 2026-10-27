@@ -26,36 +26,6 @@ export default function AppDrawer({
 
   const menuItems = [
     {
-      id: "map",
-      label: "Carte",
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
-          <line x1="9" y1="3" x2="9" y2="18" />
-          <line x1="15" y1="6" x2="15" y2="21" />
-        </svg>
-      ),
-      action: () => {
-        onClose();
-        if (onNavigate) onNavigate("map");
-      }
-    },
-    {
-      id: "gallery",
-      label: "Album de collection",
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-          <circle cx="8.5" cy="8.5" r="1.5" />
-          <polyline points="21 15 16 10 5 21" />
-        </svg>
-      ),
-      action: () => {
-        onClose();
-        if (onNavigate) onNavigate("gallery");
-      }
-    },
-    {
       id: "friends",
       label: "Carte de vos amis",
       icon: (
@@ -69,24 +39,6 @@ export default function AppDrawer({
       action: () => {
         onClose();
         if (onOpenFriendsMaps) onOpenFriendsMaps();
-      }
-    },
-    {
-      id: "reports",
-      label: "Chronologie & Statistiques",
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="8" y1="6" x2="21" y2="6" />
-          <line x1="8" y1="12" x2="21" y2="12" />
-          <line x1="8" y1="18" x2="21" y2="18" />
-          <line x1="3" y1="6" x2="3.01" y2="6" />
-          <line x1="3" y1="12" x2="3.01" y2="12" />
-          <line x1="3" y1="18" x2="3.01" y2="18" />
-        </svg>
-      ),
-      action: () => {
-        onClose();
-        if (onNavigate) onNavigate("reports");
       }
     },
     {
@@ -161,20 +113,6 @@ export default function AppDrawer({
         onClose();
         if (onOpenAbout) onOpenAbout();
       }
-    },
-    {
-      id: "settings",
-      label: "Paramètres",
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="3" />
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-        </svg>
-      ),
-      action: () => {
-        onClose();
-        if (onNavigate) onNavigate("settings");
-      }
     }
   ];
 
@@ -214,12 +152,7 @@ export default function AppDrawer({
             flexDirection: "column",
             alignItems: "center",
             gap: "10px",
-            marginBottom: "28px",
-            cursor: "pointer"
-          }}
-          onClick={() => {
-            onClose();
-            if (onNavigate) onNavigate("settings");
+            marginBottom: "28px"
           }}
         >
           <div
@@ -254,7 +187,6 @@ export default function AppDrawer({
             }}
           >
             <span>{myName}</span>
-            <span style={{ fontSize: "14px", opacity: 0.7 }}>›</span>
           </div>
 
           {isRecordingSortie && (
