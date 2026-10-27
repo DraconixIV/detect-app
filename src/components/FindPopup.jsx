@@ -10,7 +10,6 @@ import { loadMaterialsData } from "../services/materialsService";
 import { encodeMetadata, decodeMetadata, fileToDataUrl, generateSafeFileName } from "../services/findsService";
 import { getMyUserCode, getMyDisplayName, normalizeSessionCode } from "../services/sessionService";
 import AudioNotePlayer from "./AudioNotePlayer";
-import CategoryIcon from "./CategoryIcon";
 
 export default function FindPopup({
   find,
@@ -663,11 +662,9 @@ export default function FindPopup({
           </div>
         )}
 
-        <div style={{ fontSize: "11px", color: "#6b7280", fontWeight: "400", display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
-          <CategoryIcon name={categoryEmojis[category]} size={13} color="#6b7280" />
-          <span>{category}</span>
-          {subCategory && <span>• {subCategory}</span>}
-          {material && material !== "Indéterminé" && <span>• {materialEmojis[material] || ""} {material}</span>}
+        <div style={{ fontSize: "11px", color: "#6b7280", fontWeight: "400"}}>
+          {categoryEmojis[category] || "📍"} {category} {subCategory ? `• ${subCategory}` : ""}
+          {material && material !== "Indéterminé" ? ` • ${materialEmojis[material] || "🪙"} ${material}` : ""}
         </div>
 
         {/* Media display (Photo or Standard Category Placeholder) */}
@@ -694,10 +691,11 @@ export default function FindPopup({
               borderRadius: "10px",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center"
+              justifyContent: "center",
+              fontSize: "26px"
             }}
           >
-            <CategoryIcon name={categoryEmojis[category]} size={36} color="#9ca3af" />
+            {categoryEmojis[category] || "📍"}
           </div>
         )}
 
@@ -978,7 +976,7 @@ export default function FindPopup({
                 >
                   {availableCategories.map((cat) => (
                     <option key={cat} value={cat}>
-                      {cat}
+                      {categoryEmojis[cat] || "🏷️"} {cat}
                     </option>
                   ))}
                 </select>

@@ -401,7 +401,7 @@ export default function AddFindForm({
             >
               {categoryKeys.map((cat) => (
                 <option key={cat} value={cat} style={{ background: "#19231e", color: "#ffffff" }}>
-                  {cat}
+                  {emojis[cat] || "🏷️"} {cat}
                 </option>
               ))}
             </select>

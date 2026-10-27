@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
+import { categoryEmojis } from "./subCategories";
 
 import LoadingScreen from "./components/LoadingScreen";
 import StatsPanel from "./components/StatsPanel";
@@ -2199,7 +2200,7 @@ function App() {
                   Filtrer par sous-catégorie ?
                 </h3>
                 <p style={{ margin: 0, fontSize: "13px", lineHeight: "1.5", color: "rgba(255, 255, 255, 0.75)" }}>
-                  Souhaitez-vous affiner votre recherche par sous-catégorie pour les trouvailles de type {subCategorySelectCat} ?
+                  Souhaitez-vous affiner votre recherche par sous-catégorie pour les trouvailles de type {categoryEmojis[subCategorySelectCat] || ""} {subCategorySelectCat} ?
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" }}>
                   <button
