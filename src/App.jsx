@@ -28,6 +28,7 @@ import FeedbackModal from "./components/FeedbackModal";
 import AboutModal from "./components/AboutModal";
 import CguModal from "./components/CguModal";
 import FeaturesGuideModal from "./components/FeaturesGuideModal";
+import FriendsMapsModal from "./components/FriendsMapsModal";
 import InAppBrowserBanner from "./components/InAppBrowserBanner";
 import AdminDashboard from "./components/AdminDashboard";
 import { THEMES } from "./styles/themes";
@@ -201,6 +202,9 @@ function App() {
   const hasUnreadNews = unreadUpdatesCount > 0;
 
   const [showAboutModal, setShowAboutModal] =
+    useState(false);
+
+  const [showFriendsMapsModal, setShowFriendsMapsModal] =
     useState(false);
 
   const [showCguModal, setShowCguModal] =
@@ -2389,6 +2393,10 @@ function App() {
           setShowFeaturesGuideModal(true);
           setShowDrawer(false);
         }}
+        onOpenFriendsMaps={() => {
+          setShowFriendsMapsModal(true);
+          setShowDrawer(false);
+        }}
         onOpenNews={() => {
           setShowNewsModal(true);
           setShowDrawer(false);
@@ -2423,6 +2431,17 @@ function App() {
       <FeaturesGuideModal
         isOpen={showFeaturesGuideModal}
         onClose={() => setShowFeaturesGuideModal(false)}
+        theme={theme}
+      />
+
+      {/* Carte de vos amis Modal */}
+      <FriendsMapsModal
+        isOpen={showFriendsMapsModal}
+        onClose={() => setShowFriendsMapsModal(false)}
+        workspace={workspace}
+        setWorkspace={setWorkspace}
+        requestMapConsultation={requestMapConsultation}
+        setToast={setToast}
         theme={theme}
       />
 
