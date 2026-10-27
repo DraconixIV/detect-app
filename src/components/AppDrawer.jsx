@@ -7,7 +7,6 @@ export default function AppDrawer({
   onClose,
   theme = "dark",
   onNavigate,
-  onOpenNews,
   onOpenFeedback,
   onOpenAbout,
   onOpenFeaturesGuide,
@@ -15,14 +14,11 @@ export default function AppDrawer({
   onOpenFriendsMaps,
   user,
   isRecordingSortie,
-  isOnline = true,
-  hasUnreadNews = false,
-  unreadUpdatesCount = 0
+  isOnline = true
 }) {
   if (!isOpen) return null;
 
   const myName = getMyDisplayName() || (user ? user.email?.split("@")[0] : "Prospecteur");
-  const newsBadgeCount = unreadUpdatesCount > 0 ? unreadUpdatesCount : (hasUnreadNews ? 1 : 0);
 
   const menuItems = [
     {
@@ -53,24 +49,6 @@ export default function AppDrawer({
       action: () => {
         onClose();
         if (onOpenFeaturesGuide) onOpenFeaturesGuide();
-      }
-    },
-    {
-      id: "news",
-      label: "Actualités",
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
-          <path d="M18 14h-8" />
-          <path d="M15 18h-5" />
-          <path d="M10 6h8v4h-8V6Z" />
-        </svg>
-      ),
-      hasBadge: newsBadgeCount > 0,
-      badgeCount: newsBadgeCount,
-      action: () => {
-        onClose();
-        if (onOpenNews) onOpenNews();
       }
     },
     {
@@ -249,21 +227,6 @@ export default function AppDrawer({
               </span>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "3px", flex: 1 }}>
-                {item.hasBadge && (
-                  <span
-                    style={{
-                      alignSelf: "flex-start",
-                      background: "#e9edc9",
-                      color: "#1b4332",
-                      fontSize: "9.5px",
-                      padding: "1px 7px",
-                      borderRadius: "999px",
-                      letterSpacing: "0.4px"
-                    }}
-                  >
-                    NOUVEAU
-                  </span>
-                )}
                 <span style={{ lineHeight: "1.25", opacity: 0.95 }}>{item.label}</span>
               </div>
             </button>

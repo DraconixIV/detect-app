@@ -23,7 +23,6 @@ import ConsultationRequestModal from "./components/ConsultationRequestModal";
 import MapLayersModal from "./components/MapLayersModal";
 import SplashScreen from "./components/SplashScreen";
 import AppDrawer from "./components/AppDrawer";
-import NewsModal from "./components/NewsModal";
 import FeedbackModal from "./components/FeedbackModal";
 import AboutModal from "./components/AboutModal";
 import CguModal from "./components/CguModal";
@@ -46,7 +45,6 @@ import { addFind as createFind, toggleFavorite, normalizeDateStr, isFindInSortie
 import { getActiveSession, leaveTeamSession, normalizeSessionCode, getMyUserCode, getMyDisplayName } from "./services/sessionService";
 import { loadCategoriesData } from "./services/categoriesService";
 import { trackVisitEvent } from "./services/analyticsService";
-import { checkHasUnreadUpdate, getUnreadUpdatesCount } from "./services/feedbackService";
 
 function offsetPosition(
   position,
@@ -191,15 +189,8 @@ function App() {
   const [showDrawer, setShowDrawer] =
     useState(false);
 
-  const [showNewsModal, setShowNewsModal] =
-    useState(false);
-
   const [showFeedbackModal, setShowFeedbackModal] =
     useState(false);
-
-  const [unreadUpdatesCount, setUnreadUpdatesCount] =
-    useState(() => getUnreadUpdatesCount());
-  const hasUnreadNews = unreadUpdatesCount > 0;
 
   const [showAboutModal, setShowAboutModal] =
     useState(false);
@@ -348,15 +339,6 @@ function App() {
       document.body.classList.remove("theme-light");
     }
   }, [theme]);
-
-  // Sync update notification badge status
-  useEffect(() => {
-    const handleVersionSeen = () => {
-      setUnreadUpdatesCount(getUnreadUpdatesCount());
-    };
-    window.addEventListener("geoprospect-version-seen", handleVersionSeen);
-    return () => window.removeEventListener("geoprospect-version-seen", handleVersionSeen);
-  }, []);
 
   const [showAlbum, setShowAlbum] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState(null);
@@ -1536,8 +1518,6 @@ function App() {
           workspace={workspace}
           gpsAccuracy={gpsAccuracy}
           isOnline={isOnline}
-          hasUnreadNews={hasUnreadNews}
-          unreadUpdatesCount={unreadUpdatesCount}
           isRecordingSortie={isRecordingSortie}
           onToggleRecording={() => isRecordingSortie ? stopSortie() : startSortie(position)}
           onOpenTeamSession={() => setShowTeamSessionModal(true)}
@@ -2379,8 +2359,6 @@ function App() {
         isOpen={showDrawer}
         onClose={() => setShowDrawer(false)}
         theme={theme}
-        hasUnreadNews={hasUnreadNews}
-        unreadUpdatesCount={unreadUpdatesCount}
         onNavigate={(tab) => {
           setActiveTab(tab);
           setShowDrawer(false);
@@ -2395,10 +2373,6 @@ function App() {
         }}
         onOpenFriendsMaps={() => {
           setShowFriendsMapsModal(true);
-          setShowDrawer(false);
-        }}
-        onOpenNews={() => {
-          setShowNewsModal(true);
           setShowDrawer(false);
         }}
         onOpenAbout={() => {
@@ -2442,17 +2416,6 @@ function App() {
         setWorkspace={setWorkspace}
         requestMapConsultation={requestMapConsultation}
         setToast={setToast}
-        theme={theme}
-      />
-
-      {/* News & Tips Modal */}
-      <NewsModal
-        isOpen={showNewsModal}
-        onClose={() => setShowNewsModal(false)}
-        onOpenFeedback={() => {
-          setShowNewsModal(false);
-          setShowFeedbackModal(true);
-        }}
         theme={theme}
       />
 

@@ -21,9 +21,7 @@ export default function MapTopBar({
   finds = [],
   onSelectFind,
   onSelectPlace,
-  zenMode = false,
-  hasUnreadNews = false,
-  unreadUpdatesCount = 0
+  zenMode = false
 }) {
   const [categoriesData, setCategoriesData] = useState(() => loadCategoriesData());
   const [places, setPlaces] = useState([]);
@@ -194,32 +192,6 @@ export default function MapTopBar({
                 <line x1="3" y1="12" x2="21" y2="12" />
                 <line x1="3" y1="18" x2="21" y2="18" />
               </svg>
-              {(unreadUpdatesCount > 0 || hasUnreadNews) && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: "-5px",
-                    right: "-5px",
-                    minWidth: "15px",
-                    height: "15px",
-                    borderRadius: "8px",
-                    background: "#ef4444",
-                    color: "#ffffff",
-                    fontSize: "9.5px",
-                    fontWeight: "400",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    border: "1.5px solid #ffffff",
-                    boxShadow: "0 0 8px rgba(239, 68, 68, 0.9)",
-                    padding: "0 3px",
-                    lineHeight: 1
-                  }}
-                  title={`${unreadUpdatesCount || 1} nouvelle${(unreadUpdatesCount || 1) > 1 ? "s" : ""} mise${(unreadUpdatesCount || 1) > 1 ? "s" : ""} à jour`}
-                >
-                  {unreadUpdatesCount || 1}
-                </span>
-              )}
             </button>
           )}
 
