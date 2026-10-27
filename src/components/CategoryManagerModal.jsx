@@ -374,25 +374,18 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                             userSelect: "none"
                           }}
                         >
-                          <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, minWidth: 0 }}>
-                            <span
+                          <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1, minWidth: 0 }}>
+                            <div
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setColorPickerCat(isPickingColor ? null : catName);
                               }}
-                              title="Changer la couleur"
-                              style={{
-                                width: "12px",
-                                height: "12px",
-                                borderRadius: "50%",
-                                background: color,
-                                cursor: "pointer",
-                                display: "inline-block",
-                                flexShrink: 0
-                              }}
-                            />
-                            <TacticalPinIcon markerId={emoji} color={color} size={22} categoryName={catName} className="mr-1" />
-                            <span style={{ fontWeight: "400", fontSize: "13px", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              title="Changer la couleur du repère"
+                              style={{ cursor: "pointer", display: "inline-flex", alignItems: "center", flexShrink: 0 }}
+                            >
+                              <TacticalPinIcon markerId={emoji} color={color} size={24} categoryName={catName} />
+                            </div>
+                            <span style={{ fontWeight: "400", fontSize: "13.5px", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                               {catName}
                             </span>
                             <span style={{ fontSize: "11px", color: textSub, flexShrink: 0 }}>
