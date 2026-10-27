@@ -54,7 +54,7 @@ export default function TacticalPinIcon({
       fill="none"
       className={`inline-block shrink-0 select-none ${className}`}
       style={style}
-      aria-label={marker.label}
+      aria-label="Repère tactique"
     >
       <path
         d="M18 2C8.6 2 1 9.6 1 19c0 10.5 14 24 17 26 3-2 17-15.5 17-26 0-9.4-7.6-17-17-17z"

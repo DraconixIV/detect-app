@@ -65,14 +65,20 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
   });
 
   const [categories, setCategories] = useState(() => {
+    const hasStored = !!localStorage.getItem("geoprospect_categories");
+    if (!hasStored) return {};
     const loaded = loadCategoriesData();
     return loaded.categories || {};
   });
   const [emojis, setEmojis] = useState(() => {
+    const hasStored = !!localStorage.getItem("geoprospect_categories");
+    if (!hasStored) return {};
     const loaded = loadCategoriesData();
     return loaded.emojis || {};
   });
   const [colors, setColors] = useState(() => {
+    const hasStored = !!localStorage.getItem("geoprospect_categories");
+    if (!hasStored) return {};
     const loaded = loadCategoriesData();
     return loaded.colors || {};
   });

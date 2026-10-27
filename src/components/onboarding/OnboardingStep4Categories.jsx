@@ -1,5 +1,5 @@
 import React from "react";
-import { PRESET_CATEGORY_COLORS, SUGGESTED_STARTER_CATEGORIES } from "../../subCategories";
+import { PRESET_CATEGORY_COLORS } from "../../subCategories";
 import TacticalPinIcon from "../TacticalPinIcon";
 import CategoryMarkerPicker from "../CategoryMarkerPicker";
 import { RECOMMENDED_METALS } from "../../services/materialsService";
@@ -120,59 +120,6 @@ export default function OnboardingStep4Categories({
       {/* TAB 1: FAMILLES D'OBJETS */}
       {step4Tab === "categories" && (
         <>
-          {/* Quick 1-click Suggestion Chips */}
-          <div
-            style={{
-              background: cardBg,
-              border: `1px solid ${cardBorder}`,
-              borderRadius: "16px",
-              padding: "14px"
-            }}
-          >
-            <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>
-              Suggestions en 1 clic (activer / désactiver)
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-              {Object.keys(SUGGESTED_STARTER_CATEGORIES).map((starterName) => {
-                const item = SUGGESTED_STARTER_CATEGORIES[starterName];
-                const isAlreadyAdded = !!categories[starterName];
-                return (
-                  <button
-                    key={starterName}
-                    type="button"
-                    onClick={() => handleToggleStarter(starterName)}
-                    style={{
-                      padding: "6px 11px",
-                      borderRadius: "999px",
-                      border: isAlreadyAdded ? "1px solid #2c5e4c" : `1px solid ${cardBorder}`,
-                      background: isAlreadyAdded ? (isDark ? "rgba(44, 94, 76, 0.28)" : "#eef2ee") : inputBg,
-                      color: isAlreadyAdded ? textMain : textSub,
-                      fontSize: "12px",
-                      fontWeight: "400",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      transition: "all 0.15s ease"
-                    }}
-                  >
-                    <TacticalPinIcon markerId={item.emoji} color={item.color} size={18} categoryName={starterName} />
-                    <span>{starterName}</span>
-                    <span
-                      style={{
-                        color: isAlreadyAdded ? (isDark ? "#80b99c" : "#2c5e4c") : textSub,
-                        fontWeight: "400",
-                        fontSize: "11px"
-                      }}
-                    >
-                      {isAlreadyAdded ? "✓" : "+"}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
           {/* Custom Category Creation Form */}
           <form
             onSubmit={handleAddCustomCategory}
@@ -180,46 +127,88 @@ export default function OnboardingStep4Categories({
               background: cardBg,
               border: `1px solid ${cardBorder}`,
               borderRadius: "16px",
-              padding: "14px",
+              padding: "16px",
               display: "flex",
               flexDirection: "column",
-              gap: "10px"
+              gap: "14px"
             }}
           >
-            <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-              Créer une catégorie
+            <div>
+              <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "6px" }}>
+                1. Nom de votre catégorie
+              </div>
+              <input
+                type="text"
+                placeholder="Ex : Monnaies royales, Balles de mousquet, Boucles, Militaria..."
+                value={newCatName}
+                onChange={(e) => setNewCatName(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px 12px",
+                  borderRadius: "10px",
+                  border: `1px solid ${inputBorder}`,
+                  background: inputBg,
+                  color: textMain,
+                  fontSize: "13px",
+                  outline: "none",
+                  boxSizing: "border-box"
+                }}
+              />
             </div>
 
-            <input
-              type="text"
-              placeholder="Ex : Objets militaires, Déchets ferreux, Fibules..."
-              value={newCatName}
-              onChange={(e) => setNewCatName(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "9px 12px",
-                borderRadius: "10px",
-                border: `1px solid ${inputBorder}`,
-                background: inputBg,
-                color: textMain,
-                fontSize: "13px",
-                outline: "none",
-                boxSizing: "border-box"
-              }}
-            />
-
-            <CategoryMarkerPicker
-              selectedMarkerId={newCatEmoji}
-              onSelectMarker={setNewCatEmoji}
-              currentColor={newCatColor}
-              theme={isDark ? "dark" : "light"}
-            />
-
-            {/* Sous-catégories */}
+            {/* Color Swatch Picker */}
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
-                <div style={{ fontSize: "11px", fontWeight: "400", color: textSub }}>
-                  Sous-catégories
+              <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                2. Couleur du contour sur la carte
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "7px", alignItems: "center" }}>
+                {PRESET_CATEGORY_COLORS.map((colorHex) => {
+                  const isSelected = newCatColor === colorHex;
+                  return (
+                    <button
+                      key={colorHex}
+                      type="button"
+                      onClick={() => setNewCatColor(colorHex)}
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                        borderRadius: "50%",
+                        background: colorHex,
+                        border: isSelected ? `2px solid ${textMain}` : "1.5px solid rgba(0,0,0,0.15)",
+                        cursor: "pointer",
+                        padding: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        transform: isSelected ? "scale(1.15)" : "scale(1)",
+                        transition: "all 0.15s ease"
+                      }}
+                    >
+                      {isSelected && <span style={{ color: "#ffffff", fontSize: "11px", fontWeight: "400" }}>✓</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Visual Marker Picker in GROS PLAN */}
+            <div>
+              <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                3. Choix du repère visuel (42 formes au choix)
+              </div>
+              <CategoryMarkerPicker
+                selectedMarkerId={newCatEmoji}
+                onSelectMarker={setNewCatEmoji}
+                currentColor={newCatColor}
+                theme={isDark ? "dark" : "light"}
+              />
+            </div>
+
+            {/* Sous-catégories (optionnel) */}
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  4. Sous-catégories (optionnel)
                 </div>
                 {Object.keys(categories).length > 0 && (
                   <div style={{ fontSize: "11px", color: textSub, display: "flex", alignItems: "center", gap: "4px" }}>
@@ -250,7 +239,7 @@ export default function OnboardingStep4Categories({
               </div>
               <input
                 type="text"
-                placeholder="Ex : Antique, Médiéval, Moderne..."
+                placeholder="Ex : Antique, Médiéval, Moderne (séparez par des virgules)..."
                 value={newSubText}
                 onChange={(e) => setNewSubText(e.target.value)}
                 style={{
@@ -267,84 +256,53 @@ export default function OnboardingStep4Categories({
               />
             </div>
 
-            {/* Color Swatch Picker */}
-            <div>
-              <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
-                Couleur du repère carte
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
-                {PRESET_CATEGORY_COLORS.map((colorHex) => {
-                  const isSelected = newCatColor === colorHex;
-                  return (
-                    <button
-                      key={colorHex}
-                      type="button"
-                      onClick={() => setNewCatColor(colorHex)}
-                      style={{
-                        width: "22px",
-                        height: "22px",
-                        borderRadius: "50%",
-                        background: colorHex,
-                        border: isSelected ? `2px solid ${textMain}` : "1.5px solid rgba(0,0,0,0.15)",
-                        cursor: "pointer",
-                        padding: 0,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        transform: isSelected ? "scale(1.15)" : "scale(1)",
-                        transition: "all 0.15s ease"
-                      }}
-                    >
-                      {isSelected && <span style={{ color: "#ffffff", fontSize: "10px", fontWeight: "400" }}>✓</span>}
-                    </button>
-                  );
-                })}
-              </div>
+            <div style={{ display: "flex", gap: "8px", marginTop: "2px" }}>
+              <button
+                type="submit"
+                disabled={!newCatName.trim()}
+                style={{
+                  flex: 1,
+                  padding: "11px",
+                  borderRadius: "10px",
+                  border: "none",
+                  background: newCatName.trim() ? "#2c5e4c" : (isDark ? "rgba(255,255,255,0.06)" : "#dce2de"),
+                  color: newCatName.trim() ? "#ffffff" : textSub,
+                  fontSize: "13px",
+                  fontWeight: "400",
+                  cursor: newCatName.trim() ? "pointer" : "not-allowed",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                Ajouter cette catégorie
+              </button>
+
+              {newSubText.trim() && Object.keys(categories).length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleAddCustomSubCategory}
+                  style={{
+                    padding: "11px 14px",
+                    borderRadius: "10px",
+                    border: `1px solid #2c5e4c`,
+                    background: isDark ? "rgba(44, 94, 76, 0.22)" : "#eef2ee",
+                    color: textMain,
+                    fontSize: "13px",
+                    fontWeight: "400",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease"
+                  }}
+                >
+                  Ajouter sous-catégorie
+                </button>
+              )}
             </div>
-
-            <button
-              type="submit"
-              disabled={!newCatName.trim()}
-              style={{
-                padding: "10px",
-                borderRadius: "10px",
-                border: "none",
-                background: newCatName.trim() ? "#2c5e4c" : (isDark ? "rgba(255,255,255,0.06)" : "#dce2de"),
-                color: newCatName.trim() ? "#ffffff" : textSub,
-                fontSize: "13px",
-                fontWeight: "400",
-                cursor: newCatName.trim() ? "pointer" : "not-allowed",
-                transition: "all 0.2s ease"
-              }}
-            >
-              Ajouter cette catégorie
-            </button>
-
-            <button
-              type="button"
-              onClick={handleAddCustomSubCategory}
-              disabled={!newSubText.trim() || Object.keys(categories).length === 0}
-              style={{
-                padding: "10px",
-                borderRadius: "10px",
-                border: `1px solid ${newSubText.trim() && Object.keys(categories).length > 0 ? "#2c5e4c" : cardBorder}`,
-                background: newSubText.trim() && Object.keys(categories).length > 0 ? (isDark ? "rgba(44, 94, 76, 0.22)" : "#eef2ee") : inputBg,
-                color: newSubText.trim() && Object.keys(categories).length > 0 ? textMain : textSub,
-                fontSize: "13px",
-                fontWeight: "400",
-                cursor: newSubText.trim() && Object.keys(categories).length > 0 ? "pointer" : "not-allowed",
-                transition: "all 0.2s ease"
-              }}
-            >
-              Ajouter cette sous-catégorie
-            </button>
           </form>
 
           {/* Configured Categories List */}
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                Vos catégories ({Object.keys(categories).length})
+                Vos catégories créées ({Object.keys(categories).length})
               </span>
             </div>
 
@@ -361,10 +319,10 @@ export default function OnboardingStep4Categories({
                 }}
               >
                 <div style={{ fontWeight: "400", color: textMain, marginBottom: "4px" }}>
-                  Aucune catégorie sélectionnée
+                  Aucune catégorie créée pour le moment
                 </div>
                 <div>
-                  Activez une suggestion ci-dessus ou créez vos propres catégories.
+                  Créez votre première catégorie ci-dessus en lui donnant le nom et la forme de votre choix.
                 </div>
               </div>
             ) : (
@@ -400,19 +358,9 @@ export default function OnboardingStep4Categories({
                           userSelect: "none"
                         }}
                       >
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, minWidth: 0 }}>
-                          <span
-                            style={{
-                              width: "10px",
-                              height: "10px",
-                              borderRadius: "50%",
-                              background: col,
-                              display: "inline-block",
-                              flexShrink: 0
-                            }}
-                          />
-                          <TacticalPinIcon markerId={em} color={col} size={20} categoryName={catName} className="mr-1" />
-                          <span style={{ fontSize: "13px", fontWeight: "400", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1, minWidth: 0 }}>
+                          <TacticalPinIcon markerId={em} color={col} size={28} categoryName={catName} />
+                          <span style={{ fontSize: "14px", fontWeight: "400", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             {catName}
                           </span>
                           <span style={{ fontSize: "11px", fontWeight: "400", color: textSub, flexShrink: 0 }}>
