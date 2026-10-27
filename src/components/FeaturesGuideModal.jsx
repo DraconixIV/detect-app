@@ -4,31 +4,25 @@ const FEATURES_DATA = [
   {
     category: "maps",
     categoryLabel: "Cartographie",
-    categoryEmoji: "🗺️",
     features: [
       {
         title: "Superposition du cadastre officiel IGN",
-        icon: "📐",
         description: "Affiche le découpage parcellaire officiel, les limites de propriétés et les numéros de sections pour situer vos autorisations avec précision."
       },
       {
         title: "Carte de Cassini (XVIIIe siècle)",
-        icon: "📜",
         description: "Explorez la toute première carte générale du royaume de France pour repérer les anciens moulins, chapelles, gués, châteaux et chemins séculaires."
       },
       {
         title: "Carte de l'état-major (1820 — 1866)",
-        icon: "⚔️",
         description: "Superposez les levés topographiques militaires du XIXe siècle pour identifier l'évolution des parcelles et l'ancien réseau viaire rural."
       },
       {
         title: "Imagerie satellite HD",
-        icon: "🛰️",
         description: "Basculez entre vue aérienne haute définition et modèle numérique de relief avec courbes de niveau pour analyser les dénivelés du terrain."
       },
       {
         title: "Curseur de transparence en direct",
-        icon: "🎚️",
         description: "Ajustez la transparence de chaque couche historique pour voir le cadastre ou le satellite en transparence sous la carte ancienne."
       }
     ]
@@ -36,31 +30,25 @@ const FEATURES_DATA = [
   {
     category: "finds",
     categoryLabel: "Trouvailles",
-    categoryEmoji: "🪙",
     features: [
       {
         title: "Pointage GPS précis",
-        icon: "📍",
         description: "Épinglez instantanément une découverte avec vos coordonnées GPS réelles ou ciblez n'importe quel point précis de la carte par un appui long."
       },
       {
         title: "Photos macro avant / après nettoyage",
-        icon: "✨",
         description: "Ajoutez une photo de découverte brute (en terre) puis une photo après restauration pour apprécier l'évolution du nettoyage."
       },
       {
         title: "Recadrage macro",
-        icon: "🔍",
         description: "Recadrez et zoomez directement sur les détails des monnaies, fibules et reliefs fins sans quitter l'application."
       },
       {
         title: "Notes vocales dictées sur le terrain",
-        icon: "🎙️",
         description: "Enregistrez un mémo vocal direct pour consigner le contexte du son, la profondeur ou le type de terre sans avoir à taper sur le clavier."
       },
       {
         title: "Catégories personnalisées",
-        icon: "🏷️",
         description: "Créez vos propres catégories, sous-catégories et associez-y des métaux (or, argent, bronze, fer, cuivre, plomb...) avec leurs couleurs repères."
       }
     ]
@@ -68,26 +56,21 @@ const FEATURES_DATA = [
   {
     category: "gps",
     categoryLabel: "Traceur GPS",
-    categoryEmoji: "⏱️",
     features: [
       {
         title: "Ligne de tracé GPS en direct",
-        icon: "🔴",
         description: "Visualisez en temps réel votre parcours sur la carte pour prospecter méthodiquement et ne jamais repasser au même endroit."
       },
       {
         title: "Compteur de cibles dynamique",
-        icon: "🎯",
         description: "Le bandeau de télémétrie démarre à 0 et comptabilise automatiquement le nombre de trouvailles épinglées pendant la sortie."
       },
       {
         title: "Télémétrie complète",
-        icon: "📊",
         description: "Chronomètre avec mise en pause, calcul de la distance parcourue en kilomètres et protection contre les sauts GPS aberrants."
       },
       {
         title: "Historique des sorties",
-        icon: "🗺️",
         description: "Sauvegardez vos sorties avec un nom personnalisé et réaffichez le tracé complet d'une journée passée sur la carte."
       }
     ]
@@ -95,21 +78,17 @@ const FEATURES_DATA = [
   {
     category: "team",
     categoryLabel: "Sessions en équipe",
-    categoryEmoji: "👥",
     features: [
       {
         title: "Partage GPS en direct entre coéquipiers",
-        icon: "📡",
         description: "Visualisez les positions de vos amis en temps réel sous forme de pastilles sur la carte pour rester coordonnés sur les grands terrains."
       },
       {
         title: "Alertes trouvailles instantanées",
-        icon: "🔔",
         description: "Soyez notifié dès qu'un coéquipier enregistre une découverte remarquable dans le champ avec son nom et sa catégorie."
       },
       {
         title: "Code de session privé",
-        icon: "🔒",
         description: "Rejoignez une session avec un code unique à 6 lettres. L'hôte peut verrouiller la session ou exclure un participant."
       }
     ]
@@ -117,21 +96,17 @@ const FEATURES_DATA = [
   {
     category: "offline",
     categoryLabel: "Mode hors-ligne",
-    categoryEmoji: "💾",
     features: [
       {
         title: "Fonctionnement sans réseau (PWA)",
-        icon: "🌲",
         description: "Enregistrez vos trouvailles, photos et tracés même au fond des bois sans aucune couverture 4G grâce au stockage IndexedDB."
       },
       {
         title: "Synchronisation automatique silencieuse",
-        icon: "🔄",
         description: "Dès que votre téléphone capte à nouveau une connexion Internet, vos trouvailles en attente sont transmises à votre carnet de détection cloud."
       },
       {
         title: "Sauvegardes complètes JSON",
-        icon: "📁",
         description: "Téléchargez l'intégralité de vos trouvailles et paramètres dans un fichier de sauvegarde local réimportable à tout moment."
       }
     ]
@@ -139,21 +114,17 @@ const FEATURES_DATA = [
   {
     category: "tools",
     categoryLabel: "Boîte à outils",
-    categoryEmoji: "🧰",
     features: [
       {
         title: "Mode sombre et clair",
-        icon: "🌓",
         description: "Basculez entre thème sombre immersif et thème clair à fort contraste pour une lisibilité optimale sous le plein soleil."
       },
       {
         title: "Mode zen",
-        icon: "🧘",
         description: "Masquez l'interface inutile pour admirer la carte et activez le Wake Lock pour que votre écran ne s'éteigne jamais pendant la marche."
       },
       {
         title: "Regroupement des marqueurs (clustering)",
-        icon: "🫧",
         description: "Les centaines de points de découvertes se regroupent automatiquement en grappes fluides pour ne jamais saturer l'affichage."
       }
     ]
@@ -167,13 +138,12 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
   if (!isOpen) return null;
 
   const isLight = theme === "light";
-  const bgModal = isLight ? "#ffffff" : "#0f172a";
-  const textMain = isLight ? "#0f172a" : "#ffffff";
-  const textSub = isLight ? "#475569" : "#94a3b8";
-  const cardBg = isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)";
-  const cardBorder = isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.12)";
-  const inputBg = isLight ? "#f1f5f9" : "#1e293b";
-  const inputBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.16)";
+  const bgModal = isLight ? "#f3f4f2" : "#111915";
+  const sheetBg = isLight ? "#ffffff" : "#19231e";
+  const inputBg = isLight ? "#f3f4f2" : "#111915";
+  const cardBorder = isLight ? "#eef0ed" : "rgba(255, 255, 255, 0.08)";
+  const textMain = isLight ? "#1f2924" : "#f1f5f2";
+  const textSub = isLight ? "#5c6b63" : "#9aa8a0";
 
   const filteredCategories = FEATURES_DATA.map((cat) => {
     const matchingFeatures = cat.features.filter((f) => {
@@ -197,66 +167,63 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
         position: "fixed",
         inset: 0,
         zIndex: 9999,
-        background: "rgba(0, 0, 0, 0.75)",
-        backdropFilter: "blur(8px)",
-        WebkitBackdropFilter: "blur(8px)",
+        background: "rgba(8, 14, 11, 0.8)",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "16px",
-        animation: "fadeIn 0.2s ease"
+        padding: "16px"
       }}
       onClick={onClose}
     >
       <div
         style={{
           width: "100%",
-          maxWidth: "540px",
+          maxWidth: "520px",
           maxHeight: "88vh",
           background: bgModal,
-          borderRadius: "24px",
+          borderRadius: "20px",
           border: `1px solid ${cardBorder}`,
-          boxShadow: isLight ? "0 20px 40px rgba(0,0,0,0.15)" : "0 20px 50px rgba(0,0,0,0.7)",
+          boxShadow: "0 24px 48px rgba(0,0,0,0.5)",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden"
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
+        {/* Forest Header */}
         <div
           style={{
+            background: "#2c5e4c",
             padding: "16px 20px",
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
-            borderBottom: `1px solid ${cardBorder}`
+            justifyContent: "space-between"
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div>
-              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: textMain }}>
-                Guide des fonctionnalités
-              </h3>
-              <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
-                Toutes les capacités de votre carnet de détection GeoProspect
-              </p>
-            </div>
+          <div>
+            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: "#ffffff" }}>
+              Guide des fonctionnalités
+            </h3>
+            <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: "rgba(255,255,255,0.75)" }}>
+              Capacités de votre carnet de détection GeoProspect
+            </p>
           </div>
           <button
             type="button"
             onClick={onClose}
             style={{
-              background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.1)",
+              background: "rgba(255,255,255,0.14)",
               border: "none",
               borderRadius: "50%",
-              width: "32px",
-              height: "32px",
+              width: "28px",
+              height: "28px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: textMain,
-              fontSize: "14px",
+              color: "#ffffff",
+              fontSize: "13px",
               cursor: "pointer"
             }}
           >
@@ -267,15 +234,14 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
         {/* Search & Category Filter bar */}
         <div
           style={{
-            padding: "12px 20px",
+            padding: "14px 18px",
             borderBottom: `1px solid ${cardBorder}`,
             display: "flex",
             flexDirection: "column",
             gap: "10px",
-            background: isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.02)"
+            background: sheetBg
           }}
         >
-          {/* Search Input */}
           <input
             type="text"
             placeholder="Rechercher une fonctionnalité..."
@@ -283,9 +249,9 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
               width: "100%",
-              padding: "9px 14px",
-              borderRadius: "12px",
-              border: `1px solid ${inputBorder}`,
+              padding: "9px 12px",
+              borderRadius: "10px",
+              border: `1px solid ${cardBorder}`,
               background: inputBg,
               color: textMain,
               fontSize: "12px",
@@ -294,7 +260,6 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
             }}
           />
 
-          {/* Category Filter Chips */}
           <div
             style={{
               display: "flex",
@@ -308,13 +273,9 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
               onClick={() => setActiveCategory("all")}
               style={{
                 padding: "6px 12px",
-                borderRadius: "10px",
-                border: activeCategory === "all"
-                  ? (isLight ? "1.5px solid #0f172a" : "1.5px solid rgba(255, 255, 255, 0.6)")
-                  : `1px solid ${cardBorder}`,
-                background: activeCategory === "all"
-                  ? (isLight ? "#0f172a" : "rgba(255, 255, 255, 0.15)")
-                  : "transparent",
+                borderRadius: "999px",
+                border: "none",
+                background: activeCategory === "all" ? "#2c5e4c" : inputBg,
                 color: activeCategory === "all" ? "#ffffff" : textSub,
                 fontSize: "11px",
                 fontWeight: "400",
@@ -333,24 +294,17 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
                   onClick={() => setActiveCategory(cat.category)}
                   style={{
                     padding: "6px 12px",
-                    borderRadius: "10px",
-                    border: isSelected
-                      ? (isLight ? "1.5px solid #0f172a" : "1.5px solid rgba(255, 255, 255, 0.6)")
-                      : `1px solid ${cardBorder}`,
-                    background: isSelected
-                      ? (isLight ? "#0f172a" : "rgba(255, 255, 255, 0.15)")
-                      : "transparent",
+                    borderRadius: "999px",
+                    border: "none",
+                    background: isSelected ? "#2c5e4c" : inputBg,
                     color: isSelected ? "#ffffff" : textSub,
                     fontSize: "11px",
                     fontWeight: "400",
                     cursor: "pointer",
-                    whiteSpace: "nowrap",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px"
+                    whiteSpace: "nowrap"
                   }}
                 >
-                  <span>{cat.categoryLabel.split(" ")[0]}</span>
+                  {cat.categoryLabel}
                 </button>
               );
             })}
@@ -360,56 +314,51 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
         {/* Content list */}
         <div
           style={{
-            padding: "20px",
+            padding: "16px 18px",
             overflowY: "auto",
             display: "flex",
             flexDirection: "column",
-            gap: "20px"
+            gap: "16px"
           }}
         >
           {filteredCategories.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "30px 10px", color: textSub }}>
-              <div style={{ fontWeight: "400", fontSize: "14px", color: textMain }}>
+            <div style={{ textAlign: "center", padding: "24px 10px", color: textSub }}>
+              <div style={{ fontWeight: "400", fontSize: "13px", color: textMain }}>
                 Aucune fonctionnalité trouvée
               </div>
               <div style={{ fontSize: "12px", marginTop: "4px" }}>
-                Essayez d'autres mots-clés ou réinitialisez la recherche.
+                Essayez d'autres termes de recherche.
               </div>
             </div>
           ) : (
             filteredCategories.map((cat) => (
-              <div key={cat.category} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <span style={{ fontSize: "13px", fontWeight: "400", color: textMain, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                    {cat.categoryLabel}
-                  </span>
-                  <span style={{ fontSize: "11px", color: textSub, fontWeight: "400"}}>
-                    ({cat.features.length})
-                  </span>
+              <div key={cat.category} style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  {cat.categoryLabel} ({cat.features.length})
                 </div>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  {cat.features.map((f, i) => (
+                <div
+                  style={{
+                    background: sheetBg,
+                    border: `1px solid ${cardBorder}`,
+                    borderRadius: "16px",
+                    overflow: "hidden"
+                  }}
+                >
+                  {cat.features.map((f, i, arr) => (
                     <div
                       key={i}
                       style={{
                         padding: "12px 14px",
-                        borderRadius: "14px",
-                        background: cardBg,
-                        border: `1px solid ${cardBorder}`,
-                        display: "flex",
-                        gap: "12px",
-                        alignItems: "flex-start"
+                        borderBottom: i < arr.length - 1 ? `1px solid ${cardBorder}` : "none"
                       }}
                     >
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: "13px", fontWeight: "400", color: textMain, marginBottom: "3px" }}>
-                          {f.title}
-                        </div>
-                        <p style={{ margin: 0, fontSize: "11.5px", color: textSub, lineHeight: "1.45" }}>
-                          {f.description}
-                        </p>
+                      <div style={{ fontSize: "13px", fontWeight: "400", color: textMain, marginBottom: "3px" }}>
+                        {f.title}
                       </div>
+                      <p style={{ margin: 0, fontSize: "11.5px", color: textSub, lineHeight: "1.45" }}>
+                        {f.description}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -421,22 +370,23 @@ export default function FeaturesGuideModal({ isOpen, onClose, theme = "dark" }) 
         {/* Footer */}
         <div
           style={{
-            padding: "12px 20px",
+            padding: "12px 18px",
             borderTop: `1px solid ${cardBorder}`,
             display: "flex",
-            justifyContent: "flex-end"
+            justifyContent: "flex-end",
+            background: sheetBg
           }}
         >
           <button
             type="button"
             onClick={onClose}
             style={{
-              padding: "10px 20px",
-              borderRadius: "12px",
-              border: `1px solid ${cardBorder}`,
-              background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.12)",
+              padding: "9px 18px",
+              borderRadius: "10px",
+              border: "none",
+              background: "#2c5e4c",
               color: "#ffffff",
-              fontSize: "13px",
+              fontSize: "12px",
               fontWeight: "400",
               cursor: "pointer"
             }}

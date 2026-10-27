@@ -54,13 +54,11 @@ export default function AddFindModal({
           width: "100%",
           maxWidth: "520px",
           maxHeight: "88vh",
-          background: "rgba(15, 23, 42, 0.96)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          borderTop: "1.5px solid rgba(255, 255, 255, 0.15)",
-          borderLeft: "1px solid rgba(255, 255, 255, 0.1)",
-          borderRight: "1px solid rgba(255, 255, 255, 0.1)",
-          borderRadius: "28px 28px 0 0",
+          background: "#111915",
+          borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+          borderLeft: "1px solid rgba(255, 255, 255, 0.06)",
+          borderRight: "1px solid rgba(255, 255, 255, 0.06)",
+          borderRadius: "24px 24px 0 0",
           boxShadow: "0 -10px 40px rgba(0, 0, 0, 0.6)",
           display: "flex",
           flexDirection: "column",
@@ -72,7 +70,7 @@ export default function AddFindModal({
         {/* Header with drag bar & close */}
         <div
           style={{
-            padding: "14px 20px 10px 20px",
+            padding: "14px 20px 12px 20px",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -83,7 +81,7 @@ export default function AddFindModal({
           {/* Small visual handle bar */}
           <div
             style={{
-              width: "40px",
+              width: "36px",
               height: "4px",
               borderRadius: "999px",
               background: "rgba(255, 255, 255, 0.2)",
@@ -99,30 +97,27 @@ export default function AddFindModal({
               justifyContent: "space-between"
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span style={{ fontSize: "20px" }}>📍</span>
-              <h3
-                style={{
-                  margin: 0,
-                  color: "#ffffff",
-                  fontSize: "17px",
-                  fontWeight: "400",
-                  letterSpacing: "-0.3px"
-                }}
-              >
-                Nouvelle trouvaille
-              </h3>
-            </div>
+            <h3
+              style={{
+                margin: 0,
+                color: "#ffffff",
+                fontSize: "16px",
+                fontWeight: "400",
+                letterSpacing: "-0.2px"
+              }}
+            >
+              Nouvelle trouvaille
+            </h3>
 
             <button
               onClick={onClose}
               style={{
-                width: "32px",
-                height: "32px",
+                width: "30px",
+                height: "30px",
                 borderRadius: "50%",
                 border: "none",
                 background: "rgba(255, 255, 255, 0.08)",
-                color: "#cbd5e1",
+                color: "rgba(255, 255, 255, 0.7)",
                 fontSize: "14px",
                 cursor: "pointer",
                 display: "flex",

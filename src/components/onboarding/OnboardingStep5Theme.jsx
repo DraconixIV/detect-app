@@ -13,11 +13,14 @@ export default function OnboardingStep5Theme({
   onBack,
   onNext
 }) {
+  const activeBg = isDark ? "rgba(44, 94, 76, 0.25)" : "#eef2ee";
+  const activeBorder = "#2c5e4c";
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       <div>
-        <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "400", color: textMain, letterSpacing: "-0.5px" }}>
-          Configuration initiale ⚙️
+        <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "400", color: textMain, letterSpacing: "-0.3px" }}>
+          Configuration initiale
         </h1>
         <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
           Personnalisez votre affichage cartographique et l'interface de travail.
@@ -33,19 +36,19 @@ export default function OnboardingStep5Theme({
           <div
             onClick={() => setSelectedMapStyle("satellite")}
             style={{
-              padding: "14px",
+              padding: "16px 14px",
               borderRadius: "14px",
-              border: selectedMapStyle === "satellite" ? "2px solid #2563eb" : `1px solid ${cardBorder}`,
-              background: selectedMapStyle === "satellite" ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : cardBg,
+              border: selectedMapStyle === "satellite" ? `1.5px solid ${activeBorder}` : `1px solid ${cardBorder}`,
+              background: selectedMapStyle === "satellite" ? activeBg : cardBg,
               cursor: "pointer",
               textAlign: "center",
               transition: "all 0.2s ease"
             }}
           >
-            <div style={{ fontSize: "14px", fontWeight: "400", color: selectedMapStyle === "satellite" ? (isDark ? "#60a5fa" : "#1e3a8a") : textMain }}>
-              🛰️ Satellite HD
+            <div style={{ fontSize: "14px", fontWeight: "400", color: textMain }}>
+              Satellite HD
             </div>
-            <div style={{ fontSize: "11px", color: textSub, marginTop: "2px" }}>
+            <div style={{ fontSize: "11px", color: textSub, marginTop: "3px" }}>
               Imagerie aérienne
             </div>
           </div>
@@ -53,19 +56,19 @@ export default function OnboardingStep5Theme({
           <div
             onClick={() => setSelectedMapStyle("streets")}
             style={{
-              padding: "14px",
+              padding: "16px 14px",
               borderRadius: "14px",
-              border: selectedMapStyle === "streets" ? "2px solid #2563eb" : `1px solid ${cardBorder}`,
-              background: selectedMapStyle === "streets" ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : cardBg,
+              border: selectedMapStyle === "streets" ? `1.5px solid ${activeBorder}` : `1px solid ${cardBorder}`,
+              background: selectedMapStyle === "streets" ? activeBg : cardBg,
               cursor: "pointer",
               textAlign: "center",
               transition: "all 0.2s ease"
             }}
           >
-            <div style={{ fontSize: "14px", fontWeight: "400", color: selectedMapStyle === "streets" ? (isDark ? "#60a5fa" : "#1e3a8a") : textMain }}>
-              🏔️ Relief topographique
+            <div style={{ fontSize: "14px", fontWeight: "400", color: textMain }}>
+              Relief topographique
             </div>
-            <div style={{ fontSize: "11px", color: textSub, marginTop: "2px" }}>
+            <div style={{ fontSize: "11px", color: textSub, marginTop: "3px" }}>
               Courbes de niveau
             </div>
           </div>
@@ -77,40 +80,50 @@ export default function OnboardingStep5Theme({
         <label style={{ fontSize: "11px", fontWeight: "400", textTransform: "uppercase", color: textSub, letterSpacing: "0.5px", marginBottom: "8px", display: "block" }}>
           Mode d'affichage
         </label>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            background: cardBg,
+            padding: "4px",
+            borderRadius: "999px",
+            border: `1px solid ${cardBorder}`,
+            gap: "4px"
+          }}
+        >
           <button
             type="button"
             onClick={() => handleSelectTheme("dark")}
             style={{
-              padding: "12px",
-              borderRadius: "12px",
-              border: selectedAppTheme === "dark" ? "2px solid #2563eb" : `1px solid ${cardBorder}`,
-              background: selectedAppTheme === "dark" ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : cardBg,
-              color: selectedAppTheme === "dark" ? (isDark ? "#60a5fa" : "#1e3a8a") : textSub,
+              padding: "10px",
+              borderRadius: "999px",
+              border: "none",
+              background: selectedAppTheme === "dark" ? "#2c5e4c" : "transparent",
+              color: selectedAppTheme === "dark" ? "#ffffff" : textSub,
               fontSize: "13px",
               fontWeight: "400",
               cursor: "pointer",
               transition: "all 0.2s ease"
             }}
           >
-            🌙 Sombre {selectedAppTheme === "dark" && "✓"}
+            Mode sombre
           </button>
           <button
             type="button"
             onClick={() => handleSelectTheme("light")}
             style={{
-              padding: "12px",
-              borderRadius: "12px",
-              border: selectedAppTheme === "light" ? "2px solid #2563eb" : `1px solid ${cardBorder}`,
-              background: selectedAppTheme === "light" ? (isDark ? "rgba(37, 99, 235, 0.25)" : "#eff6ff") : cardBg,
-              color: selectedAppTheme === "light" ? (isDark ? "#60a5fa" : "#1e3a8a") : textSub,
+              padding: "10px",
+              borderRadius: "999px",
+              border: "none",
+              background: selectedAppTheme === "light" ? "#2c5e4c" : "transparent",
+              color: selectedAppTheme === "light" ? "#ffffff" : textSub,
               fontSize: "13px",
               fontWeight: "400",
               cursor: "pointer",
               transition: "all 0.2s ease"
             }}
           >
-            ☀️ Clair {selectedAppTheme === "light" && "✓"}
+            Mode clair
           </button>
         </div>
       </div>
@@ -124,14 +137,14 @@ export default function OnboardingStep5Theme({
             padding: "13px 18px",
             borderRadius: "12px",
             border: `1px solid ${cardBorder}`,
-            background: isDark ? "#1e293b" : "#ffffff",
+            background: cardBg,
             color: textSub,
             fontSize: "13px",
             fontWeight: "400",
             cursor: "pointer"
           }}
         >
-          ← Retour
+          Retour
         </button>
 
         <button
@@ -142,16 +155,15 @@ export default function OnboardingStep5Theme({
             padding: "13px 18px",
             borderRadius: "12px",
             border: "none",
-            background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+            background: "#2c5e4c",
             color: "#ffffff",
             fontSize: "14px",
             fontWeight: "400",
             cursor: "pointer",
-            boxShadow: "0 2px 10px rgba(37, 99, 235, 0.25)",
             transition: "all 0.2s ease"
           }}
         >
-          Continuer vers l'étape 6 →
+          Continuer vers l'étape 6
         </button>
       </div>
     </div>

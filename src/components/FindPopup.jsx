@@ -588,11 +588,11 @@ export default function FindPopup({
 
   const inputStyle = {
     width: "100%",
-    padding: "10px 12px",
-    borderRadius: "12px",
-    border: "1px solid rgba(255, 255, 255, 0.12)",
-    background: "rgba(255, 255, 255, 0.06)",
-    color: "white",
+    padding: "9px 12px",
+    borderRadius: "10px",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
+    background: "#19231e",
+    color: "#ffffff",
     fontSize: "13px",
     boxSizing: "border-box",
     outline: "none"
@@ -600,9 +600,9 @@ export default function FindPopup({
 
   const buttonStyle = {
     border: "none",
-    borderRadius: "12px",
-    padding: "10px",
-    background: "#1f2937",
+    borderRadius: "10px",
+    padding: "9px 12px",
+    background: "#2c5e4c",
     color: "white",
     fontWeight: "400",
     fontSize: "13px",
@@ -753,15 +753,15 @@ export default function FindPopup({
               flex: 1,
               height: "36px",
               border: "none",
-              borderRadius: "10px",
-              background: "#111827",
+              borderRadius: "8px",
+              background: "#2c5e4c",
               color: "white",
               fontSize: "11px",
               fontWeight: "400",
               cursor: "pointer"
             }}
           >
-            {isReadOnly ? "👁️ Voir les détails" : "✏️ Détails et Éditer"}
+            {isReadOnly ? "Voir les détails" : "Détails et Éditer"}
           </button>
         </div>
       </div>
@@ -789,43 +789,43 @@ export default function FindPopup({
     >
       <div
         style={{
-          background: "#0d1117",
-          border: "1px solid rgba(255, 255, 255, 0.12)",
-          borderRadius: "24px",
+          background: "#111915",
+          border: "1px solid rgba(255, 255, 255, 0.08)",
+          borderRadius: "20px",
           boxShadow: "0 16px 48px rgba(0, 0, 0, 0.7)",
           color: "white",
           width: "100%",
           maxWidth: "480px",
           maxHeight: "90vh",
           overflowY: "auto",
-          padding: "24px",
+          padding: "20px",
           boxSizing: "border-box",
           position: "relative",
           display: "flex",
           flexDirection: "column",
-          gap: "15px"
+          gap: "14px"
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "12px", gap: "8px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", letterSpacing: "-0.5px" }}>
-              {isReadOnly ? "🔍 Fiche trouvaille" : "🔍 Détails de la trouvaille"}
+            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", letterSpacing: "-0.2px" }}>
+              {isReadOnly ? "Fiche trouvaille" : "Détails de la trouvaille"}
             </h3>
             {isReadOnly && (
-              <span style={{ fontSize: "10px", background: "rgba(234, 179, 8, 0.15)", color: "#facc15", padding: "2px 6px", borderRadius: "6px", fontWeight: "400"}}>
-                🔒 Lecture
+              <span style={{ fontSize: "10px", background: "rgba(255, 255, 255, 0.08)", color: "rgba(255, 255, 255, 0.8)", border: "1px solid rgba(255, 255, 255, 0.1)", padding: "2px 6px", borderRadius: "6px", fontWeight: "400" }}>
+                Lecture
               </span>
             )}
             {finderText && (
-              <span style={{ fontSize: "10px", background: "rgba(255, 255, 255, 0.08)", color: "#e2e8f0", border: "1px solid rgba(255, 255, 255, 0.1)", padding: "2px 6px", borderRadius: "6px", fontWeight: "400"}}>
-                👤 {finderText}
+              <span style={{ fontSize: "10px", background: "rgba(255, 255, 255, 0.06)", color: "rgba(255, 255, 255, 0.8)", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "2px 6px", borderRadius: "6px", fontWeight: "400" }}>
+                {finderText}
               </span>
             )}
             {find.session_code && (
-              <span style={{ fontSize: "10px", background: "rgba(16, 185, 129, 0.15)", color: "#10b981", border: "1px solid rgba(16, 185, 129, 0.25)", padding: "2px 6px", borderRadius: "6px", fontWeight: "400"}}>
-                👥 Session {find.session_code}
+              <span style={{ fontSize: "10px", background: "rgba(64, 145, 108, 0.15)", color: "#80b99c", border: "1px solid rgba(64, 145, 108, 0.3)", padding: "2px 6px", borderRadius: "6px", fontWeight: "400" }}>
+                Session {find.session_code}
               </span>
             )}
           </div>
@@ -858,10 +858,10 @@ export default function FindPopup({
               style={{
                 flex: 1,
                 padding: "8px",
-                border: activeTab === "discovery" ? "1px solid rgba(255,255,255,0.25)" : "1px solid rgba(255,255,255,0.06)",
-                borderRadius: "10px",
-                background: activeTab === "discovery" ? "#1e293b" : "rgba(255,255,255,0.04)",
-                color: activeTab === "discovery" ? "#ffffff" : "#94a3b8",
+                border: activeTab === "discovery" ? "1px solid #40916c" : "1px solid rgba(255, 255, 255, 0.06)",
+                borderRadius: "8px",
+                background: activeTab === "discovery" ? "#2c5e4c" : "rgba(255, 255, 255, 0.04)",
+                color: activeTab === "discovery" ? "#ffffff" : "rgba(255, 255, 255, 0.6)",
                 fontWeight: "400",
                 fontSize: "11px",
                 cursor: "pointer"
@@ -875,10 +875,10 @@ export default function FindPopup({
               style={{
                 flex: 1,
                 padding: "8px",
-                border: activeTab === "clean" ? "1px solid rgba(255,255,255,0.25)" : "1px solid rgba(255,255,255,0.06)",
-                borderRadius: "10px",
-                background: activeTab === "clean" ? "#1e293b" : "rgba(255,255,255,0.04)",
-                color: activeTab === "clean" ? "#ffffff" : "#94a3b8",
+                border: activeTab === "clean" ? "1px solid #40916c" : "1px solid rgba(255, 255, 255, 0.06)",
+                borderRadius: "8px",
+                background: activeTab === "clean" ? "#2c5e4c" : "rgba(255, 255, 255, 0.04)",
+                color: activeTab === "clean" ? "#ffffff" : "rgba(255, 255, 255, 0.6)",
                 fontWeight: "400",
                 fontSize: "11px",
                 cursor: "pointer"
@@ -892,10 +892,10 @@ export default function FindPopup({
               style={{
                 flex: 1.2,
                 padding: "8px",
-                border: activeTab === "identification" ? "1px solid rgba(255,255,255,0.25)" : "1px solid rgba(255,255,255,0.06)",
-                borderRadius: "10px",
-                background: activeTab === "identification" ? "#1e293b" : "rgba(255,255,255,0.04)",
-                color: activeTab === "identification" ? "#ffffff" : "#94a3b8",
+                border: activeTab === "identification" ? "1px solid #40916c" : "1px solid rgba(255, 255, 255, 0.06)",
+                borderRadius: "8px",
+                background: activeTab === "identification" ? "#2c5e4c" : "rgba(255, 255, 255, 0.04)",
+                color: activeTab === "identification" ? "#ffffff" : "rgba(255, 255, 255, 0.6)",
                 fontWeight: "400",
                 fontSize: "11px",
                 cursor: "pointer"
@@ -956,8 +956,8 @@ export default function FindPopup({
               {/* Note Vocale Audio Player */}
               {(find.audio_url || find.audio) && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                  <span style={{ fontSize: "11px", fontWeight: "400", color: "#e2e8f0", display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span>🎙️</span> Note vocale
+                  <span style={{ fontSize: "11px", fontWeight: "400", color: "rgba(255, 255, 255, 0.7)", display: "flex", alignItems: "center", gap: "6px" }}>
+                    Note vocale
                   </span>
                   <AudioNotePlayer
                     src={find.audio_url || find.audio}
@@ -972,7 +972,7 @@ export default function FindPopup({
                 <select
                   value={category}
                   onChange={handleCategoryChange}
-                  style={{ ...inputStyle, background: "#1f2937" }}
+                  style={{ ...inputStyle, background: "#19231e" }}
                 >
                   {availableCategories.map((cat) => (
                     <option key={cat} value={cat}>
@@ -988,7 +988,7 @@ export default function FindPopup({
                   <select
                     value={subCategory}
                     onChange={(e) => setSubCategory(e.target.value)}
-                    style={{ ...inputStyle, background: "#1f2937" }}
+                    style={{ ...inputStyle, background: "#19231e" }}
                   >
                     <option value="">-- Non spécifiée --</option>
                     {availableSubCats.map((subCat) => (
@@ -1011,12 +1011,12 @@ export default function FindPopup({
                 <select
                   value={material || "Indéterminé"}
                   onChange={(e) => setMaterial(e.target.value)}
-                  style={{ ...inputStyle, background: "#1f2937" }}
+                  style={{ ...inputStyle, background: "#19231e" }}
                 >
-                  <option value="Indéterminé">❓ Métal non spécifié</option>
+                  <option value="Indéterminé">Métal non spécifié</option>
                   {(materialsData.materials || []).filter((m) => m !== "Indéterminé").map((mat) => (
                     <option key={mat} value={mat}>
-                      {materialsData.emojis?.[mat] || "🪙"} {mat}
+                      {mat}
                     </option>
                   ))}
                 </select>
@@ -1029,16 +1029,16 @@ export default function FindPopup({
                     <button
                       disabled={uploading}
                       onClick={() => uploadPhoto("discovery", true)}
-                      style={{ ...buttonStyle, flex: 1, padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
+                      style={{ ...buttonStyle, flex: 1, padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}
                     >
-                      📸 Caméra
+                      Prendre photo
                     </button>
                     <button
                       disabled={uploading}
                       onClick={() => uploadPhoto("discovery", false)}
-                      style={{ ...buttonStyle, flex: 1, padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
+                      style={{ ...buttonStyle, flex: 1, padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}
                     >
-                      🖼️ Album
+                      Galerie
                     </button>
                   </>
                 )}
@@ -1084,9 +1084,9 @@ export default function FindPopup({
                   )}
                   <button
                     onClick={() => deletePhoto(discoveryPhotos[discoveryIndex])}
-                    style={{ ...buttonStyle, background: "#ef4444", padding: "6px 12px", fontSize: "11px", marginTop: "2px" }}
+                    style={{ ...buttonStyle, background: "rgba(220, 38, 38, 0.15)", color: "#f87171", border: "1px solid rgba(220, 38, 38, 0.3)", padding: "6px 12px", fontSize: "11px", marginTop: "2px" }}
                   >
-                    🗑️ Supprimer la photo
+                    Supprimer la photo
                   </button>
                 </div>
               )}
@@ -1101,9 +1101,9 @@ export default function FindPopup({
                 <div
                   style={{
                     padding: "12px",
-                    borderRadius: "16px",
-                    background: "rgba(0, 0, 0, 0.45)",
-                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    borderRadius: "14px",
+                    background: "#19231e",
+                    border: "1px solid rgba(255, 255, 255, 0.08)",
                     display: "flex",
                     flexDirection: "column",
                     gap: "8px",
@@ -1112,7 +1112,7 @@ export default function FindPopup({
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <span style={{ fontSize: "12px", fontWeight: "400", color: "#f1f5f9", display: "flex", alignItems: "center", gap: "6px" }}>
-                      <span>🎥</span> Vidéo de la trouvaille
+                      Vidéo de la trouvaille
                     </span>
                     {!isReadOnly && (
                       <div style={{ display: "flex", gap: "6px" }}>
@@ -1122,8 +1122,8 @@ export default function FindPopup({
                           onClick={uploadVideo}
                           style={{
                             background: "rgba(255, 255, 255, 0.08)",
-                            border: "1px solid rgba(255, 255, 255, 0.15)",
-                            color: "#e2e8f0",
+                            border: "1px solid rgba(255, 255, 255, 0.12)",
+                            color: "rgba(255, 255, 255, 0.8)",
                             borderRadius: "8px",
                             padding: "4px 9px",
                             fontSize: "11px",
@@ -1131,16 +1131,16 @@ export default function FindPopup({
                             fontWeight: "400"
                           }}
                         >
-                          🔄 Remplacer
+                          Remplacer
                         </button>
                         <button
                           type="button"
                           disabled={uploading}
                           onClick={deleteVideo}
                           style={{
-                            background: "rgba(239, 68, 68, 0.15)",
-                            border: "1px solid rgba(239, 68, 68, 0.3)",
-                            color: "#fca5a5",
+                            background: "rgba(220, 38, 38, 0.15)",
+                            border: "1px solid rgba(220, 38, 38, 0.3)",
+                            color: "#f87171",
                             borderRadius: "8px",
                             padding: "4px 9px",
                             fontSize: "11px",
@@ -1148,7 +1148,7 @@ export default function FindPopup({
                             fontWeight: "400"
                           }}
                         >
-                          🗑️ Supprimer
+                          Supprimer
                         </button>
                       </div>
                     )}
@@ -1162,7 +1162,7 @@ export default function FindPopup({
                     style={{
                       width: "100%",
                       maxHeight: "240px",
-                      borderRadius: "12px",
+                      borderRadius: "10px",
                       background: "#000000",
                       border: "1px solid rgba(255, 255, 255, 0.08)",
                       objectFit: "contain"
@@ -1173,17 +1173,17 @@ export default function FindPopup({
                 <div
                   style={{
                     padding: "12px",
-                    borderRadius: "14px",
+                    borderRadius: "12px",
                     background: "rgba(255, 255, 255, 0.03)",
-                    border: "1px dashed rgba(255, 255, 255, 0.15)",
+                    border: "1px dashed rgba(255, 255, 255, 0.12)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
                     gap: "8px"
                   }}
                 >
-                  <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: "400", display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span>🎥</span> Vidéo de la trouvaille : Aucune
+                  <span style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.6)", fontWeight: "400", display: "flex", alignItems: "center", gap: "6px" }}>
+                    Vidéo : Aucune
                   </span>
                   {!isReadOnly && !find.isOfflinePending && (
                     <button
@@ -1191,17 +1191,17 @@ export default function FindPopup({
                       disabled={uploading}
                       onClick={uploadVideo}
                       style={{
-                        background: "#1f2937",
-                        border: "1px solid rgba(255, 255, 255, 0.15)",
+                        background: "#2c5e4c",
+                        border: "none",
                         color: "#ffffff",
-                        borderRadius: "10px",
+                        borderRadius: "8px",
                         padding: "6px 12px",
                         fontSize: "11px",
                         cursor: "pointer",
                         fontWeight: "400"
                       }}
                     >
-                      {uploading ? "Envoi..." : "🎥 + Ajouter vidéo"}
+                      {uploading ? "Envoi..." : "+ Ajouter vidéo"}
                     </button>
                   )}
                 </div>
@@ -1224,16 +1224,16 @@ export default function FindPopup({
                     <button
                       disabled={uploading}
                       onClick={() => uploadPhoto("clean", true)}
-                      style={{ ...buttonStyle, flex: 1, padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
+                      style={{ ...buttonStyle, flex: 1, padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}
                     >
-                      📸 Photo
+                      Prendre photo
                     </button>
                     <button
                       disabled={uploading}
                       onClick={() => uploadPhoto("clean", false)}
-                      style={{ ...buttonStyle, flex: 1, padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
+                      style={{ ...buttonStyle, flex: 1, padding: "8px", fontSize: "12px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}
                     >
-                      🖼️ Album
+                      Galerie
                     </button>
                   </>
                 )}
@@ -1279,9 +1279,9 @@ export default function FindPopup({
                   )}
                   <button
                     onClick={() => deletePhoto(cleanPhotos[cleanIndex])}
-                    style={{ ...buttonStyle, background: "#ef4444", padding: "6px 12px", fontSize: "11px", marginTop: "2px" }}
+                    style={{ ...buttonStyle, background: "rgba(220, 38, 38, 0.15)", color: "#f87171", border: "1px solid rgba(220, 38, 38, 0.3)", padding: "6px 12px", fontSize: "11px", marginTop: "2px" }}
                   >
-                    🗑️ Supprimer la photo
+                    Supprimer la photo
                   </button>
                 </div>
               )}
@@ -1299,17 +1299,7 @@ export default function FindPopup({
                   value={identificationLink}
                   onChange={(e) => setIdentificationLink(e.target.value)}
                   placeholder="https://exemplesite.com/catalogue-piece"
-                  style={{
-                    width: "100%",
-                    padding: "10px 12px",
-                    borderRadius: "12px",
-                    border: "1px solid rgba(255,255,255,0.15)",
-                    background: "rgba(255,255,255,0.06)",
-                    color: "white",
-                    fontSize: "13px",
-                    outline: "none",
-                    boxSizing: "border-box"
-                  }}
+                  style={inputStyle}
                 />
               </div>
 
@@ -1324,10 +1314,10 @@ export default function FindPopup({
                       alignItems: "center",
                       justifyContent: "center",
                       gap: "8px",
-                      padding: "12px",
-                      borderRadius: "14px",
-                      background: "#1f2937",
-                      border: "1px solid rgba(255, 255, 255, 0.15)",
+                      padding: "11px",
+                      borderRadius: "10px",
+                      background: "#2c5e4c",
+                      border: "none",
                       color: "#ffffff",
                       textDecoration: "none",
                       fontSize: "13px",
@@ -1335,14 +1325,8 @@ export default function FindPopup({
                       textAlign: "center",
                       transition: "0.2s"
                     }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "#374151";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "#1f2937";
-                    }}
                   >
-                    🌐 Ouvrir le lien de référence
+                    Ouvrir le lien de référence
                   </a>
                 </div>
               )}
@@ -1357,7 +1341,7 @@ export default function FindPopup({
           {isReadOnly ? (
             <button
               onClick={() => setIsModalOpen(false)}
-              style={{ ...buttonStyle, background: "#1f2937", border: "1px solid rgba(255,255,255,0.15)", flex: 1, padding: "12px", fontSize: "14px" }}
+              style={{ ...buttonStyle, background: "#19231e", border: "1px solid rgba(255,255,255,0.1)", flex: 1, padding: "12px", fontSize: "14px" }}
             >
               Fermer la fiche
             </button>
@@ -1380,9 +1364,9 @@ export default function FindPopup({
                       }
                     });
                   }}
-                  style={{ ...buttonStyle, background: "#ef4444", flex: 1, padding: "10px" }}
+                  style={{ ...buttonStyle, background: "rgba(220, 38, 38, 0.15)", color: "#f87171", border: "1px solid rgba(220, 38, 38, 0.3)", flex: 1, padding: "10px" }}
                 >
-                  🗑️ Supprimer
+                  Supprimer
                 </button>
               )}
 
@@ -1393,9 +1377,9 @@ export default function FindPopup({
                   setIsModalOpen(false);
                 }}
                 disabled={saving}
-                style={{ ...buttonStyle, background: "#22c55e", flex: 1.5, padding: "10px" }}
+                style={{ ...buttonStyle, background: "#2c5e4c", color: "#ffffff", flex: 1.5, padding: "10px" }}
               >
-                {saving ? "Sauvegarde..." : "Enregistrer ✅"}
+                {saving ? "Sauvegarde..." : "Enregistrer"}
               </button>
             </>
           )}

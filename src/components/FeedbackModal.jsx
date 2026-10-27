@@ -11,13 +11,12 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
   if (!isOpen) return null;
 
   const isLight = theme === "light";
-  const bgModal = isLight ? "#ffffff" : "#0f172a";
-  const textMain = isLight ? "#0f172a" : "#ffffff";
-  const textSub = isLight ? "#475569" : "#94a3b8";
-  const cardBg = isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)";
-  const cardBorder = isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.12)";
-  const inputBg = isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.06)";
-  const inputBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.15)";
+  const bgModal = isLight ? "#f3f4f2" : "#111915";
+  const sheetBg = isLight ? "#ffffff" : "#19231e";
+  const inputBg = isLight ? "#f3f4f2" : "#111915";
+  const cardBorder = isLight ? "#eef0ed" : "rgba(255, 255, 255, 0.08)";
+  const textMain = isLight ? "#1f2924" : "#f1f5f2";
+  const textSub = isLight ? "#5c6b63" : "#9aa8a0";
 
   const categories = [
     { id: "bug", label: "Signaler un bug" },
@@ -29,7 +28,7 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
   const getPlaceholder = () => {
     switch (category) {
       case "bug":
-        return "Décrivez le problème rencontré : ce qui s'est passé, sur quel écran, ou si un bouton ne répondait pas...";
+        return "Décrivez le problème rencontré : ce qui s'est passé, sur quel écran...";
       case "suggestion":
         return "Quelle fonctionnalité aimeriez-vous voir dans une prochaine mise à jour de GeoProspect ?";
       case "question":
@@ -75,14 +74,13 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
         position: "fixed",
         inset: 0,
         zIndex: 9999,
-        background: "rgba(0, 0, 0, 0.75)",
-        backdropFilter: "blur(8px)",
-        WebkitBackdropFilter: "blur(8px)",
+        background: "rgba(8, 14, 11, 0.8)",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "16px",
-        animation: "fadeIn 0.2s ease"
+        padding: "16px"
       }}
       onClick={handleClose}
     >
@@ -92,9 +90,9 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
           maxWidth: "480px",
           maxHeight: "85vh",
           background: bgModal,
-          borderRadius: "24px",
+          borderRadius: "20px",
           border: `1px solid ${cardBorder}`,
-          boxShadow: isLight ? "0 20px 40px rgba(0,0,0,0.15)" : "0 25px 60px rgba(0,0,0,0.8)",
+          boxShadow: "0 24px 48px rgba(0,0,0,0.5)",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden"
@@ -104,37 +102,35 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
         {/* Header */}
         <div
           style={{
+            background: "#2c5e4c",
             padding: "16px 20px",
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
-            borderBottom: `1px solid ${cardBorder}`
+            justifyContent: "space-between"
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div>
-              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: textMain }}>
-                Formulaire de retour
-              </h3>
-              <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
-                Aidez-nous à améliorer GeoProspect
-              </p>
-            </div>
+          <div>
+            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: "#ffffff" }}>
+              Formulaire de retour
+            </h3>
+            <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: "rgba(255,255,255,0.75)" }}>
+              Aidez-nous à améliorer GeoProspect
+            </p>
           </div>
           <button
             type="button"
             onClick={handleClose}
             style={{
-              background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.1)",
+              background: "rgba(255,255,255,0.14)",
               border: "none",
               borderRadius: "50%",
-              width: "32px",
-              height: "32px",
+              width: "28px",
+              height: "28px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: textMain,
-              fontSize: "14px",
+              color: "#ffffff",
+              fontSize: "13px",
               cursor: "pointer"
             }}
           >
@@ -143,39 +139,38 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
         </div>
 
         {/* Content Body */}
-        <div style={{ padding: "20px", overflowY: "auto" }}>
+        <div style={{ padding: "18px 20px", overflowY: "auto" }}>
           {isSubmitted ? (
-            <div style={{ textAlign: "center", padding: "30px 10px" }}>
+            <div style={{ textAlign: "center", padding: "24px 10px" }}>
               <div
                 style={{
-                  width: "60px",
-                  height: "60px",
-                  borderRadius: "20px",
-                  background: isLight ? "#0f172a" : "rgba(255, 255, 255, 0.12)",
-                  border: `1px solid ${cardBorder}`,
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "50%",
+                  background: "#2c5e4c",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "30px",
+                  fontSize: "22px",
                   color: "#ffffff",
-                  margin: "0 auto 16px auto"
+                  margin: "0 auto 14px auto"
                 }}
               >
                 ✓
               </div>
-              <h4 style={{ fontSize: "18px", fontWeight: "400", color: textMain, margin: "0 0 8px 0" }}>
-                Merci pour votre retour !
+              <h4 style={{ fontSize: "16px", fontWeight: "400", color: textMain, margin: "0 0 6px 0" }}>
+                Merci pour votre retour
               </h4>
-              <p style={{ fontSize: "13px", color: textSub, lineHeight: "1.5", margin: "0 0 24px 0" }}>
-                Votre message a bien été transmis. Vos retours permettent de faire évoluer GeoProspect pour tous les prospecteurs.
+              <p style={{ fontSize: "13px", color: textSub, lineHeight: "1.5", margin: "0 0 20px 0" }}>
+                Votre message a bien été transmis. Vos retours permettent de faire évoluer GeoProspect.
               </p>
               <button
                 type="button"
                 onClick={handleClose}
                 style={{
-                  padding: "12px 28px",
-                  borderRadius: "14px",
-                  background: isLight ? "#0f172a" : "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                  padding: "11px 24px",
+                  borderRadius: "10px",
+                  background: "#2c5e4c",
                   border: "none",
                   color: "#ffffff",
                   fontSize: "13px",
@@ -187,13 +182,12 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {/* Category selector */}
+            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
               <div>
-                <label style={{ display: "block", fontSize: "12px", fontWeight: "400", color: textSub, marginBottom: "8px" }}>
-                  Type de message :
+                <label style={{ display: "block", fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                  Type de message
                 </label>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
                   {categories.map((c) => {
                     const active = category === c.id;
                     return (
@@ -202,38 +196,30 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
                         type="button"
                         onClick={() => setCategory(c.id)}
                         style={{
-                          padding: "10px 12px",
-                          borderRadius: "12px",
-                          background: active
-                            ? (isLight ? "#0f172a" : "rgba(255, 255, 255, 0.15)")
-                            : cardBg,
-                          border: active
-                            ? (isLight ? "1.5px solid #0f172a" : "1.5px solid rgba(255, 255, 255, 0.7)")
-                            : `1px solid ${cardBorder}`,
+                          padding: "9px 12px",
+                          borderRadius: "10px",
+                          background: active ? "#2c5e4c" : sheetBg,
+                          border: active ? "1px solid #2c5e4c" : `1px solid ${cardBorder}`,
                           color: active ? "#ffffff" : textSub,
                           fontSize: "12px",
                           fontWeight: "400",
                           cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
                           transition: "all 0.15s ease"
                         }}
                       >
-                        <span>{c.label}</span>
+                        {c.label}
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Message field */}
               <div>
-                <label style={{ display: "block", fontSize: "12px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
-                  Votre message <span style={{ color: "#ef4444" }}>*</span>
+                <label style={{ display: "block", fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "6px" }}>
+                  Votre message
                 </label>
                 <textarea
-                  rows={6}
+                  rows={5}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder={getPlaceholder()}
@@ -241,9 +227,9 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
                     width: "100%",
                     boxSizing: "border-box",
                     padding: "12px 14px",
-                    borderRadius: "14px",
+                    borderRadius: "12px",
                     background: inputBg,
-                    border: `1px solid ${inputBorder}`,
+                    border: `1px solid ${cardBorder}`,
                     color: textMain,
                     fontSize: "13px",
                     lineHeight: "1.45",
@@ -256,34 +242,28 @@ export default function FeedbackModal({ isOpen, onClose, theme = "dark" }) {
               </div>
 
               {errorMsg && (
-                <div style={{ padding: "8px 12px", borderRadius: "10px", background: "rgba(239, 68, 68, 0.15)", border: "1px solid rgba(239, 68, 68, 0.4)", color: "#f87171", fontSize: "11.5px", fontWeight: "400"}}>
+                <div style={{ padding: "8px 12px", borderRadius: "8px", background: "rgba(220, 38, 38, 0.12)", color: "#dc2626", fontSize: "12px", fontWeight: "400" }}>
                   {errorMsg}
                 </div>
               )}
 
-              {/* Submit button */}
               <button
                 type="submit"
                 disabled={isSubmitting || !message.trim()}
                 style={{
                   width: "100%",
-                  padding: "13px",
-                  borderRadius: "14px",
-                  background: isSubmitting || !message.trim() ? "rgba(37, 99, 235, 0.4)" : "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                  padding: "12px",
+                  borderRadius: "10px",
+                  background: isSubmitting || !message.trim() ? (isLight ? "#dce2de" : "rgba(255,255,255,0.08)") : "#2c5e4c",
                   border: "none",
-                  color: "#ffffff",
-                  fontSize: "13.5px",
+                  color: isSubmitting || !message.trim() ? textSub : "#ffffff",
+                  fontSize: "13px",
                   fontWeight: "400",
                   cursor: isSubmitting || !message.trim() ? "not-allowed" : "pointer",
-                  boxShadow: isSubmitting || !message.trim() ? "none" : "0 6px 20px rgba(37, 99, 235, 0.4)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px",
                   transition: "all 0.2s"
                 }}
               >
-                <span>{isSubmitting ? "Envoi en cours..." : "Envoyer mon message"}</span>
+                {isSubmitting ? "Envoi en cours..." : "Envoyer mon message"}
               </button>
             </form>
           )}

@@ -4,11 +4,11 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
   if (!isOpen) return null;
 
   const isLight = theme === "light";
-  const bgModal = isLight ? "#ffffff" : "#0f172a";
-  const textMain = isLight ? "#0f172a" : "#ffffff";
-  const textSub = isLight ? "#475569" : "#94a3b8";
-  const cardBg = isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)";
-  const cardBorder = isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.12)";
+  const bgModal = isLight ? "#f3f4f2" : "#111915";
+  const sheetBg = isLight ? "#ffffff" : "#19231e";
+  const cardBorder = isLight ? "#eef0ed" : "rgba(255, 255, 255, 0.08)";
+  const textMain = isLight ? "#1f2924" : "#f1f5f2";
+  const textSub = isLight ? "#5c6b63" : "#9aa8a0";
 
   return (
     <div
@@ -16,14 +16,13 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
         position: "fixed",
         inset: 0,
         zIndex: 9999,
-        background: "rgba(0, 0, 0, 0.75)",
-        backdropFilter: "blur(8px)",
-        WebkitBackdropFilter: "blur(8px)",
+        background: "rgba(8, 14, 11, 0.8)",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "16px",
-        animation: "fadeIn 0.2s ease"
+        padding: "16px"
       }}
       onClick={onClose}
     >
@@ -33,9 +32,9 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
           maxWidth: "480px",
           maxHeight: "85vh",
           background: bgModal,
-          borderRadius: "24px",
+          borderRadius: "20px",
           border: `1px solid ${cardBorder}`,
-          boxShadow: isLight ? "0 20px 40px rgba(0,0,0,0.15)" : "0 20px 50px rgba(0,0,0,0.7)",
+          boxShadow: "0 24px 48px rgba(0,0,0,0.5)",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden"
@@ -45,37 +44,35 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
         {/* Header */}
         <div
           style={{
+            background: "#2c5e4c",
             padding: "16px 20px",
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
-            borderBottom: `1px solid ${cardBorder}`
+            justifyContent: "space-between"
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div>
-              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: textMain }}>
-                À propos de GeoProspect
-              </h3>
-              <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
-                Version 3.2.0 • 100 % indépendant et libre
-              </p>
-            </div>
+          <div>
+            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: "#ffffff" }}>
+              À propos de GeoProspect
+            </h3>
+            <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: "rgba(255,255,255,0.75)" }}>
+              Version 3.2.0 • 100 % indépendant et libre
+            </p>
           </div>
           <button
             type="button"
             onClick={onClose}
             style={{
-              background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.1)",
+              background: "rgba(255,255,255,0.14)",
               border: "none",
               borderRadius: "50%",
-              width: "32px",
-              height: "32px",
+              width: "28px",
+              height: "28px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: textMain,
-              fontSize: "14px",
+              color: "#ffffff",
+              fontSize: "13px",
               cursor: "pointer"
             }}
           >
@@ -86,32 +83,32 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
         {/* Content */}
         <div
           style={{
-            padding: "20px",
+            padding: "18px 20px",
             overflowY: "auto",
             display: "flex",
             flexDirection: "column",
-            gap: "14px"
+            gap: "12px"
           }}
         >
           {/* Logo & Intro Card */}
           <div
             style={{
               padding: "16px",
-              borderRadius: "18px",
-              background: cardBg,
+              borderRadius: "16px",
+              background: sheetBg,
               border: `1px solid ${cardBorder}`,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               textAlign: "center",
-              gap: "8px"
+              gap: "6px"
             }}
           >
             <div
               style={{
-                width: "52px",
-                height: "52px",
-                borderRadius: "14px",
+                width: "48px",
+                height: "48px",
+                borderRadius: "12px",
                 background: "#ebe3d3",
                 border: `1px solid ${cardBorder}`,
                 display: "flex",
@@ -126,12 +123,12 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>
-            <div style={{ fontSize: "16px", fontWeight: "400", color: textMain }}>GeoProspect</div>
-            <div style={{ fontSize: "11px", fontWeight: "400", color: textSub }}>
+            <div style={{ fontSize: "15px", fontWeight: "400", color: textMain }}>GeoProspect</div>
+            <div style={{ fontSize: "11px", color: textSub }}>
               Le carnet de détection GPS des détectoristes
             </div>
             <p style={{ margin: "4px 0 0 0", fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
-              Passionné de détection comme vous, j’ai créé GeoProspect avec une idée simple : concevoir le carnet de détection dont on avait tous besoin sur le terrain. Une appli moderne, fluide, 100 % gratuite, sans la moindre pub et qui respecte totalement votre vie privée.
+              Passionné de détection comme vous, j'ai créé GeoProspect avec une idée simple : concevoir le carnet de détection dont on avait tous besoin sur le terrain. Une application moderne, fluide, 100 % gratuite, sans publicité et respectueuse de votre vie privée.
             </p>
           </div>
 
@@ -140,24 +137,24 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
             style={{
               padding: "14px 16px",
               borderRadius: "16px",
-              background: cardBg,
+              background: sheetBg,
               border: `1px solid ${cardBorder}`,
               display: "flex",
               flexDirection: "column",
               gap: "8px"
             }}
           >
-            <div style={{ fontSize: "12px", fontWeight: "400", color: textMain, textTransform: "uppercase" }}>
+            <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
               Nos engagements
             </div>
-            <div style={{ fontSize: "11px", color: textSub, lineHeight: "1.4" }}>
-              • <strong>100 % gratuit</strong> : aucune fonctionnalité bridée derrière un abonnement payant.
+            <div style={{ fontSize: "12px", color: textMain, lineHeight: "1.4" }}>
+              • 100 % gratuit : aucune fonctionnalité bridée derrière un abonnement.
             </div>
-            <div style={{ fontSize: "11px", color: textSub, lineHeight: "1.4" }}>
-              • <strong>Confidentialité totale</strong> : vos coordonnées GPS et trouvailles restent votre propriété exclusive.
+            <div style={{ fontSize: "12px", color: textMain, lineHeight: "1.4" }}>
+              • Confidentialité totale : vos coordonnées GPS et trouvailles restent votre propriété exclusive.
             </div>
-            <div style={{ fontSize: "11px", color: textSub, lineHeight: "1.4" }}>
-              • <strong>Respect du patrimoine</strong> : pratique légale et responsable de la détection de loisir.
+            <div style={{ fontSize: "12px", color: textMain, lineHeight: "1.4" }}>
+              • Respect du patrimoine : pratique légale et responsable de la détection de loisir.
             </div>
           </div>
 
@@ -166,18 +163,18 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
             style={{
               padding: "14px 16px",
               borderRadius: "16px",
-              background: cardBg,
+              background: sheetBg,
               border: `1px solid ${cardBorder}`,
               display: "flex",
               flexDirection: "column",
               gap: "10px"
             }}
           >
-            <div style={{ fontSize: "12px", fontWeight: "400", color: textMain, textTransform: "uppercase" }}>
+            <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
               Soutenir le projet
             </div>
-            <p style={{ margin: 0, fontSize: "11px", color: textSub, lineHeight: "1.4" }}>
-              Un petit don encourage les futures nouveautés !
+            <p style={{ margin: 0, fontSize: "12px", color: textSub, lineHeight: "1.4" }}>
+              Un don encourage les futures nouveautés.
             </p>
             <div style={{ display: "flex", gap: "8px" }}>
               <a
@@ -186,12 +183,12 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
                 rel="noopener noreferrer"
                 style={{
                   flex: 1,
-                  padding: "10px",
-                  borderRadius: "12px",
-                  background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
-                  border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                  color: isLight ? "#0f172a" : "#ffffff",
-                  fontSize: "11px",
+                  padding: "9px",
+                  borderRadius: "10px",
+                  background: isLight ? "#f3f4f2" : "#111915",
+                  border: `1px solid ${cardBorder}`,
+                  color: textMain,
+                  fontSize: "12px",
                   fontWeight: "400",
                   textDecoration: "none",
                   textAlign: "center"
@@ -205,18 +202,18 @@ export default function AboutModal({ isOpen, onClose, theme = "dark" }) {
                 rel="noopener noreferrer"
                 style={{
                   flex: 1,
-                  padding: "10px",
-                  borderRadius: "12px",
-                  background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.08)",
-                  border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.16)",
-                  color: isLight ? "#0f172a" : "#ffffff",
-                  fontSize: "11px",
+                  padding: "9px",
+                  borderRadius: "10px",
+                  background: isLight ? "#f3f4f2" : "#111915",
+                  border: `1px solid ${cardBorder}`,
+                  color: textMain,
+                  fontSize: "12px",
                   fontWeight: "400",
                   textDecoration: "none",
                   textAlign: "center"
                 }}
               >
-                PayPal.me
+                PayPal
               </a>
             </div>
           </div>

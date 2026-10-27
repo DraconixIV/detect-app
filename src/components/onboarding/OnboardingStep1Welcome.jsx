@@ -8,53 +8,65 @@ export default function OnboardingStep1Welcome({
   textSub,
   onNext
 }) {
+  const iconBadgeBg = isDark ? "rgba(44, 94, 76, 0.25)" : "#eef2ee";
+  const iconColor = isDark ? "#80b99c" : "#2c5e4c";
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
       <div>
-        <h1 style={{ margin: "0 0 8px 0", fontSize: "24px", fontWeight: "400", color: textMain, letterSpacing: "-0.5px" }}>
-          Bienvenue sur GeoProspect 🧭
+        <h1 style={{ margin: "0 0 8px 0", fontSize: "23px", fontWeight: "400", color: textMain, letterSpacing: "-0.3px" }}>
+          Bienvenue sur GeoProspect
         </h1>
         <p style={{ margin: 0, fontSize: "14px", color: textSub, lineHeight: "1.5" }}>
-          Votre compagnon tout-en-un pour la détection de loisir.
+          Votre carnet de terrain pour la détection de loisir.
         </p>
       </div>
 
-      {/* 3 Key Feature Highlight Cards */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      {/* Grouped Sheet of 3 Key Features */}
+      <div
+        style={{
+          background: cardBg,
+          borderRadius: "16px",
+          border: `1px solid ${cardBorder}`,
+          overflow: "hidden",
+          boxShadow: isDark ? "none" : "0 2px 10px rgba(0, 0, 0, 0.03)"
+        }}
+      >
         {/* Feature 1 */}
         <div
           style={{
             display: "flex",
             gap: "14px",
-            padding: "14px 16px",
-            background: cardBg,
-            border: `1px solid ${cardBorder}`,
-            borderRadius: "16px",
+            padding: "16px",
+            borderBottom: `1px solid ${cardBorder}`,
             alignItems: "flex-start"
           }}
         >
           <div
             style={{
-              width: "40px",
-              height: "40px",
-              borderRadius: "12px",
-              background: isDark ? "rgba(37, 99, 235, 0.2)" : "#eff6ff",
-              border: isDark ? "1px solid rgba(37, 99, 235, 0.4)" : "1px solid #bfdbfe",
+              width: "38px",
+              height: "38px",
+              borderRadius: "10px",
+              background: iconBadgeBg,
+              color: iconColor,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "20px",
               flexShrink: 0
             }}
           >
-            🗺️
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+              <line x1="8" y1="2" x2="8" y2="18" />
+              <line x1="16" y1="6" x2="16" y2="22" />
+            </svg>
           </div>
           <div>
-            <div style={{ fontSize: "14px", fontWeight: "400", color: textMain, marginBottom: "3px" }}>
-              Cartes IGN et Tracé GPS en Direct
+            <div style={{ fontSize: "14px", fontWeight: "400", color: textMain, marginBottom: "4px" }}>
+              Cartes IGN et tracé GPS en direct
             </div>
             <div style={{ fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
-              Superposez le <strong>Cadastre officiel IGN</strong>, la carte de <strong>Cassini</strong> et l'<strong>État-Major 1820</strong>. Visualisez votre parcours pour ne jamais repasser au même endroit.
+              Superposez le Cadastre officiel IGN, la carte de Cassini et l'État-Major 1820. Visualisez votre parcours pour ne jamais repasser au même endroit.
             </div>
           </div>
         </div>
@@ -64,32 +76,33 @@ export default function OnboardingStep1Welcome({
           style={{
             display: "flex",
             gap: "14px",
-            padding: "14px 16px",
-            background: cardBg,
-            border: `1px solid ${cardBorder}`,
-            borderRadius: "16px",
+            padding: "16px",
+            borderBottom: `1px solid ${cardBorder}`,
             alignItems: "flex-start"
           }}
         >
           <div
             style={{
-              width: "40px",
-              height: "40px",
-              borderRadius: "12px",
-              background: isDark ? "rgba(245, 158, 11, 0.2)" : "#fef3c7",
-              border: isDark ? "1px solid rgba(245, 158, 11, 0.4)" : "1px solid #fde68a",
+              width: "38px",
+              height: "38px",
+              borderRadius: "10px",
+              background: iconBadgeBg,
+              color: iconColor,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "20px",
               flexShrink: 0
             }}
           >
-            🪙
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="3" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg>
           </div>
           <div>
-            <div style={{ fontSize: "14px", fontWeight: "400", color: textMain, marginBottom: "3px" }}>
-              Journal de Trouvailles et Photos HD
+            <div style={{ fontSize: "14px", fontWeight: "400", color: textMain, marginBottom: "4px" }}>
+              Journal de trouvailles et photos HD
             </div>
             <div style={{ fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
               Épinglez chaque découverte avec ses coordonnées exactes, photos macro, catégorie et exportez vos statistiques à tout moment.
@@ -102,32 +115,33 @@ export default function OnboardingStep1Welcome({
           style={{
             display: "flex",
             gap: "14px",
-            padding: "14px 16px",
-            background: cardBg,
-            border: `1px solid ${cardBorder}`,
-            borderRadius: "16px",
+            padding: "16px",
             alignItems: "flex-start"
           }}
         >
           <div
             style={{
-              width: "40px",
-              height: "40px",
-              borderRadius: "12px",
-              background: isDark ? "rgba(16, 185, 129, 0.2)" : "#ecfdf5",
-              border: isDark ? "1px solid rgba(16, 185, 129, 0.4)" : "1px solid #a7f3d0",
+              width: "38px",
+              height: "38px",
+              borderRadius: "10px",
+              background: iconBadgeBg,
+              color: iconColor,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "20px",
               flexShrink: 0
             }}
           >
-            👥
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
           </div>
           <div>
-            <div style={{ fontSize: "14px", fontWeight: "400", color: textMain, marginBottom: "3px" }}>
-              Sessions en Équipe et Sauvegarde
+            <div style={{ fontSize: "14px", fontWeight: "400", color: textMain, marginBottom: "4px" }}>
+              Sessions en équipe et sauvegarde
             </div>
             <div style={{ fontSize: "12px", color: textSub, lineHeight: "1.5" }}>
               Rejoignez une session collective en direct avec vos amis ou prospectez en mode local sécurisé.
@@ -141,22 +155,19 @@ export default function OnboardingStep1Welcome({
         type="button"
         onClick={onNext}
         style={{
-          marginTop: "6px",
+          marginTop: "4px",
           padding: "14px 20px",
-          borderRadius: "14px",
+          borderRadius: "12px",
           border: "none",
-          background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-          color: "white",
+          background: "#2c5e4c",
+          color: "#ffffff",
           fontSize: "14px",
           fontWeight: "400",
           cursor: "pointer",
-          boxShadow: "0 4px 14px rgba(37, 99, 235, 0.25)",
           transition: "all 0.2s ease"
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = "#1d4ed8")}
-        onMouseLeave={(e) => (e.currentTarget.style.background = "linear-gradient(135deg, #2563eb, #1d4ed8)")}
       >
-        Continuer vers l'étape 2 →
+        Continuer vers l'étape 2
       </button>
     </div>
   );

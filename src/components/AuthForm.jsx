@@ -2,7 +2,6 @@ import { useState } from "react";
 import { supabase } from "../supabase";
 
 export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme = "dark" }) {
-  // Mode par défaut : "signup" (Créer un compte à gauche)
   const [mode, setMode] = useState("signup"); // "signup" | "login" | "reset"
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,6 +10,10 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
   const [successMsg, setSuccessMsg] = useState("");
 
   const isLight = theme === "light";
+  const inputBg = isLight ? "#f3f4f2" : "#111915";
+  const inputBorder = isLight ? "#e2e6e3" : "rgba(255, 255, 255, 0.12)";
+  const textMain = isLight ? "#1f2924" : "#f1f5f2";
+  const textSub = isLight ? "#5c6b63" : "#9aa8a0";
 
   const handleEmailAuth = async (e) => {
     if (e) e.preventDefault();
@@ -103,12 +106,11 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
         console.warn("Session storage error before Google auth:", storageErr);
       }
 
-      // Clean origin URL without trailing slashes to match Supabase Redirect URLs whitelist exactly
       const currentRedirectUrl = typeof window !== "undefined"
         ? window.location.origin.replace(/\/+$/, "")
         : "https://detect-app-iota.vercel.app";
 
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           redirectTo: currentRedirectUrl,
@@ -139,16 +141,16 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%", boxSizing: "border-box" }}>
-      {/* Segmented Control : Créer un compte (Gauche) / Se connecter (Droite) */}
+    <div style={{ display: "flex", flexDirection: "column", gap: "14px", width: "100%", boxSizing: "border-box" }}>
+      {/* Segmented Pill Control : Créer un compte / Se connecter */}
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          background: isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.08)",
+          background: inputBg,
           padding: "4px",
-          borderRadius: "12px",
-          border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.14)"
+          borderRadius: "999px",
+          border: `1px solid ${inputBorder}`
         }}
       >
         <button
@@ -159,17 +161,15 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
             setSuccessMsg("");
           }}
           style={{
-            padding: "9px 8px",
-            borderRadius: "9px",
+            padding: "8px",
+            borderRadius: "999px",
             border: "none",
-            background: mode === "signup" ? "#2563eb" : "transparent",
-            color: mode === "signup" ? "#ffffff" : (isLight ? "#475569" : "#cbd5e1"),
+            background: mode === "signup" ? "#2c5e4c" : "transparent",
+            color: mode === "signup" ? "#ffffff" : textSub,
             fontWeight: "400",
             fontSize: "12px",
-            letterSpacing: "0.2px",
             cursor: "pointer",
-            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-            boxShadow: mode === "signup" ? "0 2px 8px rgba(37, 99, 235, 0.35)" : "none"
+            transition: "all 0.2s ease"
           }}
         >
           Créer un compte
@@ -183,17 +183,15 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
             setSuccessMsg("");
           }}
           style={{
-            padding: "9px 8px",
-            borderRadius: "9px",
+            padding: "8px",
+            borderRadius: "999px",
             border: "none",
-            background: mode === "login" ? "#2563eb" : "transparent",
-            color: mode === "login" ? "#ffffff" : (isLight ? "#475569" : "#cbd5e1"),
+            background: mode === "login" ? "#2c5e4c" : "transparent",
+            color: mode === "login" ? "#ffffff" : textSub,
             fontWeight: "400",
             fontSize: "12px",
-            letterSpacing: "0.2px",
             cursor: "pointer",
-            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-            boxShadow: mode === "login" ? "0 2px 8px rgba(37, 99, 235, 0.35)" : "none"
+            transition: "all 0.2s ease"
           }}
         >
           Se connecter
@@ -210,10 +208,10 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
             style={{
               width: "100%",
               padding: "11px 16px",
-              borderRadius: "12px",
-              border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.2)",
-              background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
-              color: isLight ? "#0f172a" : "#ffffff",
+              borderRadius: "10px",
+              border: `1px solid ${inputBorder}`,
+              background: inputBg,
+              color: textMain,
               fontSize: "13px",
               fontWeight: "400",
               cursor: googleLoading ? "wait" : "pointer",
@@ -223,24 +221,10 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
               justifyContent: "center",
               gap: "10px",
               transition: "all 0.2s ease",
-              boxSizing: "border-box",
-              boxShadow: isLight ? "0 1px 3px rgba(0,0,0,0.06)" : "0 2px 6px rgba(0,0,0,0.2)"
-            }}
-            onMouseEnter={(e) => {
-              if (!googleLoading) {
-                e.currentTarget.style.background = isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.14)";
-                e.currentTarget.style.borderColor = isLight ? "#94a3b8" : "rgba(255, 255, 255, 0.3)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!googleLoading) {
-                e.currentTarget.style.background = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)";
-                e.currentTarget.style.borderColor = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.2)";
-              }
+              boxSizing: "border-box"
             }}
           >
-            {/* Official Google Vector Icon */}
-            <svg width="18" height="18" viewBox="0 0 24 24">
+            <svg width="16" height="16" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -262,11 +246,11 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
           </button>
 
           <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "14px 0 2px 0" }}>
-            <div style={{ flex: 1, height: "1px", background: isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.16)" }} />
-            <span style={{ fontSize: "11px", color: isLight ? "#64748b" : "#cbd5e1", textTransform: "uppercase", letterSpacing: "0.5px", fontWeight: "400"}}>
+            <div style={{ flex: 1, height: "1px", background: inputBorder }} />
+            <span style={{ fontSize: "11px", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", fontWeight: "400" }}>
               ou par email
             </span>
-            <div style={{ flex: 1, height: "1px", background: isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.16)" }} />
+            <div style={{ flex: 1, height: "1px", background: inputBorder }} />
           </div>
         </div>
       )}
@@ -274,7 +258,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
       {/* Form Fields */}
       <form onSubmit={handleEmailAuth} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         <div>
-          <label style={{ fontSize: "12px", fontWeight: "400", color: isLight ? "#0f172a" : "#ffffff", marginBottom: "6px", display: "block" }}>
+          <label style={{ fontSize: "12px", fontWeight: "400", color: textMain, marginBottom: "6px", display: "block" }}>
             Adresse e-mail
           </label>
           <input
@@ -287,23 +271,12 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
               width: "100%",
               padding: "11px 14px",
               borderRadius: "10px",
-              border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.2)",
-              background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
-              color: isLight ? "#0f172a" : "#ffffff",
+              border: `1px solid ${inputBorder}`,
+              background: inputBg,
+              color: textMain,
               fontSize: "13px",
               outline: "none",
-              boxSizing: "border-box",
-              transition: "border-color 0.2s, box-shadow 0.2s"
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = "#3b82f6";
-              e.currentTarget.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.25)";
-              e.currentTarget.style.background = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.12)";
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.2)";
-              e.currentTarget.style.boxShadow = "none";
-              e.currentTarget.style.background = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)";
+              boxSizing: "border-box"
             }}
           />
         </div>
@@ -311,7 +284,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
         {mode !== "reset" && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-              <label style={{ fontSize: "12px", fontWeight: "400", color: isLight ? "#0f172a" : "#ffffff" }}>
+              <label style={{ fontSize: "12px", fontWeight: "400", color: textMain }}>
                 Mot de passe
               </label>
               {mode === "login" && (
@@ -327,7 +300,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
                     border: "none",
                     padding: 0,
                     fontSize: "11px",
-                    color: isLight ? "#2563eb" : "#60a5fa",
+                    color: isLight ? "#2c5e4c" : "#80b99c",
                     fontWeight: "400",
                     cursor: "pointer"
                   }}
@@ -346,23 +319,12 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
                 width: "100%",
                 padding: "11px 14px",
                 borderRadius: "10px",
-                border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.2)",
-                background: isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)",
-                color: isLight ? "#0f172a" : "#ffffff",
+                border: `1px solid ${inputBorder}`,
+                background: inputBg,
+                color: textMain,
                 fontSize: "13px",
                 outline: "none",
-                boxSizing: "border-box",
-                transition: "border-color 0.2s, box-shadow 0.2s"
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = "#3b82f6";
-                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(59, 130, 246, 0.25)";
-                e.currentTarget.style.background = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.12)";
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.2)";
-                e.currentTarget.style.boxShadow = "none";
-                e.currentTarget.style.background = isLight ? "#ffffff" : "rgba(255, 255, 255, 0.08)";
+                boxSizing: "border-box"
               }}
             />
           </div>
@@ -374,9 +336,9 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
             style={{
               padding: "10px 14px",
               borderRadius: "10px",
-              background: isLight ? "#fef2f2" : "rgba(239, 68, 68, 0.18)",
-              border: isLight ? "1px solid #fecaca" : "1px solid rgba(239, 68, 68, 0.4)",
-              color: isLight ? "#b91c1c" : "#fca5a5",
+              background: isLight ? "#fef2f2" : "rgba(220, 38, 38, 0.14)",
+              border: isLight ? "1px solid #fecaca" : "1px solid rgba(220, 38, 38, 0.3)",
+              color: isLight ? "#b91c1c" : "#f87171",
               fontSize: "12px",
               lineHeight: "1.4",
               fontWeight: "400"
@@ -391,9 +353,9 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
             style={{
               padding: "10px 14px",
               borderRadius: "10px",
-              background: isLight ? "#ecfdf5" : "rgba(16, 185, 129, 0.18)",
-              border: isLight ? "1px solid #a7f3d0" : "1px solid rgba(16, 185, 129, 0.4)",
-              color: isLight ? "#047857" : "#86efac",
+              background: isLight ? "#eef2ee" : "rgba(44, 94, 76, 0.25)",
+              border: isLight ? "1px solid #c8d6ce" : "1px solid rgba(64, 145, 108, 0.4)",
+              color: isLight ? "#2c5e4c" : "#80b99c",
               fontSize: "12px",
               lineHeight: "1.4",
               fontWeight: "400"
@@ -410,22 +372,15 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
           style={{
             marginTop: "4px",
             padding: "12px 16px",
-            borderRadius: "11px",
+            borderRadius: "10px",
             border: "none",
-            background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+            background: "#2c5e4c",
             color: "#ffffff",
             fontSize: "13px",
             fontWeight: "400",
             cursor: loading ? "not-allowed" : "pointer",
             opacity: loading ? 0.7 : 1,
-            boxShadow: "0 2px 10px rgba(37, 99, 235, 0.3)",
             transition: "all 0.2s ease"
-          }}
-          onMouseEnter={(e) => {
-            if (!loading) e.currentTarget.style.background = "#1d4ed8";
-          }}
-          onMouseLeave={(e) => {
-            if (!loading) e.currentTarget.style.background = "linear-gradient(135deg, #2563eb, #1d4ed8)";
           }}
         >
           {loading
@@ -448,13 +403,13 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
             style={{
               background: "transparent",
               border: "none",
-              color: isLight ? "#475569" : "#cbd5e1",
+              color: textSub,
               fontSize: "12px",
               cursor: "pointer",
               padding: "4px"
             }}
           >
-            ← Retour à la connexion
+            Retour à la connexion
           </button>
         )}
       </form>

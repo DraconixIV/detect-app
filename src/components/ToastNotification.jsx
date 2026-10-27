@@ -8,7 +8,6 @@ export default function ToastNotification({
   const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
-    // Auto-close after 3 seconds
     const timer = setTimeout(() => {
       handleClose();
     }, 3200);
@@ -20,7 +19,7 @@ export default function ToastNotification({
     setIsExiting(true);
     setTimeout(() => {
       onClose();
-    }, 300); // match fade-out animation length
+    }, 300);
   };
 
   const getStyleConfig = () => {
@@ -28,20 +27,17 @@ export default function ToastNotification({
       case "success":
         return {
           icon: "✓",
-          color: "#22c55e",
-          bgGlow: "rgba(34, 197, 94, 0.15)"
+          color: "#40916c"
         };
       case "error":
         return {
-          icon: "⚠️",
-          color: "#ef4444",
-          bgGlow: "rgba(239, 68, 68, 0.15)"
+          icon: "✕",
+          color: "#dc2626"
         };
       default:
         return {
-          icon: "ℹ️",
-          color: "#3b82f6",
-          bgGlow: "rgba(59, 130, 246, 0.15)"
+          icon: "•",
+          color: "#80b99c"
         };
     }
   };
@@ -58,25 +54,24 @@ export default function ToastNotification({
         transform: "translateX(-50%)",
         zIndex: 999999999,
         width: "90%",
-        maxWidth: "400px",
-        background: "rgba(17, 24, 39, 0.88)",
+        maxWidth: "380px",
+        background: "rgba(17, 25, 21, 0.94)",
         backdropFilter: "blur(14px)",
         WebkitBackdropFilter: "blur(14px)",
-        borderRadius: "18px",
-        padding: "14px 18px",
+        borderRadius: "14px",
+        padding: "12px 16px",
         boxSizing: "border-box",
-        border: `1px solid rgba(255, 255, 255, 0.08)`,
-        boxShadow: `0 8px 32px rgba(0, 0, 0, 0.4), 0 0 15px ${config.bgGlow}`,
+        border: "1px solid rgba(255, 255, 255, 0.08)",
+        boxShadow: "0 12px 32px rgba(0, 0, 0, 0.45)",
         display: "flex",
         alignItems: "center",
-        gap: "12px",
-        fontFamily: "system-ui, -apple-system, sans-serif",
+        gap: "10px",
+        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         animation: isExiting
           ? "toast-slide-out 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards"
           : "toast-slide-in 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards"
       }}
     >
-      {/* Dynamic CSS Keyframes */}
       <style>{`
         @keyframes toast-slide-in {
           from {
@@ -103,17 +98,17 @@ export default function ToastNotification({
       {/* Icon Badge */}
       <div
         style={{
-          width: "28px",
-          height: "28px",
+          width: "24px",
+          height: "24px",
           borderRadius: "50%",
-          background: `rgba(255,255,255,0.06)`,
+          background: "rgba(255,255,255,0.06)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           color: config.color,
-          fontSize: type === "success" ? "16px" : "13px",
+          fontSize: "12px",
           fontWeight: "400",
-          border: `1px solid ${config.color}33`,
+          border: `1px solid rgba(255,255,255,0.1)`,
           flexShrink: 0
         }}
       >
@@ -123,8 +118,8 @@ export default function ToastNotification({
       {/* Message Text */}
       <div
         style={{
-          color: "#f3f4f6",
-          fontSize: "13.5px",
+          color: "#f1f5f2",
+          fontSize: "13px",
           fontWeight: "400",
           lineHeight: "1.4",
           flex: 1
@@ -139,20 +134,14 @@ export default function ToastNotification({
         style={{
           background: "transparent",
           border: "none",
-          color: "#9ca3af",
+          color: "#9aa8a0",
           cursor: "pointer",
           fontSize: "12px",
           padding: "4px",
-          borderRadius: "50%",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          transition: "0.2s",
-          alignSelf: "flex-start",
-          marginTop: "-2px"
+          justifyContent: "center"
         }}
-        onMouseEnter={(e) => (e.target.style.color = "white")}
-        onMouseLeave={(e) => (e.target.style.color = "#9ca3af")}
       >
         ✕
       </button>

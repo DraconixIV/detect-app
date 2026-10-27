@@ -115,12 +115,12 @@ export default function AddFindForm({
   };
 
   const inputStyle = {
-    padding: "12px",
-    borderRadius: "14px",
-    border: "1px solid rgba(255,255,255,0.12)",
+    padding: "10px 12px",
+    borderRadius: "10px",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
     outline: "none",
-    fontSize: "14px",
-    background: "rgba(255, 255, 255, 0.08)",
+    fontSize: "13px",
+    background: "#111915",
     color: "#ffffff",
     width: "100%",
     boxSizing: "border-box",
@@ -134,13 +134,6 @@ export default function AddFindForm({
         display: "flex",
         flexDirection: "column",
         gap: "12px",
-        marginTop: "6px",
-        padding: "16px",
-        borderRadius: "20px",
-        background: "linear-gradient(180deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98))",
-        backdropFilter: "blur(16px)",
-        border: "1px solid rgba(255, 255, 255, 0.1)",
-        boxShadow: "0 12px 32px rgba(0,0,0,0.45)",
         position: "relative",
         zIndex: 10
       }}
@@ -150,57 +143,55 @@ export default function AddFindForm({
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          gap: "6px",
-          background: "rgba(0, 0, 0, 0.3)",
-          padding: "4px",
-          borderRadius: "14px",
-          border: "1px solid rgba(255,255,255,0.06)"
+          gap: "4px",
+          background: "rgba(0, 0, 0, 0.25)",
+          padding: "3px",
+          borderRadius: "10px",
+          border: "1px solid rgba(255, 255, 255, 0.06)"
         }}
       >
         <button
           type="button"
           onClick={() => handleModeToggle(false)}
           style={{
-            padding: "9px 6px",
-            borderRadius: "10px",
+            padding: "8px 6px",
+            borderRadius: "7px",
             border: "none",
-            background: !isManualMode ? "linear-gradient(135deg, #10b981, #059669)" : "transparent",
-            color: !isManualMode ? "#ffffff" : "#9ca3af",
+            background: !isManualMode ? "#2c5e4c" : "transparent",
+            color: !isManualMode ? "#ffffff" : "rgba(255, 255, 255, 0.6)",
             fontWeight: "400",
             fontSize: "12px",
             cursor: "pointer",
-            transition: "all 0.2s ease",
+            transition: "all 0.15s ease",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: "5px",
-            boxShadow: !isManualMode ? "0 2px 8px rgba(16,185,129,0.3)" : "none"
+            gap: "5px"
           }}
         >
-          <span>⚡</span> Direct (Live)
+          En direct
         </button>
 
         <button
           type="button"
           onClick={() => handleModeToggle(true)}
           style={{
-            padding: "9px 6px",
-            borderRadius: "10px",
+            padding: "8px 6px",
+            borderRadius: "7px",
             border: "none",
-            background: isManualMode ? "linear-gradient(135deg, #3b82f6, #2563eb)" : "transparent",
-            color: isManualMode ? "#ffffff" : "#9ca3af",
+            background: isManualMode ? "#2c5e4c" : "transparent",
+            color: isManualMode ? "#ffffff" : "rgba(255, 255, 255, 0.6)",
             fontWeight: "400",
             fontSize: "12px",
             cursor: "pointer",
-            transition: "all 0.2s ease",
+            transition: "all 0.15s ease",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: "5px",
-            boxShadow: isManualMode ? "0 2px 8px rgba(59,130,246,0.3)" : "none"
+            gap: "5px"
           }}
         >
-          <span>✍️</span> Différé (Manuel)
+          En différé (manuel)
         </button>
       </div>
 
@@ -208,27 +199,26 @@ export default function AddFindForm({
       <div
         style={{
           fontSize: "11px",
-          padding: "6px 10px",
+          padding: "7px 10px",
           borderRadius: "8px",
-          background: isManualMode ? "rgba(59, 130, 246, 0.12)" : "rgba(16, 185, 129, 0.12)",
-          border: `1px solid ${isManualMode ? "rgba(59, 130, 246, 0.3)" : "rgba(16, 185, 129, 0.3)"}`,
-          color: isManualMode ? "#93c5fd" : "#6ee7b7",
+          background: "rgba(255, 255, 255, 0.04)",
+          border: "1px solid rgba(255, 255, 255, 0.06)",
+          color: "rgba(255, 255, 255, 0.7)",
           display: "flex",
           alignItems: "center",
           gap: "6px"
         }}
       >
-        <span>{isManualMode ? "ℹ️" : "📍"}</span>
         <span>
           {isManualMode
-            ? "Mode différé : saisissez la date, coordonnées et choisissez vos médias."
+            ? "Mode différé : saisissez la date, les coordonnées et choisissez vos médias."
             : "Mode direct : position GPS actuelle et date enregistrées automatiquement."}
         </span>
       </div>
 
       {/* TITRE (SANS EXEMPLE) */}
       <div>
-        <label style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "4px", display: "block" }}>
+        <label style={{ fontSize: "11px", fontWeight: "400", color: "rgba(255, 255, 255, 0.8)", marginBottom: "4px", display: "block" }}>
           Titre de l'objet *
         </label>
         <input
@@ -245,9 +235,9 @@ export default function AddFindForm({
         <div
           style={{
             padding: "14px",
-            borderRadius: "14px",
-            background: "rgba(59, 130, 246, 0.15)",
-            border: "1px dashed rgba(96, 165, 250, 0.5)",
+            borderRadius: "12px",
+            background: "rgba(255, 255, 255, 0.03)",
+            border: "1px dashed rgba(255, 255, 255, 0.15)",
             display: "flex",
             flexDirection: "column",
             gap: "8px",
@@ -255,9 +245,9 @@ export default function AddFindForm({
           }}
         >
           <div style={{ fontSize: "12px", fontWeight: "400", color: "#ffffff" }}>
-            🏷️ Aucune catégorie configurée
+            Aucune catégorie configurée
           </div>
-          <div style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.75)" }}>
+          <div style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.6)" }}>
             Créez rapidement une catégorie pour classer votre trouvaille.
           </div>
 
@@ -267,15 +257,14 @@ export default function AddFindForm({
               onClick={() => setShowQuickCatBox(true)}
               style={{
                 alignSelf: "center",
-                padding: "8px 16px",
-                borderRadius: "10px",
+                padding: "7px 14px",
+                borderRadius: "8px",
                 border: "none",
-                background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                background: "#2c5e4c",
                 color: "#ffffff",
                 fontSize: "12px",
                 fontWeight: "400",
-                cursor: "pointer",
-                boxShadow: "0 2px 8px rgba(37, 99, 235, 0.3)"
+                cursor: "pointer"
               }}
             >
               + Créer une catégorie
@@ -283,10 +272,10 @@ export default function AddFindForm({
           ) : (
             <div
               style={{
-                background: "rgba(15, 23, 42, 0.9)",
+                background: "#111915",
                 padding: "12px",
-                borderRadius: "12px",
-                border: "1px solid rgba(255,255,255,0.15)",
+                borderRadius: "10px",
+                border: "1px solid rgba(255,255,255,0.08)",
                 display: "flex",
                 flexDirection: "column",
                 gap: "8px",
@@ -300,15 +289,15 @@ export default function AddFindForm({
                   style={{
                     padding: "8px",
                     borderRadius: "8px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    background: "rgba(255,255,255,0.08)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    background: "#19231e",
                     color: "#ffffff",
-                    fontSize: "16px",
+                    fontSize: "15px",
                     cursor: "pointer"
                   }}
                 >
                   {["🪙", "💍", "👑", "🛡️", "⚔️", "🏺", "🗝️", "🎖️", "💣", "🔨", "🪓", "🔔", "⚓", "📦", "📜", "✝️", "🏷️", "💎"].map((em) => (
-                    <option key={em} value={em} style={{ background: "#1e293b", color: "#ffffff" }}>
+                    <option key={em} value={em} style={{ background: "#19231e", color: "#ffffff" }}>
                       {em}
                     </option>
                   ))}
@@ -323,8 +312,8 @@ export default function AddFindForm({
                     flex: 1,
                     padding: "8px 10px",
                     borderRadius: "8px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    background: "rgba(255,255,255,0.08)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    background: "#19231e",
                     color: "#ffffff",
                     fontSize: "12px",
                     outline: "none"
@@ -359,9 +348,9 @@ export default function AddFindForm({
                   style={{
                     padding: "6px 10px",
                     borderRadius: "8px",
-                    border: "1px solid rgba(255,255,255,0.2)",
+                    border: "1px solid rgba(255,255,255,0.12)",
                     background: "transparent",
-                    color: "#cbd5e1",
+                    color: "rgba(255, 255, 255, 0.7)",
                     fontSize: "11px",
                     cursor: "pointer"
                   }}
@@ -382,7 +371,7 @@ export default function AddFindForm({
                     padding: "6px 12px",
                     borderRadius: "8px",
                     border: "none",
-                    background: "#10b981",
+                    background: "#2c5e4c",
                     color: "#ffffff",
                     fontSize: "11px",
                     fontWeight: "400",
@@ -398,7 +387,7 @@ export default function AddFindForm({
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: availableSubCats.length > 0 ? "1fr 1fr" : "1fr", gap: "8px" }}>
           <div>
-            <label style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "4px", display: "block" }}>
+            <label style={{ fontSize: "11px", fontWeight: "400", color: "rgba(255, 255, 255, 0.8)", marginBottom: "4px", display: "block" }}>
               Catégorie
             </label>
             <select
@@ -411,7 +400,7 @@ export default function AddFindForm({
               style={inputStyle}
             >
               {categoryKeys.map((cat) => (
-                <option key={cat} value={cat} style={{ background: "#1f2937", color: "#ffffff" }}>
+                <option key={cat} value={cat} style={{ background: "#19231e", color: "#ffffff" }}>
                   {emojis[cat] || "🏷️"} {cat}
                 </option>
               ))}
@@ -420,7 +409,7 @@ export default function AddFindForm({
 
           {availableSubCats.length > 0 && (
             <div>
-              <label style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "4px", display: "block" }}>
+              <label style={{ fontSize: "11px", fontWeight: "400", color: "rgba(255, 255, 255, 0.8)", marginBottom: "4px", display: "block" }}>
                 Sous-catégorie
               </label>
               <select
@@ -428,11 +417,11 @@ export default function AddFindForm({
                 onChange={(e) => setNewSubCategory(e.target.value)}
                 style={inputStyle}
               >
-                <option value="" style={{ background: "#1f2937", color: "#ffffff" }}>
+                <option value="" style={{ background: "#19231e", color: "#ffffff" }}>
                   -- Sélectionner --
                 </option>
                 {availableSubCats.map((subCat) => (
-                  <option key={subCat} value={subCat} style={{ background: "#1f2937", color: "#ffffff" }}>
+                  <option key={subCat} value={subCat} style={{ background: "#19231e", color: "#ffffff" }}>
                     {subCat}
                   </option>
                 ))}
@@ -444,7 +433,7 @@ export default function AddFindForm({
 
       {/* METAL */}
       <div>
-        <label style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "4px", display: "block" }}>
+        <label style={{ fontSize: "11px", fontWeight: "400", color: "rgba(255, 255, 255, 0.8)", marginBottom: "4px", display: "block" }}>
           Métal
         </label>
         <select
@@ -452,12 +441,12 @@ export default function AddFindForm({
           onChange={(e) => setNewDescription(e.target.value)}
           style={inputStyle}
         >
-          <option value="Indéterminé" style={{ background: "#1f2937", color: "#ffffff" }}>
-            ❓ Métal non spécifié
+          <option value="Indéterminé" style={{ background: "#19231e", color: "#ffffff" }}>
+            Métal non spécifié
           </option>
           {(materialsData.materials || []).filter((m) => m !== "Indéterminé").map((mat) => (
-            <option key={mat} value={mat} style={{ background: "#1f2937", color: "#ffffff" }}>
-              {materialsData.emojis?.[mat] || "🪙"} {mat}
+            <option key={mat} value={mat} style={{ background: "#19231e", color: "#ffffff" }}>
+              {mat}
             </option>
           ))}
         </select>
@@ -471,14 +460,14 @@ export default function AddFindForm({
             flexDirection: "column",
             gap: "8px",
             padding: "12px",
-            borderRadius: "14px",
-            background: "rgba(0,0,0,0.25)",
-            border: "1px dashed rgba(59, 130, 246, 0.4)"
+            borderRadius: "10px",
+            background: "#111915",
+            border: "1px solid rgba(255, 255, 255, 0.08)"
           }}
         >
           <div>
-            <label style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "4px", display: "block" }}>
-              📅 Date de découverte
+            <label style={{ fontSize: "11px", fontWeight: "400", color: "rgba(255, 255, 255, 0.8)", marginBottom: "4px", display: "block" }}>
+              Date de découverte
             </label>
             <input
               type="date"
@@ -490,8 +479,8 @@ export default function AddFindForm({
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
             <div>
-              <label style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "4px", display: "block" }}>
-                🌐 Latitude
+              <label style={{ fontSize: "11px", fontWeight: "400", color: "rgba(255, 255, 255, 0.8)", marginBottom: "4px", display: "block" }}>
+                Latitude
               </label>
               <input
                 type="number"
@@ -503,8 +492,8 @@ export default function AddFindForm({
               />
             </div>
             <div>
-              <label style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "4px", display: "block" }}>
-                🌐 Longitude
+              <label style={{ fontSize: "11px", fontWeight: "400", color: "rgba(255, 255, 255, 0.8)", marginBottom: "4px", display: "block" }}>
+                Longitude
               </label>
               <input
                 type="number"
@@ -551,14 +540,14 @@ export default function AddFindForm({
           const file = e.target.files?.[0];
           if (!file) return;
           if (file.size > 50 * 1024 * 1024) {
-            alert("⚠️ Vidéo trop volumineuse (max 50 Mo). Privilégiez un court extrait de 5 à 15 secondes.");
+            alert("Vidéo trop volumineuse (max 50 Mo). Privilégiez un court extrait.");
             return;
           }
           updateVideo(file);
         }}
       />
 
-      {/* MEDIA TOOLBAR (4 BOUTONS : PHOTO, GALERIE, VIDÉO, VOCAL - MONOCHROME) */}
+      {/* MEDIA TOOLBAR (4 BOUTONS : PHOTO, GALERIE, VIDÉO, VOCAL) */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "6px" }}>
         {/* Appareil Photo */}
         <button
@@ -566,22 +555,22 @@ export default function AddFindForm({
           onClick={() => cameraInputRef.current?.click()}
           title="Prendre une photo"
           style={{
-            background: newPhoto ? "rgba(255, 255, 255, 0.18)" : "rgba(255, 255, 255, 0.06)",
-            border: newPhoto ? "1px solid rgba(255, 255, 255, 0.35)" : "1px solid rgba(255, 255, 255, 0.12)",
+            background: newPhoto ? "#2c5e4c" : "rgba(255, 255, 255, 0.05)",
+            border: newPhoto ? "1px solid #40916c" : "1px solid rgba(255, 255, 255, 0.08)",
             color: "#ffffff",
-            padding: "9px 4px",
-            borderRadius: "12px",
+            padding: "8px 4px",
+            borderRadius: "10px",
             cursor: "pointer",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: "3px",
+            gap: "4px",
             fontSize: "11px",
             fontWeight: "400",
             transition: "all 0.15s"
           }}
         >
-          <span style={{ fontSize: "16px" }}>📷</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           <span>Photo</span>
         </button>
 
@@ -591,22 +580,22 @@ export default function AddFindForm({
           onClick={() => galleryInputRef.current?.click()}
           title="Choisir depuis la galerie"
           style={{
-            background: "rgba(255, 255, 255, 0.06)",
-            border: "1px solid rgba(255, 255, 255, 0.12)",
+            background: "rgba(255, 255, 255, 0.05)",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
             color: "#ffffff",
-            padding: "9px 4px",
-            borderRadius: "12px",
+            padding: "8px 4px",
+            borderRadius: "10px",
             cursor: "pointer",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: "3px",
+            gap: "4px",
             fontSize: "11px",
             fontWeight: "400",
             transition: "all 0.15s"
           }}
         >
-          <span style={{ fontSize: "16px" }}>🖼️</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           <span>Galerie</span>
         </button>
 
@@ -616,22 +605,22 @@ export default function AddFindForm({
           onClick={() => videoInputRef.current?.click()}
           title="Ajouter un court extrait vidéo"
           style={{
-            background: activeVideo ? "rgba(255, 255, 255, 0.18)" : "rgba(255, 255, 255, 0.06)",
-            border: activeVideo ? "1px solid rgba(255, 255, 255, 0.35)" : "1px solid rgba(255, 255, 255, 0.12)",
+            background: activeVideo ? "#2c5e4c" : "rgba(255, 255, 255, 0.05)",
+            border: activeVideo ? "1px solid #40916c" : "1px solid rgba(255, 255, 255, 0.08)",
             color: "#ffffff",
-            padding: "9px 4px",
-            borderRadius: "12px",
+            padding: "8px 4px",
+            borderRadius: "10px",
             cursor: "pointer",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: "3px",
+            gap: "4px",
             fontSize: "11px",
             fontWeight: "400",
             transition: "all 0.15s"
           }}
         >
-          <span style={{ fontSize: "16px" }}>🎥</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
           <span>Vidéo</span>
         </button>
 
@@ -666,29 +655,33 @@ export default function AddFindForm({
           title={isRecordingAudio ? "Arrêter l'enregistrement" : "Enregistrer une note vocale"}
           style={{
             background: isRecordingAudio
-              ? "#ef4444"
+              ? "#dc2626"
               : activeAudio
-              ? "rgba(255, 255, 255, 0.18)"
-              : "rgba(255, 255, 255, 0.06)",
+              ? "#2c5e4c"
+              : "rgba(255, 255, 255, 0.05)",
             border: isRecordingAudio
-              ? "1px solid #ef4444"
+              ? "1px solid #dc2626"
               : activeAudio
-              ? "1px solid rgba(255, 255, 255, 0.35)"
-              : "1px solid rgba(255, 255, 255, 0.12)",
+              ? "1px solid #40916c"
+              : "1px solid rgba(255, 255, 255, 0.08)",
             color: "#ffffff",
-            padding: "9px 4px",
-            borderRadius: "12px",
+            padding: "8px 4px",
+            borderRadius: "10px",
             cursor: "pointer",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: "3px",
+            gap: "4px",
             fontSize: "11px",
             fontWeight: "400",
             transition: "all 0.15s"
           }}
         >
-          <span style={{ fontSize: "16px" }}>{isRecordingAudio ? "⏹️" : "🎙️"}</span>
+          {isRecordingAudio ? (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          )}
           <span>{isRecordingAudio ? `${recordingTime}s` : "Vocal"}</span>
         </button>
       </div>
@@ -697,10 +690,10 @@ export default function AddFindForm({
       {newPhoto && (
         <div
           style={{
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.12)",
+            background: "#111915",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
             padding: "10px",
-            borderRadius: "14px",
+            borderRadius: "10px",
             display: "flex",
             flexDirection: "column",
             gap: "8px"
@@ -709,11 +702,11 @@ export default function AddFindForm({
           <div
             style={{
               fontSize: "12px",
-              color: "#f3f4f6",
+              color: "rgba(255, 255, 255, 0.8)",
               wordBreak: "break-word"
             }}
           >
-            📸 {newPhoto.name}
+            {newPhoto.name}
           </div>
 
           <img
@@ -721,10 +714,10 @@ export default function AddFindForm({
             alt="preview"
             style={{
               width: "100%",
-              borderRadius: "10px",
+              borderRadius: "8px",
               maxHeight: "180px",
               objectFit: "cover",
-              border: "1px solid rgba(255,255,255,0.15)"
+              border: "1px solid rgba(255, 255, 255, 0.08)"
             }}
           />
 
@@ -733,16 +726,16 @@ export default function AddFindForm({
             onClick={() => setNewPhoto(null)}
             style={{
               border: "none",
-              borderRadius: "10px",
-              padding: "8px",
-              background: "rgba(239, 68, 68, 0.2)",
-              color: "#fca5a5",
+              borderRadius: "8px",
+              padding: "7px",
+              background: "rgba(220, 38, 38, 0.15)",
+              color: "#f87171",
               cursor: "pointer",
               fontSize: "12px",
               fontWeight: "400"
             }}
           >
-            ❌ Retirer photo
+            Retirer la photo
           </button>
         </div>
       )}
@@ -750,8 +743,8 @@ export default function AddFindForm({
       {/* PREVIEW NOTE VOCALE AUDIO */}
       {activeAudio && (
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <div style={{ fontSize: "11px", fontWeight: "400", color: "#e2e8f0", display: "flex", alignItems: "center", gap: "6px" }}>
-            <span>🎙️</span> Note vocale
+          <div style={{ fontSize: "11px", fontWeight: "400", color: "rgba(255, 255, 255, 0.7)", display: "flex", alignItems: "center", gap: "6px" }}>
+            Note vocale
           </div>
           <AudioNotePlayer
             src={activeAudio}
@@ -770,32 +763,32 @@ export default function AddFindForm({
       {videoPreviewUrl && (
         <div
           style={{
-            background: "rgba(255, 255, 255, 0.04)",
-            border: "1px solid rgba(255, 255, 255, 0.12)",
+            background: "#111915",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
             padding: "10px",
-            borderRadius: "14px",
+            borderRadius: "10px",
             display: "flex",
             flexDirection: "column",
             gap: "8px"
           }}
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "12px", color: "#ffffff", fontWeight: "400"}}>🎥 Vidéo</span>
+            <span style={{ fontSize: "12px", color: "#ffffff", fontWeight: "400" }}>Vidéo</span>
             <button
               type="button"
               onClick={() => updateVideo(null)}
               style={{
                 background: "transparent",
-                border: "1px solid rgba(255, 255, 255, 0.16)",
-                color: "#94a3b8",
-                borderRadius: "8px",
+                border: "1px solid rgba(255, 255, 255, 0.12)",
+                color: "rgba(255, 255, 255, 0.7)",
+                borderRadius: "6px",
                 padding: "3px 8px",
                 fontSize: "11px",
                 cursor: "pointer",
                 fontWeight: "400"
               }}
             >
-              ✕ Retirer
+              Retirer
             </button>
           </div>
           <video
@@ -806,7 +799,7 @@ export default function AddFindForm({
             style={{
               width: "100%",
               maxHeight: "160px",
-              borderRadius: "10px",
+              borderRadius: "8px",
               background: "#000000"
             }}
           />
@@ -831,24 +824,23 @@ export default function AddFindForm({
           });
         }}
         style={{
-          borderRadius: "14px",
-          padding: "14px",
+          borderRadius: "10px",
+          padding: "13px",
           border: "none",
           background: addingFind || !newTitle.trim()
-            ? "#334155"
-            : "#10b981",
-          color: "white",
+            ? "rgba(255, 255, 255, 0.08)"
+            : "#2c5e4c",
+          color: addingFind || !newTitle.trim() ? "rgba(255, 255, 255, 0.35)" : "#ffffff",
           fontSize: "14px",
           fontWeight: "400",
           cursor: addingFind || !newTitle.trim() ? "not-allowed" : "pointer",
           transition: "all 0.2s ease",
-          boxShadow: addingFind || !newTitle.trim() ? "none" : "0 4px 14px rgba(16,185,129,0.25)",
           marginTop: "4px"
         }}
       >
         {addingFind
-          ? (activeVideo ? "🎥 Téléversement vidéo et enregistrement..." : (newPhoto ? "📸 Envoi de la photo et enregistrement..." : "Enregistrement en cours..."))
-          : "✅ Enregistrer la trouvaille"}
+          ? (activeVideo ? "Téléversement vidéo et enregistrement..." : (newPhoto ? "Envoi de la photo et enregistrement..." : "Enregistrement en cours..."))
+          : "Enregistrer la trouvaille"}
       </button>
     </div>
   );

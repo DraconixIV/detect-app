@@ -1836,9 +1836,9 @@ function App() {
         >
           <div
             style={{
-              background: "#111827",
-              border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: "24px",
+              background: "#111915",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "20px",
               width: "100%",
               maxWidth: "360px",
               padding: "20px",
@@ -1846,12 +1846,12 @@ function App() {
               display: "flex",
               flexDirection: "column",
               gap: "16px",
-              boxShadow: "0 12px 36px rgba(0,0,0,0.5)"
+              boxShadow: "0 12px 36px rgba(0, 0, 0, 0.6)"
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h4 style={{ margin: 0, color: "white", fontSize: "16px", fontWeight: "400"}}>
-              📷 Titre de la trouvaille rapide :
+            <h4 style={{ margin: 0, color: "white", fontSize: "15px", fontWeight: "400" }}>
+              Titre de la trouvaille rapide
             </h4>
 
             <input
@@ -1865,12 +1865,12 @@ function App() {
               }}
               autoFocus
               style={{
-                padding: "12px",
-                borderRadius: "12px",
-                border: "1px solid rgba(255,255,255,0.15)",
-                background: "rgba(255,255,255,0.06)",
+                padding: "10px 12px",
+                borderRadius: "10px",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                background: "#19231e",
                 color: "white",
-                fontSize: "14px",
+                fontSize: "13px",
                 fontWeight: "400",
                 width: "100%",
                 boxSizing: "border-box",
@@ -1887,10 +1887,10 @@ function App() {
                 style={{
                   flex: 1,
                   padding: "10px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255,255,255,0.12)",
+                  borderRadius: "10px",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
                   background: "transparent",
-                  color: "white",
+                  color: "rgba(255, 255, 255, 0.7)",
                   fontSize: "12px",
                   fontWeight: "400",
                   cursor: "pointer"
@@ -1903,16 +1903,16 @@ function App() {
                 style={{
                   flex: 1.5,
                   padding: "10px",
-                  borderRadius: "12px",
+                  borderRadius: "10px",
                   border: "none",
-                  background: "#16a34a",
+                  background: "#2c5e4c",
                   color: "white",
                   fontSize: "12px",
                   fontWeight: "400",
                   cursor: "pointer"
                 }}
               >
-                Valider ✅
+                Valider
               </button>
             </div>
           </div>
@@ -1944,9 +1944,9 @@ function App() {
         >
           <div
             style={{
-              background: "#111827",
-              border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: "24px",
+              background: "#111915",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "20px",
               width: "100%",
               maxWidth: "360px",
               padding: "20px",
@@ -1954,11 +1954,11 @@ function App() {
               display: "flex",
               flexDirection: "column",
               gap: "16px",
-              boxShadow: "0 12px 36px rgba(0,0,0,0.5)"
+              boxShadow: "0 12px 36px rgba(0, 0, 0, 0.6)"
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h4 style={{ margin: 0, color: "white", fontSize: "16px", fontWeight: "400"}}>
+            <h4 style={{ margin: 0, color: "white", fontSize: "15px", fontWeight: "400" }}>
               Nom de la sortie
             </h4>
 
@@ -1973,12 +1973,12 @@ function App() {
               }}
               autoFocus
               style={{
-                padding: "12px",
-                borderRadius: "12px",
-                border: "1px solid rgba(255,255,255,0.15)",
-                background: "rgba(255,255,255,0.06)",
+                padding: "10px 12px",
+                borderRadius: "10px",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                background: "#19231e",
                 color: "white",
-                fontSize: "14px",
+                fontSize: "13px",
                 fontWeight: "400",
                 width: "100%",
                 boxSizing: "border-box",
@@ -1995,10 +1995,10 @@ function App() {
                 style={{
                   flex: 1,
                   padding: "10px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255,255,255,0.12)",
+                  borderRadius: "10px",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
                   background: "transparent",
-                  color: "white",
+                  color: "rgba(255, 255, 255, 0.7)",
                   fontSize: "12px",
                   fontWeight: "400",
                   cursor: "pointer"
@@ -2011,9 +2011,9 @@ function App() {
                 style={{
                   flex: 1.5,
                   padding: "10px",
-                  borderRadius: "12px",
+                  borderRadius: "10px",
                   border: "none",
-                  background: "#16a34a",
+                  background: "#2c5e4c",
                   color: "white",
                   fontSize: "12px",
                   fontWeight: "400",
@@ -2035,7 +2035,7 @@ function App() {
               }}
               style={{
                 padding: "8px",
-                borderRadius: "10px",
+                borderRadius: "8px",
                 border: "none",
                 background: "transparent",
                 color: "#f87171",
@@ -2058,7 +2058,7 @@ function App() {
             left: 0,
             width: "100vw",
             height: "100vh",
-            background: "rgba(0,0,0,0.78)",
+            background: "rgba(0, 0, 0, 0.78)",
             backdropFilter: "blur(6px)",
             zIndex: 999999,
             display: "flex",
@@ -2072,17 +2072,17 @@ function App() {
         >
           <div
             style={{
-              background: "#111827",
-              border: "1px solid rgba(255,255,255,0.14)",
-              borderRadius: "24px",
+              background: "#111915",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "20px",
               width: "100%",
               maxWidth: "380px",
-              padding: "24px",
+              padding: "22px",
               boxSizing: "border-box",
               display: "flex",
               flexDirection: "column",
               gap: "16px",
-              boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
+              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.6)",
               color: "white"
             }}
             onClick={(e) => e.stopPropagation()}
@@ -2092,34 +2092,34 @@ function App() {
                 style={{
                   width: "40px",
                   height: "40px",
-                  borderRadius: "12px",
-                  background: "rgba(59, 130, 246, 0.14)",
-                  border: "1px solid rgba(59, 130, 246, 0.3)",
+                  borderRadius: "10px",
+                  background: "rgba(64, 145, 108, 0.15)",
+                  border: "1px solid rgba(64, 145, 108, 0.3)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "#60a5fa",
+                  color: "#80b99c",
                   flexShrink: 0
                 }}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                   <path d="M12 8v6" />
                   <path d="M9 11l3 3 3-3" />
                 </svg>
               </div>
               <div>
-                <h4 style={{ margin: 0, color: "white", fontSize: "16px", fontWeight: "400"}}>
+                <h4 style={{ margin: 0, color: "white", fontSize: "15px", fontWeight: "400" }}>
                   Sauvegarde de sécurité recommandée
                 </h4>
-                <span style={{ fontSize: "12px", color: "#9ca3af", fontWeight: "400"}}>
+                <span style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.6)", fontWeight: "400" }}>
                   Rappel automatique toutes les 2 sorties
                 </span>
               </div>
             </div>
 
-            <p style={{ margin: 0, fontSize: "13px", lineHeight: "1.55", color: "#d1d5db" }}>
-              Vous venez d'enregistrer deux nouvelles sorties. Pour garantir la sécurité absolue de vos trouvailles et de vos tracés GPS face aux mises à jour, aux déconnexions ou à un changement de téléphone, nous vous recommandons de télécharger une copie de sauvegarde sur votre appareil.
+            <p style={{ margin: 0, fontSize: "13px", lineHeight: "1.55", color: "rgba(255, 255, 255, 0.75)" }}>
+              Vous venez d'enregistrer deux nouvelles sorties. Pour garantir la sécurité absolue de vos trouvailles et de vos tracés GPS face aux mises à jour, aux déconnexions ou à un changement d'appareil, nous vous recommandons d'exporter une copie de sauvegarde.
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" }}>
@@ -2129,10 +2129,10 @@ function App() {
                   await handleExport();
                 }}
                 style={{
-                  padding: "12px",
-                  borderRadius: "12px",
+                  padding: "11px",
+                  borderRadius: "10px",
                   border: "none",
-                  background: "#2563eb",
+                  background: "#2c5e4c",
                   color: "white",
                   fontSize: "13px",
                   fontWeight: "400",
@@ -2143,7 +2143,7 @@ function App() {
                   gap: "8px"
                 }}
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="7 10 12 15 17 10" />
                   <line x1="12" y1="15" x2="12" y2="3" />
@@ -2153,11 +2153,11 @@ function App() {
               <button
                 onClick={() => setShowBackupPromptModal(false)}
                 style={{
-                  padding: "11px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  background: "rgba(255,255,255,0.04)",
-                  color: "#9ca3af",
+                  padding: "10px",
+                  borderRadius: "10px",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  background: "rgba(255, 255, 255, 0.04)",
+                  color: "rgba(255, 255, 255, 0.6)",
                   fontSize: "12px",
                   fontWeight: "400",
                   cursor: "pointer"
@@ -2188,7 +2188,7 @@ function App() {
             left: 0,
             width: "100vw",
             height: "100vh",
-            background: "rgba(0, 0, 0, 0.6)",
+            background: "rgba(0, 0, 0, 0.75)",
             backdropFilter: "blur(4px)",
             display: "flex",
             justifyContent: "center",
@@ -2200,14 +2200,13 @@ function App() {
         >
           <div
             style={{
-              background: "rgba(17, 24, 39, 0.95)",
-              backdropFilter: "blur(16px)",
-              border: "1px solid rgba(255, 255, 255, 0.12)",
-              borderRadius: "24px",
-              padding: "24px",
+              background: "#111915",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "20px",
+              padding: "22px",
               width: "100%",
               maxWidth: "380px",
-              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.5)",
+              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.6)",
               color: "white",
               display: "flex",
               flexDirection: "column",
@@ -2218,24 +2217,23 @@ function App() {
             {subCatModalStep === 1 ? (
               <>
                 <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", display: "flex", alignItems: "center", gap: "8px" }}>
-                  🔍 Filtrer par sous-catégorie ?
+                  Filtrer par sous-catégorie ?
                 </h3>
-                <p style={{ margin: 0, fontSize: "13px", lineHeight: "1.5", color: "#d1d5db" }}>
-                  Souhaitez-vous affiner votre recherche par sous-catégorie pour les trouvailles de type <strong>{categoryEmojis[subCategorySelectCat] || ""} {subCategorySelectCat}</strong> ?
+                <p style={{ margin: 0, fontSize: "13px", lineHeight: "1.5", color: "rgba(255, 255, 255, 0.75)" }}>
+                  Souhaitez-vous affiner votre recherche par sous-catégorie pour les trouvailles de type {categoryEmojis[subCategorySelectCat] || ""} {subCategorySelectCat} ?
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" }}>
                   <button
                     onClick={() => setSubCatModalStep(2)}
                     style={{
-                      padding: "12px",
-                      borderRadius: "12px",
+                      padding: "11px",
+                      borderRadius: "10px",
                       border: "none",
-                      background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
+                      background: "#2c5e4c",
                       color: "white",
                       fontSize: "13px",
                       fontWeight: "400",
-                      cursor: "pointer",
-                      boxShadow: "0 4px 12px rgba(59, 130, 246, 0.25)"
+                      cursor: "pointer"
                     }}
                   >
                     Oui (Choisir une sous-catégorie)
@@ -2247,10 +2245,10 @@ function App() {
                       setSubCategorySelectCat(null);
                     }}
                     style={{
-                      padding: "12px",
-                      borderRadius: "12px",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      background: "rgba(255,255,255,0.06)",
+                      padding: "11px",
+                      borderRadius: "10px",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      background: "rgba(255, 255, 255, 0.04)",
                       color: "white",
                       fontSize: "13px",
                       fontWeight: "400",
@@ -2263,11 +2261,12 @@ function App() {
                     onClick={() => setSubCategorySelectCat(null)}
                     style={{
                       padding: "10px",
-                      borderRadius: "12px",
+                      borderRadius: "10px",
                       border: "none",
                       background: "transparent",
-                      color: "#9ca3af",
+                      color: "rgba(255, 255, 255, 0.6)",
                       fontSize: "12px",
+                      fontWeight: "400",
                       cursor: "pointer"
                     }}
                   >
@@ -2278,10 +2277,10 @@ function App() {
             ) : (
               <>
                 <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", display: "flex", alignItems: "center", gap: "8px" }}>
-                  🏷️ Choisir la sous-catégorie
+                  Choisir la sous-catégorie
                 </h3>
-                <p style={{ margin: 0, fontSize: "12px", color: "#9ca3af" }}>
-                  Sélectionnez la sous-catégorie pour <strong>{subCategorySelectCat}</strong> :
+                <p style={{ margin: 0, fontSize: "12px", color: "rgba(255, 255, 255, 0.6)" }}>
+                  Sélectionnez la sous-catégorie pour {subCategorySelectCat} :
                 </p>
                 <div style={{
                   display: "flex",
@@ -2303,25 +2302,26 @@ function App() {
                         }}
                         style={{
                           padding: "10px 12px",
-                          borderRadius: "10px",
-                          border: "1px solid rgba(255,255,255,0.08)",
-                          background: "rgba(255,255,255,0.04)",
+                          borderRadius: "8px",
+                          border: "1px solid rgba(255, 255, 255, 0.08)",
+                          background: "#19231e",
                           color: "white",
                           fontSize: "13px",
+                          fontWeight: "400",
                           textAlign: "left",
                           cursor: "pointer",
-                          transition: "0.2s"
+                          transition: "0.15s"
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-                          e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+                          e.currentTarget.style.background = "#2c5e4c";
+                          e.currentTarget.style.borderColor = "rgba(64, 145, 108, 0.4)";
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-                          e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+                          e.currentTarget.style.background = "#19231e";
+                          e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.08)";
                         }}
                       >
-                        🔹 {subCat}
+                        {subCat}
                       </button>
                     ))}
                 </div>
@@ -2331,8 +2331,8 @@ function App() {
                     style={{
                       flex: 1,
                       padding: "10px",
-                      borderRadius: "10px",
-                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "8px",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
                       background: "transparent",
                       color: "white",
                       fontSize: "12px",
@@ -2347,10 +2347,10 @@ function App() {
                     style={{
                       flex: 1,
                       padding: "10px",
-                      borderRadius: "10px",
-                      border: "none",
-                      background: "#ef4444",
-                      color: "white",
+                      borderRadius: "8px",
+                      border: "1px solid rgba(220, 38, 38, 0.3)",
+                      background: "rgba(220, 38, 38, 0.15)",
+                      color: "#f87171",
                       fontSize: "12px",
                       fontWeight: "400",
                       cursor: "pointer"

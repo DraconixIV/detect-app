@@ -12,12 +12,6 @@ import OnboardingStep5Theme from "./onboarding/OnboardingStep5Theme";
 import OnboardingStep6Letter from "./onboarding/OnboardingStep6Letter";
 
 export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange, currentTheme = "dark" }) {
-  // Step 1: Découverte et Fonctionnalités clés
-  // Step 2: Cadre Légal et Charte Éthique
-  // Step 3: Espace Prospecteur (Authentification)
-  // Step 4: Votre Classification (Catégories et Métaux)
-  // Step 5: Configuration Initiale (Carte, Thème)
-  // Step 6: Message Personnel du Créateur
   const [step, setStepState] = useState(() => {
     try {
       const saved = sessionStorage.getItem("geoprospect_onboarding_step");
@@ -39,7 +33,6 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
   const [step4Tab, setStep4Tab] = useState("categories"); // 'categories' | 'metals'
   const [user, setUser] = useState(null);
 
-  // Legal Checkboxes state (restored if previously accepted or returning from OAuth)
   const [checkOwner, setCheckOwner] = useState(() => {
     try {
       const s = parseInt(sessionStorage.getItem("geoprospect_onboarding_step") || "1", 10);
@@ -71,7 +64,6 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
     } catch { return false; }
   });
 
-  // Categories configuration state
   const [categories, setCategories] = useState(() => {
     const loaded = loadCategoriesData();
     return loaded.categories || {};
@@ -87,13 +79,12 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
 
   const [newCatName, setNewCatName] = useState("");
   const [newCatEmoji, setNewCatEmoji] = useState("🪙");
-  const [newCatColor, setNewCatColor] = useState("#facc15");
+  const [newCatColor, setNewCatColor] = useState("#2c5e4c");
   const [newSubText, setNewSubText] = useState("");
   const [targetCategoryForSub, setTargetCategoryForSub] = useState("");
   const [expandedCat, setExpandedCat] = useState(null);
   const [inlineSubInput, setInlineSubInput] = useState("");
 
-  // Metals / Materials configuration state
   const [materials, setMaterials] = useState(() => {
     const loaded = loadMaterialsData();
     return loaded.materials || [];
@@ -105,11 +96,10 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
   const [newMetalName, setNewMetalName] = useState("");
   const [newMetalEmoji, setNewMetalEmoji] = useState("🪙");
 
-  // Pre-customization choices
   const [selectedMapStyle, setSelectedMapStyle] = useState("satellite");
-  const [selectedDesignTheme, setSelectedDesignTheme] = useState("tactical");
+  const [selectedDesignTheme] = useState("tactical");
   const [selectedAppTheme, setSelectedAppTheme] = useState(() => currentTheme || "dark");
-  const [selectedGpsStyle, setSelectedGpsStyle] = useState("blue-dot");
+  const [selectedGpsStyle] = useState("blue-dot");
 
   const handleSelectTheme = (mode) => {
     setSelectedAppTheme(mode);
@@ -118,14 +108,15 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
     }
   };
 
+  // Forest Palette
   const isDark = selectedAppTheme === "dark";
-  const bgRoot = isDark ? "#0b1329" : "#ffffff";
-  const textMain = isDark ? "#ffffff" : "#0f172a";
-  const textSub = isDark ? "#94a3b8" : "#475569";
-  const cardBg = isDark ? "#111c44" : "#f8fafc";
-  const cardBorder = isDark ? "rgba(255, 255, 255, 0.12)" : "#e2e8f0";
-  const inputBg = isDark ? "#0b1329" : "#ffffff";
-  const inputBorder = isDark ? "rgba(255, 255, 255, 0.2)" : "#cbd5e1";
+  const bgRoot = isDark ? "#111915" : "#f3f4f2";
+  const textMain = isDark ? "#f1f5f2" : "#1f2924";
+  const textSub = isDark ? "#9aa8a0" : "#5c6b63";
+  const cardBg = isDark ? "#19231e" : "#ffffff";
+  const cardBorder = isDark ? "rgba(255, 255, 255, 0.08)" : "#eef0ed";
+  const inputBg = isDark ? "#111915" : "#f3f4f2";
+  const inputBorder = isDark ? "rgba(255, 255, 255, 0.12)" : "#e2e6e3";
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -169,11 +160,9 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
       .map((s) => s.trim())
       .filter(Boolean);
 
-    const finalSubs = parsedSubs;
-
-    const updatedCats = { ...categories, [trimmed]: finalSubs };
-    const updatedEmojis = { ...emojis, [trimmed]: newCatEmoji || "🏷️" };
-    const updatedColors = { ...colors, [trimmed]: newCatColor || "#3b82f6" };
+    const updatedCats = { ...categories, [trimmed]: parsedSubs };
+    const updatedEmojis = { ...emojis, [trimmed]: newCatEmoji || "🪙" };
+    const updatedColors = { ...colors, [trimmed]: newCatColor || "#2c5e4c" };
 
     setCategories(updatedCats);
     setEmojis(updatedEmojis);
@@ -367,17 +356,17 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
         }}
       >
         {/* Header : Progress Stepper */}
-        <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <div style={{ display: "flex", gap: "5px" }}>
               {[1, 2, 3, 4, 5, 6].map((s) => (
                 <div
                   key={s}
                   style={{
-                    width: step === s ? "24px" : "8px",
+                    width: step === s ? "26px" : "8px",
                     height: "6px",
                     borderRadius: "3px",
-                    background: step === s ? "#2563eb" : (step > s ? "#10b981" : (isDark ? "rgba(255,255,255,0.15)" : "#e2e8f0")),
+                    background: step === s ? "#2c5e4c" : (step > s ? "#40916c" : (isDark ? "rgba(255,255,255,0.12)" : "#dce2de")),
                     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                   }}
                 />
@@ -387,6 +376,9 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
               Étape {step} sur 6
             </span>
           </div>
+          <span style={{ fontSize: "11px", color: textSub, letterSpacing: "0.4px" }}>
+            GeoProspect
+          </span>
         </div>
 
         {/* Étape 1 */}
@@ -429,6 +421,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
         {step === 3 && (
           <OnboardingStep3Auth
             isDark={isDark}
+            cardBg={cardBg}
             cardBorder={cardBorder}
             textMain={textMain}
             textSub={textSub}

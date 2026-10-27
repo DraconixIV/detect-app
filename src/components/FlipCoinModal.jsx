@@ -34,11 +34,12 @@ export default function FlipCoinModal({
   if (!isOpen || !find) return null;
 
   const isLight = theme === "light";
-  const bgModal = isLight ? "#ffffff" : "#0f172a";
-  const textMain = isLight ? "#000000" : "#ffffff";
-  const textSub = isLight ? "#1e293b" : "#ffffff";
-  const cardBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.12)";
-  const inputBg = isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.05)";
+  const bgModal = isLight ? "#f3f4f2" : "#111915";
+  const sheetBg = isLight ? "#ffffff" : "#19231e";
+  const inputBg = isLight ? "#f3f4f2" : "#111915";
+  const cardBorder = isLight ? "#eef0ed" : "rgba(255, 255, 255, 0.08)";
+  const textMain = isLight ? "#1f2924" : "#f1f5f2";
+  const textSub = isLight ? "#5c6b63" : "#9aa8a0";
 
   const handleFileUpload = (e, setTargetUrl) => {
     const file = e.target.files?.[0];
@@ -69,7 +70,6 @@ export default function FlipCoinModal({
     onClose();
   };
 
-  // Collect all available photo URLs for this find
   const candidatePhotos = [];
   if (find.offlinePhoto) candidatePhotos.push(find.offlinePhoto);
   if (find.image_url && !candidatePhotos.includes(find.image_url)) candidatePhotos.push(find.image_url);
@@ -86,18 +86,17 @@ export default function FlipCoinModal({
         position: "fixed",
         inset: 0,
         zIndex: 100000,
-        background: "rgba(0, 0, 0, 0.85)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
+        background: "rgba(8, 14, 11, 0.8)",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "16px",
-        fontFamily: "system-ui, -apple-system, sans-serif"
+        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
       }}
       onClick={onClose}
     >
-      {/* Hidden file inputs for Avers */}
       <input
         type="file"
         accept="image/*"
@@ -113,8 +112,6 @@ export default function FlipCoinModal({
         style={{ display: "none" }}
         onChange={(e) => handleFileUpload(e, setAversUrl)}
       />
-
-      {/* Hidden file inputs for Revers */}
       <input
         type="file"
         accept="image/*"
@@ -134,43 +131,49 @@ export default function FlipCoinModal({
       <div
         style={{
           width: "100%",
-          maxWidth: "500px",
+          maxWidth: "480px",
           maxHeight: "90vh",
           overflowY: "auto",
           background: bgModal,
-          borderRadius: "24px",
+          borderRadius: "20px",
           border: `1px solid ${cardBorder}`,
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8)",
-          padding: "22px",
+          boxShadow: "0 24px 48px rgba(0, 0, 0, 0.5)",
           color: textMain,
           boxSizing: "border-box",
           display: "flex",
           flexDirection: "column",
-          gap: "16px"
+          overflow: "hidden"
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        {/* Header */}
+        <div
+          style={{
+            background: "#2c5e4c",
+            padding: "16px 20px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between"
+          }}
+        >
           <div>
-            <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "400", color: "#ffffff", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>🪙</span> Configuration de la vue 3D
+            <h2 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: "#ffffff" }}>
+              Configuration de la vue 3D
             </h2>
-            <p style={{ margin: "4px 0 0 0", fontSize: "12px", color: textSub }}>
-              Sélectionnez les 2 faces de <strong>{find.title || "votre objet"}</strong> pour créer la vue rotative.
+            <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: "rgba(255,255,255,0.75)" }}>
+              {find.title || "Objet"}
             </p>
           </div>
           <button
             onClick={onClose}
             style={{
-              background: "rgba(255, 255, 255, 0.1)",
+              background: "rgba(255, 255, 255, 0.14)",
               border: "none",
               borderRadius: "50%",
-              width: "32px",
-              height: "32px",
+              width: "28px",
+              height: "28px",
               color: "#ffffff",
-              fontSize: "14px",
-              fontWeight: "400",
+              fontSize: "13px",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
@@ -181,388 +184,353 @@ export default function FlipCoinModal({
           </button>
         </div>
 
-        {/* 3D Coin Live Preview */}
-        <div
-          style={{
-            background: isLight ? "#f1f5f9" : "rgba(0, 0, 0, 0.35)",
-            borderRadius: "18px",
-            border: `1px solid ${cardBorder}`,
-            padding: "16px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <div style={{ fontSize: "11px", fontWeight: "400", textTransform: "uppercase", letterSpacing: "1px", color: "#facc15", marginBottom: "8px" }}>
-            Aperçu 3D interactif (Tapez pour tourner)
-          </div>
-
-          <style>{`
-            .modal-coin-3d {
-              perspective: 1000px;
-              width: 150px;
-              height: 150px;
-              cursor: pointer;
-              margin: 6px auto;
-            }
-            .modal-coin-inner {
-              position: relative;
-              width: 100%;
-              height: 100%;
-              transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-              transform-style: preserve-3d;
-            }
-            .modal-coin-3d.flipped .modal-coin-inner {
-              transform: rotateY(180deg);
-            }
-            .modal-coin-front, .modal-coin-back {
-              position: absolute;
-              width: 100%;
-              height: 100%;
-              -webkit-backface-visibility: hidden;
-              backface-visibility: hidden;
-              border-radius: 50%;
-              overflow: hidden;
-              border: 3px solid #facc15;
-              box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-            }
-            .modal-coin-back {
-              transform: rotateY(180deg);
-            }
-            .modal-coin-front img, .modal-coin-back img {
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-            }
-            .modal-coin-placeholder {
-              width: 100%;
-              height: 100%;
-              background: linear-gradient(135deg, #1e293b, #0f172a);
-              display: flex;
-              flex-direction: column;
-              alignItems: center;
-              justifyContent: center;
-              color: #facc15;
-              font-size: 11px;
-              font-weight: 400;
-              text-align: center;
-              padding: 10px;
-              box-sizing: border-box;
-            }
-          `}</style>
-
-          <div
-            className={`modal-coin-3d ${isFlipped ? "flipped" : ""}`}
-            onClick={() => setIsFlipped(!isFlipped)}
-          >
-            <div className="modal-coin-inner">
-              <div className="modal-coin-front">
-                {aversUrl ? (
-                  <img src={aversUrl} alt="Avers" />
-                ) : (
-                  <div className="modal-coin-placeholder">
-                    <span style={{ fontSize: "24px", marginBottom: "4px" }}>🪙</span>
-                    <span>1. Avers</span>
-                    <span style={{ fontSize: "9px", opacity: 0.8 }}>(Face avant)</span>
-                  </div>
-                )}
-              </div>
-              <div className="modal-coin-back">
-                {reversUrl ? (
-                  <img src={reversUrl} alt="Revers" />
-                ) : (
-                  <div className="modal-coin-placeholder">
-                    <span style={{ fontSize: "24px", marginBottom: "4px" }}>🔄</span>
-                    <span>2. Revers</span>
-                    <span style={{ fontSize: "9px", opacity: 0.8 }}>(Face arrière)</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div style={{ fontSize: "11px", color: textSub, marginTop: "6px" }}>
-            Face visible actuelle : <strong>{isFlipped ? "Revers (Face arrière)" : "Avers (Face avant)"}</strong>
-          </div>
-        </div>
-
-        {/* 2 SIDES CONFIGURATION SECTION */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-          {/* AVERS CARD */}
+        <div style={{ padding: "18px 20px", display: "flex", flexDirection: "column", gap: "14px" }}>
+          {/* 3D Coin Live Preview */}
           <div
             style={{
-              background: inputBg,
-              border: `1px solid ${aversUrl ? "#facc15" : cardBorder}`,
+              background: sheetBg,
               borderRadius: "16px",
-              padding: "12px",
+              border: `1px solid ${cardBorder}`,
+              padding: "16px",
               display: "flex",
               flexDirection: "column",
-              gap: "8px"
-            }}
-          >
-            <div style={{ fontSize: "12px", fontWeight: "400", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span>1. Avers (Avant)</span>
-              {aversUrl && <span style={{ color: "#10b981", fontSize: "11px" }}>✓ Choisi</span>}
-            </div>
-
-            {aversUrl ? (
-              <div style={{ position: "relative", width: "100%", height: "90px", borderRadius: "10px", overflow: "hidden", border: `1px solid ${cardBorder}` }}>
-                <img src={aversUrl} alt="Avers" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                <button
-                  onClick={() => setAversUrl("")}
-                  style={{
-                    position: "absolute",
-                    top: "4px",
-                    right: "4px",
-                    background: "rgba(239, 68, 68, 0.9)",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "6px",
-                    padding: "2px 6px",
-                    fontSize: "10px",
-                    fontWeight: "400",
-                    cursor: "pointer"
-                  }}
-                >
-                  ✕
-                </button>
-              </div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                <button
-                  type="button"
-                  onClick={() => aversCameraRef.current?.click()}
-                  style={{
-                    padding: "8px 6px",
-                    borderRadius: "10px",
-                    border: "none",
-                    background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
-                    color: "white",
-                    fontSize: "11px",
-                    fontWeight: "400",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "4px"
-                  }}
-                >
-                  <span>📷</span>
-                  <span>Photo Avers</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => aversGalleryRef.current?.click()}
-                  style={{
-                    padding: "8px 6px",
-                    borderRadius: "10px",
-                    border: `1px solid ${cardBorder}`,
-                    background: "rgba(255,255,255,0.08)",
-                    color: "#ffffff",
-                    fontSize: "11px",
-                    fontWeight: "400",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "4px"
-                  }}
-                >
-                  <span>🖼️</span>
-                  <span>Galerie Avers</span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* REVERS CARD */}
-          <div
-            style={{
-              background: inputBg,
-              border: `1px solid ${reversUrl ? "#facc15" : cardBorder}`,
-              borderRadius: "16px",
-              padding: "12px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px"
-            }}
-          >
-            <div style={{ fontSize: "12px", fontWeight: "400", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span>2. Revers (Arrière)</span>
-              {reversUrl && <span style={{ color: "#10b981", fontSize: "11px" }}>✓ Choisi</span>}
-            </div>
-
-            {reversUrl ? (
-              <div style={{ position: "relative", width: "100%", height: "90px", borderRadius: "10px", overflow: "hidden", border: `1px solid ${cardBorder}` }}>
-                <img src={reversUrl} alt="Revers" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                <button
-                  onClick={() => setReversUrl("")}
-                  style={{
-                    position: "absolute",
-                    top: "4px",
-                    right: "4px",
-                    background: "rgba(239, 68, 68, 0.9)",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "6px",
-                    padding: "2px 6px",
-                    fontSize: "10px",
-                    fontWeight: "400",
-                    cursor: "pointer"
-                  }}
-                >
-                  ✕
-                </button>
-              </div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                <button
-                  type="button"
-                  onClick={() => reversCameraRef.current?.click()}
-                  style={{
-                    padding: "8px 6px",
-                    borderRadius: "10px",
-                    border: "none",
-                    background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
-                    color: "white",
-                    fontSize: "11px",
-                    fontWeight: "400",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "4px"
-                  }}
-                >
-                  <span>📷</span>
-                  <span>Photo Revers</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => reversGalleryRef.current?.click()}
-                  style={{
-                    padding: "8px 6px",
-                    borderRadius: "10px",
-                    border: `1px solid ${cardBorder}`,
-                    background: "rgba(255,255,255,0.08)",
-                    color: "#ffffff",
-                    fontSize: "11px",
-                    fontWeight: "400",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "4px"
-                  }}
-                >
-                  <span>🖼️</span>
-                  <span>Galerie Revers</span>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Existing photos quick selector */}
-        {candidatePhotos.length > 0 && (
-          <div>
-            <div style={{ fontSize: "11px", fontWeight: "400", color: "#ffffff", marginBottom: "6px" }}>
-              Ou assigner depuis les photos existantes de l'objet :
-            </div>
-            <div style={{ display: "flex", gap: "8px", overflowX: "auto", paddingBottom: "4px" }}>
-              {candidatePhotos.map((url, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    flex: "0 0 70px",
-                    height: "70px",
-                    borderRadius: "10px",
-                    overflow: "hidden",
-                    border: `1px solid ${cardBorder}`,
-                    position: "relative"
-                  }}
-                >
-                  <img src={url} alt="existing" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "2px" }}>
-                    <button
-                      onClick={() => setAversUrl(url)}
-                      style={{ background: "#2563eb", color: "white", border: "none", borderRadius: "4px", fontSize: "9px", fontWeight: "400", cursor: "pointer", padding: "2px" }}
-                    >
-                      + Avers
-                    </button>
-                    <button
-                      onClick={() => setReversUrl(url)}
-                      style={{ background: "#059669", color: "white", border: "none", borderRadius: "4px", fontSize: "9px", fontWeight: "400", cursor: "pointer", padding: "2px" }}
-                    >
-                      + Revers
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Bottom Actions */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" }}>
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={!aversUrl || !reversUrl}
-            style={{
-              width: "100%",
-              padding: "14px",
-              borderRadius: "14px",
-              border: "none",
-              background: !aversUrl || !reversUrl
-                ? "rgba(255, 255, 255, 0.1)"
-                : "linear-gradient(135deg, #10b981, #059669)",
-              color: !aversUrl || !reversUrl ? "rgba(255,255,255,0.4)" : "#ffffff",
-              fontSize: "14px",
-              fontWeight: "400",
-              cursor: !aversUrl || !reversUrl ? "not-allowed" : "pointer",
-              boxShadow: !aversUrl || !reversUrl ? "none" : "0 4px 14px rgba(16, 185, 129, 0.35)",
-              display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              gap: "8px"
+              justifyContent: "center"
             }}
           >
-            <span>✨</span>
-            <span>Activer le Flip Coin 3D</span>
-          </button>
+            <div style={{ fontSize: "11px", fontWeight: "400", textTransform: "uppercase", letterSpacing: "0.5px", color: textSub, marginBottom: "8px" }}>
+              Aperçu rotatif (toucher pour retourner)
+            </div>
 
-          {currentFlipCoin && (
-            <button
-              type="button"
-              onClick={handleDelete}
+            <style>{`
+              .modal-coin-3d {
+                perspective: 1000px;
+                width: 140px;
+                height: 140px;
+                cursor: pointer;
+                margin: 6px auto;
+              }
+              .modal-coin-inner {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+                transform-style: preserve-3d;
+              }
+              .modal-coin-3d.flipped .modal-coin-inner {
+                transform: rotateY(180deg);
+              }
+              .modal-coin-front, .modal-coin-back {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
+                border-radius: 50%;
+                overflow: hidden;
+                border: 2px solid #2c5e4c;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+              }
+              .modal-coin-back {
+                transform: rotateY(180deg);
+              }
+              .modal-coin-front img, .modal-coin-back img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+              }
+              .modal-coin-placeholder {
+                width: 100%;
+                height: 100%;
+                background: ${inputBg};
+                display: flex;
+                flex-direction: column;
+                alignItems: center;
+                justifyContent: center;
+                color: ${textSub};
+                font-size: 11px;
+                font-weight: 400;
+                text-align: center;
+                padding: 10px;
+                box-sizing: border-box;
+              }
+            `}</style>
+
+            <div
+              className={`modal-coin-3d ${isFlipped ? "flipped" : ""}`}
+              onClick={() => setIsFlipped(!isFlipped)}
+            >
+              <div className="modal-coin-inner">
+                <div className="modal-coin-front">
+                  {aversUrl ? (
+                    <img src={aversUrl} alt="Avers" />
+                  ) : (
+                    <div className="modal-coin-placeholder">
+                      <span>Face 1 : Avers</span>
+                    </div>
+                  )}
+                </div>
+                <div className="modal-coin-back">
+                  {reversUrl ? (
+                    <img src={reversUrl} alt="Revers" />
+                  ) : (
+                    <div className="modal-coin-placeholder">
+                      <span>Face 2 : Revers</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ fontSize: "11px", color: textSub, marginTop: "6px" }}>
+              Face visible : {isFlipped ? "Revers" : "Avers"}
+            </div>
+          </div>
+
+          {/* 2 SIDES CONFIGURATION SECTION */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+            {/* AVERS */}
+            <div
               style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "12px",
-                border: "1px solid rgba(239, 68, 68, 0.4)",
-                background: "rgba(239, 68, 68, 0.15)",
-                color: "#ef4444",
-                fontSize: "12px",
-                fontWeight: "400",
-                cursor: "pointer"
+                background: sheetBg,
+                border: `1px solid ${aversUrl ? "#2c5e4c" : cardBorder}`,
+                borderRadius: "14px",
+                padding: "12px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px"
               }}
             >
-              🗑️ Supprimer le Flip Coin 3D
-            </button>
+              <div style={{ fontSize: "12px", fontWeight: "400", color: textMain, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span>Face 1 : Avers</span>
+                {aversUrl && <span style={{ color: "#40916c", fontSize: "11px" }}>✓</span>}
+              </div>
+
+              {aversUrl ? (
+                <div style={{ position: "relative", width: "100%", height: "85px", borderRadius: "8px", overflow: "hidden", border: `1px solid ${cardBorder}` }}>
+                  <img src={aversUrl} alt="Avers" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <button
+                    onClick={() => setAversUrl("")}
+                    style={{
+                      position: "absolute",
+                      top: "4px",
+                      right: "4px",
+                      background: "rgba(0, 0, 0, 0.6)",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      padding: "2px 6px",
+                      fontSize: "10px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <button
+                    type="button"
+                    onClick={() => aversCameraRef.current?.click()}
+                    style={{
+                      padding: "8px",
+                      borderRadius: "8px",
+                      border: "none",
+                      background: "#2c5e4c",
+                      color: "white",
+                      fontSize: "11px",
+                      fontWeight: "400",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Photo
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => aversGalleryRef.current?.click()}
+                    style={{
+                      padding: "8px",
+                      borderRadius: "8px",
+                      border: `1px solid ${cardBorder}`,
+                      background: inputBg,
+                      color: textMain,
+                      fontSize: "11px",
+                      fontWeight: "400",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Galerie
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* REVERS */}
+            <div
+              style={{
+                background: sheetBg,
+                border: `1px solid ${reversUrl ? "#2c5e4c" : cardBorder}`,
+                borderRadius: "14px",
+                padding: "12px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px"
+              }}
+            >
+              <div style={{ fontSize: "12px", fontWeight: "400", color: textMain, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span>Face 2 : Revers</span>
+                {reversUrl && <span style={{ color: "#40916c", fontSize: "11px" }}>✓</span>}
+              </div>
+
+              {reversUrl ? (
+                <div style={{ position: "relative", width: "100%", height: "85px", borderRadius: "8px", overflow: "hidden", border: `1px solid ${cardBorder}` }}>
+                  <img src={reversUrl} alt="Revers" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <button
+                    onClick={() => setReversUrl("")}
+                    style={{
+                      position: "absolute",
+                      top: "4px",
+                      right: "4px",
+                      background: "rgba(0, 0, 0, 0.6)",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      padding: "2px 6px",
+                      fontSize: "10px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <button
+                    type="button"
+                    onClick={() => reversCameraRef.current?.click()}
+                    style={{
+                      padding: "8px",
+                      borderRadius: "8px",
+                      border: "none",
+                      background: "#2c5e4c",
+                      color: "white",
+                      fontSize: "11px",
+                      fontWeight: "400",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Photo
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => reversGalleryRef.current?.click()}
+                    style={{
+                      padding: "8px",
+                      borderRadius: "8px",
+                      border: `1px solid ${cardBorder}`,
+                      background: inputBg,
+                      color: textMain,
+                      fontSize: "11px",
+                      fontWeight: "400",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Galerie
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Existing photos quick selector */}
+          {candidatePhotos.length > 0 && (
+            <div>
+              <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
+                Ou sélectionner depuis les photos existantes :
+              </div>
+              <div style={{ display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "4px" }}>
+                {candidatePhotos.map((url, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      flex: "0 0 64px",
+                      height: "64px",
+                      borderRadius: "8px",
+                      overflow: "hidden",
+                      border: `1px solid ${cardBorder}`,
+                      position: "relative"
+                    }}
+                  >
+                    <img src={url} alt="existing" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "2px" }}>
+                      <button
+                        onClick={() => setAversUrl(url)}
+                        style={{ background: "#2c5e4c", color: "white", border: "none", borderRadius: "4px", fontSize: "9px", cursor: "pointer", padding: "2px" }}
+                      >
+                        Avers
+                      </button>
+                      <button
+                        onClick={() => setReversUrl(url)}
+                        style={{ background: "#40916c", color: "white", border: "none", borderRadius: "4px", fontSize: "9px", cursor: "pointer", padding: "2px" }}
+                      >
+                        Revers
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
+
+          {/* Actions */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" }}>
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={!aversUrl || !reversUrl}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "10px",
+                border: "none",
+                background: !aversUrl || !reversUrl ? (isLight ? "#dce2de" : "rgba(255,255,255,0.08)") : "#2c5e4c",
+                color: !aversUrl || !reversUrl ? textSub : "#ffffff",
+                fontSize: "13px",
+                fontWeight: "400",
+                cursor: !aversUrl || !reversUrl ? "not-allowed" : "pointer"
+              }}
+            >
+              Enregistrer la vue 3D
+            </button>
+
+            {currentFlipCoin && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                style={{
+                  width: "100%",
+                  padding: "9px",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: "rgba(220, 38, 38, 0.12)",
+                  color: "#dc2626",
+                  fontSize: "12px",
+                  fontWeight: "400",
+                  cursor: "pointer"
+                }}
+              >
+                Supprimer la vue 3D
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       {showDeleteConfirm && (
         <ConfirmModal
           title="Supprimer la vue 3D"
-          icon="🪙"
-          confirmColor="#ef4444"
-          message="Voulez-vous supprimer la vue 3D Flip Coin pour cette trouvaille ?"
+          confirmColor="#dc2626"
+          message="Voulez-vous supprimer la vue 3D pour cette trouvaille ?"
           confirmText="Supprimer"
           cancelText="Annuler"
           onConfirm={handleConfirmDelete}

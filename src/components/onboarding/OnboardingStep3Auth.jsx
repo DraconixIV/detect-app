@@ -3,6 +3,7 @@ import AuthForm from "../AuthForm";
 
 export default function OnboardingStep3Auth({
   isDark,
+  cardBg,
   cardBorder,
   textMain,
   textSub,
@@ -12,11 +13,13 @@ export default function OnboardingStep3Auth({
   onBack,
   onNext
 }) {
+  const sheetBg = cardBg || (isDark ? "#19231e" : "#ffffff");
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       <div>
-        <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "400", color: textMain, letterSpacing: "-0.5px" }}>
-          Votre espace prospecteur 👤
+        <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", fontWeight: "400", color: textMain, letterSpacing: "-0.3px" }}>
+          Votre espace prospecteur
         </h1>
         <p style={{ margin: 0, fontSize: "13px", color: textSub, lineHeight: "1.5" }}>
           Connectez-vous pour synchroniser vos trouvailles sur tous vos appareils, ou continuez en local.
@@ -26,8 +29,8 @@ export default function OnboardingStep3Auth({
       {user ? (
         <div
           style={{
-            background: isDark ? "rgba(16, 185, 129, 0.15)" : "#ecfdf5",
-            border: isDark ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid #a7f3d0",
+            background: sheetBg,
+            border: `1px solid ${cardBorder}`,
             borderRadius: "16px",
             padding: "18px",
             display: "flex",
@@ -38,25 +41,25 @@ export default function OnboardingStep3Auth({
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div
               style={{
-                width: "40px",
-                height: "40px",
+                width: "38px",
+                height: "38px",
                 borderRadius: "50%",
-                background: "#10b981",
+                background: "#2c5e4c",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "white",
+                color: "#ffffff",
                 fontWeight: "400",
-                fontSize: "18px"
+                fontSize: "16px"
               }}
             >
               ✓
             </div>
             <div>
-              <div style={{ fontSize: "14px", fontWeight: "400", color: isDark ? "#34d399" : "#065f46" }}>
+              <div style={{ fontSize: "14px", fontWeight: "400", color: textMain }}>
                 Connecté avec succès
               </div>
-              <div style={{ fontSize: "13px", color: isDark ? "#a7f3d0" : "#047857" }}>
+              <div style={{ fontSize: "12px", color: textSub }}>
                 {user.email}
               </div>
             </div>
@@ -70,19 +73,25 @@ export default function OnboardingStep3Auth({
               padding: "13px",
               borderRadius: "12px",
               border: "none",
-              background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-              color: "white",
+              background: "#2c5e4c",
+              color: "#ffffff",
               fontSize: "14px",
               fontWeight: "400",
-              cursor: "pointer",
-              boxShadow: "0 2px 10px rgba(37, 99, 235, 0.25)"
+              cursor: "pointer"
             }}
           >
-            Continuer vers l'étape 4 →
+            Continuer vers l'étape 4
           </button>
         </div>
       ) : (
-        <div>
+        <div
+          style={{
+            background: sheetBg,
+            border: `1px solid ${cardBorder}`,
+            borderRadius: "16px",
+            padding: "16px"
+          }}
+        >
           <AuthForm
             theme={selectedAppTheme}
             onAuthSuccess={(u) => {
@@ -92,7 +101,7 @@ export default function OnboardingStep3Auth({
             showGoogleOption={true}
           />
 
-          <div style={{ textAlign: "center", marginTop: "16px" }}>
+          <div style={{ textAlign: "center", marginTop: "14px", paddingTop: "12px", borderTop: `1px solid ${cardBorder}` }}>
             <button
               type="button"
               onClick={onNext}
@@ -100,17 +109,15 @@ export default function OnboardingStep3Auth({
                 background: "none",
                 border: "none",
                 color: textSub,
-                fontSize: "13px",
+                fontSize: "12px",
                 fontWeight: "400",
                 cursor: "pointer",
-                padding: "6px 10px",
+                padding: "4px 10px",
                 textDecoration: "underline",
                 transition: "color 0.2s"
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = textMain)}
-              onMouseLeave={(e) => (e.currentTarget.style.color = textSub)}
             >
-              Continuer vers l'étape 4 (mode local) →
+              Continuer sans compte (mode local)
             </button>
           </div>
         </div>
@@ -122,16 +129,16 @@ export default function OnboardingStep3Auth({
           onClick={onBack}
           style={{
             padding: "11px 16px",
-            borderRadius: "10px",
+            borderRadius: "12px",
             border: `1px solid ${cardBorder}`,
-            background: isDark ? "#1e293b" : "#ffffff",
+            background: sheetBg,
             color: textSub,
             fontSize: "12px",
             fontWeight: "400",
             cursor: "pointer"
           }}
         >
-          ← Retour au cadre légal
+          Retour au cadre légal
         </button>
       </div>
     </div>

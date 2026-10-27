@@ -11,11 +11,11 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
   if (!isOpen) return null;
 
   const isLight = theme === "light";
-  const bgModal = isLight ? "#ffffff" : "#0f172a";
-  const textMain = isLight ? "#0f172a" : "#ffffff";
-  const textSub = isLight ? "#475569" : "#94a3b8";
-  const cardBg = isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.04)";
-  const cardBorder = isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.12)";
+  const bgModal = isLight ? "#f3f4f2" : "#111915";
+  const sheetBg = isLight ? "#ffffff" : "#19231e";
+  const cardBorder = isLight ? "#eef0ed" : "rgba(255, 255, 255, 0.08)";
+  const textMain = isLight ? "#1f2924" : "#f1f5f2";
+  const textSub = isLight ? "#5c6b63" : "#9aa8a0";
 
   const handleClose = () => {
     markUpdateAsSeen();
@@ -35,14 +35,13 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
         position: "fixed",
         inset: 0,
         zIndex: 9999,
-        background: "rgba(0, 0, 0, 0.75)",
-        backdropFilter: "blur(8px)",
-        WebkitBackdropFilter: "blur(8px)",
+        background: "rgba(8, 14, 11, 0.8)",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "16px",
-        animation: "fadeIn 0.2s ease"
+        padding: "16px"
       }}
       onClick={handleClose}
     >
@@ -52,9 +51,9 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
           maxWidth: "480px",
           maxHeight: "85vh",
           background: bgModal,
-          borderRadius: "24px",
+          borderRadius: "20px",
           border: `1px solid ${cardBorder}`,
-          boxShadow: isLight ? "0 20px 40px rgba(0,0,0,0.15)" : "0 25px 60px rgba(0,0,0,0.8)",
+          boxShadow: "0 24px 48px rgba(0,0,0,0.5)",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden"
@@ -64,37 +63,35 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
         {/* Header */}
         <div
           style={{
+            background: "#2c5e4c",
             padding: "16px 20px",
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
-            borderBottom: `1px solid ${cardBorder}`
+            justifyContent: "space-between"
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div>
-              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: textMain }}>
-                Mises à jour
-              </h3>
-              <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
-                Dernières évolutions de GeoProspect
-              </p>
-            </div>
+          <div>
+            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: "#ffffff" }}>
+              Mises à jour
+            </h3>
+            <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: "rgba(255,255,255,0.75)" }}>
+              Dernières évolutions de GeoProspect
+            </p>
           </div>
           <button
             type="button"
             onClick={handleClose}
             style={{
-              background: isLight ? "#f1f5f9" : "rgba(255,255,255,0.1)",
+              background: "rgba(255,255,255,0.14)",
               border: "none",
               borderRadius: "50%",
-              width: "32px",
-              height: "32px",
+              width: "28px",
+              height: "28px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: textMain,
-              fontSize: "14px",
+              color: "#ffffff",
+              fontSize: "13px",
               cursor: "pointer"
             }}
           >
@@ -102,36 +99,33 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
           </button>
         </div>
 
-        {/* Centered Action banner to test feedback */}
+        {/* Feedback prompt banner */}
         <div
           style={{
-            padding: "14px 18px",
-            background: "linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(56, 189, 248, 0.08))",
+            padding: "12px 18px",
+            background: sheetBg,
             borderBottom: `1px solid ${cardBorder}`,
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
+            justifyContent: "space-between",
             gap: "10px"
           }}
         >
-          <div style={{ fontSize: "12.5px", color: textMain, fontWeight: "400", textAlign: "center" }}>
-            Une idée ou un bug à signaler ?
+          <div style={{ fontSize: "12px", color: textMain, fontWeight: "400" }}>
+            Une idée ou un problème à signaler ?
           </div>
           <button
             type="button"
             onClick={handleFeedbackClick}
             style={{
-              padding: "7px 16px",
-              borderRadius: "10px",
-              background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+              padding: "7px 14px",
+              borderRadius: "999px",
+              background: "#2c5e4c",
               border: "none",
               color: "#ffffff",
-              fontSize: "12px",
+              fontSize: "11px",
               fontWeight: "400",
-              cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)"
+              cursor: "pointer"
             }}
           >
             Formulaire de retour
@@ -141,48 +135,48 @@ export default function NewsModal({ isOpen, onClose, onOpenFeedback, theme = "da
         {/* Content list */}
         <div
           style={{
-            padding: "18px 20px",
+            padding: "16px 18px",
             overflowY: "auto",
             display: "flex",
             flexDirection: "column",
-            gap: "14px"
+            gap: "12px"
           }}
         >
           {APP_RELEASES.filter((r) => r.id === "1.4.0").map((item) => (
             <div
               key={item.id}
               style={{
-                padding: "16px",
-                borderRadius: "18px",
-                background: cardBg,
+                padding: "14px 16px",
+                borderRadius: "16px",
+                background: sheetBg,
                 border: `1px solid ${cardBorder}`,
                 display: "flex",
                 flexDirection: "column",
-                gap: "10px"
+                gap: "8px"
               }}
             >
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <span style={{ fontSize: "12px", fontWeight: "400", color: textMain }}>
                   {item.version}
                 </span>
-                <span style={{ fontSize: "11px", color: textSub, fontWeight: "400"}}>{item.date}</span>
+                <span style={{ fontSize: "11px", color: textSub, fontWeight: "400" }}>{item.date}</span>
               </div>
 
-              <div style={{ fontSize: "14px", fontWeight: "400", color: textMain }}>
+              <div style={{ fontSize: "13px", fontWeight: "400", color: textMain }}>
                 {item.title}
               </div>
 
               {item.highlights && item.highlights.length > 0 && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "2px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "2px" }}>
                   {item.highlights.map((h, i) => (
                     <div
                       key={i}
                       style={{
-                        fontSize: "12.5px",
-                        color: isLight ? "#1e293b" : "#e2e8f0",
+                        fontSize: "12px",
+                        color: textSub,
                         display: "flex",
                         alignItems: "flex-start",
-                        gap: "8px",
+                        gap: "6px",
                         lineHeight: "1.45"
                       }}
                     >

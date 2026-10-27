@@ -36,7 +36,6 @@ export default function CropperModal({
     setImgDims({ w, h });
   };
 
-  // Constrain position when zoom or image dimensions change
   useEffect(() => {
     const maxPosX = (imgDims.w * zoom) / 2 - 100;
     const minPosX = 100 - (imgDims.w * zoom) / 2;
@@ -47,7 +46,6 @@ export default function CropperModal({
     setPosY((y) => (maxPosY > minPosY ? Math.max(minPosY, Math.min(maxPosY, y)) : 0));
   }, [zoom, imgDims]);
 
-  // Mouse / Touch drag handlers
   const handleStart = (e) => {
     isDragging.current = true;
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -83,7 +81,6 @@ export default function CropperModal({
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
-    // HD Crop square size
     canvas.width = 500;
     canvas.height = 500;
 
@@ -91,22 +88,14 @@ export default function CropperModal({
     img.crossOrigin = "anonymous";
     img.onload = () => {
       ctx.clearRect(0, 0, 500, 500);
-      
-      // Save state
       ctx.save();
-      
-      // Translate to center of canvas
       ctx.translate(250, 250);
       
-      // Apply translation in unrotated and unscaled coordinates
       const scaleFactor = 500 / 300;
       ctx.translate(posX * scaleFactor, posY * scaleFactor);
-
-      // Rotate and scale
       ctx.rotate((rotation * Math.PI) / 180);
       ctx.scale(zoom, zoom);
 
-      // Determine dimensions to fill viewport (cover mode)
       const imgRatio = img.width / img.height;
       let drawW, drawH;
       if (imgRatio > 1) {
@@ -142,13 +131,15 @@ export default function CropperModal({
         left: 0,
         width: "100vw",
         height: "100vh",
-        background: "rgba(0,0,0,0.9)",
+        background: "rgba(8, 14, 11, 0.82)",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
         zIndex: 9999999,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        fontFamily: "system-ui, sans-serif",
+        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         padding: "16px",
         boxSizing: "border-box"
       }}
@@ -156,30 +147,30 @@ export default function CropperModal({
     >
       <div
         style={{
-          background: "#111827",
-          border: "1px solid rgba(255,255,255,0.12)",
-          borderRadius: "24px",
+          background: "#19231e",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: "20px",
           width: "100%",
-          maxWidth: "400px",
+          maxWidth: "380px",
           padding: "20px",
           boxSizing: "border-box",
           display: "flex",
           flexDirection: "column",
-          gap: "16px",
-          boxShadow: "0 12px 36px rgba(0,0,0,0.5)"
+          gap: "14px",
+          boxShadow: "0 24px 48px rgba(0,0,0,0.5)"
         }}
       >
         {/* Title */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h4 style={{ margin: 0, color: "white", fontSize: "15px", fontWeight: "400"}}>
-            📐 Centrer et aligner la trouvaille
+          <h4 style={{ margin: 0, color: "#f1f5f2", fontSize: "15px", fontWeight: "400" }}>
+            Centrer et aligner la photo
           </h4>
           <button
             onClick={onClose}
             style={{
-              background: "rgba(255,255,255,0.1)",
+              background: "rgba(255,255,255,0.08)",
               border: "none",
-              color: "white",
+              color: "#9aa8a0",
               width: "28px",
               height: "28px",
               borderRadius: "50%",
@@ -195,12 +186,12 @@ export default function CropperModal({
         <div
           ref={containerRef}
           style={{
-            width: "300px",
-            height: "300px",
+            width: "280px",
+            height: "280px",
             position: "relative",
             overflow: "hidden",
-            borderRadius: "16px",
-            background: "#000",
+            borderRadius: "14px",
+            background: "#111915",
             cursor: "move",
             alignSelf: "center",
             touchAction: "none"
@@ -213,7 +204,6 @@ export default function CropperModal({
           onTouchMove={handleMove}
           onTouchEnd={handleEnd}
         >
-          {/* Image to crop */}
           <img
             src={displaySrc}
             crossOrigin="anonymous"
@@ -230,66 +220,71 @@ export default function CropperModal({
             }}
           />
 
-          {/* Glowing Cutout Mask */}
           <div
             style={{
               position: "absolute",
-              top: "50px",
-              left: "50px",
+              top: "40px",
+              left: "40px",
               width: "200px",
               height: "200px",
               borderRadius: maskShape === "circle" ? "50%" : "12px",
-              boxShadow: "0 0 0 9999px rgba(17, 24, 39, 0.75)",
-              border: "2px solid #60a5fa",
+              boxShadow: "0 0 0 9999px rgba(17, 25, 21, 0.75)",
+              border: "1.5px solid #40916c",
               pointerEvents: "none",
               boxSizing: "border-box"
             }}
           />
         </div>
 
-        {/* Control Tools */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          
+        {/* Controls */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {/* Mask Shape Toggle */}
-          <div style={{ display: "flex", gap: "8px" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              background: "#111915",
+              padding: "3px",
+              borderRadius: "999px",
+              border: "1px solid rgba(255,255,255,0.08)"
+            }}
+          >
             <button
               onClick={() => setMaskShape("circle")}
               style={{
-                flex: 1,
-                padding: "8px",
-                borderRadius: "10px",
+                padding: "6px 8px",
+                borderRadius: "999px",
                 border: "none",
-                background: maskShape === "circle" ? "#2563eb" : "rgba(255,255,255,0.06)",
-                color: "white",
+                background: maskShape === "circle" ? "#2c5e4c" : "transparent",
+                color: maskShape === "circle" ? "#ffffff" : "#9aa8a0",
                 fontSize: "11px",
                 fontWeight: "400",
                 cursor: "pointer"
               }}
             >
-              ⚪ Pièce (Ronde)
+              Ronde (Monnaie)
             </button>
             <button
               onClick={() => setMaskShape("rect")}
               style={{
-                flex: 1,
-                padding: "8px",
-                borderRadius: "10px",
+                padding: "6px 8px",
+                borderRadius: "999px",
                 border: "none",
-                background: maskShape === "rect" ? "#2563eb" : "rgba(255,255,255,0.06)",
-                color: "white",
+                background: maskShape === "rect" ? "#2c5e4c" : "transparent",
+                color: maskShape === "rect" ? "#ffffff" : "#9aa8a0",
                 fontSize: "11px",
                 fontWeight: "400",
                 cursor: "pointer"
               }}
             >
-              ⬜ Objet / Carré / Boucle
+              Carrée (Objet)
             </button>
           </div>
 
           {/* Zoom Slider */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#9ca3af" }}>
-              <span>🔍 Zoom :</span>
+          <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#9aa8a0" }}>
+              <span>Zoom</span>
               <span>{zoom.toFixed(1)}x</span>
             </div>
             <input
@@ -299,14 +294,14 @@ export default function CropperModal({
               step="0.1"
               value={zoom}
               onChange={(e) => setZoom(parseFloat(e.target.value))}
-              style={{ width: "100%", accentColor: "#2563eb" }}
+              style={{ width: "100%", accentColor: "#2c5e4c" }}
             />
           </div>
 
           {/* Rotation Slider */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#9ca3af" }}>
-              <span>🔄 Aligner (Angle) :</span>
+          <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#9aa8a0" }}>
+              <span>Rotation</span>
               <span>{rotation}°</span>
             </div>
             <input
@@ -316,27 +311,22 @@ export default function CropperModal({
               step="1"
               value={rotation}
               onChange={(e) => setRotation(parseInt(e.target.value))}
-              style={{ width: "100%", accentColor: "#2563eb" }}
+              style={{ width: "100%", accentColor: "#2c5e4c" }}
             />
-          </div>
-
-          <div style={{ fontSize: "10px", opacity: 0.6, color: "#9ca3af", textAlign: "center" }}>
-            👉 Faites glisser l'image pour la centrer. Utilisez les glissières pour zoomer et redresser la pièce.
           </div>
         </div>
 
         {/* Buttons */}
-        <div style={{ display: "flex", gap: "8px", marginTop: "4px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "8px", marginTop: "2px" }}>
           <button
             onClick={onClose}
             style={{
               flex: 1,
-              minWidth: "80px",
               padding: "10px",
-              borderRadius: "12px",
-              border: "1px solid rgba(255,255,255,0.12)",
-              background: "transparent",
-              color: "white",
+              borderRadius: "10px",
+              border: "1px solid rgba(255,255,255,0.08)",
+              background: "#111915",
+              color: "#9aa8a0",
               fontSize: "12px",
               fontWeight: "400",
               cursor: "pointer"
@@ -348,30 +338,28 @@ export default function CropperModal({
           <button
             onClick={() => onCrop(null)}
             style={{
-              flex: 1.5,
-              minWidth: "100px",
+              flex: 1,
               padding: "10px",
-              borderRadius: "12px",
-              border: "1px solid rgba(255, 255, 255, 0.15)",
-              background: "rgba(255, 255, 255, 0.06)",
-              color: "#d1d5db",
+              borderRadius: "10px",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              background: "#111915",
+              color: "#9aa8a0",
               fontSize: "12px",
               fontWeight: "400",
               cursor: "pointer"
             }}
           >
-            Passer ⏭️
+            Passer
           </button>
 
           <button
             onClick={handleCropClick}
             style={{
-              flex: 2,
-              minWidth: "130px",
+              flex: 1.4,
               padding: "10px",
-              borderRadius: "12px",
+              borderRadius: "10px",
               border: "none",
-              background: "#2563eb",
+              background: "#2c5e4c",
               color: "white",
               fontSize: "12px",
               fontWeight: "400",

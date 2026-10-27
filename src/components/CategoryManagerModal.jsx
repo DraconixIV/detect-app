@@ -18,22 +18,13 @@ import {
 import { PRESET_CATEGORY_COLORS, defaultCategoryColors } from "../subCategories";
 
 const DETECTORIST_EMOJIS = [
-  // Monnaies, Trésors & Précieux
   "🪙", "💰", "🥇", "🥈", "🥉", "💎", "💍", "👑", "📿", "🏆", "🎖️", "🏅", "⚜️",
-  // Antiquités, Objets Historiques & Archéologie
   "🏺", "🗿", "🏛️", "📜", "🗝️", "🔑", "🔒", "🪞", "🕯️", "⌛", "⏳", "🧱", "✝️",
-  // Militaria, Armes & Boucles
   "🛡️", "⚔️", "🗡️", "🏹", "💣", "🪖", "🎯", "🔫", "🪓", "🪚", "⚙️", "🥨",
-  // Quincaillerie, Outils, Fixations & Ferraille
   "🔔", "⚓", "🧲", "🔨", "⛏️", "🔧", "🔩", "🪛", "🖇️", "📎", "✂️", "🪡", "🧷", "🥄", "🍴", "👞", "👝", "🏷️", "📦", "🔘", "🥫", "🎣", "⛓️", "🪜", "🪤", "🪨",
-  // Métaux, Matières, Éléments & Minéraux
   "🟫", "💿", "⚖️", "🧪", "🔬", "🪵", "🧭", "🔍", "⚡", "🌟", "✨",
-  // Pastilles de repérage
   "🟡", "⚪", "🟤", "🔴", "🟢", "🔵", "🟣", "⚫"
 ];
-
-const COMMON_EMOJIS = DETECTORIST_EMOJIS;
-const METAL_EMOJIS = DETECTORIST_EMOJIS;
 
 export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }) {
   const [modalTab, setModalTab] = useState("categories"); // 'categories' | 'metals'
@@ -41,7 +32,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
   const [materialsData, setMaterialsData] = useState(() => loadMaterialsData());
   const [newCatName, setNewCatName] = useState("");
   const [newCatEmoji, setNewCatEmoji] = useState("🪙");
-  const [newCatColor, setNewCatColor] = useState("#3b82f6");
+  const [newCatColor, setNewCatColor] = useState("#2c5e4c");
   const [colorPickerCat, setColorPickerCat] = useState(null);
   const [selectedCatForSub, setSelectedCatForSub] = useState("");
   const [newSubName, setNewSubName] = useState("");
@@ -65,20 +56,19 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
   if (!isOpen) return null;
 
   const isLight = theme === "light";
-  const bgModal = isLight ? "#ffffff" : "#0f172a";
-  const textMain = isLight ? "#000000" : "#ffffff";
-  const textSub = isLight ? "#1e293b" : "#ffffff";
-  const cardBg = isLight ? "#f8fafc" : "#1e293b";
-  const cardBorder = isLight ? "#e2e8f0" : "rgba(255, 255, 255, 0.1)";
-  const inputBg = isLight ? "#ffffff" : "#0b1329";
-  const inputBorder = isLight ? "#cbd5e1" : "rgba(255, 255, 255, 0.18)";
+  const bgModal = isLight ? "#f3f4f2" : "#111915";
+  const sheetBg = isLight ? "#ffffff" : "#19231e";
+  const inputBg = isLight ? "#f3f4f2" : "#111915";
+  const cardBorder = isLight ? "#eef0ed" : "rgba(255, 255, 255, 0.08)";
+  const textMain = isLight ? "#1f2924" : "#f1f5f2";
+  const textSub = isLight ? "#5c6b63" : "#9aa8a0";
 
   const handleAddCategory = (e) => {
     e?.preventDefault();
     if (!newCatName.trim()) return;
     addCategory(newCatName, newCatEmoji, ["Indéterminé"], newCatColor);
     setNewCatName("");
-    setNewCatColor("#3b82f6");
+    setNewCatColor("#2c5e4c");
   };
 
   const handleAddSub = (catName, e) => {
@@ -109,23 +99,21 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
     setNewMetalName("");
   };
 
-  const handleRemoveCustomMetal = (metalName) => {
-    removeMaterial(metalName);
-  };
-
   return (
     <div
       style={{
         position: "fixed",
         inset: 0,
         zIndex: 99999,
-        background: "rgba(0, 0, 0, 0.75)",
-        backdropFilter: "blur(6px)",
+        background: "rgba(8, 14, 11, 0.8)",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "16px",
-        boxSizing: "border-box"
+        boxSizing: "border-box",
+        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
       }}
       onClick={onClose}
     >
@@ -133,14 +121,14 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
         style={{
           background: bgModal,
           color: textMain,
-          borderRadius: "24px",
+          borderRadius: "20px",
           border: `1px solid ${cardBorder}`,
           width: "100%",
-          maxWidth: "520px",
-          maxHeight: "85vh",
+          maxWidth: "480px",
+          maxHeight: "88vh",
           display: "flex",
           flexDirection: "column",
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+          boxShadow: "0 24px 48px rgba(0, 0, 0, 0.5)",
           overflow: "hidden"
         }}
         onClick={(e) => e.stopPropagation()}
@@ -148,38 +136,35 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
         {/* Header */}
         <div
           style={{
-            padding: "18px 20px",
-            borderBottom: `1px solid ${cardBorder}`,
+            background: "#2c5e4c",
+            padding: "16px 20px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between"
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "24px" }}>{modalTab === "categories" ? "🏷️" : "🪙"}</span>
-            <div>
-              <h2 style={{ margin: 0, fontSize: "17px", fontWeight: "400", color: textMain }}>
-                {modalTab === "categories" ? "Gestion des catégories" : "Gestion des métaux et alliages"}
-              </h2>
-              <p style={{ margin: 0, fontSize: "11px", color: textSub }}>
-                {modalTab === "categories"
-                  ? "Personnalisez vos catégories, repères et sous-catégories"
-                  : "Activez et personnalisez les métaux pour vos trouvailles"}
-              </p>
-            </div>
+          <div>
+            <h2 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: "#ffffff" }}>
+              {modalTab === "categories" ? "Gestion des catégories" : "Gestion des métaux"}
+            </h2>
+            <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: "rgba(255,255,255,0.75)" }}>
+              {modalTab === "categories"
+                ? "Personnalisez vos catégories, repères et sous-catégories"
+                : "Activez et personnalisez les métaux pour vos trouvailles"}
+            </p>
           </div>
           <button
             type="button"
             aria-label="Fermer"
             onClick={onClose}
             style={{
-              width: "32px",
-              height: "32px",
+              width: "28px",
+              height: "28px",
               borderRadius: "50%",
-              border: `1px solid ${cardBorder}`,
-              background: cardBg,
-              color: textMain,
-              fontSize: "16px",
+              border: "none",
+              background: "rgba(255, 255, 255, 0.14)",
+              color: "#ffffff",
+              fontSize: "13px",
               fontWeight: "400",
               cursor: "pointer",
               display: "flex",
@@ -194,85 +179,88 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
         {/* Tab Switcher */}
         <div
           style={{
-            display: "flex",
-            background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.05)",
-            padding: "6px 12px",
-            borderBottom: `1px solid ${cardBorder}`,
-            gap: "6px"
+            padding: "10px 16px 4px 16px",
+            background: sheetBg
           }}
         >
-          <button
-            type="button"
-            onClick={() => setModalTab("categories")}
+          <div
             style={{
-              flex: 1,
-              padding: "8px 12px",
-              borderRadius: "10px",
-              border: "none",
-              background: modalTab === "categories" ? (isLight ? "#ffffff" : "#1e293b") : "transparent",
-              color: modalTab === "categories" ? textMain : (isLight ? "#64748b" : "#94a3b8"),
-              fontWeight: "400",
-              fontSize: "12px",
-              cursor: "pointer",
-              boxShadow: modalTab === "categories" ? "0 2px 5px rgba(0,0,0,0.08)" : "none",
-              transition: "all 0.15s ease"
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              background: inputBg,
+              padding: "4px",
+              borderRadius: "999px",
+              border: `1px solid ${cardBorder}`
             }}
           >
-            Catégorie ({Object.keys(categoriesData.categories || {}).length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setModalTab("metals")}
-            style={{
-              flex: 1,
-              padding: "8px 12px",
-              borderRadius: "10px",
-              border: "none",
-              background: modalTab === "metals" ? (isLight ? "#ffffff" : "#1e293b") : "transparent",
-              color: modalTab === "metals" ? textMain : (isLight ? "#64748b" : "#94a3b8"),
-              fontWeight: "400",
-              fontSize: "12px",
-              cursor: "pointer",
-              boxShadow: modalTab === "metals" ? "0 2px 5px rgba(0,0,0,0.08)" : "none",
-              transition: "all 0.15s ease"
-            }}
-          >
-            Métaux ({ (materialsData.materials || []).length })
-          </button>
+            <button
+              type="button"
+              onClick={() => setModalTab("categories")}
+              style={{
+                padding: "8px",
+                borderRadius: "999px",
+                border: "none",
+                background: modalTab === "categories" ? "#2c5e4c" : "transparent",
+                color: modalTab === "categories" ? "#ffffff" : textSub,
+                fontWeight: "400",
+                fontSize: "12px",
+                cursor: "pointer",
+                transition: "all 0.15s ease"
+              }}
+            >
+              Catégories ({Object.keys(categoriesData.categories || {}).length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setModalTab("metals")}
+              style={{
+                padding: "8px",
+                borderRadius: "999px",
+                border: "none",
+                background: modalTab === "metals" ? "#2c5e4c" : "transparent",
+                color: modalTab === "metals" ? "#ffffff" : textSub,
+                fontWeight: "400",
+                fontSize: "12px",
+                cursor: "pointer",
+                transition: "all 0.15s ease"
+              }}
+            >
+              Métaux ({(materialsData.materials || []).length})
+            </button>
+          </div>
         </div>
 
         {/* Scrollable Content */}
-        <div style={{ padding: "16px 20px", overflowY: "auto", flex: 1 }}>
+        <div style={{ padding: "14px 16px", overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: "12px" }}>
           {modalTab === "categories" ? (
             <>
               {/* Add Category Form */}
               <form
                 onSubmit={handleAddCategory}
                 style={{
-                  background: cardBg,
+                  background: sheetBg,
                   border: `1px solid ${cardBorder}`,
                   borderRadius: "16px",
                   padding: "14px",
-                  marginBottom: "16px",
                   display: "flex",
                   flexDirection: "column",
                   gap: "10px"
                 }}
               >
                 <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                  Créer une catégorie :
+                  Créer une catégorie
                 </div>
 
                 <input
                   type="text"
-                  placeholder="Nom"
+                  placeholder="Nom de la catégorie"
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
                   style={{
                     width: "100%",
                     padding: "9px 12px",
                     borderRadius: "10px",
-                    border: `1px solid ${inputBorder}`,
+                    border: `1px solid ${cardBorder}`,
                     background: inputBg,
                     color: textMain,
                     fontSize: "13px",
@@ -281,25 +269,25 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                   }}
                 />
 
-                {/* Grille complète d'émojis */}
+                {/* Emojis grid */}
                 <div>
                   <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
-                    Émoji associé :
+                    Symbole associé
                   </div>
                   <div
                     style={{
                       display: "flex",
                       flexWrap: "wrap",
                       gap: "6px",
-                      maxHeight: "120px",
+                      maxHeight: "115px",
                       overflowY: "auto",
                       padding: "6px",
                       background: inputBg,
-                      border: `1px solid ${inputBorder}`,
+                      border: `1px solid ${cardBorder}`,
                       borderRadius: "10px"
                     }}
                   >
-                    {COMMON_EMOJIS.map((em) => {
+                    {DETECTORIST_EMOJIS.map((em) => {
                       const isSelected = newCatEmoji === em;
                       return (
                         <button
@@ -310,18 +298,15 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                             width: "32px",
                             height: "32px",
                             borderRadius: "8px",
-                            border: isSelected ? "2px solid #3b82f6" : `1px solid ${cardBorder}`,
-                            background: isSelected ? (isLight ? "#eff6ff" : "rgba(59, 130, 246, 0.25)") : (isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.05)"),
-                            fontSize: "18px",
+                            border: isSelected ? "1.5px solid #2c5e4c" : `1px solid ${cardBorder}`,
+                            background: isSelected ? (isLight ? "#eef2ee" : "rgba(44, 94, 76, 0.35)") : sheetBg,
+                            fontSize: "17px",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             cursor: "pointer",
-                            padding: 0,
-                            transform: isSelected ? "scale(1.12)" : "scale(1)",
-                            transition: "all 0.12s ease"
+                            padding: 0
                           }}
-                          title={em}
                         >
                           {em}
                         </button>
@@ -333,7 +318,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                 {/* Color Swatches */}
                 <div>
                   <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
-                    Couleur du repère carte :
+                    Couleur du repère carte
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
                     {PRESET_CATEGORY_COLORS.map((colorHex) => {
@@ -348,19 +333,17 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                             height: "22px",
                             borderRadius: "50%",
                             background: colorHex,
-                            border: isSelected ? "2.5px solid #ffffff" : "1.5px solid rgba(0,0,0,0.2)",
-                            boxShadow: isSelected ? `0 0 6px ${colorHex}` : "none",
+                            border: isSelected ? `2px solid ${textMain}` : "1.5px solid rgba(0,0,0,0.15)",
                             cursor: "pointer",
                             padding: 0,
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            transform: isSelected ? "scale(1.2)" : "scale(1)",
+                            transform: isSelected ? "scale(1.15)" : "scale(1)",
                             transition: "all 0.15s ease"
                           }}
-                          title={colorHex}
                         >
-                          {isSelected && <span style={{ color: "#ffffff", fontSize: "10px", fontWeight: "400"}}>✓</span>}
+                          {isSelected && <span style={{ color: "#ffffff", fontSize: "10px" }}>✓</span>}
                         </button>
                       );
                     })}
@@ -375,247 +358,248 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                     padding: "10px",
                     borderRadius: "10px",
                     border: "none",
-                    background: newCatName.trim() ? "linear-gradient(135deg, #3b82f6, #2563eb)" : (isLight ? "#e2e8f0" : "rgba(255,255,255,0.1)"),
+                    background: newCatName.trim() ? "#2c5e4c" : (isLight ? "#dce2de" : "rgba(255,255,255,0.08)"),
                     color: newCatName.trim() ? "#ffffff" : textSub,
                     fontSize: "12px",
                     fontWeight: "400",
-                    cursor: newCatName.trim() ? "pointer" : "not-allowed",
-                    transition: "all 0.2s ease"
+                    cursor: newCatName.trim() ? "pointer" : "not-allowed"
                   }}
                 >
-                  + Ajouter cette catégorie
+                  Ajouter cette catégorie
                 </button>
               </form>
 
               {/* Categories List */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                  Catégories Actives ({Object.keys(categoriesData.categories || {}).length})
+                  Catégories actives ({Object.keys(categoriesData.categories || {}).length})
                 </div>
 
-                {Object.entries(categoriesData.categories || {}).map(([catName, subCats]) => {
-                  const emoji = categoriesData.emojis?.[catName] || "🏷️";
-                  const color = categoriesData.colors?.[catName] || defaultCategoryColors[catName] || "#3b82f6";
-                  const isExpanded = expandedCat === catName;
-                  const isPickingColor = colorPickerCat === catName;
+                <div
+                  style={{
+                    background: sheetBg,
+                    border: `1px solid ${cardBorder}`,
+                    borderRadius: "16px",
+                    overflow: "hidden"
+                  }}
+                >
+                  {Object.entries(categoriesData.categories || {}).map(([catName, subCats], idx, arr) => {
+                    const emoji = categoriesData.emojis?.[catName] || "🏷️";
+                    const color = categoriesData.colors?.[catName] || defaultCategoryColors[catName] || "#2c5e4c";
+                    const isExpanded = expandedCat === catName;
+                    const isPickingColor = colorPickerCat === catName;
 
-                  return (
-                    <div
-                      key={catName}
-                      style={{
-                        background: cardBg,
-                        border: `1px solid ${cardBorder}`,
-                        borderRadius: "14px",
-                        overflow: "hidden"
-                      }}
-                    >
+                    return (
                       <div
-                        onClick={() => setExpandedCat(isExpanded ? null : catName)}
+                        key={catName}
                         style={{
-                          padding: "12px 14px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          cursor: "pointer",
-                          userSelect: "none"
+                          borderBottom: idx < arr.length - 1 ? `1px solid ${cardBorder}` : "none"
                         }}
                       >
-                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                          <span
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setColorPickerCat(isPickingColor ? null : catName);
-                            }}
-                            title="Changer la couleur du repère"
-                            style={{
-                              width: "16px",
-                              height: "16px",
-                              borderRadius: "50%",
-                              background: color,
-                              border: "2px solid rgba(255,255,255,0.3)",
-                              cursor: "pointer",
-                              display: "inline-block"
-                            }}
-                          />
-                          <span style={{ fontSize: "18px" }}>{emoji}</span>
-                          <span style={{ fontWeight: "400", fontSize: "14px", color: textMain }}>
-                            {catName}
-                          </span>
-                          <span style={{ fontSize: "11px", color: textSub }}>
-                            ({subCats.length} sous-catégories)
-                          </span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setConfirmCatToDelete(catName);
-                            }}
-                            style={{
-                              background: "transparent",
-                              border: "none",
-                              color: "#ef4444",
-                              cursor: "pointer",
-                              fontSize: "14px",
-                              padding: "4px"
-                            }}
-                            title="Supprimer la catégorie"
-                          >
-                            🗑️
-                          </button>
-                          <span style={{ color: textSub, fontSize: "12px" }}>
-                            {isExpanded ? "▲" : "▼"}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Color Picker Accordion */}
-                      {isPickingColor && (
                         <div
-                          style={{
-                            padding: "10px 14px",
-                            background: isLight ? "#f1f5f9" : "rgba(0,0,0,0.35)",
-                            borderTop: `1px solid ${cardBorder}`
-                          }}
-                        >
-                          <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
-                            Choisir la couleur pour {catName} :
-                          </div>
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                            {PRESET_CATEGORY_COLORS.map((col) => (
-                              <button
-                                key={col}
-                                type="button"
-                                onClick={() => {
-                                  updateCategoryColor(catName, col);
-                                  setColorPickerCat(null);
-                                }}
-                                style={{
-                                  width: "20px",
-                                  height: "20px",
-                                  borderRadius: "50%",
-                                  background: col,
-                                  border: color === col ? "2px solid #ffffff" : "1px solid rgba(0,0,0,0.2)",
-                                  cursor: "pointer",
-                                  padding: 0
-                                }}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Sub Categories Accordion */}
-                      {isExpanded && (
-                        <div
+                          onClick={() => setExpandedCat(isExpanded ? null : catName)}
                           style={{
                             padding: "12px 14px",
-                            borderTop: `1px solid ${cardBorder}`,
-                            background: isLight ? "#f1f5f9" : "rgba(0,0,0,0.2)"
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            cursor: "pointer",
+                            userSelect: "none"
                           }}
                         >
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px" }}>
-                            {subCats.map((sub) => (
-                              <div
-                                key={sub}
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "6px",
-                                  padding: "4px 8px",
-                                  borderRadius: "8px",
-                                  background: isLight ? "#ffffff" : "rgba(255,255,255,0.08)",
-                                  border: `1px solid ${cardBorder}`,
-                                  fontSize: "12px",
-                                  color: textMain
-                                }}
-                              >
-                                <span>{sub}</span>
-                                <button
-                                  onClick={() => removeSubCategory(catName, sub)}
-                                  style={{
-                                    background: "transparent",
-                                    border: "none",
-                                    color: "#ef4444",
-                                    cursor: "pointer",
-                                    fontSize: "10px",
-                                    fontWeight: "400",
-                                    padding: "0 2px"
-                                  }}
-                                >
-                                  ✕
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-
-                          {/* Add Sub Category Inline */}
-                          <form
-                            onSubmit={(e) => {
-                              handleAddSub(catName, e);
-                            }}
-                            style={{ display: "flex", gap: "6px" }}
-                          >
-                            <input
-                              type="text"
-                              placeholder={`Ajouter une sous-catégorie à ${catName}...`}
-                              value={selectedCatForSub === catName ? newSubName : ""}
-                              onFocus={() => setSelectedCatForSub(catName)}
-                              onChange={(e) => {
-                                setSelectedCatForSub(catName);
-                                setNewSubName(e.target.value);
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, minWidth: 0 }}>
+                            <span
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setColorPickerCat(isPickingColor ? null : catName);
                               }}
+                              title="Changer la couleur"
                               style={{
-                                flex: 1,
-                                padding: "6px 10px",
-                                borderRadius: "8px",
-                                border: `1px solid ${inputBorder}`,
-                                background: inputBg,
-                                color: textMain,
-                                fontSize: "12px",
-                                outline: "none"
+                                width: "12px",
+                                height: "12px",
+                                borderRadius: "50%",
+                                background: color,
+                                cursor: "pointer",
+                                display: "inline-block",
+                                flexShrink: 0
                               }}
                             />
+                            <span style={{ fontSize: "16px", flexShrink: 0 }}>{emoji}</span>
+                            <span style={{ fontWeight: "400", fontSize: "13px", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              {catName}
+                            </span>
+                            <span style={{ fontSize: "11px", color: textSub, flexShrink: 0 }}>
+                              ({subCats.length})
+                            </span>
+                          </div>
+
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
                             <button
-                              type="submit"
-                              style={{
-                                padding: "6px 12px",
-                                borderRadius: "8px",
-                                border: "none",
-                                background: "#3b82f6",
-                                color: "white",
-                                fontSize: "11px",
-                                fontWeight: "400",
-                                cursor: "pointer"
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setConfirmCatToDelete(catName);
                               }}
+                              style={{
+                                background: "transparent",
+                                border: "none",
+                                color: textSub,
+                                cursor: "pointer",
+                                fontSize: "13px",
+                                padding: "2px 4px"
+                              }}
+                              title="Supprimer la catégorie"
                             >
-                              + Ajouter
+                              ✕
                             </button>
-                          </form>
+                            <span style={{ color: textSub, fontSize: "10px", transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
+                              ▼
+                            </span>
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
+
+                        {/* Color Picker Accordion */}
+                        {isPickingColor && (
+                          <div
+                            style={{
+                              padding: "10px 14px",
+                              background: inputBg,
+                              borderTop: `1px solid ${cardBorder}`
+                            }}
+                          >
+                            <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
+                              Couleur pour {catName} :
+                            </div>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                              {PRESET_CATEGORY_COLORS.map((col) => (
+                                <button
+                                  key={col}
+                                  type="button"
+                                  onClick={() => {
+                                    updateCategoryColor(catName, col);
+                                    setColorPickerCat(null);
+                                  }}
+                                  style={{
+                                    width: "20px",
+                                    height: "20px",
+                                    borderRadius: "50%",
+                                    background: col,
+                                    border: color === col ? `2px solid ${textMain}` : "1px solid rgba(0,0,0,0.15)",
+                                    cursor: "pointer",
+                                    padding: 0
+                                  }}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Sub Categories Accordion */}
+                        {isExpanded && (
+                          <div
+                            style={{
+                              padding: "10px 14px 14px 14px",
+                              borderTop: `1px solid ${cardBorder}`,
+                              background: inputBg
+                            }}
+                          >
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px" }}>
+                              {subCats.map((sub) => (
+                                <div
+                                  key={sub}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "5px",
+                                    padding: "4px 9px",
+                                    borderRadius: "999px",
+                                    background: sheetBg,
+                                    border: `1px solid ${cardBorder}`,
+                                    fontSize: "11px",
+                                    color: textMain
+                                  }}
+                                >
+                                  <span>{sub}</span>
+                                  <button
+                                    onClick={() => removeSubCategory(catName, sub)}
+                                    style={{
+                                      background: "transparent",
+                                      border: "none",
+                                      color: textSub,
+                                      cursor: "pointer",
+                                      fontSize: "11px",
+                                      padding: "0 2px"
+                                    }}
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+
+                            <form
+                              onSubmit={(e) => {
+                                handleAddSub(catName, e);
+                              }}
+                              style={{ display: "flex", gap: "6px" }}
+                            >
+                              <input
+                                type="text"
+                                placeholder={`Ajouter une sous-catégorie à ${catName}...`}
+                                value={selectedCatForSub === catName ? newSubName : ""}
+                                onFocus={() => setSelectedCatForSub(catName)}
+                                onChange={(e) => {
+                                  setSelectedCatForSub(catName);
+                                  setNewSubName(e.target.value);
+                                }}
+                                style={{
+                                  flex: 1,
+                                  padding: "7px 10px",
+                                  borderRadius: "8px",
+                                  border: `1px solid ${cardBorder}`,
+                                  background: sheetBg,
+                                  color: textMain,
+                                  fontSize: "11px",
+                                  outline: "none"
+                                }}
+                              />
+                              <button
+                                type="submit"
+                                style={{
+                                  padding: "7px 12px",
+                                  borderRadius: "8px",
+                                  border: "none",
+                                  background: "#2c5e4c",
+                                  color: "white",
+                                  fontSize: "11px",
+                                  fontWeight: "400",
+                                  cursor: "pointer"
+                                }}
+                              >
+                                Ajouter
+                              </button>
+                            </form>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </>
           ) : (
-            /* TAB: METALS & EMOJIS */
+            /* TAB: METALS */
             <>
-              {/* Recommendations 11 metals */}
               <div
                 style={{
-                  background: cardBg,
+                  background: sheetBg,
                   border: `1px solid ${cardBorder}`,
-                  borderRadius: "14px",
-                  padding: "12px 14px",
-                  marginBottom: "16px"
+                  borderRadius: "16px",
+                  padding: "14px"
                 }}
               >
-                <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
-                  💡 Métaux recommandés par GeoProspect (Cliquez pour activer / désactiver) :
+                <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>
+                  Métaux recommandés (activer / désactiver)
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                   {RECOMMENDED_METALS.map((rec) => {
@@ -626,11 +610,11 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                         type="button"
                         onClick={() => handleToggleRecommendedMetal(rec)}
                         style={{
-                          padding: "6px 10px",
-                          borderRadius: "10px",
-                          border: isActif ? "1.5px solid #3b82f6" : `1px solid ${cardBorder}`,
-                          background: isActif ? (isLight ? "#eff6ff" : "rgba(59, 130, 246, 0.2)") : inputBg,
-                          color: isActif ? (isLight ? "#1e3a8a" : "#60a5fa") : textMain,
+                          padding: "6px 11px",
+                          borderRadius: "999px",
+                          border: isActif ? "1px solid #2c5e4c" : `1px solid ${cardBorder}`,
+                          background: isActif ? (isLight ? "#eef2ee" : "rgba(44, 94, 76, 0.28)") : inputBg,
+                          color: isActif ? textMain : textSub,
                           fontSize: "12px",
                           fontWeight: "400",
                           cursor: "pointer",
@@ -639,15 +623,12 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                           gap: "5px",
                           transition: "all 0.15s ease"
                         }}
-                        title={isActif ? "Métal actif" : `Activer ${rec.name}`}
                       >
                         <span style={{ fontSize: "14px" }}>{materialsData.emojis?.[rec.name] || rec.emoji}</span>
                         <span>{rec.name}</span>
-                        {isActif ? (
-                          <span style={{ color: "#10b981", fontWeight: "400", fontSize: "11px" }}>✓</span>
-                        ) : (
-                          <span style={{ color: textSub, fontSize: "10px" }}>+</span>
-                        )}
+                        <span style={{ color: isActif ? (isLight ? "#2c5e4c" : "#80b99c") : textSub, fontSize: "11px" }}>
+                          {isActif ? "✓" : "+"}
+                        </span>
                       </button>
                     );
                   })}
@@ -658,18 +639,17 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
               <form
                 onSubmit={handleAddCustomMetal}
                 style={{
-                  background: cardBg,
+                  background: sheetBg,
                   border: `1px solid ${cardBorder}`,
                   borderRadius: "16px",
                   padding: "14px",
-                  marginBottom: "16px",
                   display: "flex",
                   flexDirection: "column",
                   gap: "10px"
                 }}
               >
                 <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                  Ajouter un métal et/ou un alliage :
+                  Ajouter un métal ou un alliage
                 </div>
 
                 <input
@@ -681,7 +661,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                     width: "100%",
                     padding: "9px 12px",
                     borderRadius: "10px",
-                    border: `1px solid ${inputBorder}`,
+                    border: `1px solid ${cardBorder}`,
                     background: inputBg,
                     color: textMain,
                     fontSize: "13px",
@@ -690,25 +670,25 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                   }}
                 />
 
-                {/* Grille complète d'émojis pour les métaux */}
+                {/* Emojis grid */}
                 <div>
                   <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
-                    Émoji associé :
+                    Symbole associé
                   </div>
                   <div
                     style={{
                       display: "flex",
                       flexWrap: "wrap",
                       gap: "6px",
-                      maxHeight: "120px",
+                      maxHeight: "115px",
                       overflowY: "auto",
                       padding: "6px",
                       background: inputBg,
-                      border: `1px solid ${inputBorder}`,
+                      border: `1px solid ${cardBorder}`,
                       borderRadius: "10px"
                     }}
                   >
-                    {METAL_EMOJIS.map((em) => {
+                    {DETECTORIST_EMOJIS.map((em) => {
                       const isSelected = newMetalEmoji === em;
                       return (
                         <button
@@ -719,18 +699,15 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                             width: "32px",
                             height: "32px",
                             borderRadius: "8px",
-                            border: isSelected ? "2px solid #3b82f6" : `1px solid ${cardBorder}`,
-                            background: isSelected ? (isLight ? "#eff6ff" : "rgba(59, 130, 246, 0.25)") : (isLight ? "#f8fafc" : "rgba(255, 255, 255, 0.05)"),
-                            fontSize: "18px",
+                            border: isSelected ? "1.5px solid #2c5e4c" : `1px solid ${cardBorder}`,
+                            background: isSelected ? (isLight ? "#eef2ee" : "rgba(44, 94, 76, 0.35)") : sheetBg,
+                            fontSize: "17px",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             cursor: "pointer",
-                            padding: 0,
-                            transform: isSelected ? "scale(1.12)" : "scale(1)",
-                            transition: "all 0.12s ease"
+                            padding: 0
                           }}
-                          title={em}
                         >
                           {em}
                         </button>
@@ -746,22 +723,21 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                     padding: "10px",
                     borderRadius: "10px",
                     border: "none",
-                    background: newMetalName.trim() ? "linear-gradient(135deg, #10b981, #059669)" : (isLight ? "#e2e8f0" : "rgba(255,255,255,0.1)"),
+                    background: newMetalName.trim() ? "#2c5e4c" : (isLight ? "#dce2de" : "rgba(255,255,255,0.08)"),
                     color: newMetalName.trim() ? "#ffffff" : textSub,
                     fontSize: "12px",
                     fontWeight: "400",
-                    cursor: newMetalName.trim() ? "pointer" : "not-allowed",
-                    transition: "all 0.2s ease"
+                    cursor: newMetalName.trim() ? "pointer" : "not-allowed"
                   }}
                 >
-                  + Ajouter ce métal
+                  Ajouter ce métal
                 </button>
               </form>
 
               {/* Active Metals List */}
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                  Vos Métaux Actifs ({(materialsData.materials || []).length})
+                  Vos métaux actifs ({(materialsData.materials || []).length})
                 </div>
 
                 <div
@@ -777,7 +753,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                       <div
                         key={mat}
                         style={{
-                          background: cardBg,
+                          background: sheetBg,
                           border: `1px solid ${cardBorder}`,
                           borderRadius: "10px",
                           padding: "8px 10px",
@@ -788,7 +764,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                         }}
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: "6px", overflow: "hidden" }}>
-                          <span style={{ fontSize: "15px" }}>{em}</span>
+                          <span style={{ fontSize: "14px" }}>{em}</span>
                           <span
                             style={{
                               fontSize: "12px",
@@ -804,18 +780,17 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                         </div>
                         <button
                           type="button"
-                          onClick={() => handleRemoveCustomMetal(mat)}
+                          onClick={() => removeMaterial(mat)}
                           style={{
                             background: "transparent",
                             border: "none",
-                            color: "#ef4444",
+                            color: textSub,
                             fontSize: "12px",
                             cursor: "pointer",
                             padding: "2px"
                           }}
-                          title={`Supprimer ${mat}`}
                         >
-                          🗑️
+                          ✕
                         </button>
                       </div>
                     );
@@ -825,49 +800,22 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
             </>
           )}
         </div>
-
-        {/* Footer */}
-        <div
-          style={{
-            padding: "12px 20px",
-            borderTop: `1px solid ${cardBorder}`,
-            display: "flex",
-            justifyContent: "flex-end"
-          }}
-        >
-          <button
-            onClick={onClose}
-            style={{
-              padding: "8px 18px",
-              borderRadius: "10px",
-              border: "none",
-              background: "linear-gradient(135deg, #3b82f6, #2563eb)",
-              color: "white",
-              fontSize: "13px",
-              fontWeight: "400",
-              cursor: "pointer"
-            }}
-          >
-              Terminer ✅
-            </button>
-          </div>
-        </div>
-
-        {confirmCatToDelete && (
-          <ConfirmModal
-            title="Supprimer la catégorie"
-            icon="🏷️"
-            confirmColor="#ef4444"
-            message={`Voulez-vous vraiment supprimer la catégorie "${confirmCatToDelete}" et toutes ses sous-catégories ?`}
-            confirmText="Supprimer"
-            cancelText="Annuler"
-            onConfirm={() => {
-              removeCategory(confirmCatToDelete);
-              setConfirmCatToDelete(null);
-            }}
-            onCancel={() => setConfirmCatToDelete(null)}
-          />
-        )}
       </div>
-    );
-  }
+
+      {confirmCatToDelete && (
+        <ConfirmModal
+          title="Supprimer la catégorie"
+          confirmColor="#dc2626"
+          message={`Voulez-vous supprimer la catégorie « ${confirmCatToDelete} » ?`}
+          confirmText="Supprimer"
+          cancelText="Annuler"
+          onConfirm={() => {
+            removeCategory(confirmCatToDelete);
+            setConfirmCatToDelete(null);
+          }}
+          onCancel={() => setConfirmCatToDelete(null)}
+        />
+      )}
+    </div>
+  );
+}
