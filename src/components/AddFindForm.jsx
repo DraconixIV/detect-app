@@ -485,7 +485,7 @@ export default function AddFindForm({
               <input
                 type="number"
                 step="any"
-                placeholder="Ex: 47.394"
+                placeholder="Latitude"
                 value={customLat || ""}
                 onChange={(e) => setCustomLat && setCustomLat(e.target.value)}
                 style={inputStyle}
@@ -498,7 +498,7 @@ export default function AddFindForm({
               <input
                 type="number"
                 step="any"
-                placeholder="Ex: 0.684"
+                placeholder="Longitude"
                 value={customLng || ""}
                 onChange={(e) => setCustomLng && setCustomLng(e.target.value)}
                 style={inputStyle}

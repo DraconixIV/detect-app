@@ -30,7 +30,7 @@ export function addSavedFriend(name, code) {
   const cleanCode = normalizeSessionCode(code);
   const cleanName = (name || "").trim() || `Ami ${cleanCode.slice(-4)}`;
   if (!cleanCode) {
-    throw new Error("Code détecteur invalide (format attendu : GEO-XXXXXX).");
+    throw new Error("Code détecteur invalide.");
   }
 
   const existing = getSavedFriends();

@@ -808,7 +808,7 @@ export default function TeamSessionModal({
                       type="text"
                       value={consultCodeInput}
                       onChange={(e) => setConsultCodeInput(e.target.value)}
-                      placeholder="GEO-XXXXXX"
+                      placeholder="Code détecteur"
                       required
                       style={{
                         width: "100%",
@@ -1266,7 +1266,7 @@ export default function TeamSessionModal({
                         setJoinSessionCodeInput(e.target.value);
                         if (joinError) setJoinError("");
                       }}
-                      placeholder="GEO-XXXXXX"
+                      placeholder="Code de session"
                       required
                       style={{
                         width: "100%",

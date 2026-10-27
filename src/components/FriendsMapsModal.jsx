@@ -59,7 +59,7 @@ export default function FriendsMapsModal({
 
     const cleanCode = normalizeSessionCode(friendCodeInput);
     if (!cleanCode) {
-      setFormError("Code détecteur invalide (format attendu : GEO-XXXXXX).");
+      setFormError("Code détecteur invalide.");
       return;
     }
 
@@ -572,7 +572,7 @@ export default function FriendsMapsModal({
               <div>
                 <input
                   type="text"
-                  placeholder="Prénom ou pseudo (ex: Thomas)"
+                  placeholder="Prénom ou pseudo"
                   value={friendNameInput}
                   onChange={(e) => setFriendNameInput(e.target.value)}
                   style={{
@@ -593,7 +593,7 @@ export default function FriendsMapsModal({
               <div>
                 <input
                   type="text"
-                  placeholder="Code détecteur (ex: GEO-AB12CD)"
+                  placeholder="Code détecteur"
                   value={friendCodeInput}
                   onChange={(e) => setFriendCodeInput(e.target.value)}
                   required

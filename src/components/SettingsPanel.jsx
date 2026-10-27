@@ -61,7 +61,7 @@ export default function SettingsPanel({
     setRestoreSuccessMsg("");
     const clean = (restoreCodeInput || "").trim().toUpperCase();
     if (!clean || clean.length < 3) {
-      setRestoreErrorMsg("Veuillez saisir un code valide (ex: GEO-KE9Q88).");
+      setRestoreErrorMsg("Veuillez saisir un code valide.");
       return;
     }
     const updated = setMyUserCode(clean, "GeoProspect");
@@ -300,7 +300,7 @@ export default function SettingsPanel({
                   type="text"
                   value={restoreCodeInput}
                   onChange={(e) => setRestoreCodeInput(e.target.value)}
-                  placeholder="Ex: GEO-XXXXXX"
+                  placeholder="Code détecteur"
                   style={{
                     flex: 1,
                     padding: "9px 12px",
@@ -466,7 +466,7 @@ export default function SettingsPanel({
                   type="text"
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
-                  placeholder="Nouvelle catégorie (ex: Fossile)"
+                  placeholder="Nouvelle catégorie"
                   style={{ flex: 1, padding: "8px 12px", borderRadius: "10px", border: `1px solid ${dividerCol}`, fontSize: "12px" }}
                 />
                 <button
