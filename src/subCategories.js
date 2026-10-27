@@ -19,47 +19,47 @@ export const PRESET_CATEGORY_COLORS = [
 
 export const SUGGESTED_STARTER_CATEGORIES = {
   "Monnaie": {
-    emoji: "🪙",
+    emoji: "monnaie",
     color: "#facc15",
     subCategories: []
   },
   "Bijou": {
-    emoji: "💍",
+    emoji: "bague",
     color: "#ec4899",
     subCategories: []
   },
   "Boucle": {
-    emoji: "🥨",
+    emoji: "boucle",
     color: "#8b5cf6",
     subCategories: []
   },
   "Bouton": {
-    emoji: "🔘",
+    emoji: "bouton",
     color: "#10b981",
     subCategories: []
   },
   "Militaria": {
-    emoji: "🎖️",
+    emoji: "militaria",
     color: "#ef4444",
     subCategories: []
   },
   "Outil": {
-    emoji: "🛠️",
+    emoji: "outil",
     color: "#f97316",
     subCategories: []
   },
   "Religieux": {
-    emoji: "✝️",
+    emoji: "religieux",
     color: "#d97706",
     subCategories: []
   },
   "Plomb": {
-    emoji: "⚓",
+    emoji: "plomb",
     color: "#6b7280",
     subCategories: []
   },
   "Autre": {
-    emoji: "📦",
+    emoji: "autre",
     color: "#334155",
     subCategories: []
   }

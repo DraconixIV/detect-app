@@ -1,5 +1,7 @@
 import React from "react";
 import { PRESET_CATEGORY_COLORS, SUGGESTED_STARTER_CATEGORIES } from "../../subCategories";
+import TacticalPinIcon from "../TacticalPinIcon";
+import CategoryMarkerPicker from "../CategoryMarkerPicker";
 import { RECOMMENDED_METALS } from "../../services/materialsService";
 
 const DETECTORIST_EMOJIS = [
@@ -154,17 +156,8 @@ export default function OnboardingStep4Categories({
                       transition: "all 0.15s ease"
                     }}
                   >
-                    <span
-                      style={{
-                        width: "8px",
-                        height: "8px",
-                        borderRadius: "50%",
-                        background: item.color,
-                        display: "inline-block",
-                        opacity: isAlreadyAdded ? 1 : 0.6
-                      }}
-                    />
-                    <span>{item.emoji} {starterName}</span>
+                    <TacticalPinIcon markerId={item.emoji} color={item.color} size={18} categoryName={starterName} />
+                    <span>{starterName}</span>
                     <span
                       style={{
                         color: isAlreadyAdded ? (isDark ? "#80b99c" : "#2c5e4c") : textSub,
@@ -215,52 +208,12 @@ export default function OnboardingStep4Categories({
               }}
             />
 
-            {/* Grille d'émojis */}
-            <div>
-              <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
-                Symbole du repère carte
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "6px",
-                  maxHeight: "115px",
-                  overflowY: "auto",
-                  padding: "6px",
-                  background: inputBg,
-                  border: `1px solid ${inputBorder}`,
-                  borderRadius: "10px"
-                }}
-              >
-                {DETECTORIST_EMOJIS.map((em) => {
-                  const isSelected = newCatEmoji === em;
-                  return (
-                    <button
-                      key={em}
-                      type="button"
-                      onClick={() => setNewCatEmoji(em)}
-                      style={{
-                        width: "32px",
-                        height: "32px",
-                        borderRadius: "8px",
-                        border: isSelected ? "1.5px solid #2c5e4c" : `1px solid ${cardBorder}`,
-                        background: isSelected ? (isDark ? "rgba(44, 94, 76, 0.35)" : "#eef2ee") : cardBg,
-                        fontSize: "17px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        cursor: "pointer",
-                        padding: 0,
-                        transition: "all 0.12s ease"
-                      }}
-                    >
-                      {em}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            <CategoryMarkerPicker
+              selectedMarkerId={newCatEmoji}
+              onSelectMarker={setNewCatEmoji}
+              currentColor={newCatColor}
+              theme={isDark ? "dark" : "light"}
+            />
 
             {/* Sous-catégories */}
             <div>
@@ -458,7 +411,7 @@ export default function OnboardingStep4Categories({
                               flexShrink: 0
                             }}
                           />
-                          <span style={{ fontSize: "15px", flexShrink: 0 }}>{em}</span>
+                          <TacticalPinIcon markerId={em} color={col} size={20} categoryName={catName} className="mr-1" />
                           <span style={{ fontSize: "13px", fontWeight: "400", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             {catName}
                           </span>

@@ -16,6 +16,8 @@ import {
   removeMaterial
 } from "../services/materialsService";
 import { PRESET_CATEGORY_COLORS, defaultCategoryColors } from "../subCategories";
+import TacticalPinIcon from "./TacticalPinIcon";
+import CategoryMarkerPicker from "./CategoryMarkerPicker";
 
 const DETECTORIST_EMOJIS = [
   "🪙", "💰", "🥇", "🥈", "🥉", "💎", "💍", "👑", "📿", "🏆", "🎖️", "🏅", "⚜️",
@@ -31,7 +33,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
   const [categoriesData, setCategoriesData] = useState(() => loadCategoriesData());
   const [materialsData, setMaterialsData] = useState(() => loadMaterialsData());
   const [newCatName, setNewCatName] = useState("");
-  const [newCatEmoji, setNewCatEmoji] = useState("🪙");
+  const [newCatEmoji, setNewCatEmoji] = useState("monnaie");
   const [newCatColor, setNewCatColor] = useState("#2c5e4c");
   const [colorPickerCat, setColorPickerCat] = useState(null);
   const [selectedCatForSub, setSelectedCatForSub] = useState("");
@@ -269,51 +271,12 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                   }}
                 />
 
-                {/* Emojis grid */}
-                <div>
-                  <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
-                    Symbole associé
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "6px",
-                      maxHeight: "115px",
-                      overflowY: "auto",
-                      padding: "6px",
-                      background: inputBg,
-                      border: `1px solid ${cardBorder}`,
-                      borderRadius: "10px"
-                    }}
-                  >
-                    {DETECTORIST_EMOJIS.map((em) => {
-                      const isSelected = newCatEmoji === em;
-                      return (
-                        <button
-                          key={em}
-                          type="button"
-                          onClick={() => setNewCatEmoji(em)}
-                          style={{
-                            width: "32px",
-                            height: "32px",
-                            borderRadius: "8px",
-                            border: isSelected ? "1.5px solid #2c5e4c" : `1px solid ${cardBorder}`,
-                            background: isSelected ? (isLight ? "#eef2ee" : "rgba(44, 94, 76, 0.35)") : sheetBg,
-                            fontSize: "17px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            cursor: "pointer",
-                            padding: 0
-                          }}
-                        >
-                          {em}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+                <CategoryMarkerPicker
+                  selectedMarkerId={newCatEmoji}
+                  onSelectMarker={setNewCatEmoji}
+                  currentColor={newCatColor}
+                  theme={theme}
+                />
 
                 {/* Color Swatches */}
                 <div>
@@ -424,7 +387,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                                 flexShrink: 0
                               }}
                             />
-                            <span style={{ fontSize: "16px", flexShrink: 0 }}>{emoji}</span>
+                            <TacticalPinIcon markerId={emoji} color={color} size={22} categoryName={catName} className="mr-1" />
                             <span style={{ fontWeight: "400", fontSize: "13px", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                               {catName}
                             </span>

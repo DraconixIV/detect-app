@@ -10,6 +10,7 @@ import { loadMaterialsData } from "../services/materialsService";
 import { encodeMetadata, decodeMetadata, fileToDataUrl, generateSafeFileName } from "../services/findsService";
 import { getMyUserCode, getMyDisplayName, normalizeSessionCode } from "../services/sessionService";
 import AudioNotePlayer from "./AudioNotePlayer";
+import TacticalPinIcon from "./TacticalPinIcon";
 
 export default function FindPopup({
   find,
@@ -662,9 +663,10 @@ export default function FindPopup({
           </div>
         )}
 
-        <div style={{ fontSize: "11px", color: "#6b7280", fontWeight: "400"}}>
-          {categoryEmojis[category] || "📍"} {category} {subCategory ? `• ${subCategory}` : ""}
-          {material && material !== "Indéterminé" ? ` • ${materialEmojis[material] || "🪙"} ${material}` : ""}
+        <div style={{ fontSize: "11px", color: "#6b7280", fontWeight: "400", display: "flex", alignItems: "center", gap: "6px" }}>
+          <TacticalPinIcon markerId={categoryEmojis[category]} color={categoriesData?.colors?.[category]} size="xs" categoryName={category} />
+          <span>{category} {subCategory ? `• ${subCategory}` : ""}</span>
+          {material && material !== "Indéterminé" ? <span>• {materialEmojis[material] || "🪙"} {material}</span> : null}
         </div>
 
         {/* Media display (Photo or Standard Category Placeholder) */}
@@ -687,15 +689,15 @@ export default function FindPopup({
             style={{
               width: "100%",
               height: "80px",
-              background: "#f3f4f6",
+              background: "#131e18",
               borderRadius: "10px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "26px"
+              border: "1px solid rgba(255, 255, 255, 0.08)"
             }}
           >
-            {categoryEmojis[category] || "📍"}
+            <TacticalPinIcon markerId={categoryEmojis[category]} color={categoriesData?.colors?.[category]} size={46} categoryName={category} />
           </div>
         )}
 
@@ -976,7 +978,7 @@ export default function FindPopup({
                 >
                   {availableCategories.map((cat) => (
                     <option key={cat} value={cat}>
-                      {categoryEmojis[cat] || "🏷️"} {cat}
+                      {cat}
                     </option>
                   ))}
                 </select>

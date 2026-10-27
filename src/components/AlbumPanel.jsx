@@ -695,10 +695,21 @@ export default function AlbumPanel({
                     fontWeight: "400",
                     whiteSpace: "nowrap",
                     cursor: "pointer",
-                    transition: "all 0.15s"
+                    transition: "all 0.15s",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px"
                   }}
                 >
-                  {cat}
+                  {cat !== "Tous" && (
+                    <TacticalPinIcon
+                      markerId={categoryEmojis[cat]}
+                      color={categoriesData?.colors?.[cat]}
+                      size="xs"
+                      categoryName={cat}
+                    />
+                  )}
+                  <span>{cat}</span>
                 </button>
               );
             })}
