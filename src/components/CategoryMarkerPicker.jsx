@@ -4,7 +4,7 @@ import TacticalPinIcon from "./TacticalPinIcon";
 
 /**
  * CategoryMarkerPicker
- * Pokédex-style tactical marker grid selector.
+ * Tactical marker grid selector.
  * Allows picking any of the 42 official tactical markers with live color preview.
  */
 export default function CategoryMarkerPicker({
