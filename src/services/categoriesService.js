@@ -1,10 +1,5 @@
 import { supabase } from "../supabase.js";
-import {
-  categoryEmojis as defaultCategoryEmojis,
-  defaultCategoryColors,
-  categoriesWithSub as defaultCategoriesWithSub,
-  PRESET_CATEGORY_COLORS
-} from "../subCategories.js";
+import { PRESET_CATEGORY_COLORS } from "../subCategories.js";
 import { resolveMarkerId } from "../constants/tacticalMarkers.js";
 
 const STORAGE_CATEGORIES_KEY = "geoprospect_custom_categories";
@@ -149,17 +144,25 @@ export function loadCategoriesData() {
     let recoveredEmojis = {};
     let recoveredColors = {};
 
-    // 1. Check current and all legacy localStorage keys in order of precedence
-    for (const key of LEGACY_CATEGORIES_KEYS) {
-      const val = localStorage.getItem(key);
-      const parsed = tryParseCategories(val);
-      if (parsed && Object.keys(parsed).length > 0) {
-        recoveredCats = parsed;
-        break;
+    // 1. Check primary key first
+    const primaryCatsRaw = localStorage.getItem(STORAGE_CATEGORIES_KEY);
+    const parsedPrimary = tryParseCategories(primaryCatsRaw);
+    if (parsedPrimary && Object.keys(parsedPrimary).length > 0) {
+      recoveredCats = parsedPrimary;
+    } else {
+      // 2. If primary key is empty or null, check all legacy keys to recover user-created categories
+      for (const key of LEGACY_CATEGORIES_KEYS) {
+        if (key === STORAGE_CATEGORIES_KEY) continue;
+        const val = localStorage.getItem(key);
+        const parsed = tryParseCategories(val);
+        if (parsed && Object.keys(parsed).length > 0) {
+          recoveredCats = parsed;
+          break;
+        }
       }
     }
 
-    // 2. Recover emojis dictionary from all legacy keys
+    // 3. Recover emojis dictionary from all legacy keys
     for (const key of LEGACY_EMOJIS_KEYS) {
       const val = localStorage.getItem(key);
       const parsed = tryParseDict(val);
@@ -168,7 +171,7 @@ export function loadCategoriesData() {
       }
     }
 
-    // 3. Recover colors dictionary from all legacy keys
+    // 4. Recover colors dictionary from all legacy keys
     for (const key of LEGACY_COLORS_KEYS) {
       const val = localStorage.getItem(key);
       const parsed = tryParseDict(val);
@@ -177,22 +180,20 @@ export function loadCategoriesData() {
       }
     }
 
-    // 4. Fallback guarantee: GeoProspect NEVER allows 0 categories
-    const categories = (recoveredCats && Object.keys(recoveredCats).length > 0)
-      ? recoveredCats
-      : { ...defaultCategoriesWithSub };
+    // Pure user data: no forced injection of default categories
+    const categories = recoveredCats || {};
 
-    // 5. Ensure all categories have a valid tactical marker ID and valid hex color
+    // Ensure all categories have a valid tactical marker ID and valid hex color
     const emojis = {};
     const colors = {};
 
     Object.keys(categories).forEach((cat, idx) => {
       // Normalize emoji: legacy unicode (e.g. 🪙) or empty -> tactical marker ID
-      const rawEmoji = recoveredEmojis[cat] || defaultCategoryEmojis[cat] || null;
+      const rawEmoji = recoveredEmojis[cat] || null;
       emojis[cat] = resolveMarkerId(rawEmoji, cat);
 
       // Normalize color: ensure valid hex color
-      const rawColor = recoveredColors[cat] || defaultCategoryColors[cat] || null;
+      const rawColor = recoveredColors[cat] || null;
       if (rawColor && typeof rawColor === "string" && rawColor.startsWith("#")) {
         colors[cat] = rawColor;
       } else {
@@ -200,21 +201,19 @@ export function loadCategoriesData() {
       }
     });
 
-    // 6. Auto-heal: persist the consolidated data to the canonical keys
-    try {
-      localStorage.setItem(STORAGE_CATEGORIES_KEY, JSON.stringify(categories));
-      localStorage.setItem(STORAGE_EMOJIS_KEY, JSON.stringify(emojis));
-      localStorage.setItem(STORAGE_COLORS_KEY, JSON.stringify(colors));
-    } catch {}
+    // If categories were recovered from a legacy key, migrate them into the canonical key
+    if (recoveredCats && (!parsedPrimary || Object.keys(parsedPrimary).length === 0)) {
+      try {
+        localStorage.setItem(STORAGE_CATEGORIES_KEY, JSON.stringify(categories));
+        localStorage.setItem(STORAGE_EMOJIS_KEY, JSON.stringify(emojis));
+        localStorage.setItem(STORAGE_COLORS_KEY, JSON.stringify(colors));
+      } catch {}
+    }
 
     return { categories, emojis, colors };
   } catch (err) {
     console.error("Failed to load custom categories:", err);
-    return {
-      categories: { ...defaultCategoriesWithSub },
-      emojis: { ...defaultCategoryEmojis },
-      colors: { ...defaultCategoryColors }
-    };
+    return { categories: {}, emojis: {}, colors: {} };
   }
 }
 
@@ -225,18 +224,17 @@ export function saveCategoriesData(categories, emojis, colors) {
     let finalEmojis = emojis !== undefined ? emojis : current.emojis;
     let finalColors = colors !== undefined ? colors : current.colors;
 
-    // Safety guard: NEVER allow saving an empty categories object!
-    if (!finalCategories || typeof finalCategories !== "object" || Object.keys(finalCategories).length === 0) {
-      finalCategories = { ...defaultCategoriesWithSub };
+    if (!finalCategories || typeof finalCategories !== "object") {
+      finalCategories = {};
     }
 
-    // Ensure all categories have an emoji marker and a color
+    // Ensure all categories present in finalCategories have an emoji marker and a color
     const safeEmojis = { ...(finalEmojis || {}) };
     const safeColors = { ...(finalColors || {}) };
     Object.keys(finalCategories).forEach((cat, idx) => {
-      safeEmojis[cat] = resolveMarkerId(safeEmojis[cat] || defaultCategoryEmojis[cat], cat);
+      safeEmojis[cat] = resolveMarkerId(safeEmojis[cat], cat);
       if (!safeColors[cat] || !safeColors[cat].startsWith("#")) {
-        safeColors[cat] = defaultCategoryColors[cat] || PRESET_CATEGORY_COLORS[idx % PRESET_CATEGORY_COLORS.length] || "#2c5e4c";
+        safeColors[cat] = PRESET_CATEGORY_COLORS[idx % PRESET_CATEGORY_COLORS.length] || "#2c5e4c";
       }
     });
 
@@ -334,7 +332,7 @@ export function ensureCategoriesFromFinds(finds = []) {
         if (catName && !updatedCats[catName]) {
           updatedCats[catName] = [];
           updatedEmojis[catName] = resolveMarkerId(null, catName);
-          updatedColors[catName] = defaultCategoryColors[catName] || PRESET_CATEGORY_COLORS[Object.keys(updatedCats).length % PRESET_CATEGORY_COLORS.length];
+          updatedColors[catName] = PRESET_CATEGORY_COLORS[Object.keys(updatedCats).length % PRESET_CATEGORY_COLORS.length];
           hasNew = true;
         }
       }
