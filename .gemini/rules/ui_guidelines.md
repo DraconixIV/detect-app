@@ -10,7 +10,12 @@
   - "Latitude" / "Longitude"
   - "Nom de la catégorie"
 
+## Règle absolue et définitive : JAMAIS D'ÉMOJI
+- **Interdiction absolue d'utiliser des émojis dans l'ensemble du projet** (UI, code, toasts, alertes, boutons, headers, badges, formulaires, modales, etc.).
+- Les messages de notification (`alert()`, `setToast()`, `window.__showToast()`) doivent toujours être 100 % textuels, neutres et professionnels (ex: "Sauvegardé", "Trouvaille supprimée avec succès", "Tracé GPS affiché sur la carte").
+- Pour l'iconographie, utiliser exclusivement des tracés vectoriels SVG discrets (`TacticalPinIcon`, SVG natifs) ou des pastilles CSS, jamais d'émojis Unicode cartoon.
+
 ## Charte visuelle Forest
 - Aucun texte en gras (`font-weight: 400` partout).
-- Aucun emoji d'interface dans les titres, boutons, onglets et en-têtes de modales.
+- Rendu sobre, tactique et militaire : pas d'émojis, pas de fioritures.
 - Palette sobre : anthracite `#111915`, fiches `#19231e`, vert forêt `#2c5e4c`, accents sauge `#40916c` / `#80b99c`.
