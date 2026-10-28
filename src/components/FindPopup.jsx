@@ -620,73 +620,107 @@ export default function FindPopup({
   const isMyFind = !find.user_code || normalizeSessionCode(find.user_code) === normalizeSessionCode(myCode);
   const finderText = isMyFind ? (myName || find.finder_name || "Moi") : (find.finder_name || find.user_code);
 
+  const formatPopupDate = (rawDate) => {
+    if (!rawDate) return "Date inconnue";
+    try {
+      let clean = String(rawDate).trim();
+      clean = clean.replace(/,\s*/, " • ");
+      clean = clean.replace(/(:\d{2}):\d{2}/, "$1");
+      clean = clean.replace(/(\d{2}\/\d{2}\/\d{4})\s+(\d{1,2}:\d{2})/, "$1 • $2");
+      return clean;
+    } catch {
+      return rawDate;
+    }
+  };
+
   return (
     <>
       {/* 1. COMPACT READ-ONLY VIEW (Inside Leaflet map popup bubble) */}
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: "215px",
-          minWidth: "215px",
-          maxWidth: "215px",
+          width: "248px",
+          minWidth: "248px",
+          maxWidth: "248px",
           display: "flex",
           flexDirection: "column",
-          gap: "8px",
-          color: "#111827",
-          fontFamily: "system-ui, sans-serif",
+          gap: "9px",
+          color: "#f1f5f2",
+          fontFamily: "system-ui, -apple-system, sans-serif",
           boxSizing: "border-box"
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "6px" }}>
-          <h4 style={{ margin: 0, fontSize: "14px", fontWeight: "400", color: "#1f2937", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
-            {title || "Sans titre"}
-          </h4>
+        {/* Top Header: Category Chip + Material Chip + Read-only badge */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px", flexWrap: "wrap", paddingRight: "22px" }}>
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "5px",
+            background: "rgba(255, 255, 255, 0.06)",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+            padding: "3px 8px",
+            borderRadius: "7px",
+            fontSize: "11px",
+            color: "#e2e8f0",
+            maxWidth: "100%",
+            overflow: "hidden"
+          }}>
+            <TacticalPinIcon markerId={categoryEmojis[category]} color={categoriesData?.colors?.[category]} size="xs" categoryName={category} />
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {category || "Trouvaille"}{subCategory ? ` • ${subCategory}` : ""}
+            </span>
+          </div>
+
+          {material && material !== "Indéterminé" && (
+            <div style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "4px",
+              background: "rgba(255, 255, 255, 0.04)",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              padding: "3px 7px",
+              borderRadius: "7px",
+              fontSize: "11px",
+              color: "#cbd5e1"
+            }}>
+              <MetallicMaterialBadge metalName={material} emojiOrSymbol={materialEmojis[material]} size={14} />
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "80px" }}>{material}</span>
+            </div>
+          )}
+
           {isReadOnly && (
-            <span style={{ fontSize: "10px", background: "#fef3c7", color: "#b45309", padding: "1px 6px", borderRadius: "6px", fontWeight: "400", whiteSpace: "nowrap" }}>
+            <span style={{ fontSize: "10px", background: "rgba(245, 158, 11, 0.15)", border: "1px solid rgba(245, 158, 11, 0.25)", color: "#fbbf24", padding: "2px 6px", borderRadius: "6px", fontWeight: "400", whiteSpace: "nowrap" }}>
               🔒 Lecture
             </span>
           )}
         </div>
 
-        {finderText && (
-          <div style={{ fontSize: "10px", color: "#374151", fontWeight: "400", display: "flex", alignItems: "center", gap: "4px" }}>
-            <span>👤</span>
-            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              Trouvé par : {finderText}
-            </span>
-          </div>
-        )}
-
-        {find.session_code && (
-          <div style={{ fontSize: "9px", background: "rgba(16, 185, 129, 0.12)", color: "#059669", padding: "2px 6px", borderRadius: "5px", fontWeight: "400", display: "inline-flex", alignItems: "center", gap: "4px", width: "fit-content" }}>
-            <span>👥</span>
-            <span>Session Équipe ({find.session_code})</span>
-          </div>
-        )}
-
-        <div style={{ fontSize: "11px", color: "#6b7280", fontWeight: "400", display: "flex", alignItems: "center", gap: "6px" }}>
-          <TacticalPinIcon markerId={categoryEmojis[category]} color={categoriesData?.colors?.[category]} size="xs" categoryName={category} />
-          <span>{category} {subCategory ? `• ${subCategory}` : ""}</span>
-          {material && material !== "Indéterminé" ? (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-              • <MetallicMaterialBadge metalName={material} emojiOrSymbol={materialEmojis[material]} size={16} />
-              <span>{material}</span>
-            </span>
-          ) : null}
-        </div>
+        {/* Title */}
+        <h4 style={{
+          margin: 0,
+          fontSize: "15px",
+          fontWeight: "400",
+          color: "#ffffff",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          letterSpacing: "-0.2px",
+          lineHeight: "1.3"
+        }}>
+          {title || "Sans titre"}
+        </h4>
 
         {/* Media display (Photo or Standard Category Placeholder) */}
         {coverPhoto && !isVideoFile(coverPhoto) ? (
-          <div style={{ position: "relative", width: "100%", height: "110px" }}>
+          <div style={{ position: "relative", width: "100%", height: "116px", borderRadius: "11px", overflow: "hidden", border: "1px solid rgba(255, 255, 255, 0.1)", background: "#0c130f" }}>
             <img
               src={coverPhoto}
               alt={title}
               style={{
                 width: "100%",
-                height: "110px",
+                height: "100%",
                 objectFit: "cover",
-                borderRadius: "10px",
-                border: "1px solid #e5e7eb"
+                display: "block"
               }}
             />
           </div>
@@ -694,37 +728,74 @@ export default function FindPopup({
           <div
             style={{
               width: "100%",
-              height: "80px",
-              background: "#131e18",
-              borderRadius: "10px",
+              height: "88px",
+              background: "radial-gradient(circle at center, rgba(44, 94, 76, 0.25) 0%, rgba(13, 20, 16, 0.9) 100%)",
+              borderRadius: "11px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               border: "1px solid rgba(255, 255, 255, 0.08)"
             }}
           >
-            <TacticalPinIcon markerId={categoryEmojis[category]} color={categoriesData?.colors?.[category]} size={46} categoryName={category} />
+            <TacticalPinIcon markerId={categoryEmojis[category]} color={categoriesData?.colors?.[category]} size={42} categoryName={category} />
           </div>
         )}
 
         {/* Audio Note player in popup bubble */}
         {(find.audio_url || find.audio) && (
-          <div style={{ marginTop: "4px" }}>
+          <div style={{ marginTop: "2px" }}>
             <AudioNotePlayer
               src={find.audio_url || find.audio}
               duration={find.audio_duration || null}
-              theme="light"
+              theme="dark"
             />
           </div>
         )}
 
-        <div style={{ fontSize: "10px", color: "#4b5563" }}>
-          📅 {date ? date.split(",")[0] : "Date inconnue"}
+        {/* Meta Info: Finder, Session & Date */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "11px", color: "rgba(255, 255, 255, 0.65)" }}>
+          {finderText && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.7, flexShrink: 0 }}>
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                Trouvé par : <span style={{ color: "#e2e8f0" }}>{finderText}</span>
+              </span>
+            </div>
+          )}
+
+          {find.session_code && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#34d399" }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.85, flexShrink: 0 }}>
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                Session Équipe ({find.session_code})
+              </span>
+            </div>
+          )}
+
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.7, flexShrink: 0 }}>
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <span>{formatPopupDate(date)}</span>
+          </div>
         </div>
 
-        <div style={{ display: "flex", gap: "6px", marginTop: "2px" }}>
+        {/* Action Buttons */}
+        <div style={{ display: "flex", gap: "8px", marginTop: "2px" }}>
           {/* Favorite Toggle */}
           <button
+            type="button"
             onClick={async (e) => {
               e.stopPropagation();
               const nextFav = !isFav;
@@ -735,24 +806,27 @@ export default function FindPopup({
               }
             }}
             style={{
-              flex: "0 0 36px",
+              flex: "0 0 38px",
               height: "36px",
-              border: "1px solid #d1d5db",
+              border: isFav ? "1px solid rgba(250, 204, 21, 0.4)" : "1px solid rgba(255, 255, 255, 0.12)",
               borderRadius: "10px",
-              background: isFav ? "#fef08a" : "white",
+              background: isFav ? "rgba(250, 204, 21, 0.16)" : "rgba(255, 255, 255, 0.05)",
+              color: isFav ? "#facc15" : "rgba(255, 255, 255, 0.7)",
               cursor: "pointer",
               fontSize: "16px",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center"
+              justifyContent: "center",
+              transition: "all 0.15s ease"
             }}
             title="Ajouter / Retirer des favoris"
           >
-            {isFav ? "⭐" : "☆"}
+            {isFav ? "★" : "☆"}
           </button>
 
           {/* Details / Edit triggers Portal Modal */}
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               setIsModalOpen(true);
@@ -760,16 +834,26 @@ export default function FindPopup({
             style={{
               flex: 1,
               height: "36px",
-              border: "none",
-              borderRadius: "8px",
-              background: "#2c5e4c",
-              color: "white",
-              fontSize: "11px",
+              border: "1px solid rgba(255, 255, 255, 0.14)",
+              borderRadius: "10px",
+              background: "linear-gradient(135deg, #2c5e4c 0%, #1f4336 100%)",
+              color: "#ffffff",
+              fontSize: "12px",
               fontWeight: "400",
-              cursor: "pointer"
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "6px",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.25)",
+              transition: "all 0.15s ease"
             }}
           >
-            {isReadOnly ? "Voir les détails" : "Détails et Éditer"}
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.9 }}>
+              <path d="M12 20h9"/>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+            <span>{isReadOnly ? "Voir les détails" : "Détails & Modifier"}</span>
           </button>
         </div>
       </div>
