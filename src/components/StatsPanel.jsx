@@ -3,6 +3,7 @@ import { categoriesWithSub as defaultCategoriesWithSub, defaultCategoryColors, P
 import { loadCategoriesData } from "../services/categoriesService";
 import { normalizeDateStr } from "../services/findsService";
 import ConfirmModal from "./ConfirmModal";
+import TacticalPinIcon from "./TacticalPinIcon";
 
 function getDistance(p1, p2) {
   if (!p1 || !p2 || !Array.isArray(p1) || !Array.isArray(p2)) return 0;
@@ -46,7 +47,7 @@ export default function StatsPanel({
   onDeleteTrack,
   onDeleteFind
 }) {
-  const { categories: customCategories, colors: categoryColors = {} } = loadCategoriesData();
+  const { categories: customCategories, colors: categoryColors = {}, emojis: categoryEmojis = {} } = loadCategoriesData();
   const [chartType, setChartType] = useState("donut"); // 'donut' | 'bar' | 'radar'
   const [expandedCats, setExpandedCats] = useState({});
   const [confirmTrackToDelete, setConfirmTrackToDelete] = useState(null);
@@ -140,6 +141,11 @@ export default function StatsPanel({
     if (categoryColors && categoryColors[cat]) return categoryColors[cat];
     if (defaultCategoryColors && defaultCategoryColors[cat]) return defaultCategoryColors[cat];
     return PRESET_CATEGORY_COLORS[idx % PRESET_CATEGORY_COLORS.length] || accentMint;
+  };
+
+  const getCategoryMarker = (cat) => {
+    if (categoryEmojis && categoryEmojis[cat]) return categoryEmojis[cat];
+    return "autre";
   };
 
   const toggleCategory = (cat) => {
@@ -360,7 +366,14 @@ export default function StatsPanel({
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
-                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: seg.color, flexShrink: 0 }} />
+                    <div style={{ flexShrink: 0 }}>
+                      <TacticalPinIcon
+                        markerId={getCategoryMarker(seg.category)}
+                        color={seg.color}
+                        size={20}
+                        categoryName={seg.category}
+                      />
+                    </div>
                     <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{seg.category}</span>
                   </div>
                   <span style={{ color: textSub, fontSize: "12px", flexShrink: 0 }}>
@@ -382,8 +395,16 @@ export default function StatsPanel({
 
               return (
                 <div key={category}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12.5px", marginBottom: "4px" }}>
-                    <span style={{ color: textMain }}>{category}</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12.5px", marginBottom: "4px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <TacticalPinIcon
+                        markerId={getCategoryMarker(category)}
+                        color={color}
+                        size={18}
+                        categoryName={category}
+                      />
+                      <span style={{ color: textMain }}>{category}</span>
+                    </div>
                     <span style={{ color: textSub }}>{count} ({pct}%)</span>
                   </div>
                   <div style={{ width: "100%", height: "6px", borderRadius: "999px", background: dividerCol, overflow: "hidden" }}>
@@ -559,7 +580,14 @@ export default function StatsPanel({
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: color }} />
+                    <div style={{ flexShrink: 0 }}>
+                      <TacticalPinIcon
+                        markerId={getCategoryMarker(category)}
+                        color={color}
+                        size={24}
+                        categoryName={category}
+                      />
+                    </div>
                     <span style={{ fontSize: "14px", color: textMain }}>{category}</span>
                   </div>
 
