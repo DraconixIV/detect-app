@@ -75,6 +75,8 @@ export default function MapLayers({
     effectiveBaseKey = baseMap;
   } else if (mapStyle === "plan" || mapStyle === "streets") {
     effectiveBaseKey = "osm";
+  } else if (mapStyle === "opentopo") {
+    effectiveBaseKey = "opentopo";
   } else if (mapStyle === "satellite") {
     effectiveBaseKey = "satellite";
   }

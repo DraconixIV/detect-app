@@ -2450,10 +2450,13 @@ function App() {
         onLiveThemeChange={(newTheme) => {
           if (newTheme) setTheme(newTheme);
         }}
-        onComplete={({ defaultMapStyle, designTheme: newDesignTheme, theme: newTheme, gpsStyle: newGpsStyle }) => {
+        onComplete={({ defaultMapStyle, baseMap: newBaseMap, designTheme: newDesignTheme, theme: newTheme, gpsStyle: newGpsStyle }) => {
           setActiveTab("map");
           setShowOnboarding(false);
           if (defaultMapStyle) setMapStyle(defaultMapStyle);
+          const targetBase = newBaseMap || ((defaultMapStyle === "streets" || defaultMapStyle === "opentopo") ? "opentopo" : "satellite");
+          setBaseMap(targetBase);
+          localStorage.setItem("baseMap", targetBase);
           if (newDesignTheme) setDesignTheme(newDesignTheme);
           if (newTheme) setTheme(newTheme);
           if (newGpsStyle) setGpsStyle(newGpsStyle);

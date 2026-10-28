@@ -321,7 +321,9 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
     saveMaterialsData(materials, materialEmojis);
     localStorage.setItem("geoprospect_onboarding_completed_v3", "true");
     localStorage.setItem("geoprospect_cgu_accepted", "true");
+    const resolvedBaseMap = (selectedMapStyle === "opentopo" || selectedMapStyle === "streets") ? "opentopo" : "satellite";
     localStorage.setItem("mapStyle", selectedMapStyle);
+    localStorage.setItem("baseMap", resolvedBaseMap);
     localStorage.setItem("app_design_theme", selectedDesignTheme);
     localStorage.setItem("app_theme", selectedAppTheme);
     localStorage.setItem("gpsStyle", selectedGpsStyle);
@@ -329,6 +331,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
     if (onComplete) {
       onComplete({
         defaultMapStyle: selectedMapStyle,
+        baseMap: resolvedBaseMap,
         designTheme: selectedDesignTheme,
         theme: selectedAppTheme,
         gpsStyle: selectedGpsStyle
