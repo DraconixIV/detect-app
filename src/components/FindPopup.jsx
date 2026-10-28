@@ -226,7 +226,7 @@ export default function FindPopup({
     find.description = material || "Indéterminé";
     find.video_url = effectiveVideoUrl;
 
-    alert("Sauvegardé ✅");
+    alert("Sauvegardé");
     if (onUpdate) onUpdate();
   };
 
