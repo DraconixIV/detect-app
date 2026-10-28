@@ -355,8 +355,10 @@ export default function OnboardingStep4Categories({
                         }}
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1, minWidth: 0 }}>
-                          <TacticalPinIcon markerId={em} color={col} size={28} categoryName={catName} />
-                          <span style={{ fontSize: "14px", fontWeight: "400", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          <div style={{ display: "inline-flex", alignItems: "center", flexShrink: 0, transform: "translateY(2.5px)" }}>
+                            <TacticalPinIcon markerId={em} color={col} size={28} categoryName={catName} />
+                          </div>
+                          <span style={{ fontSize: "14px", fontWeight: "400", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: "1" }}>
                             {catName}
                           </span>
                           <span style={{ fontSize: "11px", fontWeight: "400", color: textSub, flexShrink: 0 }}>

@@ -377,11 +377,11 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                                 setColorPickerCat(isPickingColor ? null : catName);
                               }}
                               title="Changer la couleur du repère"
-                              style={{ cursor: "pointer", display: "inline-flex", alignItems: "center", flexShrink: 0 }}
+                              style={{ cursor: "pointer", display: "inline-flex", alignItems: "center", flexShrink: 0, transform: "translateY(2.5px)" }}
                             >
                               <TacticalPinIcon markerId={emoji} color={color} size={24} categoryName={catName} />
                             </div>
-                            <span style={{ fontWeight: "400", fontSize: "13.5px", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            <span style={{ fontWeight: "400", fontSize: "13.5px", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: "1" }}>
                               {catName}
                             </span>
                             <span style={{ fontSize: "11px", color: textSub, flexShrink: 0 }}>

@@ -366,7 +366,7 @@ export default function StatsPanel({
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
-                    <div style={{ flexShrink: 0 }}>
+                    <div style={{ flexShrink: 0, display: "flex", alignItems: "center", transform: "translateY(2px)" }}>
                       <TacticalPinIcon
                         markerId={getCategoryMarker(seg.category)}
                         color={seg.color}
@@ -374,7 +374,7 @@ export default function StatsPanel({
                         categoryName={seg.category}
                       />
                     </div>
-                    <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{seg.category}</span>
+                    <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: "1" }}>{seg.category}</span>
                   </div>
                   <span style={{ color: textSub, fontSize: "12px", flexShrink: 0 }}>
                     {Math.round(seg.pct * 100)}%
@@ -397,13 +397,15 @@ export default function StatsPanel({
                 <div key={category}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12.5px", marginBottom: "4px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <TacticalPinIcon
-                        markerId={getCategoryMarker(category)}
-                        color={color}
-                        size={18}
-                        categoryName={category}
-                      />
-                      <span style={{ color: textMain }}>{category}</span>
+                      <div style={{ flexShrink: 0, display: "flex", alignItems: "center", transform: "translateY(2px)" }}>
+                        <TacticalPinIcon
+                          markerId={getCategoryMarker(category)}
+                          color={color}
+                          size={18}
+                          categoryName={category}
+                        />
+                      </div>
+                      <span style={{ color: textMain, lineHeight: "1" }}>{category}</span>
                     </div>
                     <span style={{ color: textSub }}>{count} ({pct}%)</span>
                   </div>
@@ -580,7 +582,7 @@ export default function StatsPanel({
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <div style={{ flexShrink: 0 }}>
+                    <div style={{ flexShrink: 0, display: "flex", alignItems: "center", transform: "translateY(2.5px)" }}>
                       <TacticalPinIcon
                         markerId={getCategoryMarker(category)}
                         color={color}
@@ -588,7 +590,7 @@ export default function StatsPanel({
                         categoryName={category}
                       />
                     </div>
-                    <span style={{ fontSize: "14px", color: textMain }}>{category}</span>
+                    <span style={{ fontSize: "14px", color: textMain, lineHeight: "1" }}>{category}</span>
                   </div>
 
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>

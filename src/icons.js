@@ -10,9 +10,9 @@ const PIN_SIZES = {
 };
 
 const HIGHLIGHTED_SIZES = {
-  small: { w: 28, h: 36, anchor: [14, 36], popup: [0, -34] },
-  medium: { w: 36, h: 46, anchor: [18, 46], popup: [0, -44] },
-  large: { w: 45, h: 58, anchor: [22.5, 58], popup: [0, -56] }
+  small: { w: 36, h: 42, anchor: [18, 35], popup: [0, -36] },
+  medium: { w: 46, h: 54, anchor: [23, 44], popup: [0, -46] },
+  large: { w: 56, h: 65, anchor: [28, 53], popup: [0, -56] }
 };
 
 /**

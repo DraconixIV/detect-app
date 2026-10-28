@@ -537,12 +537,51 @@ export function renderTacticalPinSvg(markerId, color = "#facc15", width = 36, he
   const marker = TACTICAL_MARKERS_BY_ID[markerId] || TACTICAL_MARKERS_BY_ID.autre;
   const safeColor = color || "#facc15";
 
-  const highlightAura = isHighlighted
-    ? `
-      <ellipse cx="18" cy="19" rx="17" ry="17" fill="${safeColor}" opacity="0.25"/>
-      <circle cx="18" cy="19" r="16" stroke="${safeColor}" stroke-width="1.2" stroke-dasharray="2 2" opacity="0.6"/>
-    `
-    : "";
+  if (isHighlighted) {
+    // Highly visible luminous luxury gold highlight pin for active sortie finds
+    const glowId = "sortieGlow_" + Math.random().toString(36).substring(2, 7);
+    return `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="${width}"
+           height="${height}"
+           viewBox="0 0 52 60"
+           fill="none">
+        <defs>
+          <radialGradient id="${glowId}" cx="50%" cy="40%" r="50%">
+            <stop offset="0%" stop-color="#fef08a" stop-opacity="0.95"/>
+            <stop offset="45%" stop-color="#facc15" stop-opacity="0.55"/>
+            <stop offset="85%" stop-color="#ca8a04" stop-opacity="0.2"/>
+            <stop offset="100%" stop-color="#ca8a04" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <!-- 1. Ambient Golden Halo Aura -->
+        <ellipse cx="26" cy="23" rx="25" ry="25" fill="url(#${glowId})"/>
+        <!-- 2. Golden Dotted Orbital Ring -->
+        <circle cx="26" cy="23" r="21.5" stroke="#facc15" stroke-width="1.8" stroke-dasharray="3 2" opacity="0.95"/>
+        <!-- 3. Elevated Pin Body with Rich Golden Stroke -->
+        <path
+          d="M26 6C16.6 6 9 13.6 9 23c0 10.5 14 24 17 26 3-2 17-15.5 17-26 0-9.4-7.6-17-17-17z"
+          fill="#16201a"
+          stroke="#facc15"
+          stroke-width="3"
+          stroke-linejoin="round"
+        />
+        <!-- 4. Inner Category Color Accent Ring -->
+        <path
+          d="M26 8C17.8 8 11.2 14.6 11.2 23c0 9 12 21 14.8 23 2.8-2 14.8-14 14.8-23 0-8.4-6.6-15-14.8-15z"
+          fill="none"
+          stroke="${safeColor}"
+          stroke-width="1.6"
+        />
+        <!-- 5. Centered Tactical Icon -->
+        <g transform="translate(8, 5)">
+          ${marker.svgInner}
+        </g>
+        <!-- 6. Diamond Sparkle Star (Top-Right) -->
+        <path d="M42 3 Q42 8 47 8 Q42 8 42 13 Q42 8 37 8 Q42 8 42 3 Z" fill="#ffffff" stroke="#facc15" stroke-width="0.8"/>
+      </svg>
+    `.trim();
+  }
 
   return `
     <svg xmlns="http://www.w3.org/2000/svg"
@@ -550,12 +589,11 @@ export function renderTacticalPinSvg(markerId, color = "#facc15", width = 36, he
          height="${height}"
          viewBox="0 0 36 46"
          fill="none">
-      ${highlightAura}
       <path
         d="M18 2C8.6 2 1 9.6 1 19c0 10.5 14 24 17 26 3-2 17-15.5 17-26 0-9.4-7.6-17-17-17z"
         fill="#242c26"
         stroke="${safeColor}"
-        stroke-width="${isHighlighted ? "2.6" : "2"}"
+        stroke-width="2"
         stroke-linejoin="round"
       />
       ${marker.svgInner}
