@@ -29,14 +29,14 @@ export default function TrackHistory({
                 }}
               >
                 <h3>
-                  🛰️{" "}
+                  
                   {
                     savedTrack.session_name
                   }
                 </h3>
 
                 <p>
-                  📍 Points GPS :
+                  Points GPS :
                   {" "}
                   {
                     savedTrack
@@ -46,7 +46,7 @@ export default function TrackHistory({
                 </p>
 
                 <p>
-                  📅 Créé le :
+                  Créé le :
                   <br />
                   {new Date(
                     savedTrack.created_at

@@ -462,7 +462,7 @@ export default function MapTopBar({
           >
             {Object.keys(categoriesData.categories || {}).sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" })).map((cat) => {
               const active = filters.includes(cat);
-              const emoji = categoriesData.emojis?.[cat] || "🏷️";
+              const emoji = categoriesData.emojis?.[cat] || "autre";
               return (
                 <button
                   key={cat}

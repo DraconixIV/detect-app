@@ -16,8 +16,8 @@ export default function MapControls({
         }
       >
         {followGps
-          ? "📍 GPS ON"
-          : "📍 GPS OFF"}
+          ? "GPS ON"
+          : "GPS OFF"}
       </button>
 
       <button
@@ -30,8 +30,8 @@ export default function MapControls({
         }
       >
         {mapStyle === "plan"
-          ? "🛰️ Satellite"
-          : "🗺️ Plan"}
+          ? "Satellite"
+          : "Plan"}
       </button>
 
       <button
@@ -41,7 +41,7 @@ export default function MapControls({
           )
         }
       >
-        🔥 Heatmap
+        Heatmap
       </button>
     </>
   );

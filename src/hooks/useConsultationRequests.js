@@ -69,7 +69,7 @@ export default function useConsultationRequests(workspace, setWorkspace, setToas
         }
         if (setToast) {
           setToast({
-            message: `⚠️ Le propriétaire (${ownerClean}) a interrompu le partage de sa carte.`,
+            message: `Le propriétaire (${ownerClean}) a interrompu le partage de sa carte.`,
             type: "warning"
           });
         }
@@ -125,7 +125,7 @@ export default function useConsultationRequests(workspace, setWorkspace, setToas
 
     if (setToast) {
       setToast({
-        message: `👁️ Carte partagée en lecture seule avec ${req.requesterName}.`,
+        message: `Carte partagée en lecture seule avec ${req.requesterName}.`,
         type: "success"
       });
     }

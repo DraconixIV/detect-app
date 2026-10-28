@@ -44,7 +44,7 @@ export default function WikiPanel({ finds, photos, onOpenFindDetails, onUpdate }
 
       selectedCoin.clean_description = editedDescription;
       setIsEditing(false);
-      alert("Notice numismatique enregistrée ! ✅");
+      alert("Notice numismatique enregistrée !");
       if (onUpdate) onUpdate();
     } catch (err) {
       console.error(err);
@@ -115,11 +115,11 @@ export default function WikiPanel({ finds, photos, onOpenFindDetails, onUpdate }
       composition = "Bronze (Cu-Sn)";
     }
 
-    const generatedMarkdown = `### 🏛️ CABINET NUMISMATIQUE : ${selectedCoin.title || "Monnaie à identifier"}
+    const generatedMarkdown = `### CABINET NUMISMATIQUE : ${selectedCoin.title || "Monnaie à identifier"}
 
 ---
 
-#### 📋 CARACTÉRISTIQUES DE L'EXEMPLAIRE
+#### CARACTÉRISTIQUES DE L'EXEMPLAIRE
 *   **Monnaie** : ${selectedCoin.title || "Non renseignée"}
 *   **Émetteur / Autorité** : ${regime}
 *   **Période historique** : ${epoque}
@@ -128,18 +128,18 @@ export default function WikiPanel({ finds, photos, onOpenFindDetails, onUpdate }
 
 ---
 
-#### 📜 LE RÉCIT HISTORIQUE
+#### LE RÉCIT HISTORIQUE
 ${contexte}
 
 ---
 
-#### 🪙 SYMBOLIQUE ET ICONOGRAPHIE
+#### SYMBOLIQUE ET ICONOGRAPHIE
 *   **Sur l'Avers (Face)**, le graveur a représenté ${aversDesc.charAt(0).toLowerCase() + aversDesc.slice(1)}
 *   **Au Revers (Pile)**, on contemple ${reversDesc.charAt(0).toLowerCase() + reversDesc.slice(1)}
 
 ---
 
-#### 🔍 L'AVIS DU COLLECTIONNEUR
+#### L'AVIS DU COLLECTIONNEUR
 *   **Conservation et Aspect** : Cet exemplaire présente une usure liée à sa circulation d'époque. Sa patine témoigne de son long séjour en terre, préservant les reliefs essentiels qui racontent son histoire.
 *   **Anecdote et Rôle** : Cette monnaie d'usage quotidien servait aux transactions courantes du peuple de l'époque. Elle constitue un lien direct et palpable avec le quotidien des générations passées.`;
 
@@ -304,7 +304,7 @@ ${contexte}
       {/* Header section with Museum Title */}
       <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
         <h2 style={{ margin: 0, fontSize: "22px", fontWeight: "400", letterSpacing: "-0.5px" }}>
-          🏛️ Musée numismatique
+          Musée numismatique
         </h2>
         <p style={{ margin: 0, fontSize: "12px", opacity: 0.7 }}>
           Consultez et valorisez l'histoire de vos plus belles monnaies trouvées.
@@ -325,19 +325,19 @@ ${contexte}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
           <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "400", textTransform: "uppercase" }}>Total monnaies</span>
-          <span style={{ fontSize: "24px", fontWeight: "400"}}>{stats.total} 🪙</span>
+          <span style={{ fontSize: "24px", fontWeight: "400"}}>{stats.total}</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
           <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "400", textTransform: "uppercase", color: "#fbbf24" }}>Or</span>
-          <span style={{ fontSize: "24px", fontWeight: "400", color: "#fbbf24" }}>{stats.goldCount} ✨</span>
+          <span style={{ fontSize: "24px", fontWeight: "400", color: "#fbbf24" }}>{stats.goldCount}</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
           <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "400", textTransform: "uppercase", color: "#9ca3af" }}>Argent</span>
-          <span style={{ fontSize: "24px", fontWeight: "400", color: "#e5e7eb" }}>{stats.silverCount} 🥈</span>
+          <span style={{ fontSize: "24px", fontWeight: "400", color: "#e5e7eb" }}>{stats.silverCount}</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
           <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "400", textTransform: "uppercase", color: "#f97316" }}>Bronze / Cuivre</span>
-          <span style={{ fontSize: "24px", fontWeight: "400", color: "#fdba74" }}>{stats.bronzeCount} 🥉</span>
+          <span style={{ fontSize: "24px", fontWeight: "400", color: "#fdba74" }}>{stats.bronzeCount}</span>
         </div>
       </div>
 
@@ -410,7 +410,7 @@ ${contexte}
       {/* Grid List of Coins */}
       {filteredCoins.length === 0 ? (
         <div style={{ textAlign: "center", padding: "40px", opacity: 0.5, fontSize: "13px" }}>
-          📭 Aucune monnaie ne correspond aux critères de recherche.
+          Aucune monnaie ne correspond aux critères de recherche.
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "16px" }}>
@@ -514,7 +514,7 @@ ${contexte}
             {/* Header */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: "11px", opacity: 0.6, fontWeight: "400", textTransform: "uppercase", letterSpacing: "1px" }}>
-                🏛️ Exposition collection
+                Exposition collection
               </span>
               <button
                 onClick={() => setSelectedCoin(null)}
@@ -558,7 +558,7 @@ ${contexte}
                 </div>
               </div>
               <span style={{ fontSize: "10px", opacity: 0.5 }}>
-                👆 Cliquez sur la pièce pour la retourner
+                Cliquez sur la pièce pour la retourner
               </span>
             </div>
 
@@ -580,7 +580,7 @@ ${contexte}
             {/* Notice header block */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: "11px", opacity: 0.6, fontWeight: "400", textTransform: "uppercase" }}>
-                📜 Notice historique
+                Notice historique
               </span>
               {!isEditing && selectedCoin.clean_description && (
                 <button
@@ -595,7 +595,7 @@ ${contexte}
                     padding: 0
                   }}
                 >
-                  ✏️ Modifier
+                  Modifier
                 </button>
               )}
             </div>
@@ -619,7 +619,7 @@ ${contexte}
                 gap: "6px"
               }}
             >
-              🪄 Générer / Mettre à jour la Notice
+              Générer / Mettre à jour la Notice
             </button>
 
             {/* Historical / Wiki details rendering or inline editor */}
@@ -659,7 +659,7 @@ ${contexte}
                       cursor: "pointer"
                     }}
                   >
-                    💾 Enregistrer
+                    Enregistrer
                   </button>
                   <button
                     onClick={() => setIsEditing(false)}
@@ -694,11 +694,11 @@ ${contexte}
                 >
                   {selectedCoin.clean_description ? (
                     <div style={{ whiteSpace: "pre-wrap", fontFamily: "inherit" }}>
-                      {selectedCoin.clean_description.replace("### 🏛️ FICHE WIKI NUMISMATIQUE", "")}
+                      {selectedCoin.clean_description.replace("### FICHE WIKI NUMISMATIQUE", "")}
                     </div>
                   ) : (
                     <div style={{ textAlign: "center", opacity: 0.5, padding: "10px 0" }}>
-                      📝 Aucune description numismatique rédigée. Cliquez sur le bouton ci-dessus pour la générer !
+                      Aucune description numismatique rédigée. Cliquez sur le bouton ci-dessus pour la générer !
                     </div>
                   )}
                 </div>
@@ -724,7 +724,7 @@ ${contexte}
                   cursor: "pointer"
                 }}
               >
-                ✏️ Éditer la trouvaille
+                Éditer la trouvaille
               </button>
 
               {selectedCoin.identification_link && (
@@ -748,7 +748,7 @@ ${contexte}
                     justifyContent: "center"
                   }}
                 >
-                  🌐 Catalogue Extérieur
+                  Catalogue Extérieur
                 </a>
               )}
             </div>

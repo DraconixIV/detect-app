@@ -64,7 +64,7 @@ export default class ErrorBoundary extends React.Component {
             boxSizing: "border-box"
           }}
         >
-          <div style={{ fontSize: "44px", marginBottom: "14px" }}>🧭</div>
+          <div style={{ width: "44px", height: "44px", margin: "0 auto 14px", borderRadius: "50%", background: "#2563eb", display: "flex", alignItems: "center", justifyContent: "center" }}><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
           <h2 style={{ fontSize: "20px", fontWeight: "400", margin: "0 0 10px 0", color: "#f8fafc" }}>
             GeoProspect
           </h2>
@@ -87,7 +87,7 @@ export default class ErrorBoundary extends React.Component {
                 boxShadow: "0 4px 14px rgba(37, 99, 235, 0.4)"
               }}
             >
-              🔄 Recharger
+              Recharger
             </button>
             <button
               onClick={this.handleResetStorage}
@@ -102,7 +102,7 @@ export default class ErrorBoundary extends React.Component {
                 fontSize: "13px"
               }}
             >
-              🧹 Vider le cache & redémarrer
+              Vider le cache & redémarrer
             </button>
           </div>
         </div>

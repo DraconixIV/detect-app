@@ -360,7 +360,7 @@ function App() {
       const next = !prev;
       localStorage.setItem("showLiveSortieTrack", String(next));
       setToast({
-        message: next ? "👁️ Tracé GPS affiché sur la carte" : "🙈 Tracé GPS masqué",
+        message: next ? "Tracé GPS affiché sur la carte" : "Tracé GPS masqué",
         type: "info"
       });
       return next;
@@ -434,7 +434,7 @@ function App() {
     if (!("geolocation" in navigator)) {
       if (showFeedback) {
         setToast({
-          message: "⚠️ Géolocalisation non prise en charge par ce navigateur.",
+          message: "Géolocalisation non prise en charge par ce navigateur.",
           type: "error"
         });
       }
@@ -485,12 +485,12 @@ function App() {
           if (showFeedback) {
             if (finalErr.code === 1) {
               setToast({
-                message: "⚠️ Accès GPS refusé. Veuillez autoriser la localisation ou ouvrir dans Chrome/Safari (⋮).",
+                message: "Accès GPS refusé. Veuillez autoriser la localisation ou ouvrir dans Chrome/Safari (⋮).",
                 type: "error"
               });
             } else {
               setToast({
-                message: "⚠️ Signal GPS indisponible. Vérifiez vos paramètres ou ouvrez dans Chrome/Safari (⋮).",
+                message: "Signal GPS indisponible. Vérifiez vos paramètres ou ouvrez dans Chrome/Safari (⋮).",
                 type: "error"
               });
             }
@@ -646,10 +646,8 @@ function App() {
       let type = "info";
       const normalized = String(msg).toLowerCase();
       if (
-        normalized.includes("✅") ||
         normalized.includes("succès") ||
         normalized.includes("success") ||
-        normalized.includes("✨") ||
         normalized.includes("enregistré") ||
         normalized.includes("démarrée") ||
         normalized.includes("démarré") ||
@@ -658,7 +656,6 @@ function App() {
       ) {
         type = "success";
       } else if (
-        normalized.includes("⚠️") ||
         normalized.includes("erreur") ||
         normalized.includes("échec") ||
         normalized.includes("impossible") ||
@@ -688,7 +685,7 @@ function App() {
         setFollowGps(true);
         startSortieRaw(position);
         setToast({
-          message: `👥 Session d'équipe rejointe ! Tracé GPS en direct activé.`,
+          message: `Session d'équipe rejointe ! Tracé GPS en direct activé.`,
           type: "success"
         });
       }
@@ -880,7 +877,7 @@ function App() {
     setShowForm(true);
     setShowMenu(true);
     setToast({
-      message: "📍 Coordonnées ciblées depuis la carte. Remplissez le formulaire !",
+      message: "Coordonnées ciblées depuis la carte. Remplissez le formulaire !",
       type: "success"
     });
   };
@@ -954,7 +951,7 @@ function App() {
           sessionCode: currentSessionCode
         }, photoVal);
 
-        alert("Trouvaille sauvegardée localement (Hors-ligne) ! Elle sera synchronisée dès le retour d'internet. 💾");
+        alert("Trouvaille sauvegardée localement (Hors-ligne) ! Elle sera synchronisée dès le retour d'internet.");
       } else {
         const createdFind = await createFind({
           position: finalPosition,
@@ -1006,7 +1003,7 @@ function App() {
 
       await loadFinds();
       if (quickParams && quickParams.newTitle) {
-        alert("📸 Trouvaille rapide enregistrée !");
+        alert("Trouvaille rapide enregistrée !");
       }
     } catch (error) {
       console.error("Supabase creation failed, falling back to local storage:", error);
@@ -1024,7 +1021,7 @@ function App() {
           sessionCode: currentSessionCode
         }, photoVal);
 
-        alert("⚠️ Connexion instable. Votre trouvaille a été sauvegardée localement (Hors-ligne) ! 💾");
+        alert("Connexion instable. Votre trouvaille a été sauvegardée localement (Hors-ligne) !");
 
         const firstAvailableCat = Object.keys(loadCategoriesData().categories || {})[0] || "";
         setCustomDate("");
@@ -1117,7 +1114,7 @@ function App() {
         const offlineId = Number(findId.replace("offline-", ""));
         await deletePendingFind(offlineId);
         await loadFinds();
-        setToast({ message: "🗑️ Trouvaille supprimée.", type: "info" });
+        setToast({ message: "Trouvaille supprimée.", type: "info" });
         return;
       }
 
@@ -1161,7 +1158,7 @@ function App() {
       }
 
       await loadFinds();
-      setToast({ message: "🗑️ Trouvaille supprimée avec succès.", type: "info" });
+      setToast({ message: "Trouvaille supprimée avec succès.", type: "info" });
     } catch (fatalErr) {
       console.error("deleteFind fatal error:", fatalErr);
       alert("Erreur imprévue lors de la suppression.");
@@ -1389,14 +1386,13 @@ function App() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
-            <span style={{ fontSize: "16px", flexShrink: 0 }}>✨</span>
             <div style={{ minWidth: 0 }}>
               <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontSize: "13px", fontWeight: "400", color: "#fef08a" }}>
                 Sortie du {normalizeDateStr(selectedDate)}
               </div>
               <div style={{ fontSize: "11px", color: "#94a3b8", fontWeight: "400"}}>
                 {selectedSortieFindsCount > 0 ? (
-                  <>🪙 <strong style={{ color: "#facc15" }}>{selectedSortieFindsCount}</strong> trouvaille{selectedSortieFindsCount > 1 ? "s" : ""} en surbrillance</>
+                  <><strong style={{ color: "#facc15" }}>{selectedSortieFindsCount}</strong> trouvaille{selectedSortieFindsCount > 1 ? "s" : ""} en surbrillance</>
                 ) : (
                   <>Tracé GPS de la sortie affiché</>
                 )}

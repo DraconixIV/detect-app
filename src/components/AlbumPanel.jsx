@@ -961,7 +961,7 @@ export default function AlbumPanel({
                         gap: "6px"
                       }}
                     >
-                      <span>{forcePhotoView ? "🪙 Voir Flip Coin 3D" : "🔍 Voir Photo et Zoom"}</span>
+                      <span>{forcePhotoView ? "Voir Flip Coin 3D" : "Voir Photo et Zoom"}</span>
                     </button>
                   )}
                 </div>
@@ -1122,7 +1122,6 @@ export default function AlbumPanel({
                       </div>
                     </div>
                     <div style={{ fontSize: "12px", color: "#ffffff", fontWeight: "400", display: "flex", alignItems: "center", gap: "4px" }}>
-                      <span>👆</span>
                       <span>Tapez sur la pièce pour voir l'autre face ({lightboxCoinFlipped ? "Revers" : "Avers"})</span>
                     </div>
                   </div>

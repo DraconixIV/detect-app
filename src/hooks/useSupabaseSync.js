@@ -150,7 +150,7 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
       if (syncedCount > 0) {
         if (setToast) {
           setToast({
-            message: `🔄 Synchronisation : ${syncedCount} trouvaille(s) transférée(s) avec succès !`,
+            message: `Synchronisation : ${syncedCount} trouvaille(s) transférée(s) avec succès !`,
             type: "success"
           });
         }
@@ -230,7 +230,7 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
 
                 if (currentWs.mode === "session" && decodedRow.user_code !== myCode && setToast) {
                   setToast({
-                    message: `✨ ${decodedRow.finder_name || "Un coéquipier"} vient de trouver : ${decodedRow.title || decodedRow.category} !`,
+                    message: `${decodedRow.finder_name || "Un coéquipier"} vient de trouver : ${decodedRow.title || decodedRow.category} !`,
                     type: "success"
                   });
                 }
@@ -300,7 +300,7 @@ export default function useSupabaseSync(setToast, workspace = { mode: "personal"
                 }
                 if (setToast) {
                   setToast({
-                    message: `✨ ${payload.finder_name || "Un coéquipier"} vient de trouver : ${payload.title || payload.category} !`,
+                    message: `${payload.finder_name || "Un coéquipier"} vient de trouver : ${payload.title || payload.category} !`,
                     type: "success"
                   });
                 }

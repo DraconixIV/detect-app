@@ -77,13 +77,13 @@ export default function ChaosBenchmarkModal({
       clearInterval(botsIntervalRef.current);
       setIsSimulating(false);
       setActiveBotsCount(0);
-      addLog("🛑 Arrêt de la simulation des bots.");
+      addLog("Arrêt de la simulation des bots.");
       return;
     }
 
     setIsSimulating(true);
     setActiveBotsCount(count);
-    addLog(`🚀 Démarrage de ${count} prospecteurs virtuels simultanés sur la carte !`);
+    addLog(`Démarrage de ${count} prospecteurs virtuels simultanés sur la carte !`);
 
     const centerLat = currentPosition?.[0] || 48.8566;
     const centerLng = currentPosition?.[1] || 2.3522;
@@ -142,7 +142,7 @@ export default function ChaosBenchmarkModal({
       setFinds((prev) => [...newTestFinds, ...prev]);
     }
     setInjectedFindsCount((prev) => prev + count);
-    addLog(`✨ ${count} trouvailles de test injectées sur la carte.`);
+    addLog(`${count} trouvailles de test injectées sur la carte.`);
   };
 
   // 4. Action: Test Offline Queue with 10 Finds
@@ -162,7 +162,7 @@ export default function ChaosBenchmarkModal({
     }
 
     await refreshOfflineCount();
-    addLog("💾 5 trouvailles ajoutées dans la file hors-ligne locale (IndexedDB).");
+    addLog("5 trouvailles ajoutées dans la file hors-ligne locale (IndexedDB).");
   };
 
   // 5. Action: 1-Click Total Cleanup
@@ -193,7 +193,7 @@ export default function ChaosBenchmarkModal({
       // Ignored
     }
 
-    addLog("🧹 Nettoyage total effectué : base, carte et bots réinitialisés !");
+    addLog("Nettoyage total effectué : base, carte et bots réinitialisés !");
   };
 
   const isLight = theme === "light";
@@ -246,7 +246,7 @@ export default function ChaosBenchmarkModal({
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "24px" }}>⚡</span>
+            
             <div>
               <h2 style={{ margin: 0, fontSize: "16px", fontWeight: "400", color: textMain }}>
                 Banc de test de charge
@@ -338,7 +338,7 @@ export default function ChaosBenchmarkModal({
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
                 <div style={{ fontSize: "13px", fontWeight: "400", color: textMain }}>
-                  🤖 Simulation de Prospecteurs ({activeBotsCount} actifs)
+                  Simulation de Prospecteurs ({activeBotsCount} actifs)
                 </div>
                 <div style={{ fontSize: "11px", color: textSub }}>
                   Déplacements GPS en direct à 1 Hz
@@ -358,7 +358,7 @@ export default function ChaosBenchmarkModal({
                     cursor: "pointer"
                   }}
                 >
-                  Arrêter 🛑
+                  Arrêter
                 </button>
               )}
             </div>
@@ -411,7 +411,7 @@ export default function ChaosBenchmarkModal({
                     cursor: "pointer"
                   }}
                 >
-                  500 Bots 🔥
+                  500 Bots
                 </button>
               </div>
             )}
@@ -432,7 +432,7 @@ export default function ChaosBenchmarkModal({
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
                 <div style={{ fontSize: "13px", fontWeight: "400", color: textMain }}>
-                  🗺️ Charge Massive de Repères ({injectedFindsCount} injectés)
+                  Charge Massive de Repères ({injectedFindsCount} injectés)
                 </div>
                 <div style={{ fontSize: "11px", color: textSub }}>
                   Teste le rendu Leaflet, le clustering et le lag graphique
@@ -487,7 +487,7 @@ export default function ChaosBenchmarkModal({
                   cursor: "pointer"
                 }}
               >
-                +500 Repères 🔥
+                +500 Repères
               </button>
             </div>
           </div>
@@ -506,7 +506,7 @@ export default function ChaosBenchmarkModal({
           >
             <div>
               <div style={{ fontSize: "13px", fontWeight: "400", color: textMain }}>
-                💾 File d'Attente Hors-Ligne ({offlinePendingCount} en attente)
+                File d'Attente Hors-Ligne ({offlinePendingCount} en attente)
               </div>
               <div style={{ fontSize: "11px", color: textSub }}>
                 Simule l'enregistrement de trouvailles sans connexion
@@ -525,7 +525,7 @@ export default function ChaosBenchmarkModal({
                 cursor: "pointer"
               }}
             >
-              +5 Hors-ligne 💾
+              +5 Hors-ligne
             </button>
           </div>
 
@@ -543,7 +543,7 @@ export default function ChaosBenchmarkModal({
           >
             <div>
               <div style={{ fontSize: "13px", fontWeight: "400", color: "#ef4444" }}>
-                🧹 Nettoyage Total (1-Clic)
+                Nettoyage Total (1-Clic)
               </div>
               <div style={{ fontSize: "11px", color: textSub }}>
                 Supprime immédiatement tous les bots et trouvailles de test
@@ -563,7 +563,7 @@ export default function ChaosBenchmarkModal({
                 boxShadow: "0 2px 8px rgba(239, 68, 68, 0.3)"
               }}
             >
-              Purger Tout 🧹
+              Purger Tout
             </button>
           </div>
 

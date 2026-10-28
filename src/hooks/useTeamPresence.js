@@ -102,7 +102,7 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
       }
       if (setToast) {
         setToast({
-          message: "🚫 Vous avez été banni de cette session d'équipe.",
+          message: "Vous avez été banni de cette session d'équipe.",
           type: "error"
         });
       }
@@ -182,7 +182,7 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
           // Trigger join popup toast
           if (!isInitialSyncRef.current && setToast) {
             setToast({
-              message: `👋 ${joinerName} a rejoint la session d'équipe !`,
+              message: `${joinerName} a rejoint la session d'équipe !`,
               type: "success"
             });
           }
@@ -200,7 +200,7 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
           if (setToast) {
             const leaverName = oldTeammate?.userName || `Détecteuriste ${key.slice(-4)}`;
             setToast({
-              message: `🚪 ${leaverName} a quitté la session.`,
+              message: `${leaverName} a quitté la session.`,
               type: "info"
             });
           }
@@ -215,7 +215,7 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
       if (!payload || payload.user_code === myCode) return;
       if (setToast) {
         setToast({
-          message: `✨ ${payload.finder_name || "Un coéquipier"} vient de trouver : ${payload.title || payload.category} !`,
+          message: `${payload.finder_name || "Un coéquipier"} vient de trouver : ${payload.title || payload.category} !`,
           type: "success"
         });
       }
@@ -243,7 +243,7 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
         }
         if (setToast) {
           setToast({
-            message: "⚠️ Vous avez été éjecté de la session par l'administrateur.",
+            message: "Vous avez été éjecté de la session par l'administrateur.",
             type: "error"
           });
         }
@@ -266,7 +266,7 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
         }
         if (setToast) {
           setToast({
-            message: "🚫 Vous avez été banni de cette session par l'administrateur.",
+            message: "Vous avez été banni de cette session par l'administrateur.",
             type: "error"
           });
         }
@@ -285,7 +285,7 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
       setSessionLockedState(sessionCode, locked);
       if (setToast) {
         setToast({
-          message: locked ? "🔒 L'hôte a verrouillé la session." : "🔓 L'hôte a déverrouillé la session.",
+          message: locked ? "L'hôte a verrouillé la session." : "L'hôte a déverrouillé la session.",
           type: "info"
         });
       }
@@ -421,7 +421,7 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
 
     if (setToast) {
       setToast({
-        message: `⚠️ ${targetUserName || cleanTarget} a été éjecté de la session.`,
+        message: `${targetUserName || cleanTarget} a été éjecté de la session.`,
         type: "info"
       });
     }
@@ -452,7 +452,7 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
 
     if (setToast) {
       setToast({
-        message: `🚫 ${targetUserName || cleanTarget} a été banni définitivement.`,
+        message: `${targetUserName || cleanTarget} a été banni définitivement.`,
         type: "error"
       });
     }
@@ -465,7 +465,7 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
     setBannedList(updated || []);
     if (setToast) {
       setToast({
-        message: `✓ Utilisateur retiré de la liste noire.`,
+        message: `Utilisateur retiré de la liste noire.`,
         type: "success"
       });
     }
@@ -488,7 +488,7 @@ export default function useTeamPresence(workspace, position, setToast, setWorksp
 
     if (setToast) {
       setToast({
-        message: newLockedState ? "🔒 Session verrouillée aux nouveaux membres." : "🔓 Session ouverte.",
+        message: newLockedState ? "Session verrouillée aux nouveaux membres." : "Session ouverte.",
         type: "info"
       });
     }

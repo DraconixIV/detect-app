@@ -42,7 +42,7 @@ function saveToLocalStorage(record) {
     localStorage.setItem(BACKUP_KEY, JSON.stringify(existing));
 
     if (window.__showToast) {
-      window.__showToast("💾 Sauvegardé en mémoire locale de secours (sans photo).", "success");
+      window.__showToast("Sauvegardé en mémoire locale de secours (sans photo).", "success");
     }
     return true;
   } catch (err) {
@@ -134,7 +134,7 @@ export async function addPendingFind(findData, photoFile) {
 
         // Trigger a toast notification to warn the user that the photo was omitted
         if (window.__showToast) {
-          window.__showToast("⚠️ Enregistré hors-ligne, mais la photo a été ignorée (trop lourde ou incompatible).", "warning");
+          window.__showToast("Enregistré hors-ligne, mais la photo a été ignorée (trop lourde ou incompatible).", "warning");
         }
         return true;
       } catch (retryError) {

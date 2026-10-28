@@ -874,7 +874,7 @@ export async function deleteFind(
     }
 
     alert(
-      "Trouvaille supprimée ✅"
+      "Trouvaille supprimée"
     );
 
     return true;

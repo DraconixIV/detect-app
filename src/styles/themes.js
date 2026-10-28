@@ -2,7 +2,7 @@ export const THEMES = {
   tactical: {
     id: "tactical",
     name: "Cockpit Tactique (XP)",
-    icon: "🎛️",
+    icon: "",
     badge: "STYLE PRO",
     description: "Noir carbone, rouge/orange technique et affichage télémétrie LCD haute lisibilité.",
     colors: {
@@ -27,7 +27,7 @@ export const THEMES = {
   heritage: {
     id: "heritage",
     name: "Explorateur Antique",
-    icon: "📜",
+    icon: "",
     badge: "HISTOIRE ET CASSINI",
     description: "Laiton brossé, cuir vieilli, or patiné et esprit cartographie ancienne.",
     colors: {
@@ -52,7 +52,7 @@ export const THEMES = {
   stealth: {
     id: "stealth",
     name: "Radar Furtif OLED",
-    icon: "📡",
+    icon: "",
     badge: "SONAR / 100% BATTERIE",
     description: "Noir absolu OLED, vert phosphorescent radar et cyan néon pour un contraste maximal.",
     colors: {
@@ -77,7 +77,7 @@ export const THEMES = {
   outdoor: {
     id: "outdoor",
     name: "Outdoor Pro (Garmin)",
-    icon: "🌲",
+    icon: "",
     badge: "SPORT ET AVENTURE",
     description: "Bleu ardoise profond, orange vif et blanc glacier pour une ergonomie outdoor moderne.",
     colors: {

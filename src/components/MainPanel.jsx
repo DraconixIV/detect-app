@@ -67,13 +67,13 @@ export default function MainPanel({
           setShowForm(true)
         }
       >
-        ➕ Ajouter une trouvaille
+        Ajouter une trouvaille
       </ModernButton>
 
       <ModernButton
         onClick={saveTrack}
       >
-        💾 Sauvegarder sortie
+        Sauvegarder sortie
       </ModernButton>
 
       <MapControls

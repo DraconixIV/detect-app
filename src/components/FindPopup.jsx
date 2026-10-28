@@ -241,7 +241,7 @@ export default function FindPopup({
       const file = e.target.files?.[0];
       if (!file) return;
       if (file.size > 50 * 1024 * 1024) {
-        alert("⚠️ Vidéo trop volumineuse (max 50 Mo). Privilégiez un court extrait de 5 à 15 secondes.");
+        alert("Vidéo trop volumineuse (max 50 Mo). Privilégiez un court extrait de 5 à 15 secondes.");
         return;
       }
 
@@ -310,7 +310,7 @@ export default function FindPopup({
         }
         await loadPhotos();
 
-        alert("Vidéo enregistrée avec succès ! 🎥");
+        alert("Vidéo enregistrée avec succès !");
         if (onUpdate) onUpdate();
       } catch (err) {
         console.error("Video upload error:", err);
@@ -522,7 +522,7 @@ export default function FindPopup({
       }
       await loadPhotos();
       if (onUpdate) onUpdate();
-      alert("Photos alignées et cadrées avec succès ! ✨");
+      alert("Photos alignées et cadrées avec succès !");
     } catch (err) {
       console.error(err);
       alert(err.message || "Une erreur est survenue lors de la sauvegarde.");
@@ -690,7 +690,7 @@ export default function FindPopup({
 
           {isReadOnly && (
             <span style={{ fontSize: "10px", background: "rgba(245, 158, 11, 0.15)", border: "1px solid rgba(245, 158, 11, 0.25)", color: "#fbbf24", padding: "2px 6px", borderRadius: "6px", fontWeight: "400", whiteSpace: "nowrap" }}>
-              🔒 Lecture
+              Lecture
             </span>
           )}
         </div>
@@ -1551,7 +1551,15 @@ export default function FindPopup({
             fontFamily: "system-ui, sans-serif"
           }}
         >
-          <span style={{ fontSize: "36px", marginBottom: "16px" }}>⚙️</span>
+          <div style={{
+            width: "36px",
+            height: "36px",
+            borderRadius: "50%",
+            border: "3px solid rgba(255, 255, 255, 0.2)",
+            borderTopColor: "#38bdf8",
+            animation: "spin 1s linear infinite",
+            marginBottom: "16px"
+          }} />
           <span style={{ fontSize: "16px", fontWeight: "400"}}>Alignement et compression des photos en cours...</span>
         </div>
       )}

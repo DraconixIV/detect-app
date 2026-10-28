@@ -241,7 +241,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
               boxShadow: "0 8px 24px rgba(37, 99, 235, 0.4)"
             }}
           >
-            🔒
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           </div>
 
           <h2 style={{ margin: "0 0 6px 0", fontSize: "18px", fontWeight: "400", letterSpacing: "-0.3px" }}>
@@ -370,7 +370,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                 fontSize: "20px"
               }}
             >
-              🧭
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
             </div>
             <div>
               <div style={{ fontSize: "16px", fontWeight: "400", color: "#ffffff", display: "flex", alignItems: "center", gap: "8px" }}>
@@ -413,7 +413,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                 gap: "6px"
               }}
             >
-              <span>🔄</span> {loading ? "..." : "Actualiser"}
+              {loading ? "..." : "Actualiser"}
             </button>
 
             <button
@@ -429,7 +429,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                 cursor: "pointer"
               }}
             >
-              🧭 Aller sur l'App
+              Aller sur l'App
             </button>
 
             <button
@@ -446,7 +446,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
               }}
               title="Verrouiller"
             >
-              🔒
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </button>
           </div>
         </div>
@@ -467,7 +467,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "12px" }}>
-            <span style={{ fontSize: "20px" }}>🛡️</span>
+            <span style={{ fontSize: "20px" }}></span>
             <div>
               <div style={{ fontWeight: "400", color: "#38bdf8", letterSpacing: "-0.2px" }}>
                 Mode développeur actif sur cet appareil
@@ -495,7 +495,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
               transition: "all 0.2s"
             }}
           >
-            <span>🗑️</span> Remettre les clics à zéro
+            Remettre les clics à zéro
           </button>
         </div>
 
@@ -511,7 +511,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
             }}
           >
             <div style={{ fontSize: "13px", fontWeight: "400", color: "#fbbf24", marginBottom: "6px" }}>
-              ⚡ Configuration Supabase (Optionnel en 1 clic)
+              Configuration Supabase (Optionnel en 1 clic)
             </div>
             <p style={{ margin: "0 0 10px 0", fontSize: "11.5px", color: "#fef3c7", lineHeight: "1.4" }}>
               Pour enregistrer automatiquement l'historique détaillé des clics et des visiteurs, exécutez ce script SQL dans votre console Supabase (SQL Editor) :
@@ -529,7 +529,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                 cursor: "pointer"
               }}
             >
-              {copiedSql ? "✓ Script SQL copié dans le presse-papier !" : "📋 Copier le script SQL Supabase"}
+              {copiedSql ? "✓ Script SQL copié dans le presse-papier !" : "Copier le script SQL Supabase"}
             </button>
           </div>
         )}
@@ -540,7 +540,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           <div style={metricCardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
               <span style={{ fontSize: "11px", fontWeight: "400", color: "#94a3b8", textTransform: "uppercase" }}>Prospecteurs réels estimés</span>
-              <span style={{ fontSize: "16px" }}>👥</span>
+              <span style={{ fontSize: "16px" }}></span>
             </div>
             <div style={{ fontSize: "28px", fontWeight: "400", color: "#ffffff", letterSpacing: "-0.5px" }}>
               {data?.estimatedRealVisitors || data?.uniqueVisitors || 0}
@@ -554,7 +554,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           <div style={metricCardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
               <span style={{ fontSize: "11px", fontWeight: "400", color: "#94a3b8", textTransform: "uppercase" }}>Ouvertures et clics</span>
-              <span style={{ fontSize: "16px" }}>📈</span>
+              <span style={{ fontSize: "16px" }}></span>
             </div>
             <div style={{ fontSize: "28px", fontWeight: "400", color: "#ffffff", letterSpacing: "-0.5px" }}>
               {data?.totalVisits ?? 0}
@@ -568,7 +568,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           <div style={metricCardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
               <span style={{ fontSize: "11px", fontWeight: "400", color: "#94a3b8", textTransform: "uppercase" }}>Trouvailles utilisateurs</span>
-              <span style={{ fontSize: "16px" }}>🪙</span>
+              <span style={{ fontSize: "16px" }}></span>
             </div>
             <div style={{ fontSize: "28px", fontWeight: "400", color: "#ffffff", letterSpacing: "-0.5px" }}>
               {data?.totalFinds ?? 0}
@@ -582,7 +582,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           <div style={metricCardStyle}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
               <span style={{ fontSize: "11px", fontWeight: "400", color: "#94a3b8", textTransform: "uppercase" }}>Sorties GPS</span>
-              <span style={{ fontSize: "16px" }}>📍</span>
+              <span style={{ fontSize: "16px" }}></span>
             </div>
             <div style={{ fontSize: "28px", fontWeight: "400", color: "#ffffff", letterSpacing: "-0.5px" }}>
               {data?.totalTracks ?? 0}
@@ -598,7 +598,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           {/* Sources breakdown */}
           <div style={sectionCardStyle}>
             <div style={{ fontSize: "13px", fontWeight: "400", color: "#ffffff", marginBottom: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>🌐</span> Détail de la provenance du trafic
+              Détail de la provenance du trafic
             </div>
 
             {data && Object.keys(data.sources).length > 0 ? (
@@ -606,19 +606,19 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                 {Object.entries(data.sources).map(([src, count]) => {
                   const pct = Math.round((count / (data.totalVisits || 1)) * 100);
                   let displayLabel = src;
-                  let icon = "🔗";
+                  let icon = "";
                   if (src === "Facebook") {
                     displayLabel = "Facebook (Publication et Groupes)";
-                    icon = "📘";
+                    icon = "";
                   } else if (src === "Accès Direct / PWA") {
                     displayLabel = "Accès Direct / PWA (Navigateur et App)";
-                    icon = "⚡";
+                    icon = "";
                   } else if (src === "Google") {
                     displayLabel = "Google (Recherche, Discover, Gmail)";
-                    icon = "🔍";
+                    icon = "";
                   } else if (src.includes("Twitter") || src.includes("X")) {
                     displayLabel = "X / Twitter (Lien partagé)";
-                    icon = "🐦";
+                    icon = "";
                   }
 
                   return (
@@ -657,7 +657,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
           {/* Devices breakdown */}
           <div style={sectionCardStyle}>
             <div style={{ fontSize: "13px", fontWeight: "400", color: "#ffffff", marginBottom: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>📱</span> Appareils et navigateurs
+              Appareils et navigateurs
             </div>
 
             {data && Object.keys(data.devices).length > 0 ? (
@@ -689,7 +689,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
         <div style={{ ...sectionCardStyle, marginBottom: "20px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "8px" }}>
             <div style={{ fontSize: "13.5px", fontWeight: "400", color: "#38bdf8", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>💬</span> Messages et retours utilisateurs
+              Messages et retours utilisateurs
               <span
                 style={{
                   fontSize: "10.5px",
@@ -712,13 +712,13 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {feedbacks.map((fb, idx) => {
                 const dateStr = fb.created_at ? new Date(fb.created_at).toLocaleString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "-";
-                let catBadge = { label: "Avis", icon: "💬", bg: "rgba(16, 185, 129, 0.15)", border: "rgba(16, 185, 129, 0.4)", text: "#10b981" };
+                let catBadge = { label: "Avis", icon: "", bg: "rgba(16, 185, 129, 0.15)", border: "rgba(16, 185, 129, 0.4)", text: "#10b981" };
                 if (fb.category === "bug") {
-                  catBadge = { label: "Bug", icon: "🐛", bg: "rgba(239, 68, 68, 0.15)", border: "rgba(239, 68, 68, 0.4)", text: "#f87171" };
+                  catBadge = { label: "Bug", icon: "", bg: "rgba(239, 68, 68, 0.15)", border: "rgba(239, 68, 68, 0.4)", text: "#f87171" };
                 } else if (fb.category === "suggestion") {
-                  catBadge = { label: "Idée", icon: "💡", bg: "rgba(56, 189, 248, 0.15)", border: "rgba(56, 189, 248, 0.4)", text: "#38bdf8" };
+                  catBadge = { label: "Idée", icon: "", bg: "rgba(56, 189, 248, 0.15)", border: "rgba(56, 189, 248, 0.4)", text: "#38bdf8" };
                 } else if (fb.category === "question") {
-                  catBadge = { label: "Question", icon: "❓", bg: "rgba(245, 158, 11, 0.15)", border: "rgba(245, 158, 11, 0.4)", text: "#fbbf24" };
+                  catBadge = { label: "Question", icon: "", bg: "rgba(245, 158, 11, 0.15)", border: "rgba(245, 158, 11, 0.4)", text: "#fbbf24" };
                 }
 
                 return (
@@ -758,14 +758,14 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                         </span>
                         {fb.contact && (
                           <span style={{ fontSize: "11px", color: "#e2e8f0", fontWeight: "400", background: "rgba(255, 255, 255, 0.08)", padding: "2px 8px", borderRadius: "6px" }}>
-                            👤 {fb.contact}
+                            {fb.contact}
                           </span>
                         )}
                       </div>
 
                       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                         <span style={{ fontSize: "11px", color: "#64748b" }}>
-                          ⏱️ {dateStr}
+                          {dateStr}
                         </span>
                         <button
                           onClick={() => handleDeleteFeedback(fb.id)}
@@ -782,7 +782,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                             cursor: "pointer"
                           }}
                         >
-                          {deletingFeedbackId === fb.id ? "..." : "🗑️"}
+                          {deletingFeedbackId === fb.id ? "..." : "Supprimer"}
                         </button>
                       </div>
                     </div>
@@ -792,10 +792,10 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                     </div>
 
                     <div style={{ fontSize: "10.5px", color: "#64748b", display: "flex", gap: "12px", flexWrap: "wrap" }}>
-                      <span>📱 {fb.device || "Appareil inconnu"}</span>
-                      <span>🌐 {fb.browser || "Navigateur inconnu"}</span>
-                      {fb.screen_size && <span>📐 {fb.screen_size}</span>}
-                      {fb.app_version && <span>🏷️ v{fb.app_version}</span>}
+                      <span>{fb.device || "Appareil inconnu"}</span>
+                      <span>{fb.browser || "Navigateur inconnu"}</span>
+                      {fb.screen_size && <span>{fb.screen_size}</span>}
+                      {fb.app_version && <span>v{fb.app_version}</span>}
                     </div>
                   </div>
                 );
@@ -812,7 +812,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
         <div style={sectionCardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "8px" }}>
             <div style={{ fontSize: "13.5px", fontWeight: "400", color: "#ffffff", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span>⚡</span> Journal des clics et visites en direct
+              Journal des clics et visites en direct
             </div>
             <div style={{ fontSize: "11px", color: "#94a3b8" }}>
               Heure exacte au format seconde (Paris)
@@ -865,7 +865,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                         <td style={{ padding: "10px 8px", whiteSpace: "nowrap" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                             <span style={{ fontWeight: "400", color: "#ffffff", fontSize: "12px" }}>
-                              ⏱️ {timeStr}
+                              {timeStr}
                             </span>
                             {relativeBadge && (
                               <span style={{ fontSize: "9.5px", fontWeight: "400", padding: "1px 5px", borderRadius: "4px", background: relativeBadge.includes("instant") || relativeBadge.includes("min") ? "rgba(16, 185, 129, 0.2)" : "rgba(255, 255, 255, 0.08)", color: relativeBadge.includes("instant") || relativeBadge.includes("min") ? "#10b981" : "#94a3b8" }}>
@@ -881,7 +881,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                         {/* Appareil & Écran */}
                         <td style={{ padding: "10px 8px", whiteSpace: "nowrap" }}>
                           <div style={{ fontWeight: "400", color: "#e2e8f0" }}>
-                            {v.device?.includes("iPhone") ? "📱 iPhone (iOS)" : v.device?.includes("Android") ? "🤖 Android" : v.device?.includes("Windows") ? "💻 PC Windows" : v.device?.includes("Mac") ? "🍎 Mac" : v.device || "Mobile"}
+                            {v.device?.includes("iPhone") ? "iPhone (iOS)" : v.device?.includes("Android") ? "Android" : v.device?.includes("Windows") ? "💻 PC Windows" : v.device?.includes("Mac") ? "🍎 Mac" : v.device || "Mobile"}
                           </div>
                           {v.screen_size && v.screen_size !== "0x0" && (
                             <div style={{ fontSize: "10px", color: "#64748b", marginTop: "2px" }}>
@@ -911,7 +911,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                               border: v.source?.toLowerCase().includes("facebook") ? "1px solid rgba(59, 130, 246, 0.4)" : "1px solid rgba(255, 255, 255, 0.1)"
                             }}
                           >
-                            {v.source?.toLowerCase().includes("facebook") ? "📘 Facebook" : v.source || "🔗 Direct / PWA"}
+                            {v.source?.toLowerCase().includes("facebook") ? "Facebook" : v.source || "Direct / PWA"}
                           </span>
                         </td>
 
@@ -941,7 +941,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                               transition: "all 0.15s ease"
                             }}
                           >
-                            {deletingId === v.id ? "..." : "🗑️"}
+                            {deletingId === v.id ? "..." : "Supprimer"}
                           </button>
                         </td>
                       </tr>
@@ -986,7 +986,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div style={{ fontSize: "28px", textAlign: "center", marginBottom: "12px" }}>🗑️</div>
+              <div style={{ fontSize: "28px", textAlign: "center", marginBottom: "12px" }}></div>
               <h3 style={{ margin: "0 0 8px 0", fontSize: "16px", fontWeight: "400", textAlign: "center" }}>
                 Remettre les clics à zéro ?
               </h3>
