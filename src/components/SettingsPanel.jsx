@@ -25,7 +25,8 @@ export default function SettingsPanel({
   setWorkspace,
   onOpenTeamSession,
   markerSize = "medium",
-  setMarkerSize
+  setMarkerSize,
+  onClose = null
 }) {
   const [categoriesData, setCategoriesData] = useState(loadCategoriesData());
   const [user, setUser] = useState(null);

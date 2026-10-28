@@ -80,33 +80,6 @@ export default function ReportsPanel({
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "5px 12px",
-              borderRadius: "20px",
-              background: "rgba(0, 0, 0, 0.28)",
-              border: "1px solid rgba(255, 255, 255, 0.12)",
-              fontSize: "12px",
-              color: "#f1f5f2"
-            }}
-          >
-            <span
-              style={{
-                width: "6px",
-                height: "6px",
-                borderRadius: "50%",
-                background: "#34d399",
-                boxShadow: "0 0 6px rgba(52, 211, 153, 0.85)"
-              }}
-            />
-            <span>
-              {savedTracks.length} {savedTracks.length > 1 ? "sorties" : "sortie"}
-            </span>
-          </div>
-
           {onClose && (
             <button
               type="button"
