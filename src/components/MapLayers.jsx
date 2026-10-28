@@ -100,7 +100,7 @@ export default function MapLayers({
         minZoom={0}
         crossOrigin="anonymous"
         updateWhenZooming={false}
-        updateWhenIdle={false}
+        updateWhenIdle={true}
         keepBuffer={4}
       />
 
@@ -115,7 +115,7 @@ export default function MapLayers({
           maxNativeZoom={14}
           minZoom={0}
           updateWhenZooming={false}
-          updateWhenIdle={false}
+          updateWhenIdle={true}
           keepBuffer={3}
           crossOrigin="anonymous"
           zIndex={350}
@@ -133,7 +133,7 @@ export default function MapLayers({
           maxNativeZoom={15}
           minZoom={0}
           updateWhenZooming={false}
-          updateWhenIdle={false}
+          updateWhenIdle={true}
           keepBuffer={3}
           crossOrigin="anonymous"
           zIndex={360}
@@ -151,7 +151,7 @@ export default function MapLayers({
           maxNativeZoom={18}
           minZoom={0}
           updateWhenZooming={false}
-          updateWhenIdle={false}
+          updateWhenIdle={true}
           keepBuffer={3}
           crossOrigin="anonymous"
           zIndex={400}

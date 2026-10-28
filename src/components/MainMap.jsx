@@ -38,30 +38,32 @@ function RecenterMap({ target, onRecentered }) {
 // Helper: Intercept map context menu (long press) and map drag starts
 function MapEventsHandler({ onLongPress, onMapDrag }) {
   const map = useMap();
+  const onLongPressRef = React.useRef(onLongPress);
+  onLongPressRef.current = onLongPress;
+  const onMapDragRef = React.useRef(onMapDrag);
+  onMapDragRef.current = onMapDrag;
 
   useEffect(() => {
     const handleContextMenu = (e) => {
-      if (onLongPress) {
-        onLongPress(e.latlng);
+      if (onLongPressRef.current) {
+        onLongPressRef.current(e.latlng);
       }
     };
 
     const handleUserDrag = () => {
-      if (onMapDrag) {
-        onMapDrag();
+      if (onMapDragRef.current) {
+        onMapDragRef.current();
       }
     };
 
     map.on("contextmenu", handleContextMenu);
     map.on("dragstart", handleUserDrag);
-    map.on("zoomstart", handleUserDrag);
 
     return () => {
       map.off("contextmenu", handleContextMenu);
       map.off("dragstart", handleUserDrag);
-      map.off("zoomstart", handleUserDrag);
     };
-  }, [map, onLongPress, onMapDrag]);
+  }, [map]);
 
   return null;
 }

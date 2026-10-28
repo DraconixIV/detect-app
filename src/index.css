@@ -216,9 +216,7 @@ POPUP MOBILE FIX & VISUAL STABILITY
 }
 
 .custom-find-leaflet-popup .leaflet-popup-content-wrapper {
-  background: rgba(16, 24, 20, 0.97) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  background: #111915 !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 18px !important;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75) !important;
@@ -226,7 +224,7 @@ POPUP MOBILE FIX & VISUAL STABILITY
 }
 
 .custom-find-leaflet-popup .leaflet-popup-tip {
-  background: rgba(16, 24, 20, 0.95) !important;
+  background: #111915 !important;
   border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
   box-shadow: none !important;
@@ -268,23 +266,31 @@ POPUP MOBILE FIX & VISUAL STABILITY
   pointer-events: none !important;
 }
 
+/* Hardware acceleration for tile opacity transitions & GPU scaling */
+.leaflet-tile {
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  will-change: opacity, transform;
+}
+
 .leaflet-container {
-  touch-action: none !important;
+  touch-action: pan-x pan-y pinch-zoom !important;
   user-select: none;
   -webkit-user-select: none;
 }
 
-.leaflet-map-pane,
-.leaflet-tile-pane,
-.leaflet-marker-pane,
-.leaflet-shadow-pane,
 .leaflet-zoom-anim .leaflet-zoom-animated {
   will-change: transform;
-  transform: translateZ(0);
 }
 
-.leaflet-tile {
-  transition: opacity 0.2s ease-out !important;
+.leaflet-marker-pane,
+.leaflet-tile-pane,
+.leaflet-shadow-pane {
+  will-change: transform;
+}
+
+.leaflet-marker-icon {
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 /* Global Keyframes for GPS & Teammate Markers */
