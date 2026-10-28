@@ -478,10 +478,19 @@ export default function MapTopBar({
                     fontWeight: "400",
                     whiteSpace: "nowrap",
                     cursor: "pointer",
-                    transition: "all 0.15s ease"
+                    transition: "all 0.15s ease",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px"
                   }}
                 >
-                  {emoji} {cat}
+                  <TacticalPinIcon
+                    markerId={emoji}
+                    color={categoriesData?.colors?.[cat]}
+                    size="xs"
+                    categoryName={cat}
+                  />
+                  <span>{cat}</span>
                 </button>
               );
             })}

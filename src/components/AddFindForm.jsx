@@ -99,6 +99,18 @@ export default function AddFindForm({
     };
   }, [newCategory, setNewCategory]);
 
+  useEffect(() => {
+    if (showForm) {
+      const freshData = loadCategoriesData();
+      setCategoryData(freshData);
+      const keys = Object.keys(freshData.categories || {});
+      if (keys.length > 0 && (!newCategory || !freshData.categories[newCategory])) {
+        setNewCategory(keys[0]);
+      }
+      setMaterialsData(loadMaterialsData());
+    }
+  }, [showForm, newCategory, setNewCategory]);
+
   if (!showForm) return null;
 
   const categories = categoryData.categories || {};

@@ -3,6 +3,7 @@ import { getMyUserCode, getMyDisplayName, normalizeSessionCode } from "./session
 import { decodeMetadata, encodeMetadata } from "./findsService";
 import { decodeTrackMetadata, encodeTrackMetadata, getLocalTracks } from "./tracksService";
 import { loadCategoriesData } from "./categoriesService";
+import { loadMaterialsData } from "./materialsService";
 
 export async function exportData() {
   try {
@@ -62,7 +63,8 @@ export async function exportData() {
       finds: findsData,
       photos: photosData,
       tracks: tracksData,
-      categories: categoriesData
+      categories: categoriesData,
+      materials: loadMaterialsData()
     };
 
     const blob = new Blob([JSON.stringify(backup, null, 2)], {
@@ -181,6 +183,20 @@ export async function importData(onSuccess) {
           window.dispatchEvent(new Event("categories-updated"));
         } catch (catErr) {
           console.warn("Categories import error:", catErr);
+        }
+      }
+
+      if (backup.materials && typeof backup.materials === "object") {
+        try {
+          if (Array.isArray(backup.materials.materials)) {
+            localStorage.setItem("geoprospect_custom_materials", JSON.stringify(backup.materials.materials));
+          }
+          if (backup.materials.emojis) {
+            localStorage.setItem("geoprospect_custom_material_emojis", JSON.stringify(backup.materials.emojis));
+          }
+          window.dispatchEvent(new Event("materials-updated"));
+        } catch (matErr) {
+          console.warn("Materials import error:", matErr);
         }
       }
 

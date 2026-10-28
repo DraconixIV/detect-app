@@ -89,8 +89,8 @@ try {
 
 export function loadMaterialsData() {
   try {
-    const storedMats = localStorage.getItem(STORAGE_MATERIALS_KEY);
-    const storedEmojis = localStorage.getItem(STORAGE_MATERIAL_EMOJIS_KEY);
+    const storedMats = localStorage.getItem(STORAGE_MATERIALS_KEY) || localStorage.getItem("geoprospect_materials_v1");
+    const storedEmojis = localStorage.getItem(STORAGE_MATERIAL_EMOJIS_KEY) || localStorage.getItem("geoprospect_material_emojis_v1");
 
     const materials = storedMats ? JSON.parse(storedMats) : [...DEFAULT_MATERIALS];
     const emojis = storedEmojis ? JSON.parse(storedEmojis) : { ...DEFAULT_MATERIAL_EMOJIS };
