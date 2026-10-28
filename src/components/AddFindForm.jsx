@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { PRESET_CATEGORY_COLORS } from "../subCategories";
+import CategoryMarkerPicker from "./CategoryMarkerPicker";
 import { loadCategoriesData, addCategory } from "../services/categoriesService";
 import { loadMaterialsData } from "../services/materialsService";
 import AudioNotePlayer from "./AudioNotePlayer";
@@ -38,7 +39,7 @@ export default function AddFindForm({
   const [materialsData, setMaterialsData] = useState(() => loadMaterialsData());
   const [showQuickCatBox, setShowQuickCatBox] = useState(false);
   const [quickCatName, setQuickCatName] = useState("");
-  const [quickCatEmoji, setQuickCatEmoji] = useState("🪙");
+  const [quickCatEmoji, setQuickCatEmoji] = useState("monnaie");
   const [quickCatColor, setQuickCatColor] = useState("#facc15");
 
   // Media states
@@ -282,63 +283,57 @@ export default function AddFindForm({
                 textAlign: "left"
               }}
             >
-              <div style={{ display: "flex", gap: "6px" }}>
-                <select
-                  value={quickCatEmoji}
-                  onChange={(e) => setQuickCatEmoji(e.target.value)}
-                  style={{
-                    padding: "8px",
-                    borderRadius: "8px",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    background: "#19231e",
-                    color: "#ffffff",
-                    fontSize: "15px",
-                    cursor: "pointer"
-                  }}
-                >
-                  {["🪙", "💍", "👑", "🛡️", "⚔️", "🏺", "🗝️", "🎖️", "💣", "🔨", "🪓", "🔔", "⚓", "📦", "📜", "✝️", "🏷️", "💎"].map((em) => (
-                    <option key={em} value={em} style={{ background: "#19231e", color: "#ffffff" }}>
-                      {em}
-                    </option>
-                  ))}
-                </select>
-
-                <input
-                  type="text"
-                  placeholder="Nom de la catégorie..."
-                  value={quickCatName}
-                  onChange={(e) => setQuickCatName(e.target.value)}
-                  style={{
-                    flex: 1,
-                    padding: "8px 10px",
-                    borderRadius: "8px",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    background: "#19231e",
-                    color: "#ffffff",
-                    fontSize: "12px",
-                    outline: "none"
-                  }}
-                />
-              </div>
+              <input
+                type="text"
+                placeholder="Nom de la catégorie..."
+                value={quickCatName}
+                onChange={(e) => setQuickCatName(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "9px 12px",
+                  borderRadius: "8px",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  background: "#19231e",
+                  color: "#ffffff",
+                  fontSize: "12px",
+                  outline: "none",
+                  boxSizing: "border-box"
+                }}
+              />
 
               {/* Color swatches */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
-                {PRESET_CATEGORY_COLORS.map((col) => (
-                  <button
-                    key={col}
-                    type="button"
-                    onClick={() => setQuickCatColor(col)}
-                    style={{
-                      width: "18px",
-                      height: "18px",
-                      borderRadius: "50%",
-                      background: col,
-                      border: quickCatColor === col ? "2px solid #ffffff" : "1px solid rgba(255,255,255,0.2)",
-                      cursor: "pointer",
-                      padding: 0
-                    }}
-                  />
-                ))}
+              <div>
+                <div style={{ fontSize: "10px", opacity: 0.7, textTransform: "uppercase", marginBottom: "5px" }}>
+                  Couleur du repère sur la carte
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+                  {PRESET_CATEGORY_COLORS.map((col) => (
+                    <button
+                      key={col}
+                      type="button"
+                      onClick={() => setQuickCatColor(col)}
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        borderRadius: "50%",
+                        background: col,
+                        border: quickCatColor === col ? "2px solid #ffffff" : "1px solid rgba(255,255,255,0.2)",
+                        cursor: "pointer",
+                        padding: 0
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Tactical marker selector */}
+              <div>
+                <CategoryMarkerPicker
+                  selectedMarkerId={quickCatEmoji}
+                  onSelectMarker={setQuickCatEmoji}
+                  currentColor={quickCatColor}
+                  theme="dark"
+                />
               </div>
 
               <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>

@@ -37,8 +37,6 @@ export default function OnboardingStep4Categories({
   setInlineSubInput,
   newMetalName,
   setNewMetalName,
-  newMetalEmoji,
-  setNewMetalEmoji,
   handleToggleStarter,
   handleAddCustomCategory,
   handleAddCustomSubCategory,
@@ -333,7 +331,7 @@ export default function OnboardingStep4Categories({
                 {Object.entries(categories)
                   .sort(([a], [b]) => a.localeCompare(b, "fr", { sensitivity: "base" }))
                   .map(([catName, subCats], idx, arr) => {
-                  const em = emojis[catName] || "🪙";
+                  const em = emojis[catName] || "monnaie";
                   const col = colors[catName] || "#2c5e4c";
                   const isExpanded = expandedCat === catName;
                   const safeSubCats = Array.isArray(subCats) ? subCats : [];

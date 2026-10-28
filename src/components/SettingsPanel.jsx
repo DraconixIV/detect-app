@@ -32,7 +32,7 @@ export default function SettingsPanel({
   const [showAuthBox, setShowAuthBox] = useState(false);
   const [newCatName, setNewCatName] = useState("");
   const [confirmCatToDelete, setConfirmCatToDelete] = useState(null);
-  const [newCatEmoji, setNewCatEmoji] = useState("🪙");
+  const [newCatEmoji, setNewCatEmoji] = useState("monnaie");
   const [selectedCatForSub, setSelectedCatForSub] = useState("");
   const [newSubName, setNewSubName] = useState("");
   const [showCatManager, setShowCatManager] = useState(false);
@@ -112,7 +112,7 @@ export default function SettingsPanel({
     if (!newCatName.trim()) return;
     addCategory(newCatName, newCatEmoji);
     setNewCatName("");
-    setNewCatEmoji("🪙");
+    setNewCatEmoji("monnaie");
   };
 
   const handleAddSub = (catName) => {

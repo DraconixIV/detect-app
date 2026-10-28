@@ -3,6 +3,7 @@ import { supabase } from "../supabase";
 import { SUGGESTED_STARTER_CATEGORIES } from "../subCategories";
 import { loadCategoriesData, saveCategoriesData } from "../services/categoriesService";
 import { loadMaterialsData, saveMaterialsData } from "../services/materialsService";
+import { deriveMetalSymbol } from "../constants/metallicMaterials";
 
 import OnboardingStep1Welcome from "./onboarding/OnboardingStep1Welcome";
 import OnboardingStep2Legal from "./onboarding/OnboardingStep2Legal";
@@ -100,7 +101,6 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
     return loaded.emojis || {};
   });
   const [newMetalName, setNewMetalName] = useState("");
-  const [newMetalEmoji, setNewMetalEmoji] = useState("🪙");
 
   const [selectedMapStyle, setSelectedMapStyle] = useState("satellite");
   const [selectedDesignTheme] = useState("tactical");
@@ -289,7 +289,7 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
     if (!updatedMaterials.includes(trimmed)) {
       updatedMaterials.push(trimmed);
     }
-    const symbol = trimmed.length <= 2 ? trimmed.toUpperCase() : trimmed[0].toUpperCase() + trimmed[1].toLowerCase();
+    const symbol = deriveMetalSymbol(trimmed);
     const updatedEmojis = { ...materialEmojis, [trimmed]: symbol };
     setMaterials(updatedMaterials);
     setMaterialEmojis(updatedEmojis);
@@ -474,8 +474,6 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
             setInlineSubInput={setInlineSubInput}
             newMetalName={newMetalName}
             setNewMetalName={setNewMetalName}
-            newMetalEmoji={newMetalEmoji}
-            setNewMetalEmoji={setNewMetalEmoji}
             handleToggleStarter={handleToggleStarter}
             handleAddCustomCategory={handleAddCustomCategory}
             handleAddCustomSubCategory={handleAddCustomSubCategory}

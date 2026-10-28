@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { THEMES } from "../styles/themes";
 import { loadCategoriesData } from "../services/categoriesService";
+import TacticalPinIcon from "./TacticalPinIcon";
 
 export default function MapTopBar({
   currentThemeKey = "tactical",
@@ -507,7 +508,8 @@ export default function MapTopBar({
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                     {matchingFinds.map((f) => {
-                      const em = categoriesData.emojis?.[f.category] || "🪙";
+                      const em = categoriesData.emojis?.[f.category] || "autre";
+                      const catCol = categoriesData.colors?.[f.category] || "#2c5e4c";
                       return (
                         <div
                           key={f.id}
@@ -534,7 +536,9 @@ export default function MapTopBar({
                           }}
                         >
                           <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
-                            <span style={{ fontSize: "18px", flexShrink: 0 }}>{em}</span>
+                            <div style={{ flexShrink: 0 }}>
+                              <TacticalPinIcon markerId={em} color={catCol} size={22} categoryName={f.category} />
+                            </div>
                             <div style={{ minWidth: 0 }}>
                               <div style={{ fontSize: "12px", fontWeight: "400", color: textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                 {f.title || "Trouvaille sans titre"}

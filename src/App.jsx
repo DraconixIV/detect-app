@@ -2200,7 +2200,7 @@ function App() {
                   Filtrer par sous-catégorie ?
                 </h3>
                 <p style={{ margin: 0, fontSize: "13px", lineHeight: "1.5", color: "rgba(255, 255, 255, 0.75)" }}>
-                  Souhaitez-vous affiner votre recherche par sous-catégorie pour les trouvailles de type {categoryEmojis[subCategorySelectCat] || ""} {subCategorySelectCat} ?
+                  Souhaitez-vous affiner votre recherche par sous-catégorie pour les trouvailles de type « {subCategorySelectCat} » ?
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" }}>
                   <button

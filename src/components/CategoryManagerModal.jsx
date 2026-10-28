@@ -347,7 +347,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                   {Object.entries(categoriesData.categories || {})
                     .sort(([a], [b]) => a.localeCompare(b, "fr", { sensitivity: "base" }))
                     .map(([catName, subCats], idx, arr) => {
-                    const emoji = categoriesData.emojis?.[catName] || "🏷️";
+                    const emoji = categoriesData.emojis?.[catName] || "autre";
                     const color = categoriesData.colors?.[catName] || defaultCategoryColors[catName] || "#2c5e4c";
                     const isExpanded = expandedCat === catName;
                     const isPickingColor = colorPickerCat === catName;
