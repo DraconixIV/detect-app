@@ -108,11 +108,6 @@ export const materials = [
   "Aluminium",
   "Plomb",
   "Fer",
-  "Alliage cuivreux",
-  "Maillechort",
-  "Peltre",
-  "Métal blanc",
-  "Zamac",
   "Autre"
 ];
 
@@ -130,10 +125,5 @@ export const materialEmojis = {
   "Aluminium": "Al",
   "Plomb": "Pb",
   "Fer": "Fe",
-  "Alliage cuivreux": "Cu",
-  "Maillechort": "Ni",
-  "Peltre": "Sn",
-  "Métal blanc": "Ag",
-  "Zamac": "Zk",
   "Autre": "?"
 };
