@@ -2,12 +2,85 @@ import { supabase } from "../supabase.js";
 import {
   categoryEmojis as defaultCategoryEmojis,
   defaultCategoryColors,
-  categoriesWithSub as defaultCategoriesWithSub
+  categoriesWithSub as defaultCategoriesWithSub,
+  PRESET_CATEGORY_COLORS
 } from "../subCategories.js";
+import { resolveMarkerId } from "../constants/tacticalMarkers.js";
 
 const STORAGE_CATEGORIES_KEY = "geoprospect_custom_categories";
 const STORAGE_EMOJIS_KEY = "geoprospect_custom_emojis";
 const STORAGE_COLORS_KEY = "geoprospect_custom_colors";
+
+// All keys ever used across previous and current versions of the app
+const LEGACY_CATEGORIES_KEYS = [
+  "geoprospect_custom_categories",
+  "rdl_custom_categories",
+  "geoprospect_categories_v1",
+  "geoprospect_categories"
+];
+
+const LEGACY_EMOJIS_KEYS = [
+  "geoprospect_custom_emojis",
+  "rdl_custom_emojis",
+  "geoprospect_emojis_v1",
+  "geoprospect_emojis"
+];
+
+const LEGACY_COLORS_KEYS = [
+  "geoprospect_custom_colors",
+  "rdl_custom_colors",
+  "geoprospect_colors_v1",
+  "geoprospect_colors"
+];
+
+function tryParseCategories(raw) {
+  if (!raw) return null;
+  try {
+    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+    if (!parsed) return null;
+
+    // Format 1: Array of category names or objects: ["Monnaie", ...] or [{ name: "Monnaie", ... }]
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      const obj = {};
+      parsed.forEach((c) => {
+        if (typeof c === "string" && c.trim()) {
+          obj[c.trim()] = [];
+        } else if (c && typeof c === "object" && c.name && typeof c.name === "string" && c.name.trim()) {
+          obj[c.name.trim()] = Array.isArray(c.subCategories) ? c.subCategories : [];
+        }
+      });
+      return Object.keys(obj).length > 0 ? obj : null;
+    }
+
+    // Format 2: Object map: { "Monnaie": [...], ... }
+    if (typeof parsed === "object" && !Array.isArray(parsed)) {
+      const keys = Object.keys(parsed);
+      if (keys.length > 0) {
+        const clean = {};
+        keys.forEach((k) => {
+          if (k && typeof k === "string" && k.trim()) {
+            clean[k.trim()] = Array.isArray(parsed[k]) ? parsed[k] : [];
+          }
+        });
+        return Object.keys(clean).length > 0 ? clean : null;
+      }
+    }
+  } catch (e) {
+    // Ignore invalid JSON
+  }
+  return null;
+}
+
+function tryParseDict(raw) {
+  if (!raw) return null;
+  try {
+    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed) && Object.keys(parsed).length > 0) {
+      return parsed;
+    }
+  } catch {}
+  return null;
+}
 
 export async function syncCategoriesToCloud() {
   try {
@@ -43,17 +116,14 @@ export async function pullCategoriesFromCloud(user = null) {
     const cloudEmojis = currentUser.user_metadata.geoprospect_emojis;
     const cloudColors = currentUser.user_metadata.geoprospect_colors;
 
-    if (cloudCats && Object.keys(cloudCats).length > 0) {
+    const parsedCloudCats = tryParseCategories(cloudCats);
+    if (parsedCloudCats && Object.keys(parsedCloudCats).length > 0) {
       const local = loadCategoriesData();
-      // Merge cloud over local
-      const mergedCats = { ...local.categories, ...cloudCats };
-      const mergedEmojis = { ...local.emojis, ...cloudEmojis };
-      const mergedColors = { ...local.colors, ...cloudColors };
+      const mergedCats = { ...local.categories, ...parsedCloudCats };
+      const mergedEmojis = { ...local.emojis, ...(cloudEmojis || {}) };
+      const mergedColors = { ...local.colors, ...(cloudColors || {}) };
 
-      localStorage.setItem(STORAGE_CATEGORIES_KEY, JSON.stringify(mergedCats));
-      localStorage.setItem(STORAGE_EMOJIS_KEY, JSON.stringify(mergedEmojis));
-      localStorage.setItem(STORAGE_COLORS_KEY, JSON.stringify(mergedColors));
-      window.dispatchEvent(new Event("categories-updated"));
+      saveCategoriesData(mergedCats, mergedEmojis, mergedColors);
       return true;
     }
   } catch (err) {
@@ -75,17 +145,67 @@ try {
 
 export function loadCategoriesData() {
   try {
-    const storedCats = localStorage.getItem(STORAGE_CATEGORIES_KEY);
-    const storedEmojis = localStorage.getItem(STORAGE_EMOJIS_KEY);
-    const storedColors = localStorage.getItem(STORAGE_COLORS_KEY);
+    let recoveredCats = null;
+    let recoveredEmojis = {};
+    let recoveredColors = {};
 
-    const userCats = storedCats ? JSON.parse(storedCats) : null;
-    const userEmojis = storedEmojis ? JSON.parse(storedEmojis) : null;
-    const userColors = storedColors ? JSON.parse(storedColors) : null;
+    // 1. Check current and all legacy localStorage keys in order of precedence
+    for (const key of LEGACY_CATEGORIES_KEYS) {
+      const val = localStorage.getItem(key);
+      const parsed = tryParseCategories(val);
+      if (parsed && Object.keys(parsed).length > 0) {
+        recoveredCats = parsed;
+        break;
+      }
+    }
 
-    const categories = userCats !== null ? userCats : { ...defaultCategoriesWithSub };
-    const emojis = userEmojis !== null ? userEmojis : { ...defaultCategoryEmojis };
-    const colors = userColors !== null ? userColors : { ...defaultCategoryColors };
+    // 2. Recover emojis dictionary from all legacy keys
+    for (const key of LEGACY_EMOJIS_KEYS) {
+      const val = localStorage.getItem(key);
+      const parsed = tryParseDict(val);
+      if (parsed) {
+        recoveredEmojis = { ...parsed, ...recoveredEmojis };
+      }
+    }
+
+    // 3. Recover colors dictionary from all legacy keys
+    for (const key of LEGACY_COLORS_KEYS) {
+      const val = localStorage.getItem(key);
+      const parsed = tryParseDict(val);
+      if (parsed) {
+        recoveredColors = { ...parsed, ...recoveredColors };
+      }
+    }
+
+    // 4. Fallback guarantee: GeoProspect NEVER allows 0 categories
+    const categories = (recoveredCats && Object.keys(recoveredCats).length > 0)
+      ? recoveredCats
+      : { ...defaultCategoriesWithSub };
+
+    // 5. Ensure all categories have a valid tactical marker ID and valid hex color
+    const emojis = {};
+    const colors = {};
+
+    Object.keys(categories).forEach((cat, idx) => {
+      // Normalize emoji: legacy unicode (e.g. 🪙) or empty -> tactical marker ID
+      const rawEmoji = recoveredEmojis[cat] || defaultCategoryEmojis[cat] || null;
+      emojis[cat] = resolveMarkerId(rawEmoji, cat);
+
+      // Normalize color: ensure valid hex color
+      const rawColor = recoveredColors[cat] || defaultCategoryColors[cat] || null;
+      if (rawColor && typeof rawColor === "string" && rawColor.startsWith("#")) {
+        colors[cat] = rawColor;
+      } else {
+        colors[cat] = PRESET_CATEGORY_COLORS[idx % PRESET_CATEGORY_COLORS.length] || "#2c5e4c";
+      }
+    });
+
+    // 6. Auto-heal: persist the consolidated data to the canonical keys
+    try {
+      localStorage.setItem(STORAGE_CATEGORIES_KEY, JSON.stringify(categories));
+      localStorage.setItem(STORAGE_EMOJIS_KEY, JSON.stringify(emojis));
+      localStorage.setItem(STORAGE_COLORS_KEY, JSON.stringify(colors));
+    } catch {}
 
     return { categories, emojis, colors };
   } catch (err) {
@@ -101,13 +221,28 @@ export function loadCategoriesData() {
 export function saveCategoriesData(categories, emojis, colors) {
   try {
     const current = loadCategoriesData();
-    const finalCategories = categories !== undefined ? categories : current.categories;
-    const finalEmojis = emojis !== undefined ? emojis : current.emojis;
-    const finalColors = colors !== undefined ? colors : current.colors;
+    let finalCategories = categories !== undefined ? categories : current.categories;
+    let finalEmojis = emojis !== undefined ? emojis : current.emojis;
+    let finalColors = colors !== undefined ? colors : current.colors;
+
+    // Safety guard: NEVER allow saving an empty categories object!
+    if (!finalCategories || typeof finalCategories !== "object" || Object.keys(finalCategories).length === 0) {
+      finalCategories = { ...defaultCategoriesWithSub };
+    }
+
+    // Ensure all categories have an emoji marker and a color
+    const safeEmojis = { ...(finalEmojis || {}) };
+    const safeColors = { ...(finalColors || {}) };
+    Object.keys(finalCategories).forEach((cat, idx) => {
+      safeEmojis[cat] = resolveMarkerId(safeEmojis[cat] || defaultCategoryEmojis[cat], cat);
+      if (!safeColors[cat] || !safeColors[cat].startsWith("#")) {
+        safeColors[cat] = defaultCategoryColors[cat] || PRESET_CATEGORY_COLORS[idx % PRESET_CATEGORY_COLORS.length] || "#2c5e4c";
+      }
+    });
 
     localStorage.setItem(STORAGE_CATEGORIES_KEY, JSON.stringify(finalCategories));
-    localStorage.setItem(STORAGE_EMOJIS_KEY, JSON.stringify(finalEmojis));
-    localStorage.setItem(STORAGE_COLORS_KEY, JSON.stringify(finalColors));
+    localStorage.setItem(STORAGE_EMOJIS_KEY, JSON.stringify(safeEmojis));
+    localStorage.setItem(STORAGE_COLORS_KEY, JSON.stringify(safeColors));
     window.dispatchEvent(new Event("categories-updated"));
 
     // Sync to Supabase cloud in background
@@ -123,8 +258,8 @@ export function addCategory(name, emoji = "monnaie", subCategories = [], color =
   
   const { categories, emojis, colors } = loadCategoriesData();
   categories[trimmedName] = Array.isArray(subCategories) ? subCategories : [];
-  emojis[trimmedName] = emoji || "monnaie";
-  colors[trimmedName] = color || "#2c5e4c";
+  emojis[trimmedName] = resolveMarkerId(emoji, trimmedName);
+  colors[trimmedName] = color && color.startsWith("#") ? color : "#2c5e4c";
   
   saveCategoriesData(categories, emojis, colors);
   return true;
@@ -141,7 +276,7 @@ export function updateCategoryColor(categoryName, newColor) {
 export function updateCategoryEmoji(categoryName, newEmoji) {
   if (!categoryName || !newEmoji) return false;
   const { categories, emojis, colors } = loadCategoriesData();
-  emojis[categoryName] = newEmoji;
+  emojis[categoryName] = resolveMarkerId(newEmoji, categoryName);
   saveCategoriesData(categories, emojis, colors);
   return true;
 }
@@ -177,4 +312,38 @@ export function removeSubCategory(categoryName, subCategoryName) {
     saveCategoriesData(categories, emojis, colors);
   }
   return true;
+}
+
+/**
+ * Automatically inspects finds to guarantee that all categories present in
+ * historical finds are registered and preserved in categoriesData.
+ */
+export function ensureCategoriesFromFinds(finds = []) {
+  if (!Array.isArray(finds) || finds.length === 0) return;
+  try {
+    const { categories, emojis, colors } = loadCategoriesData();
+    let hasNew = false;
+    const updatedCats = { ...categories };
+    const updatedEmojis = { ...emojis };
+    const updatedColors = { ...colors };
+
+    finds.forEach((find) => {
+      const rawCat = find?.category;
+      if (rawCat && typeof rawCat === "string") {
+        const catName = rawCat.trim();
+        if (catName && !updatedCats[catName]) {
+          updatedCats[catName] = [];
+          updatedEmojis[catName] = resolveMarkerId(null, catName);
+          updatedColors[catName] = defaultCategoryColors[catName] || PRESET_CATEGORY_COLORS[Object.keys(updatedCats).length % PRESET_CATEGORY_COLORS.length];
+          hasNew = true;
+        }
+      }
+    });
+
+    if (hasNew) {
+      saveCategoriesData(updatedCats, updatedEmojis, updatedColors);
+    }
+  } catch (err) {
+    console.warn("Could not synchronize categories from finds:", err);
+  }
 }

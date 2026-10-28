@@ -4,6 +4,7 @@ import { supabase, directUploadStorage } from "../supabase.js";
 import { getMyUserCode, getMyDisplayName, getActiveSession, getMyJoinedSessions, normalizeSessionCode } from "./sessionService.js";
 import { clearAllPendingFinds } from "./offlineStore.js";
 import { clearAllLocalTracks, decodeTrackMetadata } from "./tracksService.js";
+import { ensureCategoriesFromFinds } from "./categoriesService.js";
 
 const LEGACY_CLAIMED_FLAG = "geoprospect_legacy_finds_claimed_v3";
 
@@ -440,7 +441,7 @@ export async function loadFinds(options = {}) {
       }
     }
 
-    return filteredFinds.map((find) => {
+    const finalFinds = filteredFinds.map((find) => {
       const normalizedFind = normalizeCategoryAndSub(find);
       const resolvedImg = normalizedFind.image_url || photoMap[normalizedFind.id] || null;
       const resolvedVideo = normalizedFind.video_url || videoMap[normalizedFind.id] || null;
@@ -455,6 +456,12 @@ export async function loadFinds(options = {}) {
         ]
       };
     });
+
+    try {
+      ensureCategoriesFromFinds(finalFinds);
+    } catch {}
+
+    return finalFinds;
 
   } catch (error) {
     console.error("loadFinds exception:", error);
