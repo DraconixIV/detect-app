@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { loadCategoriesData } from "../services/categoriesService";
 import { getFlipCoins, getFlipCoin, saveFlipCoin, removeFlipCoin } from "../services/flipCoinService";
 import FlipCoinModal from "./FlipCoinModal";
+import TacticalPinIcon from "./TacticalPinIcon";
 
 function LazyImage({ src, alt }) {
   const [loaded, setLoaded] = useState(false);
@@ -334,8 +335,8 @@ export default function AlbumPanel({
     };
   }, []);
 
-  const categoryEmojis = categoriesData.emojis || {};
-  const categoriesList = useMemo(() => ["Tous", ...Object.keys(categoriesData.categories || {}).sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }))], [categoriesData]);
+  const categoryEmojis = categoriesData?.emojis || {};
+  const categoriesList = useMemo(() => ["Tous", ...Object.keys(categoriesData?.categories || {}).sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }))], [categoriesData]);
 
   const [albumFilter, setAlbumFilter] = useState("Tous");
   const [albumSearch, setAlbumSearch] = useState("");
