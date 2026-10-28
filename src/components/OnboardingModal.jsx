@@ -66,20 +66,14 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
   });
 
   const [categories, setCategories] = useState(() => {
-    const hasStored = !!localStorage.getItem("geoprospect_categories");
-    if (!hasStored) return {};
     const loaded = loadCategoriesData();
     return loaded.categories || {};
   });
   const [emojis, setEmojis] = useState(() => {
-    const hasStored = !!localStorage.getItem("geoprospect_categories");
-    if (!hasStored) return {};
     const loaded = loadCategoriesData();
     return loaded.emojis || {};
   });
   const [colors, setColors] = useState(() => {
-    const hasStored = !!localStorage.getItem("geoprospect_categories");
-    if (!hasStored) return {};
     const loaded = loadCategoriesData();
     return loaded.colors || {};
   });
@@ -151,6 +145,18 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
 
     return () => subscription?.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      const loadedCats = loadCategoriesData();
+      setCategories(loadedCats.categories || {});
+      setEmojis(loadedCats.emojis || {});
+      setColors(loadedCats.colors || {});
+      const loadedMats = loadMaterialsData();
+      setMaterials(loadedMats.materials || []);
+      setMaterialEmojis(loadedMats.emojis || {});
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

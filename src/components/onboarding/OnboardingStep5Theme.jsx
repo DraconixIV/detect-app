@@ -36,19 +36,38 @@ export default function OnboardingStep5Theme({
           <div
             onClick={() => setSelectedMapStyle("satellite")}
             style={{
-              padding: "16px 14px",
+              padding: "12px 10px 14px 10px",
               borderRadius: "14px",
               border: selectedMapStyle === "satellite" ? `1.5px solid ${activeBorder}` : `1px solid ${cardBorder}`,
               background: selectedMapStyle === "satellite" ? activeBg : cardBg,
               cursor: "pointer",
               textAlign: "center",
-              transition: "all 0.2s ease"
+              transition: "all 0.2s ease",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center"
             }}
           >
-            <div style={{ fontSize: "14px", fontWeight: "400", color: textMain }}>
+            {/* Mini preview Satellite HD */}
+            <div style={{ width: "100%", height: "54px", borderRadius: "10px", overflow: "hidden", marginBottom: "8px", position: "relative", border: "1px solid rgba(255,255,255,0.1)" }}>
+              <svg width="100%" height="100%" viewBox="0 0 140 54" preserveAspectRatio="xMidYMid slice" fill="none">
+                <rect width="140" height="54" fill="#2d3d30" />
+                <path d="M0 0 L80 0 L65 54 L0 54 Z" fill="#3a4b39" />
+                <path d="M80 0 L140 0 L140 28 L72 28 Z" fill="#4d5c41" />
+                <path d="M72 28 L140 28 L140 54 L65 54 Z" fill="#2f3e2e" />
+                <path d="M22 0 L14 54" stroke="#222c21" strokeWidth="2" strokeDasharray="3 2" />
+                <path d="M65 54 L80 0" stroke="#222c21" strokeWidth="2.5" />
+                <path d="M72 28 L140 28" stroke="#222c21" strokeWidth="2" />
+                <circle cx="38" cy="18" r="5" fill="#1b281d" opacity="0.8" />
+                <circle cx="110" cy="40" r="6" fill="#1b281d" opacity="0.8" />
+                <circle cx="70" cy="27" r="7" stroke="#facc15" strokeWidth="1.2" fill="none" opacity="0.85" />
+                <circle cx="70" cy="27" r="2" fill="#facc15" />
+              </svg>
+            </div>
+            <div style={{ fontSize: "13.5px", fontWeight: "400", color: textMain }}>
               Satellite HD
             </div>
-            <div style={{ fontSize: "11px", color: textSub, marginTop: "3px" }}>
+            <div style={{ fontSize: "11px", color: textSub, marginTop: "2px" }}>
               Imagerie aérienne
             </div>
           </div>
@@ -56,19 +75,35 @@ export default function OnboardingStep5Theme({
           <div
             onClick={() => setSelectedMapStyle("streets")}
             style={{
-              padding: "16px 14px",
+              padding: "12px 10px 14px 10px",
               borderRadius: "14px",
               border: selectedMapStyle === "streets" ? `1.5px solid ${activeBorder}` : `1px solid ${cardBorder}`,
               background: selectedMapStyle === "streets" ? activeBg : cardBg,
               cursor: "pointer",
               textAlign: "center",
-              transition: "all 0.2s ease"
+              transition: "all 0.2s ease",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center"
             }}
           >
-            <div style={{ fontSize: "14px", fontWeight: "400", color: textMain }}>
+            {/* Mini preview Relief Topographique */}
+            <div style={{ width: "100%", height: "54px", borderRadius: "10px", overflow: "hidden", marginBottom: "8px", position: "relative", border: "1px solid rgba(255,255,255,0.1)" }}>
+              <svg width="100%" height="100%" viewBox="0 0 140 54" preserveAspectRatio="xMidYMid slice" fill="none">
+                <rect width="140" height="54" fill="#eef2ee" />
+                <path d="M0 18 Q35 6 75 22 T140 10 L140 54 L0 54 Z" fill="#dce6dc" />
+                <path d="M-10 14 Q25 4 70 16 T150 8" fill="none" stroke="#8fa88f" strokeWidth="1.2" />
+                <path d="M-10 24 Q30 14 80 26 T150 18" fill="none" stroke="#7a967a" strokeWidth="1.3" />
+                <path d="M-10 34 Q35 24 90 36 T150 28" fill="none" stroke="#8fa88f" strokeWidth="1.2" />
+                <path d="M-10 44 Q40 34 100 46 T150 38" fill="none" stroke="#7a967a" strokeWidth="1.3" />
+                <text x="44" y="23" fontSize="7.5" fill="#4d664d" fontFamily="monospace">150m</text>
+                <path d="M15 54 Q45 28 125 10" fill="none" stroke="#d97706" strokeWidth="1.4" strokeDasharray="3 2" />
+              </svg>
+            </div>
+            <div style={{ fontSize: "13.5px", fontWeight: "400", color: textMain }}>
               Relief topographique
             </div>
-            <div style={{ fontSize: "11px", color: textSub, marginTop: "3px" }}>
+            <div style={{ fontSize: "11px", color: textSub, marginTop: "2px" }}>
               Courbes de niveau
             </div>
           </div>

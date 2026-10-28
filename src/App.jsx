@@ -2451,6 +2451,7 @@ function App() {
           if (newTheme) setTheme(newTheme);
         }}
         onComplete={({ defaultMapStyle, designTheme: newDesignTheme, theme: newTheme, gpsStyle: newGpsStyle }) => {
+          setActiveTab("map");
           setShowOnboarding(false);
           if (defaultMapStyle) setMapStyle(defaultMapStyle);
           if (newDesignTheme) setDesignTheme(newDesignTheme);

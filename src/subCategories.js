@@ -1,6 +1,5 @@
 export const PRESET_CATEGORY_COLORS = [
   "#facc15", // Jaune or
-  "#f59e0b", // Ambre
   "#f97316", // Orange vif
   "#ef4444", // Rouge corail
   "#ec4899", // Rose magenta
@@ -12,7 +11,7 @@ export const PRESET_CATEGORY_COLORS = [
   "#14b8a6", // Sarcelle / Teal
   "#10b981", // Vert émeraude
   "#84cc16", // Vert lime
-  "#d97706", // Bronze cuivré
+  "#78350f", // Brun terre antique
   "#6b7280", // Gris acier
   "#334155"  // Ardoise sombre
 ];
@@ -50,7 +49,7 @@ export const SUGGESTED_STARTER_CATEGORIES = {
   },
   "Religieux": {
     emoji: "religieux",
-    color: "#d97706",
+    color: "#78350f",
     subCategories: []
   },
   "Plomb": {

@@ -33,7 +33,7 @@ export default function OnboardingStep2Legal({
     {
       checked: checkHeritage,
       onChange: setCheckHeritage,
-      label: "Je respecte l'interdiction de recherche archéologique sans autorisation préfectorale (Art. L. 542-1)."
+      label: "Je respecte l'interdiction de recherche archéologique sans autorisation préfectorale (Art. L. 542-1 du Code du patrimoine)."
     },
     {
       checked: checkDeclaration,

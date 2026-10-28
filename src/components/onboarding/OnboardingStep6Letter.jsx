@@ -38,19 +38,16 @@ export default function OnboardingStep6Letter({
         }}
       >
         <p style={{ margin: 0, color: textSub }}>
-          Cette application est 100 % gratuite et toujours en phase de test. Il se peut que vous rencontriez de nouveaux bugs à mesure de son utilisation.
+          Cette application est 100 % gratuite et en constante évolution. Elle peut encore comporter de petits ajustements au fil de vos sorties.
         </p>
         <p style={{ margin: 0, color: textSub }}>
-          On parle d'un projet développé seul par un étudiant de 19 ans passionné de détection, qui s'appuie sur l'IA comme assistante de développement pour concevoir et enrichir ce carnet de détection. Proposer un outil de poche moderne et fluide est ma manière de contribuer à la communauté.
+          GeoProspect est un projet indépendant que je développe seul, à 19 ans, animé par la passion de la détection et épaulé par l'intelligence artificielle pour concevoir l'outil de terrain le plus fluide et moderne possible. C'est ma façon de contribuer activement à notre communauté.
         </p>
         <p style={{ margin: 0, color: textSub }}>
-          Tous vos retours seront votre manière de remercier mon travail, un simple compte-rendu de votre expérience suffira amplement à contribuer à l'amélioration constante de GeoProspect.
+          Chacun de vos retours d'expérience est précieux et participe directement à perfectionner l'application. Si l'outil vous plaît et que vous souhaitez m'aider à aller plus loin, un espace de dons est à votre disposition pour soutenir le projet et l'arrivée continue de nouvelles fonctionnalités.
         </p>
         <p style={{ margin: 0, color: textSub }}>
-          Je me suis ainsi permis d'ouvrir un espace aux dons pour permettre à tous les utilisateurs étant extrêmement satisfaits de soutenir le projet de manière plus directe. Ce fond pourra servir à investir dans ce dernier à plus long terme en allouant des ressources plus importantes et en continuant l'apport mensuel de nouveautés.
-        </p>
-        <p style={{ margin: 0, color: textSub }}>
-          Enfin, j'aimerais souligner que notre loisir est encadré par des lois. À ce titre, il demeure essentiel de se renseigner sur la législation française afin d'éviter de ternir notre réputation et d'amputer la communauté responsable qui ne souhaite que plus de visibilité. Prospecter exige une déontologie.
+          Enfin, rappelons que notre passion s'exerce dans un cadre légal strict. Respecter la législation française et obtenir l'accord préalable des propriétaires est indispensable pour préserver l'image de notre loisir et faire vivre une détection responsable. Prospecter exige une vraie déontologie.
         </p>
         <div
           style={{
@@ -66,7 +63,7 @@ export default function OnboardingStep6Letter({
             lineHeight: "1.5"
           }}
         >
-          Allez, je vous laisse profiter ! Merci pour votre lecture, bonnes recherches.
+          Bonnes sorties et belles découvertes avec GeoProspect !
         </div>
       </div>
 
