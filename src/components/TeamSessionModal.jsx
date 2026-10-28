@@ -536,7 +536,7 @@ export default function TeamSessionModal({
                           setDisplayName(e.target.value);
                           if (pseudoRequiredError) setPseudoRequiredError("");
                         }}
-                        placeholder="Votre pseudonyme (ex : Alex Détection)"
+                        placeholder="Votre pseudonyme"
                         autoFocus={!!pseudoRequiredError}
                         style={{
                           flex: 1,
@@ -1160,7 +1160,7 @@ export default function TeamSessionModal({
                           setDisplayName(e.target.value);
                         }
                       }}
-                      placeholder="Ex : Marc Détection"
+                      placeholder="Votre pseudonyme"
                       style={{
                         width: "100%",
                         padding: "10px 12px",
@@ -1213,7 +1213,7 @@ export default function TeamSessionModal({
                       type="text"
                       value={newSessionName}
                       onChange={(e) => setNewSessionName(e.target.value)}
-                      placeholder="Nom (ex : Sortie Forêt Dimanche)"
+                      placeholder="Nom de la session"
                       style={{
                         width: "100%",
                         padding: "10px 12px",

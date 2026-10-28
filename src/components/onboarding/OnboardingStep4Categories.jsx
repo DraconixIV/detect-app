@@ -131,7 +131,7 @@ export default function OnboardingStep4Categories({
               </div>
               <input
                 type="text"
-                placeholder="Ex : Monnaies royales, Balles de mousquet, Boucles, Militaria..."
+                placeholder="Nom de votre catégorie"
                 value={newCatName}
                 onChange={(e) => setNewCatName(e.target.value)}
                 style={{
@@ -233,7 +233,7 @@ export default function OnboardingStep4Categories({
               </div>
               <input
                 type="text"
-                placeholder="Ex : Antique, Médiéval, Moderne (séparez par des virgules)..."
+                placeholder="Sous-catégories (séparées par des virgules)"
                 value={newSubText}
                 onChange={(e) => setNewSubText(e.target.value)}
                 style={{

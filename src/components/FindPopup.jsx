@@ -1008,7 +1008,7 @@ export default function FindPopup({
                     type="text"
                     value={subCategory}
                     onChange={(e) => setSubCategory(e.target.value)}
-                    placeholder="Sous-catégorie (ex: Denier, Napoléon...)"
+                    placeholder="Sous-catégorie"
                     style={inputStyle}
                   />
                 )}
@@ -1306,7 +1306,7 @@ export default function FindPopup({
                   type="text"
                   value={identificationLink}
                   onChange={(e) => setIdentificationLink(e.target.value)}
-                  placeholder="https://exemplesite.com/catalogue-piece"
+                  placeholder="https://..."
                   style={inputStyle}
                 />
               </div>

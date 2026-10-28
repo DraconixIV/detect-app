@@ -251,7 +251,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
 
                 <input
                   type="text"
-                  placeholder="Nom de votre catégorie (ex: Monnaies royales...)"
+                  placeholder="Nom de votre catégorie"
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
                   style={{

@@ -263,7 +263,7 @@ export default function AuthForm({ onAuthSuccess, showGoogleOption = true, theme
           </label>
           <input
             type="email"
-            placeholder="nom@exemple.com"
+            placeholder="adresse@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
