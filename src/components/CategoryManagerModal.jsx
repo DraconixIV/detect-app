@@ -18,15 +18,8 @@ import {
 import { PRESET_CATEGORY_COLORS, defaultCategoryColors } from "../subCategories";
 import TacticalPinIcon from "./TacticalPinIcon";
 import CategoryMarkerPicker from "./CategoryMarkerPicker";
-
-const DETECTORIST_EMOJIS = [
-  "🪙", "💰", "🥇", "🥈", "🥉", "💎", "💍", "👑", "📿", "🏆", "🎖️", "🏅", "⚜️",
-  "🏺", "🗿", "🏛️", "📜", "🗝️", "🔑", "🔒", "🪞", "🕯️", "⌛", "⏳", "🧱", "✝️",
-  "🛡️", "⚔️", "🗡️", "🏹", "💣", "🪖", "🎯", "🔫", "🪓", "🪚", "⚙️", "🥨",
-  "🔔", "⚓", "🧲", "🔨", "⛏️", "🔧", "🔩", "🪛", "🖇️", "📎", "✂️", "🪡", "🧷", "🥄", "🍴", "👞", "👝", "🏷️", "📦", "🔘", "🥫", "🎣", "⛓️", "🪜", "🪤", "🪨",
-  "🟫", "💿", "⚖️", "🧪", "🔬", "🪵", "🧭", "🔍", "⚡", "🌟", "✨",
-  "🟡", "⚪", "🟤", "🔴", "🟢", "🔵", "🟣", "⚫"
-];
+import MetallicMaterialBadge from "./MetallicMaterialBadge";
+import { METALLIC_SHADES, deriveMetalSymbol } from "../constants/metallicMaterials";
 
 export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }) {
   const [modalTab, setModalTab] = useState("categories"); // 'categories' | 'metals'
@@ -42,7 +35,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
   const [confirmCatToDelete, setConfirmCatToDelete] = useState(null);
 
   const [newMetalName, setNewMetalName] = useState("");
-  const [newMetalEmoji, setNewMetalEmoji] = useState("🪙");
+  const [newMetalShade, setNewMetalShade] = useState("or");
 
   useEffect(() => {
     const refreshCats = () => setCategoriesData(loadCategoriesData());
@@ -84,7 +77,8 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
     const currentList = materialsData.materials || [];
     const currentEmojis = materialsData.emojis || {};
     let updatedMaterials;
-    const updatedEmojis = { ...currentEmojis, [metal.name]: metal.emoji };
+    const symbol = metal.symbol || metal.emoji || deriveMetalSymbol(metal.name);
+    const updatedEmojis = { ...currentEmojis, [metal.name]: symbol };
     if (currentList.includes(metal.name)) {
       updatedMaterials = currentList.filter((m) => m !== metal.name);
     } else {
@@ -97,8 +91,10 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
     e?.preventDefault();
     const trimmed = newMetalName.trim();
     if (!trimmed) return;
-    addMaterial(trimmed, newMetalEmoji);
+    const symbol = deriveMetalSymbol(trimmed);
+    addMaterial(trimmed, symbol);
     setNewMetalName("");
+    setNewMetalShade("or");
   };
 
   return (
@@ -586,7 +582,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                           transition: "all 0.15s ease"
                         }}
                       >
-                        <span style={{ fontSize: "14px" }}>{materialsData.emojis?.[rec.name] || rec.emoji}</span>
+                        <MetallicMaterialBadge metalName={rec.name} emojiOrSymbol={materialsData.emojis?.[rec.name] || rec.symbol || rec.emoji} size={18} />
                         <span>{rec.name}</span>
                         <span style={{ color: isActif ? (isLight ? "#2c5e4c" : "#80b99c") : textSub, fontSize: "11px" }}>
                           {isActif ? "✓" : "+"}
@@ -634,44 +630,32 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
 
                 {/* Emojis grid */}
                 <div>
-                  <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "6px" }}>
-                    Symbole associé
+                  <div style={{ fontSize: "11px", fontWeight: "400", color: textSub, marginBottom: "8px" }}>
+                    Nuance de matière métallique
                   </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "6px",
-                      maxHeight: "115px",
-                      overflowY: "auto",
-                      padding: "6px",
-                      background: inputBg,
-                      border: `1px solid ${cardBorder}`,
-                      borderRadius: "10px"
-                    }}
-                  >
-                    {DETECTORIST_EMOJIS.map((em) => {
-                      const isSelected = newMetalEmoji === em;
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "8px" }}>
+                    {METALLIC_SHADES.map((shade) => {
+                      const isSelected = newMetalShade === shade.id;
                       return (
                         <button
-                          key={em}
+                          key={shade.id}
                           type="button"
-                          onClick={() => setNewMetalEmoji(em)}
+                          onClick={() => setNewMetalShade(shade.id)}
                           style={{
-                            width: "32px",
-                            height: "32px",
-                            borderRadius: "8px",
-                            border: isSelected ? "1.5px solid #2c5e4c" : `1px solid ${cardBorder}`,
-                            background: isSelected ? (isLight ? "#eef2ee" : "rgba(44, 94, 76, 0.35)") : sheetBg,
-                            fontSize: "17px",
                             display: "flex",
+                            flexDirection: "column",
                             alignItems: "center",
-                            justifyContent: "center",
+                            gap: "4px",
+                            padding: "6px 2px",
+                            borderRadius: "10px",
+                            border: isSelected ? "1.5px solid #10b981" : `1px solid ${cardBorder}`,
+                            background: isSelected ? (isLight ? "rgba(16, 185, 129, 0.12)" : "rgba(16, 185, 129, 0.15)") : inputBg,
                             cursor: "pointer",
-                            padding: 0
+                            transition: "all 0.15s ease"
                           }}
                         >
-                          {em}
+                          <MetallicMaterialBadge shade={shade.id} metalName={newMetalName.trim() || shade.label} size={20} />
+                          <span style={{ fontSize: "9px", color: isSelected ? textMain : textSub }}>{shade.label}</span>
                         </button>
                       );
                     })}
@@ -710,7 +694,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                   }}
                 >
                   {(materialsData.materials || []).map((mat) => {
-                    const em = materialsData.emojis?.[mat] || "🪙";
+                    const em = materialsData.emojis?.[mat] || "";
                     return (
                       <div
                         key={mat}
@@ -726,7 +710,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
                         }}
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: "6px", overflow: "hidden" }}>
-                          <span style={{ fontSize: "14px" }}>{em}</span>
+                          <MetallicMaterialBadge metalName={mat} emojiOrSymbol={em} size={18} />
                           <span
                             style={{
                               fontSize: "12px",

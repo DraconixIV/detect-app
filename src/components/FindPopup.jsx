@@ -11,6 +11,7 @@ import { encodeMetadata, decodeMetadata, fileToDataUrl, generateSafeFileName } f
 import { getMyUserCode, getMyDisplayName, normalizeSessionCode } from "../services/sessionService";
 import AudioNotePlayer from "./AudioNotePlayer";
 import TacticalPinIcon from "./TacticalPinIcon";
+import MetallicMaterialBadge from "./MetallicMaterialBadge";
 
 export default function FindPopup({
   find,
@@ -666,7 +667,12 @@ export default function FindPopup({
         <div style={{ fontSize: "11px", color: "#6b7280", fontWeight: "400", display: "flex", alignItems: "center", gap: "6px" }}>
           <TacticalPinIcon markerId={categoryEmojis[category]} color={categoriesData?.colors?.[category]} size="xs" categoryName={category} />
           <span>{category} {subCategory ? `• ${subCategory}` : ""}</span>
-          {material && material !== "Indéterminé" ? <span>• {materialEmojis[material] || "🪙"} {material}</span> : null}
+          {material && material !== "Indéterminé" ? (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+              • <MetallicMaterialBadge metalName={material} emojiOrSymbol={materialEmojis[material]} size={16} />
+              <span>{material}</span>
+            </span>
+          ) : null}
         </div>
 
         {/* Media display (Photo or Standard Category Placeholder) */}

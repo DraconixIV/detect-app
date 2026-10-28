@@ -1,27 +1,28 @@
 import { supabase } from "../supabase.js";
 
 export const RECOMMENDED_METALS = [
-  { name: "Or", emoji: "🪙" },
-  { name: "Argent", emoji: "🥈" },
-  { name: "Bronze", emoji: "🥉" },
-  { name: "Cuivre", emoji: "🟫" },
-  { name: "Laiton", emoji: "🔔" },
-  { name: "Cupronickel", emoji: "💿" },
-  { name: "Billon", emoji: "🔘" },
-  { name: "Étain", emoji: "⚖️" },
-  { name: "Aluminium", emoji: "🥫" },
-  { name: "Plomb", emoji: "⚓" },
-  { name: "Fer", emoji: "⚙️" }
+  { name: "Or", symbol: "Au", emoji: "Au", shade: "or" },
+  { name: "Argent", symbol: "Ag", emoji: "Ag", shade: "argent" },
+  { name: "Bronze", symbol: "Bz", emoji: "Bz", shade: "bronze" },
+  { name: "Cuivre", symbol: "Cu", emoji: "Cu", shade: "cuivre" },
+  { name: "Laiton", symbol: "Lt", emoji: "Lt", shade: "laiton" },
+  { name: "Cupronickel", symbol: "Ni", emoji: "Ni", shade: "cupronickel" },
+  { name: "Billon", symbol: "Bi", emoji: "Bi", shade: "billon" },
+  { name: "Potin", symbol: "Pt", emoji: "Pt", shade: "potin" },
+  { name: "Étain", symbol: "Sn", emoji: "Sn", shade: "etain" },
+  { name: "Aluminium", symbol: "Al", emoji: "Al", shade: "aluminium" },
+  { name: "Plomb", symbol: "Pb", emoji: "Pb", shade: "plomb" },
+  { name: "Fer", symbol: "Fe", emoji: "Fe", shade: "fer" }
 ];
 
 export const DEFAULT_MATERIALS = RECOMMENDED_METALS.map((m) => m.name);
 
 export const DEFAULT_MATERIAL_EMOJIS = RECOMMENDED_METALS.reduce((acc, m) => {
-  acc[m.name] = m.emoji;
+  acc[m.name] = m.symbol;
   return acc;
 }, {
-  "Indéterminé": "❓",
-  "Autre": "📦"
+  "Indéterminé": "?",
+  "Autre": "?"
 });
 
 const STORAGE_MATERIALS_KEY = "geoprospect_custom_materials";
@@ -121,7 +122,7 @@ export function saveMaterialsData(materials, emojis) {
   }
 }
 
-export function addMaterial(name, emoji = "🪙") {
+export function addMaterial(name, emojiOrSymbol = "Au") {
   const trimmed = name.trim();
   if (!trimmed) return false;
 
@@ -129,7 +130,7 @@ export function addMaterial(name, emoji = "🪙") {
   if (!materials.includes(trimmed)) {
     materials.push(trimmed);
   }
-  emojis[trimmed] = emoji || "🪙";
+  emojis[trimmed] = emojiOrSymbol || "Au";
 
   saveMaterialsData(materials, emojis);
   return true;

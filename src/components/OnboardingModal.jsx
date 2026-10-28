@@ -269,7 +269,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
 
   const handleToggleRecommendedMetal = (metal) => {
     let updatedMaterials;
-    const updatedEmojis = { ...materialEmojis, [metal.name]: metal.emoji };
+    const symbol = metal.symbol || metal.emoji || metal.name.slice(0, 2);
+    const updatedEmojis = { ...materialEmojis, [metal.name]: symbol };
     if (materials.includes(metal.name)) {
       updatedMaterials = materials.filter((m) => m !== metal.name);
     } else {
@@ -288,7 +289,8 @@ export default function OnboardingModal({ isOpen, onComplete, onLiveThemeChange,
     if (!updatedMaterials.includes(trimmed)) {
       updatedMaterials.push(trimmed);
     }
-    const updatedEmojis = { ...materialEmojis, [trimmed]: newMetalEmoji || "🪙" };
+    const symbol = trimmed.length <= 2 ? trimmed.toUpperCase() : trimmed[0].toUpperCase() + trimmed[1].toLowerCase();
+    const updatedEmojis = { ...materialEmojis, [trimmed]: symbol };
     setMaterials(updatedMaterials);
     setMaterialEmojis(updatedEmojis);
     saveMaterialsData(updatedMaterials, updatedEmojis);
