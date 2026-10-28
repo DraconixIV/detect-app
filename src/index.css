@@ -288,11 +288,6 @@ POPUP MOBILE FIX & VISUAL STABILITY
   will-change: transform;
 }
 
-.leaflet-marker-icon {
-  transform: translateZ(0);
-  will-change: transform;
-}
-
 /* Global Keyframes for GPS & Teammate Markers */
 @keyframes gpsPulse {
   0% { transform: scale(0.5); opacity: 1; }

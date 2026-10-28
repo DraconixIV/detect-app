@@ -1233,7 +1233,7 @@ function App() {
 
     return groups.flatMap((group) => {
       if (group.length === 1) {
-        return { ...group[0], finalPosition: group[0].position };
+        return [{ ...group[0], finalPosition: group[0].position }];
       }
       return group.map((find, index) => ({
         ...find,

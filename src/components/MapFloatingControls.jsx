@@ -33,8 +33,8 @@ export default function MapFloatingControls({
         userSelect: "none"
       }}
     >
-      {/* 1. HIDE / SHOW ALL FINDS ON MAP TOGGLE (Visible in Zen Mode) */}
-      {zenMode && setHideAllFinds && (
+      {/* 1. HIDE / SHOW ALL FINDS ON MAP TOGGLE (Visible in Zen Mode or whenever finds are hidden) */}
+      {(zenMode || hideAllFinds) && setHideAllFinds && (
         <button
           onClick={() => setHideAllFinds(!hideAllFinds)}
           style={{
