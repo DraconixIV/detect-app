@@ -268,12 +268,6 @@ POPUP MOBILE FIX & VISUAL STABILITY
   pointer-events: none !important;
 }
 
-/* Hardware acceleration for tile opacity transitions & GPU scaling */
-.leaflet-tile {
-  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  will-change: opacity, transform;
-}
-
 .leaflet-container {
   touch-action: pan-x pan-y pinch-zoom !important;
   user-select: none;
@@ -281,17 +275,6 @@ POPUP MOBILE FIX & VISUAL STABILITY
 }
 
 .leaflet-zoom-anim .leaflet-zoom-animated {
-  will-change: transform;
-}
-
-.leaflet-marker-pane,
-.leaflet-tile-pane,
-.leaflet-shadow-pane {
-  will-change: transform;
-}
-
-.leaflet-marker-icon {
-  transform: translateZ(0);
   will-change: transform;
 }
 

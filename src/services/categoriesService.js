@@ -138,7 +138,25 @@ try {
   // Ignored in non-browser env
 }
 
-export function loadCategoriesData() {
+let categoriesDataCache = null;
+
+export function invalidateCategoriesCache() {
+  categoriesDataCache = null;
+}
+
+try {
+  if (typeof window !== "undefined") {
+    window.addEventListener("categories-updated", () => {
+      categoriesDataCache = null;
+    });
+  }
+} catch {}
+
+export function loadCategoriesData(forceRefresh = false) {
+  if (!forceRefresh && categoriesDataCache) {
+    return categoriesDataCache;
+  }
+
   try {
     let recoveredCats = null;
     let recoveredEmojis = {};
@@ -210,7 +228,8 @@ export function loadCategoriesData() {
       } catch {}
     }
 
-    return { categories, emojis, colors };
+    categoriesDataCache = { categories, emojis, colors };
+    return categoriesDataCache;
   } catch (err) {
     console.error("Failed to load custom categories:", err);
     return { categories: {}, emojis: {}, colors: {} };
@@ -218,6 +237,7 @@ export function loadCategoriesData() {
 }
 
 export function saveCategoriesData(categories, emojis, colors) {
+  categoriesDataCache = null;
   try {
     const current = loadCategoriesData();
     let finalCategories = categories !== undefined ? categories : current.categories;

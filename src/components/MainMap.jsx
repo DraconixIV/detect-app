@@ -46,20 +46,18 @@ function MapEventsHandler({ onLongPress, onMapDrag }) {
       }
     };
 
-    const handleUserMapMove = () => {
+    const handleUserDrag = () => {
       if (onMapDrag) {
         onMapDrag();
       }
     };
 
     map.on("contextmenu", handleContextMenu);
-    map.on("dragstart", handleUserMapMove);
-    map.on("movestart", handleUserMapMove);
+    map.on("dragstart", handleUserDrag);
 
     return () => {
       map.off("contextmenu", handleContextMenu);
-      map.off("dragstart", handleUserMapMove);
-      map.off("movestart", handleUserMapMove);
+      map.off("dragstart", handleUserDrag);
     };
   }, [map, onLongPress, onMapDrag]);
 
@@ -266,7 +264,11 @@ export default function MainMap({
       >
         <MapEventsHandler 
           onLongPress={handleMapLongPress} 
-          onMapDrag={() => setFollowGps(false)} 
+          onMapDrag={() => {
+            if (followGps) {
+              setFollowGps(false);
+            }
+          }} 
         />
         <GpsFollower position={position} followGps={followGps} />
         {zoomTarget && (
