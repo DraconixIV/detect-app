@@ -54,10 +54,12 @@ function MapEventsHandler({ onLongPress, onMapDrag }) {
 
     map.on("contextmenu", handleContextMenu);
     map.on("dragstart", handleUserDrag);
+    map.on("zoomstart", handleUserDrag);
 
     return () => {
       map.off("contextmenu", handleContextMenu);
       map.off("dragstart", handleUserDrag);
+      map.off("zoomstart", handleUserDrag);
     };
   }, [map, onLongPress, onMapDrag]);
 

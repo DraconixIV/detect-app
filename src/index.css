@@ -216,9 +216,9 @@ POPUP MOBILE FIX & VISUAL STABILITY
 }
 
 .custom-find-leaflet-popup .leaflet-popup-content-wrapper {
-  background: rgba(16, 24, 20, 0.95) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
+  background: rgba(16, 24, 20, 0.97) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 18px !important;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75) !important;
@@ -269,13 +269,22 @@ POPUP MOBILE FIX & VISUAL STABILITY
 }
 
 .leaflet-container {
-  touch-action: pan-x pan-y pinch-zoom !important;
+  touch-action: none !important;
   user-select: none;
   -webkit-user-select: none;
 }
 
+.leaflet-map-pane,
+.leaflet-tile-pane,
+.leaflet-marker-pane,
+.leaflet-shadow-pane,
 .leaflet-zoom-anim .leaflet-zoom-animated {
   will-change: transform;
+  transform: translateZ(0);
+}
+
+.leaflet-tile {
+  transition: opacity 0.2s ease-out !important;
 }
 
 /* Global Keyframes for GPS & Teammate Markers */

@@ -101,8 +101,7 @@ export default function MapLayers({
         crossOrigin="anonymous"
         updateWhenZooming={false}
         updateWhenIdle={false}
-        updateInterval={100}
-        keepBuffer={2}
+        keepBuffer={4}
       />
 
       {/* 2. Surcouche Carte de Cassini (18e siècle - BnF / IGN) */}
@@ -117,8 +116,7 @@ export default function MapLayers({
           minZoom={0}
           updateWhenZooming={false}
           updateWhenIdle={false}
-          updateInterval={100}
-          keepBuffer={2}
+          keepBuffer={3}
           crossOrigin="anonymous"
           zIndex={350}
         />
@@ -136,8 +134,7 @@ export default function MapLayers({
           minZoom={0}
           updateWhenZooming={false}
           updateWhenIdle={false}
-          updateInterval={100}
-          keepBuffer={2}
+          keepBuffer={3}
           crossOrigin="anonymous"
           zIndex={360}
         />
@@ -155,8 +152,7 @@ export default function MapLayers({
           minZoom={0}
           updateWhenZooming={false}
           updateWhenIdle={false}
-          updateInterval={100}
-          keepBuffer={2}
+          keepBuffer={3}
           crossOrigin="anonymous"
           zIndex={400}
         />
