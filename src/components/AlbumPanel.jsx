@@ -511,40 +511,95 @@ export default function AlbumPanel({
           }
         `}</style>
 
-        {/* Forest-Style Solid Top Header Bar */}
+        {/* Tactical Forest Header Bar */}
         <div
           style={{
-            background: accentForest,
+            background: "linear-gradient(180deg, #1e4536 0%, #153227 100%)",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.09)",
             color: "#ffffff",
             padding: "16px 18px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.12)"
+            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.25)"
           }}
         >
-          <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.8)" }}>
-            {albumFilteredFinds.length} objet{albumFilteredFinds.length > 1 ? "s" : ""}
-          </span>
-          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "400", color: "#ffffff", letterSpacing: "0.2px" }}>
-            Galerie
-          </h2>
-          <div style={{ minWidth: "50px", display: "flex", justifyContent: "flex-end" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div
+              style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "11px",
+                background: "rgba(52, 211, 153, 0.14)",
+                border: "1px solid rgba(52, 211, 153, 0.28)",
+                color: "#34d399",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.25)",
+                flexShrink: 0
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+            </div>
+            <div>
+              <h2 style={{ margin: 0, fontSize: "17px", fontWeight: "400", color: "#ffffff", letterSpacing: "0.2px", lineHeight: "1.2" }}>
+                Galerie
+              </h2>
+              <div style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.55)", marginTop: "2px" }}>
+                Photothèque des découvertes
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "5px 12px",
+                borderRadius: "20px",
+                background: "rgba(0, 0, 0, 0.28)",
+                border: "1px solid rgba(255, 255, 255, 0.12)",
+                fontSize: "12px",
+                color: "#f1f5f2"
+              }}
+            >
+              <span
+                style={{
+                  width: "6px",
+                  height: "6px",
+                  borderRadius: "50%",
+                  background: "#34d399",
+                  boxShadow: "0 0 6px rgba(52, 211, 153, 0.85)"
+                }}
+              />
+              <span>
+                {albumFilteredFinds.length} {albumFilteredFinds.length > 1 ? "objets" : "objet"}
+              </span>
+            </div>
+
             {!isTab && onClose && (
               <button
                 type="button"
                 onClick={onClose}
                 style={{
-                  background: "rgba(255,255,255,0.15)",
-                  border: "none",
+                  background: "rgba(255, 255, 255, 0.12)",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
                   borderRadius: "50%",
-                  width: "28px",
-                  height: "28px",
+                  width: "30px",
+                  height: "30px",
                   color: "#ffffff",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center"
+                  justifyContent: "center",
+                  transition: "all 0.15s ease"
                 }}
               >
                 ✕
@@ -569,22 +624,73 @@ export default function AlbumPanel({
         >
           {/* Search & Sort Panel */}
           <div style={{ display: "flex", gap: "8px", marginBottom: "12px", position: "relative" }}>
-            <input
-              type="text"
-              placeholder="Rechercher un objet, métal, lieu..."
-              value={albumSearch}
-              onChange={(e) => setAlbumSearch(e.target.value)}
-              style={{
-                flex: 1,
-                padding: "10px 14px",
-                borderRadius: "12px",
-                border: `1px solid ${dividerCol}`,
-                background: sheetBg,
-                color: textMain,
-                fontSize: "13px",
-                outline: "none"
-              }}
-            />
+            <div style={{ position: "relative", flex: 1 }}>
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{
+                  position: "absolute",
+                  left: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: textSub,
+                  opacity: 0.75,
+                  pointerEvents: "none"
+                }}
+              >
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input
+                type="text"
+                placeholder=""
+                value={albumSearch}
+                onChange={(e) => setAlbumSearch(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px 34px 10px 36px",
+                  borderRadius: "12px",
+                  border: `1px solid ${dividerCol}`,
+                  background: sheetBg,
+                  color: textMain,
+                  fontSize: "13px",
+                  outline: "none",
+                  boxSizing: "border-box"
+                }}
+              />
+              {albumSearch && (
+                <button
+                  type="button"
+                  onClick={() => setAlbumSearch("")}
+                  style={{
+                    position: "absolute",
+                    right: "10px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "transparent",
+                    border: "none",
+                    color: textSub,
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: 0,
+                    width: "20px",
+                    height: "20px"
+                  }}
+                  title="Effacer la recherche"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
             <div style={{ position: "relative" }}>
               <button
                 type="button"
