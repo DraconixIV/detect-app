@@ -172,24 +172,101 @@ export default function SettingsPanel({
         fontFamily: "system-ui, -apple-system, sans-serif"
       }}
     >
-      {/* Forest-Style Solid Top Header Bar */}
+      {/* Tactical Forest Header Bar */}
       <div
         style={{
           position: "sticky",
           top: 0,
           zIndex: 20,
-          background: accentForest,
+          background: "linear-gradient(180deg, #1e4536 0%, #153227 100%)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.09)",
           color: "#ffffff",
           padding: "16px 18px",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.12)"
+          justifyContent: "space-between",
+          boxShadow: "0 4px 16px rgba(0, 0, 0, 0.25)"
         }}
       >
-        <h1 style={{ margin: 0, fontSize: "18px", fontWeight: "400", color: "#ffffff", letterSpacing: "0.2px" }}>
-          Paramètres
-        </h1>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div
+            style={{
+              width: "36px",
+              height: "36px",
+              borderRadius: "11px",
+              background: "rgba(52, 211, 153, 0.14)",
+              border: "1px solid rgba(52, 211, 153, 0.28)",
+              color: "#34d399",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.25)",
+              flexShrink: 0
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </div>
+          <div>
+            <h1 style={{ margin: 0, fontSize: "17px", fontWeight: "400", color: "#ffffff", letterSpacing: "0.2px", lineHeight: "1.2" }}>
+              Paramètres
+            </h1>
+            <div style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.55)", marginTop: "2px" }}>
+              Configuration & compte
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "5px 12px",
+              borderRadius: "20px",
+              background: "rgba(0, 0, 0, 0.28)",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              fontSize: "12px",
+              color: "#f1f5f2"
+            }}
+          >
+            <span
+              style={{
+                width: "6px",
+                height: "6px",
+                borderRadius: "50%",
+                background: "#34d399",
+                boxShadow: "0 0 6px rgba(52, 211, 153, 0.85)"
+              }}
+            />
+            <span>GeoProspect</span>
+          </div>
+
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                background: "rgba(255, 255, 255, 0.12)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+                borderRadius: "50%",
+                width: "30px",
+                height: "30px",
+                color: "#ffffff",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.15s ease"
+              }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
       </div>
 
       <div style={{ maxWidth: "600px", margin: "0 auto", padding: "14px 12px 80px 12px" }}>
