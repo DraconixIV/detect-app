@@ -651,7 +651,7 @@ export default function FindPopup({
         }}
       >
         {/* Top Header: Category Chip + Material Chip + Read-only badge */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px", flexWrap: "wrap", paddingRight: "22px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", paddingRight: "22px" }}>
           <div style={{
             display: "inline-flex",
             alignItems: "center",
@@ -675,16 +675,16 @@ export default function FindPopup({
             <div style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: "4px",
+              gap: "5px",
               background: "rgba(255, 255, 255, 0.04)",
               border: "1px solid rgba(255, 255, 255, 0.08)",
-              padding: "3px 7px",
+              padding: "3px 8px",
               borderRadius: "7px",
               fontSize: "11px",
               color: "#cbd5e1"
             }}>
               <MetallicMaterialBadge metalName={material} emojiOrSymbol={materialEmojis[material]} size={14} />
-              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "80px" }}>{material}</span>
+              <span style={{ whiteSpace: "nowrap" }}>{material}</span>
             </div>
           )}
 
