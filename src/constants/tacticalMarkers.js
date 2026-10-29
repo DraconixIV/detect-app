@@ -211,16 +211,6 @@ export const TACTICAL_MARKERS = [
     `
   },
   {
-    id: "plomb",
-    label: "Plomb",
-    keywords: ["plomb", "scelle", "pesee", "lest", "filoir"],
-    svgInner: `
-      <circle cx="18" cy="11.5" r="2" stroke="#ffffff" stroke-width="1.6" fill="none"/>
-      <path d="M16 13h4l2 5-4 6-4-6 2-5z" fill="#ffffff"/>
-      <line x1="15" y1="18" x2="21" y2="18" stroke="#242c26" stroke-width="1.2"/>
-    `
-  },
-  {
     id: "clou",
     label: "Clou",
     keywords: ["clou", "forge", "charpente", "pointe"],
@@ -455,6 +445,8 @@ export const TACTICAL_MARKERS = [
 export const TACTICAL_MARKERS_BY_ID = Object.fromEntries(
   TACTICAL_MARKERS.map((m) => [m.id, m])
 );
+// Retro-compatibility alias for merged duplicate marker
+TACTICAL_MARKERS_BY_ID["plomb"] = TACTICAL_MARKERS_BY_ID["pendentif"];
 
 /**
  * Mapping table from historical emojis to tactical marker IDs
@@ -503,6 +495,9 @@ export const EMOJI_TO_MARKER_MAP = {
 export function resolveMarkerId(iconOrEmoji, categoryName = "") {
   if (iconOrEmoji === "carreau") {
     return "fleche";
+  }
+  if (iconOrEmoji === "plomb") {
+    return "pendentif";
   }
   if (iconOrEmoji && TACTICAL_MARKERS_BY_ID[iconOrEmoji]) {
     return iconOrEmoji;

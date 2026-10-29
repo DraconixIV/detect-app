@@ -53,7 +53,7 @@ export const SUGGESTED_STARTER_CATEGORIES = {
     subCategories: []
   },
   "Plomb": {
-    emoji: "plomb",
+    emoji: "pendentif",
     color: "#6b7280",
     subCategories: []
   },
