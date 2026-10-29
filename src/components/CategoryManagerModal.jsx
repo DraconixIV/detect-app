@@ -147,7 +147,7 @@ export default function CategoryManagerModal({ isOpen, onClose, theme = "dark" }
             </h2>
             <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: "rgba(255,255,255,0.75)" }}>
               {modalTab === "categories"
-                ? "Personnalisez vos catégories, repères et sous-catégories"
+                ? "Personnalisez vos catégories, métaux, repères et sous-catégories"
                 : "Activez et personnalisez les métaux pour vos trouvailles"}
             </p>
           </div>
