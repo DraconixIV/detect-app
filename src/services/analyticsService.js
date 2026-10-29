@@ -142,6 +142,18 @@ export async function trackVisitEvent() {
       return;
     }
 
+    // 2. Ignore automated bots, CI/CD runners, headless browsers (Vercel/Puppeteer preview bots)
+    if (typeof window !== "undefined") {
+      const ua = navigator.userAgent || "";
+      const isBot =
+        Boolean(navigator.webdriver) ||
+        (window.screen?.width === 800 && window.screen?.height === 600) ||
+        /bot|crawler|spider|headless|puppeteer|playwright|vercel|prerender|lighthouse/i.test(ua);
+      if (isBot) {
+        return;
+      }
+    }
+
     const lastTrackTime = sessionStorage.getItem(ANALYTICS_SESSION_KEY);
     const now = Date.now();
     if (lastTrackTime && now - parseInt(lastTrackTime, 10) < 30 * 60 * 1000) {
@@ -208,9 +220,11 @@ export async function fetchAnalyticsReport() {
     if (analyticsErr) {
       result.tableReady = false;
     } else if (analyticsData && analyticsData.length > 0) {
-      // Exclude feedback and track records from visits report
+      // Exclude feedback, track records and automated bot/CI screenshot runs (800x600 headless Linux)
       const visitData = analyticsData.filter(
-        (r) => r.event_type === "visit" || (!r.event_type && !r.source?.startsWith("[feedback]") && !r.source?.startsWith("[track]"))
+        (r) =>
+          (r.event_type === "visit" || (!r.event_type && !r.source?.startsWith("[feedback]") && !r.source?.startsWith("[track]"))) &&
+          !(r.device === "Linux" && r.screen_size === "800x600")
       );
 
       result.totalVisits = visitData.length;
