@@ -16,65 +16,13 @@ export const PRESET_CATEGORY_COLORS = [
   "#334155"  // Ardoise sombre
 ];
 
-export const SUGGESTED_STARTER_CATEGORIES = {
-  "Monnaie": {
-    emoji: "monnaie",
-    color: "#facc15",
-    subCategories: []
-  },
-  "Bijou": {
-    emoji: "bague",
-    color: "#ec4899",
-    subCategories: []
-  },
-  "Boucle": {
-    emoji: "boucle",
-    color: "#8b5cf6",
-    subCategories: []
-  },
-  "Bouton": {
-    emoji: "bouton",
-    color: "#10b981",
-    subCategories: []
-  },
-  "Militaria": {
-    emoji: "militaria",
-    color: "#ef4444",
-    subCategories: []
-  },
-  "Outil": {
-    emoji: "outil",
-    color: "#f97316",
-    subCategories: []
-  },
-  "Religieux": {
-    emoji: "religieux",
-    color: "#78350f",
-    subCategories: []
-  },
-  "Plomb": {
-    emoji: "pendentif",
-    color: "#6b7280",
-    subCategories: []
-  },
-  "Autre": {
-    emoji: "autre",
-    color: "#334155",
-    subCategories: []
-  }
-};
+export const SUGGESTED_STARTER_CATEGORIES = {};
 
-export const categoryEmojis = Object.fromEntries(
-  Object.entries(SUGGESTED_STARTER_CATEGORIES).map(([k, v]) => [k, v.emoji])
-);
+export const categoryEmojis = {};
 
-export const defaultCategoryColors = Object.fromEntries(
-  Object.entries(SUGGESTED_STARTER_CATEGORIES).map(([k, v]) => [k, v.color])
-);
+export const defaultCategoryColors = {};
 
-export const categoriesWithSub = Object.fromEntries(
-  Object.entries(SUGGESTED_STARTER_CATEGORIES).map(([k, v]) => [k, v.subCategories])
-);
+export const categoriesWithSub = {};
 
 // Retro-compatibility
 export const monnaieSubCategories = [];

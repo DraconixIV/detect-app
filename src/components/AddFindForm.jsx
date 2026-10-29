@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { PRESET_CATEGORY_COLORS } from "../subCategories";
 import CategoryMarkerPicker from "./CategoryMarkerPicker";
-import { loadCategoriesData, addCategory } from "../services/categoriesService";
+import TacticalPinIcon from "./TacticalPinIcon";
+import MetallicMaterialBadge from "./MetallicMaterialBadge";
+import { loadCategoriesData, addCategory, removeCategory } from "../services/categoriesService";
 import { loadMaterialsData } from "../services/materialsService";
 import AudioNotePlayer from "./AudioNotePlayer";
 import { startAudioRecording, stopAudioRecording, isAudioRecordingSupported } from "../services/audioRecorder";
@@ -41,6 +43,11 @@ export default function AddFindForm({
   const [quickCatName, setQuickCatName] = useState("");
   const [quickCatEmoji, setQuickCatEmoji] = useState("monnaie");
   const [quickCatColor, setQuickCatColor] = useState("#facc15");
+
+  // Modern Pickers
+  const [showCatPicker, setShowCatPicker] = useState(false);
+  const [showMetalPicker, setShowMetalPicker] = useState(false);
+  const [isCreatingNewCat, setIsCreatingNewCat] = useState(false);
 
   // Media states
   const [isRecordingAudio, setIsRecordingAudio] = useState(false);
@@ -115,6 +122,7 @@ export default function AddFindForm({
 
   const categories = categoryData.categories || {};
   const emojis = categoryData.emojis || {};
+  const colors = categoryData.colors || {};
   const categoryKeys = Object.keys(categories).sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }));
   const availableSubCats = [...(categories[newCategory] || [])].sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }));
 
@@ -244,45 +252,30 @@ export default function AddFindForm({
       </div>
 
       {/* CATEGORIE & SOUS-CATEGORIE */}
-      {categoryKeys.length === 0 ? (
-        <div
-          style={{
-            padding: "14px",
-            borderRadius: "12px",
-            background: "rgba(255, 255, 255, 0.03)",
-            border: "1px dashed rgba(255, 255, 255, 0.15)",
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
-            textAlign: "center"
-          }}
-        >
-          <div style={{ fontSize: "12px", fontWeight: "400", color: "#ffffff" }}>
-            Aucune catégorie configurée
-          </div>
-          <div style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.6)" }}>
-            Créez rapidement une catégorie pour classer votre trouvaille.
-          </div>
+      <div>
+        <label style={{ fontSize: "11px", fontWeight: "400", color: "rgba(255, 255, 255, 0.8)", marginBottom: "4px", display: "block" }}>
+          Catégorie *
+        </label>
 
-          {!showQuickCatBox ? (
-            <button
-              type="button"
-              onClick={() => setShowQuickCatBox(true)}
-              style={{
-                alignSelf: "center",
-                padding: "7px 14px",
-                borderRadius: "8px",
-                border: "none",
-                background: "#2c5e4c",
-                color: "#ffffff",
-                fontSize: "12px",
-                fontWeight: "400",
-                cursor: "pointer"
-              }}
-            >
-              + Créer une catégorie
-            </button>
-          ) : (
+        {categoryKeys.length === 0 ? (
+          <div
+            style={{
+              padding: "14px",
+              borderRadius: "12px",
+              background: "rgba(255, 255, 255, 0.03)",
+              border: "1px dashed rgba(255, 255, 255, 0.15)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px"
+            }}
+          >
+            <div style={{ fontSize: "12px", fontWeight: "400", color: "#ffffff" }}>
+              Aucune catégorie créée pour le moment
+            </div>
+            <div style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.6)" }}>
+              Créez votre première catégorie manuellement avec son repère visuel.
+            </div>
+
             <div
               style={{
                 background: "#111915",
@@ -291,7 +284,7 @@ export default function AddFindForm({
                 border: "1px solid rgba(255,255,255,0.08)",
                 display: "flex",
                 flexDirection: "column",
-                gap: "8px",
+                gap: "10px",
                 textAlign: "left"
               }}
             >
@@ -325,8 +318,8 @@ export default function AddFindForm({
                       type="button"
                       onClick={() => setQuickCatColor(col)}
                       style={{
-                        width: "20px",
-                        height: "20px",
+                        width: "22px",
+                        height: "22px",
                         borderRadius: "50%",
                         background: col,
                         border: quickCatColor === col ? "2px solid #ffffff" : "1px solid rgba(255,255,255,0.2)",
@@ -348,93 +341,108 @@ export default function AddFindForm({
                 />
               </div>
 
-              <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
+              <button
+                type="button"
+                onClick={() => {
+                  const trimmed = quickCatName.trim();
+                  if (!trimmed) return;
+                  addCategory(trimmed, quickCatEmoji, ["Indéterminé"], quickCatColor);
+                  setNewCategory(trimmed);
+                  setQuickCatName("");
+                }}
+                disabled={!quickCatName.trim()}
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: quickCatName.trim() ? "#2c5e4c" : "rgba(255,255,255,0.1)",
+                  color: "#ffffff",
+                  fontSize: "12px",
+                  fontWeight: "400",
+                  cursor: quickCatName.trim() ? "pointer" : "not-allowed"
+                }}
+              >
+                Créer la catégorie
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setShowCatPicker(true)}
+            style={{
+              ...inputStyle,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              cursor: "pointer",
+              textAlign: "left"
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+              <TacticalPinIcon
+                markerId={emojis[newCategory] || "monnaie"}
+                color={colors[newCategory] || "#2c5e4c"}
+                size={22}
+                categoryName={newCategory}
+              />
+              <span style={{ fontSize: "13px", color: "#ffffff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {newCategory || "Sélectionner une catégorie"}
+              </span>
+            </div>
+            <span style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.5)", flexShrink: 0 }}>
+              Changer ▼
+            </span>
+          </button>
+        )}
+      </div>
+
+      {/* SOUS-CATEGORIE (IF AVAILABLE) */}
+      {availableSubCats.length > 0 && (
+        <div>
+          <label style={{ fontSize: "11px", fontWeight: "400", color: "rgba(255, 255, 255, 0.8)", marginBottom: "4px", display: "block" }}>
+            Sous-catégorie
+          </label>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+            <button
+              type="button"
+              onClick={() => setNewSubCategory("")}
+              style={{
+                padding: "6px 12px",
+                borderRadius: "999px",
+                border: !newSubCategory ? "1px solid #2c5e4c" : "1px solid rgba(255,255,255,0.08)",
+                background: !newSubCategory ? "rgba(44, 94, 76, 0.3)" : "#111915",
+                color: !newSubCategory ? "#ffffff" : "rgba(255,255,255,0.7)",
+                fontSize: "12px",
+                fontWeight: "400",
+                cursor: "pointer"
+              }}
+            >
+              Non spécifiée
+            </button>
+            {availableSubCats.map((subCat) => {
+              const isSelected = newSubCategory === subCat;
+              return (
                 <button
+                  key={subCat}
                   type="button"
-                  onClick={() => setShowQuickCatBox(false)}
-                  style={{
-                    padding: "6px 10px",
-                    borderRadius: "8px",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    background: "transparent",
-                    color: "rgba(255, 255, 255, 0.7)",
-                    fontSize: "11px",
-                    cursor: "pointer"
-                  }}
-                >
-                  Annuler
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const trimmed = quickCatName.trim();
-                    if (!trimmed) return;
-                    addCategory(trimmed, quickCatEmoji, ["Indéterminé"], quickCatColor);
-                    setNewCategory(trimmed);
-                    setQuickCatName("");
-                    setShowQuickCatBox(false);
-                  }}
+                  onClick={() => setNewSubCategory(subCat)}
                   style={{
                     padding: "6px 12px",
-                    borderRadius: "8px",
-                    border: "none",
-                    background: "#2c5e4c",
-                    color: "#ffffff",
-                    fontSize: "11px",
+                    borderRadius: "999px",
+                    border: isSelected ? "1px solid #2c5e4c" : "1px solid rgba(255,255,255,0.08)",
+                    background: isSelected ? "rgba(44, 94, 76, 0.3)" : "#111915",
+                    color: isSelected ? "#ffffff" : "rgba(255,255,255,0.7)",
+                    fontSize: "12px",
                     fontWeight: "400",
                     cursor: "pointer"
                   }}
                 >
-                  Enregistrer
+                  {subCat}
                 </button>
-              </div>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div style={{ display: "grid", gridTemplateColumns: availableSubCats.length > 0 ? "1fr 1fr" : "1fr", gap: "8px" }}>
-          <div>
-            <label style={{ fontSize: "11px", fontWeight: "400", color: "rgba(255, 255, 255, 0.8)", marginBottom: "4px", display: "block" }}>
-              Catégorie
-            </label>
-            <select
-              value={newCategory}
-              onChange={(e) => {
-                const cat = e.target.value;
-                setNewCategory(cat);
-                setNewSubCategory("");
-              }}
-              style={inputStyle}
-            >
-              {categoryKeys.map((cat) => (
-                <option key={cat} value={cat} style={{ background: "#19231e", color: "#ffffff" }}>
-                  {cat}
-                </option>
-              ))}
-            </select>
+              );
+            })}
           </div>
-
-          {availableSubCats.length > 0 && (
-            <div>
-              <label style={{ fontSize: "11px", fontWeight: "400", color: "rgba(255, 255, 255, 0.8)", marginBottom: "4px", display: "block" }}>
-                Sous-catégorie
-              </label>
-              <select
-                value={newSubCategory}
-                onChange={(e) => setNewSubCategory(e.target.value)}
-                style={inputStyle}
-              >
-                <option value="" style={{ background: "#19231e", color: "#ffffff" }}>
-                  -- Sélectionner --
-                </option>
-                {availableSubCats.map((subCat) => (
-                  <option key={subCat} value={subCat} style={{ background: "#19231e", color: "#ffffff" }}>
-                    {subCat}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
         </div>
       )}
 
@@ -443,20 +451,31 @@ export default function AddFindForm({
         <label style={{ fontSize: "11px", fontWeight: "400", color: "rgba(255, 255, 255, 0.8)", marginBottom: "4px", display: "block" }}>
           Métal
         </label>
-        <select
-          value={newDescription || "Indéterminé"}
-          onChange={(e) => setNewDescription(e.target.value)}
-          style={inputStyle}
+        <button
+          type="button"
+          onClick={() => setShowMetalPicker(true)}
+          style={{
+            ...inputStyle,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            cursor: "pointer",
+            textAlign: "left"
+          }}
         >
-          <option value="Indéterminé" style={{ background: "#19231e", color: "#ffffff" }}>
-            Métal non spécifié
-          </option>
-          {(materialsData.materials || []).filter((m) => m !== "Indéterminé").map((mat) => (
-            <option key={mat} value={mat} style={{ background: "#19231e", color: "#ffffff" }}>
-              {mat}
-            </option>
-          ))}
-        </select>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+            <MetallicMaterialBadge
+              metalName={newDescription && newDescription !== "Indéterminé" ? newDescription : "Indéterminé"}
+              size={22}
+            />
+            <span style={{ fontSize: "13px", color: "#ffffff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              {newDescription && newDescription !== "Indéterminé" ? newDescription : "Métal non spécifié"}
+            </span>
+          </div>
+          <span style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.5)", flexShrink: 0 }}>
+            Changer ▼
+          </span>
+        </button>
       </div>
 
       {/* CHAMPS MANUELS (UNIQUEMENT SI MODE DIFFERE ACTIVE) */}
@@ -849,6 +868,450 @@ export default function AddFindForm({
           ? (activeVideo ? "Téléversement vidéo et enregistrement..." : (newPhoto ? "Envoi de la photo et enregistrement..." : "Enregistrement en cours..."))
           : "Enregistrer la trouvaille"}
       </button>
+
+      {/* MODAL / SHEET CHOIX & CREATION DE CATEGORIE */}
+      {showCatPicker && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 99999,
+            background: "rgba(0, 0, 0, 0.75)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "16px",
+            boxSizing: "border-box"
+          }}
+          onClick={() => setShowCatPicker(false)}
+        >
+          <div
+            style={{
+              background: "#161f1a",
+              color: "#ffffff",
+              borderRadius: "20px",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              width: "100%",
+              maxWidth: "440px",
+              maxHeight: "85vh",
+              display: "flex",
+              flexDirection: "column",
+              boxShadow: "0 24px 48px rgba(0, 0, 0, 0.6)",
+              overflow: "hidden"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div
+              style={{
+                padding: "16px 20px",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between"
+              }}
+            >
+              <div>
+                <h3 style={{ margin: 0, fontSize: "15px", fontWeight: "400", color: "#ffffff" }}>
+                  Choisir une catégorie
+                </h3>
+                <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: "rgba(255, 255, 255, 0.6)" }}>
+                  Sélectionnez ou créez une catégorie avec son repère visuel
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCatPicker(false)}
+                style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "50%",
+                  border: "none",
+                  background: "rgba(255, 255, 255, 0.08)",
+                  color: "#ffffff",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* List */}
+            <div style={{ padding: "16px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                {categoryKeys.map((cat) => {
+                  const isSelected = cat === newCategory;
+                  const markerId = emojis[cat] || "monnaie";
+                  const color = colors[cat] || "#2c5e4c";
+                  return (
+                    <div
+                      key={cat}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px"
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setNewCategory(cat);
+                          setNewSubCategory("");
+                          setShowCatPicker(false);
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: "10px 14px",
+                          borderRadius: "12px",
+                          border: isSelected ? "1px solid #2c5e4c" : "1px solid rgba(255, 255, 255, 0.08)",
+                          background: isSelected ? "rgba(44, 94, 76, 0.3)" : "#111915",
+                          color: "#ffffff",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          cursor: "pointer",
+                          textAlign: "left"
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+                          <TacticalPinIcon markerId={markerId} color={color} size={24} categoryName={cat} />
+                          <span style={{ fontSize: "13px", fontWeight: "400", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {cat}
+                          </span>
+                        </div>
+                        {isSelected && (
+                          <span style={{ fontSize: "12px", color: "#6ee7b7", fontWeight: "400" }}>✓</span>
+                        )}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeCategory(cat);
+                          const updated = loadCategoriesData();
+                          setCategoryData(updated);
+                          if (newCategory === cat) {
+                            const remaining = Object.keys(updated.categories || {});
+                            setNewCategory(remaining[0] || "");
+                            setNewSubCategory("");
+                          }
+                        }}
+                        style={{
+                          width: "34px",
+                          height: "38px",
+                          borderRadius: "10px",
+                          border: "1px solid rgba(255, 255, 255, 0.06)",
+                          background: "#111915",
+                          color: "rgba(255, 255, 255, 0.4)",
+                          fontSize: "12px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center"
+                        }}
+                        title="Supprimer la catégorie"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Add New Category Section */}
+              {!isCreatingNewCat ? (
+                <button
+                  type="button"
+                  onClick={() => setIsCreatingNewCat(true)}
+                  style={{
+                    padding: "12px",
+                    borderRadius: "12px",
+                    border: "1px dashed rgba(255, 255, 255, 0.2)",
+                    background: "transparent",
+                    color: "rgba(255, 255, 255, 0.8)",
+                    fontSize: "13px",
+                    fontWeight: "400",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "6px"
+                  }}
+                >
+                  + Créer une nouvelle catégorie
+                </button>
+              ) : (
+                <div
+                  style={{
+                    background: "#111915",
+                    padding: "14px",
+                    borderRadius: "14px",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px"
+                  }}
+                >
+                  <div style={{ fontSize: "11px", textTransform: "uppercase", color: "rgba(255, 255, 255, 0.7)", letterSpacing: "0.5px" }}>
+                    Nouvelle catégorie
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Nom de la catégorie..."
+                    value={quickCatName}
+                    onChange={(e) => setQuickCatName(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "9px 12px",
+                      borderRadius: "8px",
+                      border: "1px solid rgba(255,255,255,0.12)",
+                      background: "#19231e",
+                      color: "#ffffff",
+                      fontSize: "12px",
+                      outline: "none",
+                      boxSizing: "border-box"
+                    }}
+                  />
+
+                  <div>
+                    <div style={{ fontSize: "10px", opacity: 0.7, textTransform: "uppercase", marginBottom: "5px" }}>
+                      Couleur du repère sur la carte
+                    </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+                      {PRESET_CATEGORY_COLORS.map((col) => (
+                        <button
+                          key={col}
+                          type="button"
+                          onClick={() => setQuickCatColor(col)}
+                          style={{
+                            width: "22px",
+                            height: "22px",
+                            borderRadius: "50%",
+                            background: col,
+                            border: quickCatColor === col ? "2px solid #ffffff" : "1px solid rgba(255,255,255,0.2)",
+                            cursor: "pointer",
+                            padding: 0
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontSize: "10px", opacity: 0.7, textTransform: "uppercase", marginBottom: "5px" }}>
+                      Repère visuel
+                    </div>
+                    <CategoryMarkerPicker
+                      selectedMarkerId={quickCatEmoji}
+                      onSelectMarker={setQuickCatEmoji}
+                      currentColor={quickCatColor}
+                      theme="dark"
+                    />
+                  </div>
+
+                  <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsCreatingNewCat(false);
+                        setQuickCatName("");
+                      }}
+                      style={{
+                        padding: "8px 12px",
+                        borderRadius: "8px",
+                        border: "1px solid rgba(255,255,255,0.12)",
+                        background: "transparent",
+                        color: "rgba(255, 255, 255, 0.7)",
+                        fontSize: "11px",
+                        cursor: "pointer"
+                      }}
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const trimmed = quickCatName.trim();
+                        if (!trimmed) return;
+                        addCategory(trimmed, quickCatEmoji, ["Indéterminé"], quickCatColor);
+                        const updated = loadCategoriesData();
+                        setCategoryData(updated);
+                        setNewCategory(trimmed);
+                        setNewSubCategory("");
+                        setQuickCatName("");
+                        setIsCreatingNewCat(false);
+                        setShowCatPicker(false);
+                      }}
+                      disabled={!quickCatName.trim()}
+                      style={{
+                        padding: "8px 14px",
+                        borderRadius: "8px",
+                        border: "none",
+                        background: quickCatName.trim() ? "#2c5e4c" : "rgba(255,255,255,0.1)",
+                        color: "#ffffff",
+                        fontSize: "12px",
+                        cursor: quickCatName.trim() ? "pointer" : "not-allowed"
+                      }}
+                    >
+                      Créer et sélectionner
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL POUR CHOISIR UN MÉTAL */}
+      {showMetalPicker && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 99999,
+            background: "rgba(0, 0, 0, 0.75)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "16px",
+            boxSizing: "border-box"
+          }}
+          onClick={() => setShowMetalPicker(false)}
+        >
+          <div
+            style={{
+              background: "#161f1a",
+              color: "#ffffff",
+              borderRadius: "20px",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              width: "100%",
+              maxWidth: "420px",
+              maxHeight: "80vh",
+              display: "flex",
+              flexDirection: "column",
+              boxShadow: "0 24px 48px rgba(0, 0, 0, 0.6)",
+              overflow: "hidden"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div
+              style={{
+                padding: "16px 20px",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between"
+              }}
+            >
+              <div>
+                <h3 style={{ margin: 0, fontSize: "15px", fontWeight: "400", color: "#ffffff" }}>
+                  Sélectionner un métal
+                </h3>
+                <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: "rgba(255, 255, 255, 0.6)" }}>
+                  Choisissez la matière de votre trouvaille
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowMetalPicker(false)}
+                style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "50%",
+                  border: "none",
+                  background: "rgba(255, 255, 255, 0.08)",
+                  color: "#ffffff",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* List */}
+            <div style={{ padding: "16px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "8px" }}>
+              {/* Option: Métal non spécifié */}
+              <button
+                type="button"
+                onClick={() => {
+                  setNewDescription("Indéterminé");
+                  setShowMetalPicker(false);
+                }}
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: "12px",
+                  border: !newDescription || newDescription === "Indéterminé" ? "1px solid #2c5e4c" : "1px solid rgba(255, 255, 255, 0.08)",
+                  background: !newDescription || newDescription === "Indéterminé" ? "rgba(44, 94, 76, 0.3)" : "#111915",
+                  color: "#ffffff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  cursor: "pointer",
+                  textAlign: "left"
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <MetallicMaterialBadge metalName="Indéterminé" size={24} />
+                  <span style={{ fontSize: "13px", fontWeight: "400" }}>Métal non spécifié</span>
+                </div>
+                {(!newDescription || newDescription === "Indéterminé") && (
+                  <span style={{ fontSize: "12px", color: "#6ee7b7", fontWeight: "400" }}>✓</span>
+                )}
+              </button>
+
+              {/* Other metals */}
+              {(materialsData.materials || []).filter((m) => m !== "Indéterminé").map((mat) => {
+                const isSelected = newDescription === mat;
+                return (
+                  <button
+                    key={mat}
+                    type="button"
+                    onClick={() => {
+                      setNewDescription(mat);
+                      setShowMetalPicker(false);
+                    }}
+                    style={{
+                      padding: "10px 14px",
+                      borderRadius: "12px",
+                      border: isSelected ? "1px solid #2c5e4c" : "1px solid rgba(255, 255, 255, 0.08)",
+                      background: isSelected ? "rgba(44, 94, 76, 0.3)" : "#111915",
+                      color: "#ffffff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      cursor: "pointer",
+                      textAlign: "left"
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <MetallicMaterialBadge metalName={mat} size={24} />
+                      <span style={{ fontSize: "13px", fontWeight: "400" }}>{mat}</span>
+                    </div>
+                    {isSelected && (
+                      <span style={{ fontSize: "12px", color: "#6ee7b7", fontWeight: "400" }}>✓</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

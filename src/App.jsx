@@ -149,10 +149,7 @@ function App() {
       const data = loadCategoriesData();
       return Object.keys(data.categories || {});
     } catch {
-      return [
-        "Monnaie", "Bijou", "Boucle", "Bouton", "Médaille",
-        "Munition", "Outil", "Plomb", "Religieux", "Autre"
-      ];
+      return [];
     }
   });
 

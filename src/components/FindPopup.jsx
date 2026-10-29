@@ -45,6 +45,8 @@ export default function FindPopup({
   const [materialsData, setMaterialsData] = useState(() => loadMaterialsData());
   const [categoriesData, setCategoriesData] = useState(() => loadCategoriesData());
   const [isFav, setIsFav] = useState(!!find.favorite);
+  const [showEditCatPicker, setShowEditCatPicker] = useState(false);
+  const [showEditMetalPicker, setShowEditMetalPicker] = useState(false);
 
   useEffect(() => {
     setTitle(find.title || "");
@@ -76,7 +78,7 @@ export default function FindPopup({
     };
   }, []);
 
-  const { categories: categoriesWithSub = {}, emojis: categoryEmojis = {} } = categoriesData || {};
+  const { categories: categoriesWithSub = {}, emojis: categoryEmojis = {}, colors: categoryColors = {} } = categoriesData || {};
   const availableCategories = Array.from(new Set([
     ...Object.keys(categoriesWithSub),
     ...(category ? [category] : [])
@@ -1061,32 +1063,72 @@ export default function FindPopup({
 
               <div>
                 <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "400", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Catégorie</label>
-                <select
-                  value={category}
-                  onChange={handleCategoryChange}
-                  style={{ ...inputStyle, background: "#19231e" }}
+                <button
+                  type="button"
+                  onClick={() => setShowEditCatPicker(true)}
+                  style={{
+                    ...inputStyle,
+                    background: "#19231e",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    cursor: "pointer",
+                    textAlign: "left"
+                  }}
                 >
-                  {availableCategories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+                    <TacticalPinIcon markerId={categoryEmojis[category] || "monnaie"} color={categoryColors[category] || "#2c5e4c"} size={20} categoryName={category} />
+                    <span style={{ fontSize: "13px", color: "#ffffff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {category || "Non spécifiée"}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: "10px", color: "rgba(255, 255, 255, 0.5)", flexShrink: 0 }}>Changer ▼</span>
+                </button>
               </div>
 
               <div>
                 <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "400", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Sous-catégorie</label>
                 {availableSubCats.length > 0 ? (
-                  <select
-                    value={subCategory}
-                    onChange={(e) => setSubCategory(e.target.value)}
-                    style={{ ...inputStyle, background: "#19231e" }}
-                  >
-                    <option value="">-- Non spécifiée --</option>
-                    {availableSubCats.map((subCat) => (
-                      <option key={subCat} value={subCat}>{subCat}</option>
-                    ))}
-                  </select>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                    <button
+                      type="button"
+                      onClick={() => setSubCategory("")}
+                      style={{
+                        padding: "5px 10px",
+                        borderRadius: "999px",
+                        border: !subCategory ? "1px solid #2c5e4c" : "1px solid rgba(255,255,255,0.08)",
+                        background: !subCategory ? "rgba(44, 94, 76, 0.3)" : "#19231e",
+                        color: !subCategory ? "#ffffff" : "rgba(255,255,255,0.7)",
+                        fontSize: "11px",
+                        fontWeight: "400",
+                        cursor: "pointer"
+                      }}
+                    >
+                      Non spécifiée
+                    </button>
+                    {availableSubCats.map((subCat) => {
+                      const isSelected = subCategory === subCat;
+                      return (
+                        <button
+                          key={subCat}
+                          type="button"
+                          onClick={() => setSubCategory(subCat)}
+                          style={{
+                            padding: "5px 10px",
+                            borderRadius: "999px",
+                            border: isSelected ? "1px solid #2c5e4c" : "1px solid rgba(255,255,255,0.08)",
+                            background: isSelected ? "rgba(44, 94, 76, 0.3)" : "#19231e",
+                            color: isSelected ? "#ffffff" : "rgba(255,255,255,0.7)",
+                            fontSize: "11px",
+                            fontWeight: "400",
+                            cursor: "pointer"
+                          }}
+                        >
+                          {subCat}
+                        </button>
+                      );
+                    })}
+                  </div>
                 ) : (
                   <input
                     type="text"
@@ -1100,18 +1142,27 @@ export default function FindPopup({
 
               <div>
                 <label style={{ fontSize: "10px", opacity: 0.7, fontWeight: "400", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>Métal</label>
-                <select
-                  value={material || "Indéterminé"}
-                  onChange={(e) => setMaterial(e.target.value)}
-                  style={{ ...inputStyle, background: "#19231e" }}
+                <button
+                  type="button"
+                  onClick={() => setShowEditMetalPicker(true)}
+                  style={{
+                    ...inputStyle,
+                    background: "#19231e",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    cursor: "pointer",
+                    textAlign: "left"
+                  }}
                 >
-                  <option value="Indéterminé">Métal non spécifié</option>
-                  {(materialsData.materials || []).filter((m) => m !== "Indéterminé").map((mat) => (
-                    <option key={mat} value={mat}>
-                      {mat}
-                    </option>
-                  ))}
-                </select>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+                    <MetallicMaterialBadge metalName={material && material !== "Indéterminé" ? material : "Indéterminé"} size={20} />
+                    <span style={{ fontSize: "13px", color: "#ffffff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {material && material !== "Indéterminé" ? material : "Métal non spécifié"}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: "10px", color: "rgba(255, 255, 255, 0.5)", flexShrink: 0 }}>Changer ▼</span>
+                </button>
               </div>
 
               {/* Photos */}
@@ -1572,6 +1623,247 @@ export default function FindPopup({
           }}
           onCancel={() => setConfirmConfig(null)}
         />
+      )}
+
+      {/* Edit Category Picker Modal */}
+      {showEditCatPicker && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 100001,
+            background: "rgba(0, 0, 0, 0.75)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "16px",
+            boxSizing: "border-box"
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowEditCatPicker(false);
+          }}
+        >
+          <div
+            style={{
+              background: "#161f1a",
+              color: "#ffffff",
+              borderRadius: "20px",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              width: "100%",
+              maxWidth: "400px",
+              maxHeight: "80vh",
+              display: "flex",
+              flexDirection: "column",
+              boxShadow: "0 24px 48px rgba(0, 0, 0, 0.6)",
+              overflow: "hidden"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                padding: "16px 20px",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between"
+              }}
+            >
+              <h3 style={{ margin: 0, fontSize: "15px", fontWeight: "400", color: "#ffffff" }}>
+                Choisir une catégorie
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowEditCatPicker(false)}
+                style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "50%",
+                  border: "none",
+                  background: "rgba(255, 255, 255, 0.08)",
+                  color: "#ffffff",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <div style={{ padding: "16px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "8px" }}>
+              {availableCategories.map((cat) => {
+                const isSelected = cat === category;
+                const markerId = categoryEmojis[cat] || "monnaie";
+                const color = categoryColors[cat] || "#2c5e4c";
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => {
+                      setCategory(cat);
+                      setSubCategory("");
+                      setShowEditCatPicker(false);
+                    }}
+                    style={{
+                      padding: "10px 14px",
+                      borderRadius: "12px",
+                      border: isSelected ? "1px solid #2c5e4c" : "1px solid rgba(255, 255, 255, 0.08)",
+                      background: isSelected ? "rgba(44, 94, 76, 0.3)" : "#111915",
+                      color: "#ffffff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      cursor: "pointer",
+                      textAlign: "left"
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <TacticalPinIcon markerId={markerId} color={color} size={22} categoryName={cat} />
+                      <span style={{ fontSize: "13px", fontWeight: "400" }}>{cat}</span>
+                    </div>
+                    {isSelected && <span style={{ fontSize: "12px", color: "#6ee7b7" }}>✓</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Metal Picker Modal */}
+      {showEditMetalPicker && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 100001,
+            background: "rgba(0, 0, 0, 0.75)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "16px",
+            boxSizing: "border-box"
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowEditMetalPicker(false);
+          }}
+        >
+          <div
+            style={{
+              background: "#161f1a",
+              color: "#ffffff",
+              borderRadius: "20px",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              width: "100%",
+              maxWidth: "400px",
+              maxHeight: "80vh",
+              display: "flex",
+              flexDirection: "column",
+              boxShadow: "0 24px 48px rgba(0, 0, 0, 0.6)",
+              overflow: "hidden"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                padding: "16px 20px",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between"
+              }}
+            >
+              <h3 style={{ margin: 0, fontSize: "15px", fontWeight: "400", color: "#ffffff" }}>
+                Sélectionner un métal
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowEditMetalPicker(false)}
+                style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "50%",
+                  border: "none",
+                  background: "rgba(255, 255, 255, 0.08)",
+                  color: "#ffffff",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <div style={{ padding: "16px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "8px" }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setMaterial("Indéterminé");
+                  setShowEditMetalPicker(false);
+                }}
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: "12px",
+                  border: !material || material === "Indéterminé" ? "1px solid #2c5e4c" : "1px solid rgba(255, 255, 255, 0.08)",
+                  background: !material || material === "Indéterminé" ? "rgba(44, 94, 76, 0.3)" : "#111915",
+                  color: "#ffffff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  cursor: "pointer",
+                  textAlign: "left"
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <MetallicMaterialBadge metalName="Indéterminé" size={22} />
+                  <span style={{ fontSize: "13px", fontWeight: "400" }}>Métal non spécifié</span>
+                </div>
+                {(!material || material === "Indéterminé") && <span style={{ fontSize: "12px", color: "#6ee7b7" }}>✓</span>}
+              </button>
+
+              {(materialsData.materials || []).filter((m) => m !== "Indéterminé").map((mat) => {
+                const isSelected = material === mat;
+                return (
+                  <button
+                    key={mat}
+                    type="button"
+                    onClick={() => {
+                      setMaterial(mat);
+                      setShowEditMetalPicker(false);
+                    }}
+                    style={{
+                      padding: "10px 14px",
+                      borderRadius: "12px",
+                      border: isSelected ? "1px solid #2c5e4c" : "1px solid rgba(255, 255, 255, 0.08)",
+                      background: isSelected ? "rgba(44, 94, 76, 0.3)" : "#111915",
+                      color: "#ffffff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      cursor: "pointer",
+                      textAlign: "left"
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <MetallicMaterialBadge metalName={mat} size={22} />
+                      <span style={{ fontSize: "13px", fontWeight: "400" }}>{mat}</span>
+                    </div>
+                    {isSelected && <span style={{ fontSize: "12px", color: "#6ee7b7" }}>✓</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       )}
     </div>,
     document.body
