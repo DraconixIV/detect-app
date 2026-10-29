@@ -1,6 +1,7 @@
 import { supabase } from "../supabase.js";
 import { PRESET_CATEGORY_COLORS } from "../subCategories.js";
 import { resolveMarkerId } from "../constants/tacticalMarkers.js";
+import { getMyUserCode } from "./sessionService.js";
 
 const STORAGE_CATEGORIES_KEY = "geoprospect_custom_categories";
 const STORAGE_EMOJIS_KEY = "geoprospect_custom_emojis";
@@ -47,8 +48,33 @@ export function isLegacyDeveloperCategorySet(cats) {
   if (!cats || typeof cats !== "object") return false;
   const keys = Object.keys(cats);
   if (keys.length === 0) return false;
-  // If every single category is in the developer's legacy starter list, it is contaminated
   return keys.every((k) => LEGACY_DEVELOPER_CATEGORIES.has(k.trim().toLowerCase()));
+}
+
+export function cleanDeveloperCategories(cats, emojis = {}, colors = {}) {
+  if (!cats || typeof cats !== "object") return { cats: {}, emojis: {}, colors: {} };
+
+  try {
+    const code = getMyUserCode();
+    // Only the developer device with code GEO-KE9Q88 is allowed to retain developer categories
+    if (code === "GEO-KE9Q88" || (typeof localStorage !== "undefined" && localStorage.getItem("geoprospect_is_developer_device_v1") === "true")) {
+      return { cats, emojis, colors };
+    }
+  } catch {}
+
+  const cleanedCats = {};
+  const cleanedEmojis = {};
+  const cleanedColors = {};
+
+  Object.keys(cats).forEach((k) => {
+    if (!LEGACY_DEVELOPER_CATEGORIES.has(k.trim().toLowerCase())) {
+      cleanedCats[k] = cats[k];
+      if (emojis && emojis[k]) cleanedEmojis[k] = emojis[k];
+      if (colors && colors[k]) cleanedColors[k] = colors[k];
+    }
+  });
+
+  return { cats: cleanedCats, emojis: cleanedEmojis, colors: cleanedColors };
 }
 
 function tryParseCategories(raw) {
@@ -136,23 +162,25 @@ export async function pullCategoriesFromCloud(user = null) {
 
     const parsedCloudCats = tryParseCategories(cloudCatsRaw);
 
-    // If cloud has categories, check if they are the contaminated developer starter set
     if (parsedCloudCats && Object.keys(parsedCloudCats).length > 0) {
-      if (isLegacyDeveloperCategorySet(parsedCloudCats)) {
-        // Purge contaminated developer categories from this user
-        saveCategoriesData({}, {}, {});
+      const { cats: cleanCats, emojis: cleanEmojis, colors: cleanColors } = cleanDeveloperCategories(
+        parsedCloudCats,
+        cloudEmojisRaw || {},
+        cloudColorsRaw || {}
+      );
+
+      saveCategoriesData(cleanCats, cleanEmojis, cleanColors);
+
+      if (Object.keys(cleanCats).length !== Object.keys(parsedCloudCats).length) {
         await supabase.auth.updateUser({
           data: {
-            geoprospect_categories: {},
-            geoprospect_emojis: {},
-            geoprospect_colors: {},
+            geoprospect_categories: cleanCats,
+            geoprospect_emojis: cleanEmojis,
+            geoprospect_colors: cleanColors,
             geoprospect_categories_synced_at: new Date().toISOString()
           }
         });
-        return true;
       }
-      // Legitimate user categories from cloud
-      saveCategoriesData(parsedCloudCats, cloudEmojisRaw || {}, cloudColorsRaw || {});
       return true;
     } else {
       // Cloud has NO categories: THIS IS A NEW USER (or user with 0 categories).
@@ -245,36 +273,38 @@ export function loadCategoriesData(forceRefresh = false) {
       }
     }
 
-    // Purge contaminated developer starter set if present
-    if (isLegacyDeveloperCategorySet(recoveredCats)) {
+    // Strip developer categories for non-developer users
+    const rawCategories = recoveredCats || {};
+    const { cats: cleanedCategories, emojis: cleanedEmojis, colors: cleanedColors } = cleanDeveloperCategories(
+      rawCategories,
+      recoveredEmojis,
+      recoveredColors
+    );
+
+    const categories = cleanedCategories;
+    recoveredEmojis = cleanedEmojis;
+    recoveredColors = cleanedColors;
+
+    // If developer categories were purged from rawCategories, update local and cloud storage immediately
+    if (Object.keys(rawCategories).length !== Object.keys(categories).length) {
       try {
-        localStorage.removeItem(STORAGE_CATEGORIES_KEY);
-        localStorage.removeItem(STORAGE_EMOJIS_KEY);
-        localStorage.removeItem(STORAGE_COLORS_KEY);
+        localStorage.setItem(STORAGE_CATEGORIES_KEY, JSON.stringify(categories));
+        localStorage.setItem(STORAGE_EMOJIS_KEY, JSON.stringify(recoveredEmojis));
+        localStorage.setItem(STORAGE_COLORS_KEY, JSON.stringify(recoveredColors));
         for (const key of LEGACY_CATEGORIES_KEYS) {
-          localStorage.removeItem(key);
-        }
-        for (const key of LEGACY_EMOJIS_KEYS) {
-          localStorage.removeItem(key);
-        }
-        for (const key of LEGACY_COLORS_KEYS) {
-          localStorage.removeItem(key);
+          if (key !== STORAGE_CATEGORIES_KEY) localStorage.removeItem(key);
         }
       } catch {}
-      recoveredCats = null;
-      recoveredEmojis = {};
-      recoveredColors = {};
 
-      // Also clean up Supabase user_metadata if user is logged in
       try {
         supabase.auth.getUser().then(({ data }) => {
           const user = data?.user;
           if (user) {
             supabase.auth.updateUser({
               data: {
-                geoprospect_categories: {},
-                geoprospect_emojis: {},
-                geoprospect_colors: {},
+                geoprospect_categories: categories,
+                geoprospect_emojis: recoveredEmojis,
+                geoprospect_colors: recoveredColors,
                 geoprospect_categories_synced_at: new Date().toISOString()
               }
             }).catch(() => {});
@@ -282,9 +312,6 @@ export function loadCategoriesData(forceRefresh = false) {
         }).catch(() => {});
       } catch {}
     }
-
-    // Pure user data: no forced injection of default categories
-    const categories = recoveredCats || {};
 
     // Ensure all categories have a valid tactical marker ID and valid hex color
     const emojis = {};
@@ -418,37 +445,11 @@ export function removeSubCategory(categoryName, subCategoryName) {
 }
 
 /**
- * Automatically inspects finds to guarantee that all categories present in
- * historical finds are registered and preserved in categoriesData.
+ * Auto-category injection from finds permanently disabled:
+ * Categories must strictly be user-created and never resurrected automatically.
  */
-export function ensureCategoriesFromFinds(finds = []) {
-  if (!Array.isArray(finds) || finds.length === 0) return;
-  try {
-    const { categories, emojis, colors } = loadCategoriesData();
-    let hasNew = false;
-    const updatedCats = { ...categories };
-    const updatedEmojis = { ...emojis };
-    const updatedColors = { ...colors };
-
-    finds.forEach((find) => {
-      const rawCat = find?.category;
-      if (rawCat && typeof rawCat === "string") {
-        const catName = rawCat.trim();
-        if (catName && !updatedCats[catName]) {
-          updatedCats[catName] = [];
-          updatedEmojis[catName] = resolveMarkerId(null, catName);
-          updatedColors[catName] = PRESET_CATEGORY_COLORS[Object.keys(updatedCats).length % PRESET_CATEGORY_COLORS.length];
-          hasNew = true;
-        }
-      }
-    });
-
-    if (hasNew) {
-      saveCategoriesData(updatedCats, updatedEmojis, updatedColors);
-    }
-  } catch (err) {
-    console.warn("Could not synchronize categories from finds:", err);
-  }
+export function ensureCategoriesFromFinds(_finds = []) {
+  return;
 }
 
 export function resetCategoriesToZero() {

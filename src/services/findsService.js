@@ -58,11 +58,11 @@ export function decodeMetadata(find) {
     const myName = getMyDisplayName();
     const cleanMyCode = myCode ? normalizeSessionCode(myCode) : null;
     const cleanUserCode = user_code ? normalizeSessionCode(user_code) : null;
-    if (myName && (!cleanUserCode || cleanUserCode === cleanMyCode)) {
-      finder_name = myName;
-      if (!user_code && cleanMyCode) {
-        user_code = cleanMyCode;
-      }
+    if (cleanUserCode && cleanMyCode && cleanUserCode === cleanMyCode) {
+      if (myName) finder_name = myName;
+    } else if (!cleanUserCode && cleanMyCode === "GEO-KE9Q88") {
+      user_code = "GEO-KE9Q88";
+      if (myName) finder_name = myName;
     }
   } catch {
     // fallback
@@ -409,7 +409,10 @@ export async function loadFinds(options = {}) {
         return findSess === cleanCurrentSess || findUser === cleanMyCode;
       }
       // Mode personnel: STRICT FILTER to current user's private finds
-      return findUser === cleanMyCode;
+      if (cleanMyCode === "GEO-KE9Q88") {
+        return !findUser || findUser === "GEO-KE9Q88";
+      }
+      return findUser && cleanMyCode && findUser === cleanMyCode;
     });
 
     // Fetch photos and videos ONLY for the filtered find IDs
@@ -457,9 +460,7 @@ export async function loadFinds(options = {}) {
       };
     });
 
-    try {
-      ensureCategoriesFromFinds(finalFinds);
-    } catch {}
+    // Auto-category injection from finds permanently disabled
 
     return finalFinds;
 
