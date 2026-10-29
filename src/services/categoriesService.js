@@ -28,6 +28,29 @@ const LEGACY_COLORS_KEYS = [
   "geoprospect_colors"
 ];
 
+const LEGACY_DEVELOPER_CATEGORIES = new Set([
+  "monnaie",
+  "bijou",
+  "boucle",
+  "bouton",
+  "médaille",
+  "medaille",
+  "militaria",
+  "munition",
+  "outil",
+  "plomb",
+  "religieux",
+  "autre"
+]);
+
+export function isLegacyDeveloperCategorySet(cats) {
+  if (!cats || typeof cats !== "object") return false;
+  const keys = Object.keys(cats);
+  if (keys.length === 0) return false;
+  // If every single category is in the developer's legacy starter list, it is contaminated
+  return keys.every((k) => LEGACY_DEVELOPER_CATEGORIES.has(k.trim().toLowerCase()));
+}
+
 function tryParseCategories(raw) {
   if (!raw) return null;
   try {
@@ -105,20 +128,36 @@ export async function pullCategoriesFromCloud(user = null) {
       const { data } = await supabase.auth.getUser();
       currentUser = data?.user;
     }
-    if (!currentUser || !currentUser.user_metadata) return false;
+    if (!currentUser) return false;
 
-    const cloudCats = currentUser.user_metadata.geoprospect_categories;
-    const cloudEmojis = currentUser.user_metadata.geoprospect_emojis;
-    const cloudColors = currentUser.user_metadata.geoprospect_colors;
+    const cloudCatsRaw = currentUser.user_metadata?.geoprospect_categories;
+    const cloudEmojisRaw = currentUser.user_metadata?.geoprospect_emojis;
+    const cloudColorsRaw = currentUser.user_metadata?.geoprospect_colors;
 
-    const parsedCloudCats = tryParseCategories(cloudCats);
+    const parsedCloudCats = tryParseCategories(cloudCatsRaw);
+
+    // If cloud has categories, check if they are the contaminated developer starter set
     if (parsedCloudCats && Object.keys(parsedCloudCats).length > 0) {
-      const local = loadCategoriesData();
-      const mergedCats = { ...local.categories, ...parsedCloudCats };
-      const mergedEmojis = { ...local.emojis, ...(cloudEmojis || {}) };
-      const mergedColors = { ...local.colors, ...(cloudColors || {}) };
-
-      saveCategoriesData(mergedCats, mergedEmojis, mergedColors);
+      if (isLegacyDeveloperCategorySet(parsedCloudCats)) {
+        // Purge contaminated developer categories from this user
+        saveCategoriesData({}, {}, {});
+        await supabase.auth.updateUser({
+          data: {
+            geoprospect_categories: {},
+            geoprospect_emojis: {},
+            geoprospect_colors: {},
+            geoprospect_categories_synced_at: new Date().toISOString()
+          }
+        });
+        return true;
+      }
+      // Legitimate user categories from cloud
+      saveCategoriesData(parsedCloudCats, cloudEmojisRaw || {}, cloudColorsRaw || {});
+      return true;
+    } else {
+      // Cloud has NO categories: THIS IS A NEW USER (or user with 0 categories).
+      // Every user must start with 0 categories!
+      saveCategoriesData({}, {}, {});
       return true;
     }
   } catch (err) {
@@ -132,6 +171,14 @@ try {
   supabase.auth.onAuthStateChange((event, session) => {
     if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
       pullCategoriesFromCloud(session.user);
+    } else if (event === "SIGNED_OUT") {
+      invalidateCategoriesCache();
+      try {
+        localStorage.removeItem(STORAGE_CATEGORIES_KEY);
+        localStorage.removeItem(STORAGE_EMOJIS_KEY);
+        localStorage.removeItem(STORAGE_COLORS_KEY);
+      } catch {}
+      window.dispatchEvent(new Event("categories-updated"));
     }
   });
 } catch {
@@ -196,6 +243,44 @@ export function loadCategoriesData(forceRefresh = false) {
       if (parsed) {
         recoveredColors = { ...parsed, ...recoveredColors };
       }
+    }
+
+    // Purge contaminated developer starter set if present
+    if (isLegacyDeveloperCategorySet(recoveredCats)) {
+      try {
+        localStorage.removeItem(STORAGE_CATEGORIES_KEY);
+        localStorage.removeItem(STORAGE_EMOJIS_KEY);
+        localStorage.removeItem(STORAGE_COLORS_KEY);
+        for (const key of LEGACY_CATEGORIES_KEYS) {
+          localStorage.removeItem(key);
+        }
+        for (const key of LEGACY_EMOJIS_KEYS) {
+          localStorage.removeItem(key);
+        }
+        for (const key of LEGACY_COLORS_KEYS) {
+          localStorage.removeItem(key);
+        }
+      } catch {}
+      recoveredCats = null;
+      recoveredEmojis = {};
+      recoveredColors = {};
+
+      // Also clean up Supabase user_metadata if user is logged in
+      try {
+        supabase.auth.getUser().then(({ data }) => {
+          const user = data?.user;
+          if (user) {
+            supabase.auth.updateUser({
+              data: {
+                geoprospect_categories: {},
+                geoprospect_emojis: {},
+                geoprospect_colors: {},
+                geoprospect_categories_synced_at: new Date().toISOString()
+              }
+            }).catch(() => {});
+          }
+        }).catch(() => {});
+      } catch {}
     }
 
     // Pure user data: no forced injection of default categories
@@ -364,4 +449,23 @@ export function ensureCategoriesFromFinds(finds = []) {
   } catch (err) {
     console.warn("Could not synchronize categories from finds:", err);
   }
+}
+
+export function resetCategoriesToZero() {
+  saveCategoriesData({}, {}, {});
+  try {
+    localStorage.removeItem(STORAGE_CATEGORIES_KEY);
+    localStorage.removeItem(STORAGE_EMOJIS_KEY);
+    localStorage.removeItem(STORAGE_COLORS_KEY);
+    for (const key of LEGACY_CATEGORIES_KEYS) {
+      localStorage.removeItem(key);
+    }
+    for (const key of LEGACY_EMOJIS_KEYS) {
+      localStorage.removeItem(key);
+    }
+    for (const key of LEGACY_COLORS_KEYS) {
+      localStorage.removeItem(key);
+    }
+  } catch {}
+  syncCategoriesToCloud();
 }

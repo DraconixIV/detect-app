@@ -1025,8 +1025,14 @@ export default function AddFindForm({
                 })}
               </div>
 
+              {categoryKeys.length === 0 && !isCreatingNewCat && (
+                <div style={{ textAlign: "center", padding: "14px", color: "rgba(255, 255, 255, 0.6)", fontSize: "12px" }}>
+                  Aucune catégorie configurée. Créez votre première catégorie ci-dessous pour pouvoir classer vos trouvailles.
+                </div>
+              )}
+
               {/* Add New Category Section */}
-              {!isCreatingNewCat ? (
+              {!isCreatingNewCat && categoryKeys.length > 0 ? (
                 <button
                   type="button"
                   onClick={() => setIsCreatingNewCat(true)}
