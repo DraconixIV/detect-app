@@ -54,15 +54,15 @@ function getTrafficSource() {
       const parsed = new URL(referrer);
       const host = parsed.hostname.replace("www.", "");
       if (host.includes("vercel.app") || host.includes("localhost") || (typeof window !== "undefined" && host === window.location.hostname)) {
-        return "Accès Direct / PWA";
+        return "Accès Direct / Application";
       }
       return host;
     } catch {
-      return "Accès Direct / PWA";
+      return "Accès Direct / Application";
     }
   }
 
-  return "Accès Direct / PWA";
+  return "Accès Direct / Application";
 }
 
 export const DEV_DEVICE_STORAGE_KEY = "geoprospect_is_developer_device_v1";
@@ -252,9 +252,9 @@ export async function fetchAnalyticsReport() {
           if (uCode) uniqueWeekUsersSet.add(uCode);
         }
 
-        let src = row.source || "Accès Direct / PWA";
-        if (src.includes("vercel.app") || src.includes("localhost") || src === "Direct") {
-          src = "Accès Direct / PWA";
+        let src = row.source || "Accès Direct / Application";
+        if (src.includes("vercel.app") || src.includes("localhost") || src === "Direct" || src === "Accès Direct / PWA") {
+          src = "Accès Direct / Application";
         }
         result.sources[src] = (result.sources[src] || 0) + 1;
 
@@ -326,8 +326,8 @@ export async function fetchAnalyticsReport() {
       visitData.forEach((row) => {
         if (!row.user_code) return;
         if (!userSourcesMap[row.user_code]) userSourcesMap[row.user_code] = new Set();
-        let src = row.source || "Accès Direct / PWA";
-        if (src.includes("vercel.app") || src === "Direct") src = "Accès Direct / PWA";
+        let src = row.source || "Accès Direct / Application";
+        if (src.includes("vercel.app") || src === "Direct" || src === "Accès Direct / PWA") src = "Accès Direct / Application";
         userSourcesMap[row.user_code].add(src);
       });
 
@@ -335,9 +335,10 @@ export async function fetchAnalyticsReport() {
       let uDirect = 0;
       Object.values(userSourcesMap).forEach((srcSet) => {
         if (srcSet.has("Facebook")) uFb++;
-        if (srcSet.has("Accès Direct / PWA")) uDirect++;
+        if (srcSet.has("Accès Direct / Application") || srcSet.has("Accès Direct / PWA")) uDirect++;
       });
       result.uniqueFacebookUsers = uFb;
+      result.uniqueDirectUsers = uDirect;
       result.uniqueDirectPWAUsers = uDirect;
 
       // 3. Count GPS tracks / sorties from app_analytics

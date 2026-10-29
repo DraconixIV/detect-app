@@ -610,8 +610,8 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                   if (src === "Facebook") {
                     displayLabel = "Facebook (Publication et Groupes)";
                     icon = "";
-                  } else if (src === "Accès Direct / PWA") {
-                    displayLabel = "Accès Direct / PWA (Navigateur et App)";
+                  } else if (src === "Accès Direct / PWA" || src === "Accès Direct / Application") {
+                    displayLabel = "Accès Direct (Application et Web)";
                     icon = "";
                   } else if (src === "Google") {
                     displayLabel = "Google (Recherche, Discover, Gmail)";
@@ -911,7 +911,7 @@ CREATE POLICY "Allow public feedback insert and read" ON public.app_feedback FOR
                               border: v.source?.toLowerCase().includes("facebook") ? "1px solid rgba(59, 130, 246, 0.4)" : "1px solid rgba(255, 255, 255, 0.1)"
                             }}
                           >
-                            {v.source?.toLowerCase().includes("facebook") ? "Facebook" : v.source || "Direct / PWA"}
+                            {v.source?.toLowerCase().includes("facebook") ? "Facebook" : (v.source === "Accès Direct / PWA" ? "Accès Direct / Application" : (v.source || "Direct / Application"))}
                           </span>
                         </td>
 

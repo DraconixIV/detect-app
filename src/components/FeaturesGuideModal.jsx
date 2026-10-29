@@ -98,7 +98,7 @@ const FEATURES_DATA = [
     categoryLabel: "Mode hors-ligne",
     features: [
       {
-        title: "Fonctionnement sans réseau (PWA)",
+        title: "Fonctionnement sans réseau (Hors-ligne)",
         description: "Enregistrez vos trouvailles, photos et tracés même au fond des bois sans aucune couverture 4G grâce au stockage IndexedDB."
       },
       {

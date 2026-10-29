@@ -105,7 +105,7 @@ export default function CguModal({ isOpen, onClose, theme = "dark" }) {
               1 — Nature du service
             </div>
             <p style={{ margin: 0, color: textSub }}>
-              GeoProspect est une application web progressive conçue bénévolement et mise à disposition à titre gratuit. Elle constitue un carnet de détection numérique personnel permettant aux passionnés de détection de loisir d'enregistrer leurs trouvailles, de visualiser des fonds de cartes géographiques et de suivre leurs parcours GPS.
+              GeoProspect est une application mobile conçue bénévolement et mise à disposition à titre gratuit. Elle constitue un carnet de détection numérique personnel permettant aux passionnés de détection de loisir d'enregistrer leurs trouvailles, de visualiser des fonds de cartes géographiques et de suivre leurs parcours GPS.
             </p>
           </div>
 

@@ -26,7 +26,7 @@ try {
     }
   });
 } catch (e) {
-  console.warn("PWA Service Worker registration skipped:", e);
+  console.warn("Service Worker registration skipped:", e);
 }
 
 createRoot(document.getElementById('root')).render(
