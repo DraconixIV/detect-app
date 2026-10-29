@@ -48,11 +48,8 @@ export default function InAppBrowserBanner() {
 
   const handleCopyLink = async () => {
     try {
-      const myCode = getMyUserCode();
       const origin = typeof window !== "undefined" ? window.location.origin : "https://detect-app-iota.vercel.app";
-      const url = myCode && !myCode.includes("ANON") && !myCode.includes("LOCAL")
-        ? `${origin}/?uid=${myCode}`
-        : origin;
+      const url = origin;
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(url);
